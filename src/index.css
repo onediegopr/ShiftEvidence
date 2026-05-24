@@ -2184,81 +2184,246 @@ p {
     }
 }
 
-/* Steps Timeline */
-.steps-container {
+/* ======== MIGRATION PIPELINE ======== */
+
+.pipeline-section {
+    background: rgba(6, 9, 19, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 3rem;
+    position: relative;
+}
+
+/* Endpoints */
+.pipeline-endpoint {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
-    margin-top: 4rem;
-    position: relative;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 2rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dark);
+    flex-shrink: 0;
+    width: 80px;
+    text-align: center;
 }
 
-.steps-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 2rem;
-    width: 2px;
-    background: linear-gradient(
-        180deg,
-        hsl(var(--primary)),
-        hsl(var(--secondary)),
-        transparent
-    );
-    opacity: 0.25;
+.pipeline-endpoint.vmware {
+    color: #e88b8e;
 }
 
-.step-row {
+.pipeline-endpoint.proxmox {
+    color: #f5a960;
+}
+
+/* Cards row */
+.pipeline-cards {
     display: flex;
-    gap: 2.5rem;
-    position: relative;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 0;
+    flex: 1;
+    overflow-x: auto;
+    padding: 0.5rem 0;
 }
 
-.step-number-bubble {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-    background: var(--bg-card);
-    border: 2px solid var(--border-color);
+.pipeline-step {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Individual card */
+.pipeline-card {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+    position: relative;
+    overflow: visible;
+}
+
+.pipeline-card:hover {
+    border-color: var(--phase-color, var(--border-hover));
+    box-shadow:
+        0 0 20px
+            color-mix(in srgb, var(--phase-color, #6366f1) 20%, transparent),
+        0 8px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(-4px);
+    z-index: 5;
+}
+
+/* Card top: icon + number */
+.pipeline-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pipeline-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.04);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 1.5rem;
-    color: white;
-    z-index: 10;
-    flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s;
+    transition: background 0.3s;
 }
 
-.step-row:hover .step-number-bubble {
-    border-color: hsl(var(--secondary));
-    box-shadow: 0 0 20px rgba(var(--secondary-rgb), 0.3);
-    color: hsl(var(--secondary));
+.pipeline-card:hover .pipeline-icon {
+    background: rgba(255, 255, 255, 0.08);
 }
 
-.step-card {
-    flex-grow: 1;
-    padding: 2rem;
-}
-
-.step-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-}
-
-.step-duration {
+.pipeline-num {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: hsl(var(--secondary));
-    background: rgba(var(--secondary-rgb), 0.1);
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius-sm);
+    font-size: 1.5rem;
+    font-weight: 800;
+    opacity: 0.4;
+}
+
+.pipeline-card:hover .pipeline-num {
+    opacity: 0.8;
+}
+
+/* Title */
+.pipeline-title {
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+/* Duration badge */
+.pipeline-duration {
+    display: inline-block;
+    width: fit-content;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    border: 1px solid;
+}
+
+/* Description */
+.pipeline-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    flex-grow: 1;
+}
+
+/* Key Result */
+.pipeline-result {
+    border-left: 3px solid;
+    padding-left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-top: auto;
+}
+
+.pipeline-result-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.pipeline-result-text {
+    font-size: 0.82rem;
+    color: var(--text-main);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* Arrow between cards */
+.pipeline-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    flex-shrink: 0;
+    color: var(--text-dark);
+    opacity: 0.4;
+    transition: opacity 0.3s;
+}
+
+.pipeline-step:hover + .pipeline-step .pipeline-arrow,
+.pipeline-step:hover .pipeline-arrow {
+    opacity: 0.8;
+    color: var(--phase-color, var(--text-muted));
+}
+
+/* Mobile: vertical stack */
+@media (max-width: 1024px) {
+    .pipeline {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+    .pipeline-endpoint {
+        flex-direction: row;
+        width: 100%;
+        padding: 1rem;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .pipeline-cards {
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+        position: relative;
+    }
+    .pipeline-cards::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 2px;
+        background: linear-gradient(
+            180deg,
+            #06b6d4,
+            #8b5cf6,
+            #f59e0b,
+            #ea580c,
+            #10b981
+        );
+        opacity: 0.3;
+        z-index: 0;
+    }
+    .pipeline-step {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    .pipeline-card {
+        width: 90%;
+        max-width: 420px;
+        z-index: 1;
+    }
+    .pipeline-arrow {
+        width: 100%;
+        height: 32px;
+        transform: rotate(90deg);
+        z-index: 1;
+    }
 }
 
 /* Call To Action Form */
