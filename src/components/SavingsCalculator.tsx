@@ -67,7 +67,7 @@ export default function SavingsCalculator() {
           <h2 className="mb-4">Calculate Your Cost Shift</h2>
           <p className="mx-auto" style={{ maxWidth: '650px' }}>
             Broadcom license consolidation has forced massive price hikes. Use our live modeler to
-            estimate your cost structure difference shifting to Proxmox VE with Infrashift.
+            estimate your cost structure difference shifting to Proxmox VE with InfraShift.
           </p>
         </div>
 
@@ -189,7 +189,7 @@ export default function SavingsCalculator() {
                   </span>
                 </div>
                 <div className="savings-item">
-                  <span className="savings-item-lbl">Proxmox + Infrashift 3-Yr TCO</span>
+                  <span className="savings-item-lbl">Proxmox + InfraShift 3-Yr TCO</span>
                   <span className="savings-item-val" style={{ color: '#22d3ee' }}>
                     {formatCurrency(proxmox3Year)}
                   </span>
@@ -202,7 +202,7 @@ export default function SavingsCalculator() {
                 <AlertCircle size={18} className="text-cyan" style={{ flexShrink: 0 }} />
                 <span>
                   <strong>Includes:</strong> Proxmox VE Premium Support (24/7 enterprise SLA) and the 
-                  one-time Infrashift migration & auditing service fee ({formatCurrency(migrationFee)}). 
+                  one-time InfraShift migration & auditing service fee ({formatCurrency(migrationFee)}). 
                   VMware calculation includes standard 10% annual escalation rates typical of Broadcom renewals.
                 </span>
               </div>

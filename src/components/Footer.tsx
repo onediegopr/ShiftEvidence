@@ -30,7 +30,7 @@ export default function Footer() {
                 />
               </svg>
               <span>
-                infrashift<span className="text-cyan">.</span>
+                InfraShift<span className="text-cyan">.</span>
               </span>
             </a>
             <p style={{ fontSize: '0.85rem' }}>
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>&copy; {new Date().getFullYear()} Infrashift. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} InfraShift. All rights reserved.</span>
           <span>Open-Source Powered. Securely Configured.</span>
         </div>
       </div>

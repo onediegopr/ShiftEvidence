@@ -48,7 +48,7 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
             <circle cx="12" cy="16" r="12" fill="none" stroke="rgba(239, 68, 68, 0.2)" strokeWidth="1" strokeDasharray="3 3" />
           </svg>
           <span>
-            infrashift<span className="text-cyan">.</span>
+            InfraShift<span className="text-cyan">.</span>
           </span>
         </a>
 

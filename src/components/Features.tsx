@@ -10,7 +10,7 @@ export default function Features() {
         <div className="container">
           <div className="text-center mb-8">
             <div className="badge">Safe Shift System</div>
-            <h2 className="mb-4">Why Enterprises Choose Infrashift</h2>
+            <h2 className="mb-4">Why Enterprises Choose InfraShift</h2>
             <p className="mx-auto" style={{ maxWidth: '650px' }}>
               Migrating core infrastructure shouldn't feel like a leap of faith. Our specialized pipeline
               handles the complexity and ensures zero risk to production data.
@@ -112,8 +112,8 @@ export default function Features() {
                 <tr>
                   <th>Feature Capability</th>
                   <th className="col-vs">VMware vSphere Suite</th>
-                  <th className="col-prox">Proxmox VE + Infrashift</th>
-                  <th>Infrashift Assurance</th>
+                  <th className="col-prox">Proxmox VE + InfraShift</th>
+                  <th>InfraShift Assurance</th>
                 </tr>
               </thead>
               <tbody>
@@ -133,7 +133,7 @@ export default function Features() {
                   <td style={{ fontWeight: 600, color: 'white' }}>High Availability & DRS</td>
                   <td className="col-vs">Paid licensing tier required</td>
                   <td className="col-prox">Included / Free (Corosync)</td>
-                  <td className="col-check">Configured automatically by Infrashift</td>
+                  <td className="col-check">Configured automatically by InfraShift</td>
                 </tr>
                 <tr>
                   <td style={{ fontWeight: 600, color: 'white' }}>Storage Virtualization</td>

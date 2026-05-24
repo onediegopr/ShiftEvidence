@@ -41,7 +41,7 @@ export default function ReadinessValidator({ isOpen, onClose }: ReadinessValidat
     setLogType([]);
 
     const mockLogs = [
-      { text: '[INFO] Initializing Infrashift Audit Engine v2.1.0...', type: 'info' },
+      { text: '[INFO] Initializing InfraShift Audit Engine v2.1.0...', type: 'info' },
       { text: '[INFO] Establishing connection to VMware API endpoints (simulation)...', type: 'info' },
       { text: '[INFO] Fetching cluster topology... 4 Hypervisor nodes found.', type: 'info' },
       { text: `[INFO] Evaluating storage architecture: Target type is [${storageType.toUpperCase()}].`, type: 'info' },
@@ -105,7 +105,7 @@ export default function ReadinessValidator({ isOpen, onClose }: ReadinessValidat
         <div className="wizard-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Terminal className="text-cyan" size={24} />
-            <h3 className="wizard-title">Infrashift Migration Validator</h3>
+            <h3 className="wizard-title">InfraShift Migration Validator</h3>
           </div>
           <button className="close-btn" onClick={onClose}>
             <X size={20} />
@@ -333,7 +333,7 @@ export default function ReadinessValidator({ isOpen, onClose }: ReadinessValidat
                     <div className="badge" style={{ margin: 0, width: 'fit-content' }}>Ready for Shift</div>
                     <h4 style={{ color: 'white', marginTop: '0.25rem' }}>Highly Compatible Setup</h4>
                     <p style={{ fontSize: '0.85rem' }}>
-                      Infrashift's automated mapping templates cover {getScore()}% of your active configurations.
+                      InfraShift's automated mapping templates cover {getScore()}% of your active configurations.
                       No blocking hardware issues or compatibility concerns were detected.
                     </p>
                   </div>
@@ -369,7 +369,7 @@ export default function ReadinessValidator({ isOpen, onClose }: ReadinessValidat
                         </div>
                         <div className="recommendation-desc">
                           {networkType === 'dvs'
-                            ? 'vSphere Distributed Port Groups detected. Infrashift scripts will map these configurations to Proxmox Open vSwitch (OVS) bridges automatically during container staging.'
+                            ? 'vSphere Distributed Port Groups detected. InfraShift scripts will map these configurations to Proxmox Open vSwitch (OVS) bridges automatically during container staging.'
                             : 'Standard vSwitch maps natively to Linux bridge (vmbr0) devices on target Proxmox VE hypervisors.'
                           }
                         </div>
@@ -383,7 +383,7 @@ export default function ReadinessValidator({ isOpen, onClose }: ReadinessValidat
                         <div className="recommendation-title">Backup Strategy: Planned</div>
                         <div className="recommendation-desc">
                           {backupSystem === 'veeam'
-                            ? 'Infrashift automates the setup of Proxmox Backup Server (PBS), establishing backup schedules and datastores. Incremental backup structures are mapped cleanly.'
+                            ? 'InfraShift automates the setup of Proxmox Backup Server (PBS), establishing backup schedules and datastores. Incremental backup structures are mapped cleanly.'
                             : 'Custom scripting hook mapped. Backup schedules will be configured on Proxmox VE API schedule lists.'
                           }
                         </div>

@@ -32,7 +32,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Infrashift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
+                Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. InfraShift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
               </p>
               <p className="text-muted">
                 The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.

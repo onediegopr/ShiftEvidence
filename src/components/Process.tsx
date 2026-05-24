@@ -44,7 +44,7 @@ export default function Process() {
       <div className="container">
         <div className="text-center mb-8">
           <div className="badge">Execution Pipeline</div>
-          <h2 className="mb-4">The Infrashift Migration Pipeline</h2>
+          <h2 className="mb-4">The InfraShift Migration Pipeline</h2>
           <p className="mx-auto" style={{ maxWidth: '650px' }}>
             We guarantee zero data loss and minimal system interruption by following a rigorous,
             step-by-step verification methodology.
