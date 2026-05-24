@@ -92,13 +92,30 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <path d="M 0,0 L 600,0 M 0,50 L 600,50 M 0,100 L 600,100 M 0,150 L 600,150 M 0,200 L 600,200 M 0,250 L 600,250 M 0,300 L 600,300 M 0,350 L 600,350" stroke="rgba(255,255,255,0.015)" strokeWidth="1" />
             <path d="M 0,0 L 0,400 M 50,0 L 50,400 M 100,0 L 100,400 M 150,0 L 150,400 M 200,0 L 200,400 M 250,0 L 250,400 M 300,0 L 300,400 M 350,0 L 350,400 M 400,0 L 400,400 M 450,0 L 450,400 M 500,0 L 500,400 M 550,0 L 550,400" stroke="rgba(255,255,255,0.015)" strokeWidth="1" />
 
-            {/* Connection Migration Tunnel */}
-            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="url(#tunnelGrad)" strokeWidth="12" strokeLinecap="round" opacity="0.85" />
-            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2.5" strokeDasharray="6 6" />
+            {/* 3 Migration Track Lanes */}
+            
+            {/* Lane 1: Database (Y: 234 -> 195 -> 234) */}
+            <path d="M 90,234 C 180,234 220,195 300,195 C 380,195 420,234 510,234" fill="none" stroke="rgba(168, 85, 247, 0.12)" strokeWidth="5" strokeLinecap="round" />
+            <path d="M 90,234 C 180,234 220,195 300,195 C 380,195 420,234 510,234" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" strokeDasharray="3 3" />
+            {/* Database Lane active flow pulses */}
+            <path d="M 90,234 C 180,234 220,195 300,195 C 380,195 420,234 510,234" fill="none" stroke="rgba(168, 85, 247, 0.5)" strokeWidth="1.5" strokeDasharray="8 30" strokeLinecap="round">
+              <animate attributeName="stroke-dashoffset" values="150;0" dur="4s" repeatCount="indefinite" />
+            </path>
 
-            {/* Glowing Flow Particles */}
-            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="url(#shiftGrad)" strokeWidth="2.5" strokeDasharray="15 50" strokeLinecap="round" opacity="0.7">
-              <animate attributeName="stroke-dashoffset" values="300;0" dur="4s" repeatCount="indefinite" />
+            {/* Lane 2: Compute / Web (Y: 178 -> 195 -> 178) */}
+            <path d="M 90,178 C 180,178 220,195 300,195 C 380,195 420,178 510,178" fill="none" stroke="rgba(6, 182, 212, 0.12)" strokeWidth="5" strokeLinecap="round" />
+            <path d="M 90,178 C 180,178 220,195 300,195 C 380,195 420,178 510,178" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" strokeDasharray="3 3" />
+            {/* Compute Lane active flow pulses */}
+            <path d="M 90,178 C 180,178 220,195 300,195 C 380,195 420,178 510,178" fill="none" stroke="rgba(6, 182, 212, 0.5)" strokeWidth="1.5" strokeDasharray="8 30" strokeLinecap="round">
+              <animate attributeName="stroke-dashoffset" values="150;0" dur="3.5s" repeatCount="indefinite" />
+            </path>
+
+            {/* Lane 3: Storage / Rollback loop (Y: 289 -> 195 -> loops back to 289) */}
+            <path d="M 90,289 C 180,289 220,195 300,195 C 220,195 200,340 90,289" fill="none" stroke="rgba(239, 68, 68, 0.08)" strokeWidth="5" strokeLinecap="round" />
+            <path d="M 90,289 C 180,289 220,195 300,195 C 220,195 200,340 90,289" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1" strokeDasharray="3 3" />
+            {/* Rollback Lane active flow pulses */}
+            <path d="M 90,289 C 180,289 220,195 300,195 C 220,195 200,340 90,289" fill="none" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="1.5" strokeDasharray="8 30" strokeLinecap="round">
+              <animate attributeName="stroke-dashoffset" values="200;0" dur="5s" repeatCount="indefinite" />
             </path>
 
             {/* VMware Source Rack Enclosure (X: 10, Y: 65, W: 160, H: 260) */}
@@ -371,106 +388,127 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </g>
             </g>
 
-            {/* Infrashift Validator Shield in middle (Center: X=300, Y=120) */}
-            <g transform="translate(300, 120)">
-              {/* Pulsing Sonar Scanning Waves */}
-              <circle cx="0" cy="0" r="42" fill="none" stroke="url(#shiftGrad)" strokeWidth="2.5" opacity="0.3">
-                <animate attributeName="r" values="42;72" dur="2.2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.6;0" dur="2.2s" repeatCount="indefinite" />
+            {/* Infrashift Validator Core (Center: X=300, Y=195) - 50% LARGER */}
+            <g transform="translate(300, 195)">
+              {/* Outer Scanning Radar Waves */}
+              <circle cx="0" cy="0" r="62" fill="none" stroke="url(#shiftGrad)" strokeWidth="3" opacity="0.3">
+                <animate attributeName="r" values="62;95" dur="2.4s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.6;0" dur="2.4s" repeatCount="indefinite" />
               </circle>
-              <circle cx="0" cy="0" r="42" fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.2">
-                <animate attributeName="r" values="42;90" dur="3.3s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.4;0" dur="3.3s" repeatCount="indefinite" />
-              </circle>
-
-              {/* Rotating Telemetry Rings */}
-              <circle cx="0" cy="0" r="48" fill="none" stroke="url(#shiftGrad)" strokeWidth="1" strokeDasharray="8 6 15 5" opacity="0.6">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="12s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="0" cy="0" r="54" fill="none" stroke="#22d3ee" strokeWidth="0.8" strokeDasharray="4 8 16 6" opacity="0.5">
-                <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="9s" repeatCount="indefinite" />
+              <circle cx="0" cy="0" r="62" fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.2">
+                <animate attributeName="r" values="62;112" dur="3.6s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.4;0" dur="3.6s" repeatCount="indefinite" />
               </circle>
 
-              {/* Validator Shield Background */}
-              <circle cx="0" cy="0" r="40" fill="rgba(8, 12, 26, 0.95)" stroke="url(#shiftGrad)" strokeWidth="2" filter="url(#strongGlow)" />
+              {/* Rotating Digital Dials */}
+              <circle cx="0" cy="0" r="72" fill="none" stroke="url(#shiftGrad)" strokeWidth="1" strokeDasharray="12 8 20 6" opacity="0.65">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="0" r="80" fill="none" stroke="#22d3ee" strokeWidth="0.8" strokeDasharray="6 12 18 8" opacity="0.5">
+                <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="10s" repeatCount="indefinite" />
+              </circle>
+
+              {/* Main Core Body */}
+              <circle cx="0" cy="0" r="62" fill="rgba(8, 12, 30, 0.96)" stroke="url(#shiftGrad)" strokeWidth="2.5" filter="url(#strongGlow)" />
               
-              {/* Digital Grid overlay */}
-              <line x1="-30" y1="0" x2="30" y2="0" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-              <line x1="0" y1="-30" x2="0" y2="30" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+              {/* Sub-Sector Grid Background */}
+              <line x1="-50" y1="0" x2="50" y2="0" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+              <line x1="0" y1="-50" x2="0" y2="18" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
               
-              {/* Sweeping Laser Scanner Beam */}
-              <line x1="-32" y1="0" x2="32" y2="0" stroke="#22d3ee" strokeWidth="3" opacity="0.8" filter="url(#glow)">
-                <animate attributeName="y1" values="-26;26;-26" dur="2.5s" repeatCount="indefinite" />
-                <animate attributeName="y2" values="-26;26;-26" dur="2.5s" repeatCount="indefinite" />
+              {/* Sector 1: AUDIT Sector (Top) */}
+              <text x="0" y="-46" fill="#c084fc" fontSize="7" fontWeight="bold" textAnchor="middle" letterSpacing="0.08em">AUDITING</text>
+              <text x="0" y="-37" fill="rgba(255,255,255,0.4)" fontSize="5" fontWeight="bold" textAnchor="middle" letterSpacing="0.05em">VERIFICATION MATRIX</text>
+              
+              {/* Sector 2: VERIFY Sector (Middle scanner) */}
+              <g transform="translate(0, -10)">
+                {/* Shield Outline */}
+                <path 
+                  d="M 0,-16 L 14,-11 V 2 C 14,10 7,18 0,20 C -7,18 -14,10 -14,2 V -11 Z" 
+                  fill="none" 
+                  stroke="#10b981" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+                <path 
+                  d="M -5,1 L -1,4.5 L 6 -2" 
+                  stroke="#10b981" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+              </g>
+
+              {/* Sweeping Laser Beam across the scan sector */}
+              <line x1="-52" y1="0" x2="52" y2="0" stroke="#22d3ee" strokeWidth="2.5" opacity="0.85" filter="url(#glow)">
+                <animate attributeName="y1" values="-34;16;-34" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="y2" values="-34;16;-34" dur="2s" repeatCount="indefinite" />
               </line>
 
-              {/* Shield Icon SVG */}
-              <path 
-                d="M 0,-16 L 14,-11 V 2 C 14,10 7,18 0,20 C -7,18 -14,10 -14,2 V -11 Z" 
-                fill="none" 
-                stroke="#10b981" 
-                strokeWidth="2.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-              />
-              {/* Checkmark inside shield */}
-              <path 
-                d="M -5,1 L -1,4.5 L 6 -2" 
-                stroke="#10b981" 
-                strokeWidth="2.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-              />
+              {/* Outer LED status rings */}
+              <circle cx="-62" cy="0" r="2.2" fill="#c084fc"><animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite" /></circle>
+              <circle cx="62" cy="0" r="2.2" fill="#22d3ee"><animate attributeName="opacity" values="0.2;1;0.2" dur="1.2s" repeatCount="indefinite" /></circle>
+              <circle cx="0" cy="-62" r="2.2" fill="#10b981"><animate attributeName="opacity" values="1;0.3;1" dur="0.8s" repeatCount="indefinite" /></circle>
+              <circle cx="0" cy="62" r="2.2" fill="#ef4444"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" /></circle>
 
-              {/* Outer Scanning beads / indicator LEDs */}
-              <circle cx="-40" cy="0" r="2" fill="#c084fc">
-                <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="40" cy="0" r="2" fill="#22d3ee">
-                <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="0" cy="-40" r="2" fill="#10b981">
-                <animate attributeName="opacity" values="1;0.3;1" dur="0.8s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="0" cy="40" r="2" fill="#fbbf24">
-                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" />
-              </circle>
+              {/* Sector 3: DECISION Sector (Bottom) */}
+              <line x1="-54" y1="18" x2="54" y2="18" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" strokeDasharray="3 3" />
+              
+              {/* Decision 1: Rollback Console (Left) */}
+              <g transform="translate(-4, 0)">
+                <rect x="-48" y="24" width="46" height="24" rx="4" fill="#1b0c0f" stroke="#ef4444" strokeWidth="0.8" />
+                <text x="-25" y="34" fill="#f87171" fontSize="6.5" fontWeight="bold" textAnchor="middle">ROLLBACK</text>
+                {/* Flash LED */}
+                <circle cx="-40" cy="39" r="1.8" fill="#ef4444">
+                  <animate attributeName="opacity" values="1;0.2;1" dur="0.6s" repeatCount="indefinite" />
+                </circle>
+                {/* Bouncing Back Arrow */}
+                <path d="M -13,39 L -19,39 L -16,36 M -16,42 L -19,39" fill="none" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
+              </g>
 
-              {/* Scanner Core Titles */}
-              <text x="0" y="34" fill="rgba(255,255,255,0.7)" fontSize="7.5" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">INFRASHIFT CORE</text>
-              <text x="0" y="42" fill="#10b981" fontSize="5.5" fontWeight="900" textAnchor="middle" letterSpacing="0.12em">100% VALIDATED</text>
+              {/* Decision 2: Approve Console (Right) */}
+              <g transform="translate(4, 0)">
+                <rect x="2" y="24" width="46" height="24" rx="4" fill="#081812" stroke="#10b981" strokeWidth="0.8" />
+                <text x="25" y="34" fill="#34d399" fontSize="6.5" fontWeight="bold" textAnchor="middle">APPROVE</text>
+                {/* Flash LED */}
+                <circle cx="10" cy="39" r="1.8" fill="#10b981">
+                  <animate attributeName="opacity" values="1;0.2;1" dur="0.6s" repeatCount="indefinite" />
+                </circle>
+                {/* approved route arrow */}
+                <path d="M 37,39 L 43,39 L 40,36 M 40,42 L 43,39" fill="none" stroke="#10b981" strokeWidth="1" strokeLinecap="round" />
+              </g>
             </g>
 
             {/* Animated Nodes Traveling (VMs migrating as cards) */}
             
-            {/* VM 1: DB workload */}
+            {/* VM 1: DB workload (Approved database lane) */}
             <g>
-              {/* Card Container - Color morphs from warning red, to validator purple, to active green */}
+              {/* Card Container - Color morphs */}
               <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
-                <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.35; 0.5; 0.65; 1" />
               </rect>
               
               {/* Database cylinder icon with animated color */}
               <g transform="translate(-5, 0)">
                 <ellipse cx="-20" cy="-5" rx="5" ry="1.6" fill="none" stroke="#ef4444" strokeWidth="0.9">
-                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 </ellipse>
                 <path d="M -25,-5 v 5 C -25,1.2 -22.8,2 -20,2 C -17.2,2 -15,1.2 -15,0.8 v -5" fill="none" stroke="#ef4444" strokeWidth="0.9">
-                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 </path>
                 <path d="M -25,0 v 5 C -25,6.2 -22.8,7 -20,7 C -17.2,7 -15,6.2 -15,5.8 v -5" fill="none" stroke="#ef4444" strokeWidth="0.9">
-                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 </path>
               </g>
               
               {/* Tag Title with animated color */}
               <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
-                <animate attributeName="fill" dur="6s" begin="0s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                <animate attributeName="fill" dur="6s" begin="0s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 PROD-DB
               </text>
               
               <animateMotion 
-                path="M 90,195 Q 300,45 510,195" 
+                path="M 90,234 C 180,234 220,195 300,195 C 380,195 420,234 510,234" 
                 dur="6s" 
                 begin="0s"
                 repeatCount="indefinite" 
@@ -479,31 +517,31 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               />
             </g>
 
-            {/* VM 2: Web workload */}
+            {/* VM 2: Web workload (Approved compute lane) */}
             <g>
               {/* Card Container - Color morphs */}
               <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
-                <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.35; 0.5; 0.65; 1" />
               </rect>
               
               {/* Web browser monitor icon with animated color */}
               <g transform="translate(-5, 0)">
                 <rect x="-25" y="-8" width="11" height="9" rx="1.5" fill="none" stroke="#ef4444" strokeWidth="0.9">
-                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 </rect>
                 <path d="M -20,1 v 4 M -23,5 h 6" stroke="#ef4444" strokeWidth="0.9">
-                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 </path>
               </g>
               
               {/* Tag Title with animated color */}
               <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
-                <animate attributeName="fill" dur="6s" begin="2s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                <animate attributeName="fill" dur="6s" begin="2s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.35; 0.5; 0.65; 1" />
                 WEB-APP
               </text>
               
               <animateMotion 
-                path="M 90,195 Q 300,45 510,195" 
+                path="M 90,178 C 180,178 220,195 300,195 C 380,195 420,178 510,178" 
                 dur="6s" 
                 begin="2s"
                 repeatCount="indefinite" 
@@ -512,40 +550,47 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               />
             </g>
 
-            {/* VM 3: API Gateway workload */}
+            {/* VM 3: Storage / Incompatible Workload (Rejected storage lane loops back to VMware) */}
             <g>
-              {/* Card Container - Color morphs */}
+              {/* Card Container - Color morphs to alert flashing inside core, then stays red on return */}
               <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
-                <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #f59e0b; #ef4444; #ef4444" keyTimes="0; 0.35; 0.52; 0.7; 1" />
+                <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="rgba(8, 10, 20, 0.95);rgba(8, 10, 20, 0.95);rgba(239, 68, 68, 0.18);rgba(239, 68, 68, 0.08);rgba(8, 10, 20, 0.95)" keyTimes="0; 0.35; 0.52; 0.7; 1" />
               </rect>
               
-              {/* Connected node cluster icon with animated color */}
-              <g transform="translate(-4, -1)">
-                <circle cx="-22" cy="-4" r="1.5" fill="#ef4444">
-                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                </circle>
-                <circle cx="-16" cy="-4" r="1.5" fill="#ef4444">
-                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                </circle>
-                <circle cx="-19" cy="3" r="1.5" fill="#ef4444">
-                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                </circle>
-                <line x1="-22" y1="-4" x2="-19" y2="3" stroke="#ef4444" strokeWidth="0.8">
-                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                </line>
-                <line x1="-16" y1="-4" x2="-19" y2="3" stroke="#ef4444" strokeWidth="0.8">
-                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                </line>
+              {/* Disk Stack Icon with alert animation */}
+              <g transform="translate(-5, 0)">
+                <ellipse cx="-20" cy="-5" rx="5" ry="1.6" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #f59e0b; #ef4444; #ef4444" keyTimes="0; 0.35; 0.52; 0.7; 1" />
+                </ellipse>
+                <path d="M -25,-5 v 5 C -25,1.2 -22.8,2 -20,2 C -17.2,2 -15,1.2 -15,0.8 v -5" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #f59e0b; #ef4444; #ef4444" keyTimes="0; 0.35; 0.52; 0.7; 1" />
+                </path>
               </g>
               
-              {/* Tag Title with animated color */}
-              <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
-                <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
-                API-GW
+              {/* Alternating Text Layers based on travel position */}
+              
+              {/* Outgoing stage: LEGACY-SAN */}
+              <text x="14" y="3" fill="#f87171" fontSize="8" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="opacity" dur="6s" begin="4s" repeatCount="indefinite" values="1;1;0;0;0;0" keyTimes="0; 0.35; 0.4; 0.7; 0.75; 1" />
+                LEGACY-SAN
+              </text>
+              
+              {/* Auditing Core stage: AUDIT FAIL */}
+              <text x="14" y="3" fill="#ef4444" fontSize="8" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="opacity" dur="6s" begin="4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0; 0.35; 0.4; 0.68; 0.72; 1" />
+                <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444;#f59e0b;#ef4444" keyTimes="0; 0.5; 1" />
+                AUDIT FAIL
+              </text>
+              
+              {/* Return stage: REJECTED */}
+              <text x="14" y="3" fill="#f87171" fontSize="8" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="opacity" dur="6s" begin="4s" repeatCount="indefinite" values="0;0;0;0;1;1" keyTimes="0; 0.68; 0.72; 0.8; 0.85; 1" />
+                REJECTED
               </text>
               
               <animateMotion 
-                path="M 90,195 Q 300,45 510,195" 
+                path="M 90,289 C 180,289 220,195 300,195 C 220,195 200,340 90,289" 
                 dur="6s" 
                 begin="4s"
                 repeatCount="indefinite" 
