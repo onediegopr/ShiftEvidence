@@ -2194,92 +2194,146 @@ p {
 
 .pipeline {
     display: flex;
-    align-items: stretch;
+    flex-direction: column;
+    align-items: center;
     gap: 0;
-    margin-top: 3rem;
+    margin-top: 2rem;
     position: relative;
+}
+
+/* Central connector line */
+.pipeline::before {
+    content: "";
+    position: absolute;
+    top: 70px;
+    bottom: 70px;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(
+        180deg,
+        #b8363b,
+        #06b6d4,
+        #8b5cf6,
+        #f59e0b,
+        #ea580c,
+        #10b981,
+        #e57000
+    );
+    opacity: 0.25;
+    z-index: 0;
 }
 
 /* Endpoints */
 .pipeline-endpoint {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    padding: 2rem 0.75rem;
-    font-size: 0.72rem;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-dark);
-    flex-shrink: 0;
-    width: 80px;
-    text-align: center;
+    letter-spacing: 0.1em;
+    border-radius: 9999px;
+    border: 1px solid;
+    z-index: 1;
+    background: var(--bg-base);
 }
 
 .pipeline-endpoint.vmware {
     color: #e88b8e;
+    border-color: rgba(184, 54, 59, 0.4);
+    background: rgba(184, 54, 59, 0.1);
+    margin-bottom: 0.5rem;
 }
 
 .pipeline-endpoint.proxmox {
     color: #f5a960;
+    border-color: rgba(229, 112, 0, 0.4);
+    background: rgba(229, 112, 0, 0.1);
+    margin-top: 0.5rem;
 }
 
-/* Cards row */
-.pipeline-cards {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    flex: 1;
-    overflow-x: auto;
-    padding: 0.5rem 0;
-}
-
+/* Each step row */
 .pipeline-step {
     display: flex;
     align-items: stretch;
-    flex: 1;
-    min-width: 200px;
+    width: 100%;
+    max-width: 900px;
+    gap: 2rem;
+    padding: 0.75rem 0;
+    position: relative;
+    z-index: 1;
 }
 
-/* Individual card */
+/* Alternating: odd = card left, even = card right */
+.pipeline-step:nth-child(odd) {
+    flex-direction: row;
+}
+
+.pipeline-step:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+/* Number node on the center line */
+.pipeline-node {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    border: 2px solid;
+    background: var(--bg-base);
+    z-index: 2;
+    transition: all 0.3s;
+    margin-top: 1rem;
+}
+
+.pipeline-step:hover .pipeline-node {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--phase-color, rgba(99, 102, 241, 0.3));
+}
+
+/* Card */
 .pipeline-card {
     flex: 1;
-    padding: 1.5rem;
+    padding: 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.75rem;
     border: 1px solid var(--border-color);
     transition: all 0.3s;
-    position: relative;
-    overflow: visible;
 }
 
 .pipeline-card:hover {
     border-color: var(--phase-color, var(--border-hover));
     box-shadow:
-        0 0 20px
-            color-mix(in srgb, var(--phase-color, #6366f1) 20%, transparent),
-        0 8px 30px rgba(0, 0, 0, 0.4);
-    transform: translateY(-4px);
-    z-index: 5;
+        0 0 25px
+            color-mix(in srgb, var(--phase-color, #6366f1) 15%, transparent),
+        0 8px 30px rgba(0, 0, 0, 0.35);
+    transform: translateY(-3px);
 }
 
-/* Card top: icon + number */
-.pipeline-card-top {
+/* Card header: icon + title + duration */
+.pipeline-card-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
 .pipeline-icon {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.04);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     transition: background 0.3s;
 }
 
@@ -2287,44 +2341,36 @@ p {
     background: rgba(255, 255, 255, 0.08);
 }
 
-.pipeline-num {
-    font-family: var(--font-mono);
-    font-size: 1.5rem;
-    font-weight: 800;
-    opacity: 0.4;
+.pipeline-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.pipeline-card:hover .pipeline-num {
-    opacity: 0.8;
-}
-
-/* Title */
 .pipeline-title {
     color: white;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.2;
 }
 
-/* Duration badge */
 .pipeline-duration {
     display: inline-block;
     width: fit-content;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     font-weight: 600;
-    padding: 0.2rem 0.55rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 9999px;
     border: 1px solid;
 }
 
 /* Description */
 .pipeline-desc {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     color: var(--text-muted);
-    line-height: 1.55;
-    flex-grow: 1;
+    line-height: 1.6;
 }
 
 /* Key Result */
@@ -2333,8 +2379,7 @@ p {
     padding-left: 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    margin-top: auto;
+    gap: 0.1rem;
 }
 
 .pipeline-result-label {
@@ -2346,83 +2391,35 @@ p {
 }
 
 .pipeline-result-text {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--text-main);
     font-weight: 500;
     line-height: 1.4;
 }
 
-/* Arrow between cards */
-.pipeline-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    flex-shrink: 0;
-    color: var(--text-dark);
-    opacity: 0.4;
-    transition: opacity 0.3s;
-}
-
-.pipeline-step:hover + .pipeline-step .pipeline-arrow,
-.pipeline-step:hover .pipeline-arrow {
-    opacity: 0.8;
-    color: var(--phase-color, var(--text-muted));
-}
-
-/* Mobile: vertical stack */
-@media (max-width: 1024px) {
-    .pipeline {
-        flex-direction: column;
-        align-items: center;
-        gap: 0;
+/* Mobile: single column, no alternation */
+@media (max-width: 768px) {
+    .pipeline::before {
+        left: 26px;
     }
-    .pipeline-endpoint {
+    .pipeline-step,
+    .pipeline-step:nth-child(odd),
+    .pipeline-step:nth-child(even) {
         flex-direction: row;
-        width: 100%;
-        padding: 1rem;
-        justify-content: center;
-        gap: 0.5rem;
+        gap: 1.25rem;
     }
-    .pipeline-cards {
-        flex-direction: column;
-        width: 100%;
-        gap: 0;
-        position: relative;
-    }
-    .pipeline-cards::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        width: 2px;
-        background: linear-gradient(
-            180deg,
-            #06b6d4,
-            #8b5cf6,
-            #f59e0b,
-            #ea580c,
-            #10b981
-        );
-        opacity: 0.3;
-        z-index: 0;
-    }
-    .pipeline-step {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
+    .pipeline-node {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+        margin-top: 0.75rem;
     }
     .pipeline-card {
-        width: 90%;
-        max-width: 420px;
-        z-index: 1;
+        padding: 1.25rem;
     }
-    .pipeline-arrow {
-        width: 100%;
-        height: 32px;
-        transform: rotate(90deg);
-        z-index: 1;
+    .pipeline-endpoint {
+        font-size: 0.7rem;
+        padding: 0.5rem 1rem;
     }
 }
 

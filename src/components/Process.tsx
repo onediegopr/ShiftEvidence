@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   Search,
   RefreshCw,
   ShieldCheck,
@@ -78,101 +77,96 @@ export default function Process() {
           </p>
         </div>
 
-        {/* ======== PIPELINE TRACK ======== */}
+        {/* ======== PIPELINE ======== */}
         <div className="pipeline">
           {/* Endpoint: VMware */}
           <div className="pipeline-endpoint vmware">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect width="24" height="24" rx="5" fill="#b8363b" />
-              <polygon points="12,4 5,19 9,19 12,11 15,19 19,19" fill="white" />
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect width="20" height="20" rx="4" fill="#b8363b" />
+              <polygon
+                points="10,3 4,16 7.5,16 10,9 12.5,16 16,16"
+                fill="white"
+              />
             </svg>
-            <span>VMware</span>
+            VMware
           </div>
 
-          {/* Cards */}
-          <div className="pipeline-cards">
-            {steps.map((step, idx) => {
-              const Icon = step.icon;
-              return (
-                <div key={idx} className="pipeline-step">
-                  <div
-                    className="pipeline-card glass-card"
-                    style={
-                      { "--phase-color": step.color } as React.CSSProperties
-                    }
-                  >
-                    {/* Number + Icon header */}
-                    <div className="pipeline-card-top">
-                      <div
-                        className="pipeline-icon"
-                        style={{ color: step.color }}
-                      >
-                        <Icon size={20} />
-                      </div>
-                      <span
-                        className="pipeline-num"
-                        style={{ color: step.color }}
-                      >
-                        {step.num}
-                      </span>
-                    </div>
+          {/* Steps */}
+          {steps.map((step, idx) => {
+            const Icon = step.icon;
+            return (
+              <div
+                key={idx}
+                className="pipeline-step"
+                style={{ "--phase-color": step.color } as React.CSSProperties}
+              >
+                {/* Number node */}
+                <div
+                  className="pipeline-node"
+                  style={{
+                    color: step.color,
+                    borderColor: step.color,
+                  }}
+                >
+                  {step.num}
+                </div>
 
-                    {/* Title */}
-                    <h4 className="pipeline-title">{step.title}</h4>
-
-                    {/* Duration badge */}
-                    <span
-                      className="pipeline-duration"
-                      style={{
-                        color: step.color,
-                        background: `${step.color}18`,
-                        borderColor: `${step.color}33`,
-                      }}
-                    >
-                      {step.duration}
-                    </span>
-
-                    {/* Description */}
-                    <p className="pipeline-desc">{step.description}</p>
-
-                    {/* Key Result */}
+                {/* Card */}
+                <div className="pipeline-card glass-card">
+                  {/* Header: icon + title + duration */}
+                  <div className="pipeline-card-header">
                     <div
-                      className="pipeline-result"
-                      style={{ borderLeftColor: step.color }}
+                      className="pipeline-icon"
+                      style={{ color: step.color }}
                     >
-                      <span className="pipeline-result-label">Key Result</span>
-                      <span className="pipeline-result-text">
-                        {step.action}
+                      <Icon size={20} />
+                    </div>
+                    <div className="pipeline-header-text">
+                      <h4 className="pipeline-title">{step.title}</h4>
+                      <span
+                        className="pipeline-duration"
+                        style={{
+                          color: step.color,
+                          background: `${step.color}18`,
+                          borderColor: `${step.color}33`,
+                        }}
+                      >
+                        {step.duration}
                       </span>
                     </div>
                   </div>
 
-                  {/* Arrow between cards (hide after last) */}
-                  {idx < steps.length - 1 && (
-                    <div className="pipeline-arrow">
-                      <ArrowRight size={18} />
-                    </div>
-                  )}
+                  {/* Description */}
+                  <p className="pipeline-desc">{step.description}</p>
+
+                  {/* Key Result */}
+                  <div
+                    className="pipeline-result"
+                    style={{ borderLeftColor: step.color }}
+                  >
+                    <span className="pipeline-result-label">Key Result</span>
+                    <span className="pipeline-result-text">{step.action}</span>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
 
           {/* Endpoint: Proxmox */}
           <div className="pipeline-endpoint proxmox">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect width="24" height="24" rx="5" fill="#e57000" />
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect width="20" height="20" rx="4" fill="#e57000" />
               <circle
-                cx="12"
-                cy="12"
-                r="6"
+                cx="10"
+                cy="10"
+                r="5"
                 fill="none"
                 stroke="white"
-                strokeWidth="2"
+                strokeWidth="1.8"
               />
-              <circle cx="12" cy="12" r="2.5" fill="white" />
+              <circle cx="10" cy="10" r="2" fill="white" />
             </svg>
-            <span>Proxmox</span>
+            Proxmox
           </div>
         </div>
       </div>
