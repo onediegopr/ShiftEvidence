@@ -34,12 +34,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               <p className="text-muted">
                 Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Infrashift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
               </p>
-              <p className="text-muted">
-                The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.
-              </p>
-              <p className="text-muted">
-                It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
-              </p>
             </div>
           </div>
 
@@ -597,6 +591,16 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               />
             </g>
           </svg>
+          
+          <div className="hero-description-group" style={{ maxWidth: '500px', marginTop: '1.5rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+            <p className="text-muted" style={{ fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 0.8rem 0' }}>
+              The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.
+            </p>
+            <p className="text-muted" style={{ fontSize: '0.95rem', lineHeight: '1.5', margin: 0 }}>
+              It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
+            </p>
+          </div>
+
           <div className="hero-actions">
             <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
               Audit Your Cluster
