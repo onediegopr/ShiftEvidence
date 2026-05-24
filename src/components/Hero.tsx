@@ -40,16 +40,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
               </p>
             </div>
-            <div className="hero-actions">
-              <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
-                Audit Your Cluster
-                <ArrowRight size={18} />
-              </button>
-              <button onClick={() => scrollToSection('savings')} className="btn btn-secondary">
-                Calculate Savings
-                <DollarSign size={18} className="text-cyan" />
-              </button>
-            </div>
           </div>
 
         <div className="hero-visual">
@@ -606,6 +596,16 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               />
             </g>
           </svg>
+          <div className="hero-actions">
+            <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
+              Audit Your Cluster
+              <ArrowRight size={18} />
+            </button>
+            <button onClick={() => scrollToSection('savings')} className="btn btn-secondary">
+              Calculate Savings
+              <DollarSign size={18} className="text-cyan" />
+            </button>
+          </div>
         </div>
       </div>
 
