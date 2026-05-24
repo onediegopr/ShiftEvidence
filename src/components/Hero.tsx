@@ -59,9 +59,9 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <div className="hero-description-group">
               <p className="text-muted">
                 Broadcom’s VMware licensing changes are forcing companies, MSPs
-                and infrastructure teams to rethink their VMware strategy.
-                InfraShift helps you plan the move before production is touched
-                — whether you are assessing your own environment or preparing a
+                and infrastructure teams to rethink their VMware strategy. Shift
+                Evidence helps you plan the move before production is touched —
+                whether you are assessing your own environment or preparing a
                 client migration.
               </p>
               <p className="text-muted">
@@ -1258,7 +1258,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </g>
               </g>
 
-              {/* Infrashift Validator Core (Center: X=300, Y=195) - 50% LARGER */}
+              {/* Shift Evidence Validator Core (Center: X=300, Y=195) - 50% LARGER */}
               <g transform="translate(300, 195)">
                 {/* Outer Scanning Radar Waves */}
                 <circle

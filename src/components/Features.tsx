@@ -1,19 +1,29 @@
-import { 
-  ShieldCheck, ShieldAlert, Cpu, Database, RefreshCw, Archive 
-} from 'lucide-react';
+import {
+  ShieldCheck,
+  ShieldAlert,
+  Cpu,
+  Database,
+  RefreshCw,
+  Archive,
+} from "lucide-react";
 
 export default function Features() {
   return (
     <>
       {/* Features Grid Section */}
-      <section id="features" className="section" style={{ position: 'relative' }}>
+      <section
+        id="features"
+        className="section"
+        style={{ position: "relative" }}
+      >
         <div className="container">
           <div className="text-center mb-8">
             <div className="badge">Safe Shift System</div>
-            <h2 className="mb-4">Why Enterprises Choose InfraShift</h2>
-            <p className="mx-auto" style={{ maxWidth: '650px' }}>
-              Migrating core infrastructure shouldn't feel like a leap of faith. Our specialized pipeline
-              handles the complexity and ensures zero risk to production data.
+            <h2 className="mb-4">Why Enterprises Choose Shift Evidence</h2>
+            <p className="mx-auto" style={{ maxWidth: "650px" }}>
+              Migrating core infrastructure shouldn't feel like a leap of faith.
+              Our specialized pipeline handles the complexity and ensures zero
+              risk to production data.
             </p>
           </div>
 
@@ -23,10 +33,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <ShieldCheck size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Pre-Flight Audit & Scan</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                Our automated compatibility engine scans vSphere hosts, storage formats, and distributed
-                networks, flagging potential migration bottlenecks before they happen.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Pre-Flight Audit & Scan
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                Our automated compatibility engine scans vSphere hosts, storage
+                formats, and distributed networks, flagging potential migration
+                bottlenecks before they happen.
               </p>
             </div>
 
@@ -35,10 +48,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <Cpu size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Automated VM Translation</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                Instantly converts VMDK virtual disks into Proxmox-native RAW or QCOW2 files. Automatically
-                injects VirtIO drivers to prevent boot failures.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Automated VM Translation
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                Instantly converts VMDK virtual disks into Proxmox-native RAW or
+                QCOW2 files. Automatically injects VirtIO drivers to prevent
+                boot failures.
               </p>
             </div>
 
@@ -47,10 +63,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <RefreshCw size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Zero-Downtime Replication</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                Sync virtual machine blocks asynchronously in the background. Keep your production systems
-                running on VMware, only executing a brief restart during final cutover.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Zero-Downtime Replication
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                Sync virtual machine blocks asynchronously in the background.
+                Keep your production systems running on VMware, only executing a
+                brief restart during final cutover.
               </p>
             </div>
 
@@ -59,10 +78,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <ShieldAlert size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Instant Rollback Protection</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                We operate on a strict read-only mode for VMware assets. In the highly unlikely event of a
-                migration anomaly, you can boot the source VMware cluster immediately.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Instant Rollback Protection
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                We operate on a strict read-only mode for VMware assets. In the
+                highly unlikely event of a migration anomaly, you can boot the
+                source VMware cluster immediately.
               </p>
             </div>
 
@@ -71,10 +93,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <Database size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Ceph Storage Setup</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                We design and configure highly available Proxmox storage layers (Ceph RBD) to replace expensive
-                vSAN and proprietary storage controllers with open standards.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Ceph Storage Setup
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                We design and configure highly available Proxmox storage layers
+                (Ceph RBD) to replace expensive vSAN and proprietary storage
+                controllers with open standards.
               </p>
             </div>
 
@@ -83,10 +108,13 @@ export default function Features() {
               <div className="feature-icon-wrapper">
                 <Archive size={24} />
               </div>
-              <h3 style={{ color: 'white', fontSize: '1.25rem' }}>Backup Infrastructure Shift</h3>
-              <p style={{ fontSize: '0.9rem' }}>
-                Save on Veeam licenses. We build and deploy Proxmox Backup Server (PBS) setups, implementing
-                deduplication, encryption, and incremental backup routines.
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>
+                Backup Infrastructure Shift
+              </h3>
+              <p style={{ fontSize: "0.9rem" }}>
+                Save on Veeam licenses. We build and deploy Proxmox Backup
+                Server (PBS) setups, implementing deduplication, encryption, and
+                incremental backup routines.
               </p>
             </div>
           </div>
@@ -100,9 +128,10 @@ export default function Features() {
           <div className="text-center mb-8">
             <div className="badge badge-cyan">Feature Blueprint</div>
             <h2 className="mb-4">Comparing Architecture & Costs</h2>
-            <p className="mx-auto" style={{ maxWidth: '650px' }}>
-              Proxmox VE delivers equivalent enterprise-level virtualization capabilities with a modular,
-              open architecture that frees your company from vendor lock-in.
+            <p className="mx-auto" style={{ maxWidth: "650px" }}>
+              Proxmox VE delivers equivalent enterprise-level virtualization
+              capabilities with a modular, open architecture that frees your
+              company from vendor lock-in.
             </p>
           </div>
 
@@ -112,46 +141,72 @@ export default function Features() {
                 <tr>
                   <th>Feature Capability</th>
                   <th className="col-vs">VMware vSphere Suite</th>
-                  <th className="col-prox">Proxmox VE + InfraShift</th>
-                  <th>InfraShift Assurance</th>
+                  <th className="col-prox">Proxmox VE + Shift Evidence</th>
+                  <th>Shift Evidence Assurance</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>Hypervisor Foundation</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    Hypervisor Foundation
+                  </td>
                   <td className="col-vs">Proprietary Type-1 (ESXi)</td>
                   <td className="col-prox">Open-Source Type-1 (KVM)</td>
                   <td className="col-check">Equivalent performance</td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>Container Support</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    Container Support
+                  </td>
                   <td className="col-vs">Requires Tanzu (Extra Addon)</td>
                   <td className="col-prox">Built-in LXC Containers</td>
-                  <td className="col-check">Native Linux container virtualization</td>
+                  <td className="col-check">
+                    Native Linux container virtualization
+                  </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>High Availability & DRS</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    High Availability & DRS
+                  </td>
                   <td className="col-vs">Paid licensing tier required</td>
                   <td className="col-prox">Included / Free (Corosync)</td>
-                  <td className="col-check">Configured automatically by InfraShift</td>
+                  <td className="col-check">
+                    Configured automatically by Shift Evidence
+                  </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>Storage Virtualization</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    Storage Virtualization
+                  </td>
                   <td className="col-vs">vSAN (Separate licensing fee)</td>
                   <td className="col-prox">Ceph RBD / ZFS (Built-in)</td>
-                  <td className="col-check">Mapped to Ceph for high availability</td>
+                  <td className="col-check">
+                    Mapped to Ceph for high availability
+                  </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>Backup Infrastructure</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    Backup Infrastructure
+                  </td>
                   <td className="col-vs">Veeam/Cohesity (Paid licensing)</td>
                   <td className="col-prox">Proxmox Backup Server (Free)</td>
-                  <td className="col-check">Includes PBS configuration & setup</td>
+                  <td className="col-check">
+                    Includes PBS configuration & setup
+                  </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: 'white' }}>3-Year TCO Cost Model</td>
-                  <td className="col-vs" style={{ color: '#ef4444' }}>High recurring subscription per core</td>
-                  <td className="col-prox" style={{ color: '#22d3ee' }}>One-time shift fee + low CPU support</td>
-                  <td className="col-check" style={{ fontWeight: 800 }}>Save up to 80% TCO</td>
+                  <td style={{ fontWeight: 600, color: "white" }}>
+                    3-Year Subscription Cost Model
+                  </td>
+                  <td className="col-vs" style={{ color: "#ef4444" }}>
+                    High recurring subscription per core
+                  </td>
+                  <td className="col-prox" style={{ color: "#22d3ee" }}>
+                    Low per-socket subscription pricing
+                  </td>
+                  <td className="col-check" style={{ fontWeight: 800 }}>
+                    Up to 80% lower annual subscription costs
+                  </td>
                 </tr>
               </tbody>
             </table>

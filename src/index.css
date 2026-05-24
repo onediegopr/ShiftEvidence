@@ -1,4 +1,4 @@
-/* index.css - Infrashift Modern Web Design System */
+/* index.css - Shift Evidence Modern Web Design System */
 
 :root {
     /* Colors */
@@ -1095,6 +1095,246 @@ p {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
+}
+
+/* ---- Calculator v2: Core selector, price inputs, summary, etc. ---- */
+
+.radio-sub {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 3px;
+    font-weight: 400;
+}
+
+.slider-sub-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Core selector buttons */
+.cores-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.core-btn {
+    flex: 1;
+    min-width: 44px;
+    padding: 0.45rem 0.4rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: center;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    transition: all 0.2s;
+}
+
+.core-btn:hover {
+    border-color: var(--border-hover);
+    color: #fff;
+}
+
+.core-btn.active {
+    border-color: hsl(var(--secondary));
+    background: rgba(var(--secondary-rgb), 0.12);
+    color: hsl(var(--secondary));
+    box-shadow: 0 0 10px rgba(var(--secondary-rgb), 0.12);
+}
+
+/* Calculated summary box */
+.calc-summary {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.calc-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.calc-summary-item strong {
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    margin-left: auto;
+}
+
+.calc-note {
+    font-size: 0.7rem;
+    color: hsl(var(--warning));
+    font-style: italic;
+    white-space: nowrap;
+}
+
+/* Editable price row */
+.price-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.price-edit-label {
+    font-size: 0.78rem;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+.price-input-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.price-currency {
+    position: absolute;
+    left: 8px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.price-input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem 0.35rem 1.3rem;
+    width: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.price-input:focus {
+    border-color: hsl(var(--secondary));
+    box-shadow: 0 0 8px rgba(var(--secondary-rgb), 0.15);
+}
+
+.price-usd-equiv {
+    font-size: 0.75rem;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+/* Proxmox radio group: 2x2 grid for 4 options */
+.proxmox-radio-group {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Collapsible toggle button */
+.collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.collapse-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text-main);
+}
+
+/* Expanded options panel */
+.options-panel {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: -1px;
+}
+
+/* Checkbox row */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    accent-color: hsl(var(--secondary));
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Workload note */
+.workload-note {
+    font-size: 0.72rem;
+    color: var(--text-dark);
+    font-style: italic;
+    margin-top: 0.75rem;
+}
+
+/* Annual delta display */
+.annual-delta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.annual-delta-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.annual-delta-value {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.annual-delta-pct {
+    font-size: 0.78rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Annual breakdown under each savings item */
+.savings-item-annual {
+    font-size: 0.72rem;
+    color: var(--text-dark);
+    margin-top: 2px;
 }
 
 /* Interactive Readiness Wizard (Scanner Modal) */
