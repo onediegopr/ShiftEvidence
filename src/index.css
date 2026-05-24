@@ -1337,6 +1337,340 @@ p {
     margin-top: 2px;
 }
 
+/* ======== COMPARISON HEADER ======== */
+
+.cmp-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.cmp-header-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 1.25rem 2rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px);
+    min-width: 220px;
+    transition: all 0.3s;
+}
+
+.cmp-header-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cmp-header-badge .cmp-header-icon {
+    opacity: 0.9;
+}
+
+.cmp-header-badge .cmp-header-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+}
+
+.cmp-header-badge .cmp-header-sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dark);
+}
+
+.cmp-header-badge.vmware {
+    border-color: rgba(239, 68, 68, 0.25);
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.cmp-header-badge.vmware:hover {
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow:
+        0 0 20px rgba(239, 68, 68, 0.08),
+        0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cmp-header-badge.proxmox {
+    border-color: rgba(234, 88, 12, 0.25);
+    background: rgba(234, 88, 12, 0.04);
+}
+
+.cmp-header-badge.proxmox:hover {
+    border-color: rgba(234, 88, 12, 0.4);
+    box-shadow:
+        0 0 20px rgba(234, 88, 12, 0.08),
+        0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cmp-header-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+/* ======== INPUT ICONS ======== */
+
+.cmp-input-icon {
+    flex-shrink: 0;
+    opacity: 0.6;
+    margin-right: 2px;
+}
+
+.cmp-section-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ======== SAVINGS HERO CARD ======== */
+
+.cmp-savings-hero {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(
+        145deg,
+        rgba(16, 185, 129, 0.06) 0%,
+        rgba(16, 185, 129, 0.01) 100%
+    );
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+}
+
+.cmp-savings-hero-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.cmp-savings-hero-amount {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    color: #4ade80;
+    text-shadow: 0 0 40px rgba(74, 222, 128, 0.25);
+    font-family: var(--font-sans);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.cmp-savings-hero-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.cmp-savings-hero-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.cmp-savings-hero-annual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #4ade80;
+}
+
+.cmp-savings-hero-annual .cmp-annual-pct {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* ======== COMPARISON BARS ======== */
+
+.cmp-savings-bar-section {
+    margin-bottom: 1.25rem;
+}
+
+.cmp-savings-bar-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dark);
+    margin-bottom: 0.6rem;
+}
+
+.cmp-savings-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cmp-bar-row {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 0.75rem;
+    font-weight: 600;
+    position: relative;
+    transition: width 0.4s ease;
+}
+
+.cmp-bar-row.vmware {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    width: 100%;
+}
+
+.cmp-bar-row.proxmox {
+    background: rgba(6, 182, 212, 0.2);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.cmp-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.cmp-bar-row.vmware .cmp-bar-inner {
+    background: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+}
+
+.cmp-bar-row.proxmox .cmp-bar-inner {
+    background: rgba(6, 182, 212, 0.35);
+    color: #67e8f9;
+}
+
+.cmp-bar-delta {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4ade80;
+    margin-top: 0.6rem;
+}
+
+/* ======== BREAKDOWN SECTION ======== */
+
+.cmp-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.cmp-breakdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.cmp-breakdown-row .cmp-br-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-width: 100px;
+}
+
+.cmp-breakdown-row .cmp-br-total {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.cmp-breakdown-row .cmp-br-annual {
+    font-size: 0.72rem;
+    color: var(--text-dark);
+    width: 100%;
+    text-align: right;
+    margin-top: -0.25rem;
+}
+
+.cmp-breakdown-row.vmware .cmp-br-total {
+    color: #f87171;
+}
+
+.cmp-breakdown-row.proxmox .cmp-br-total {
+    color: #22d3ee;
+}
+
+/* ======== ASSUMPTIONS TOGGLE ======== */
+
+.cmp-assumptions-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    font-size: 0.72rem;
+    cursor: pointer;
+    padding: 0.4rem 0;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.cmp-assumptions-toggle:hover {
+    color: var(--text-muted);
+}
+
+.cmp-assumptions-content {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.cmp-assumptions-content p {
+    margin-bottom: 0.4rem;
+}
+
+/* ======== RESPONSIVE ======== */
+
+@media (max-width: 768px) {
+    .cmp-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .cmp-header-arrow {
+        transform: rotate(90deg);
+    }
+}
+
 /* Interactive Readiness Wizard (Scanner Modal) */
 .modal-overlay {
     position: fixed;
