@@ -5,6 +5,9 @@ import {
   Database,
   RefreshCw,
   Archive,
+  HardDrive,
+  Boxes,
+  DollarSign,
 } from "lucide-react";
 
 export default function Features() {
@@ -127,7 +130,7 @@ export default function Features() {
         <div className="container">
           <div className="text-center mb-8">
             <div className="badge badge-cyan">Feature Blueprint</div>
-            <h2 className="mb-4">Comparing Architecture & Costs</h2>
+            <h2 className="mb-4">Comparing Architecture &amp; Costs</h2>
             <p className="mx-auto" style={{ maxWidth: "650px" }}>
               Proxmox VE delivers equivalent enterprise-level virtualization
               capabilities with a modular, open architecture that frees your
@@ -140,72 +143,111 @@ export default function Features() {
               <thead>
                 <tr>
                   <th>Feature Capability</th>
-                  <th className="col-vs">VMware vSphere Suite</th>
-                  <th className="col-prox">Proxmox VE + Shift Evidence</th>
-                  <th>Shift Evidence Assurance</th>
+                  <th className="col-vs">
+                    <div className="cmp-th-brand">
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                      >
+                        <rect width="22" height="22" rx="5" fill="#b8363b" />
+                        <polygon
+                          points="11,4 4,18 8,18 11,10 14,18 18,18"
+                          fill="white"
+                        />
+                      </svg>
+                      VMware vSphere Suite
+                    </div>
+                  </th>
+                  <th className="col-prox">
+                    <div className="cmp-th-brand">
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                      >
+                        <rect width="22" height="22" rx="5" fill="#e57000" />
+                        <circle
+                          cx="11"
+                          cy="11"
+                          r="6"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="2"
+                        />
+                        <circle cx="11" cy="11" r="2.5" fill="white" />
+                      </svg>
+                      Proxmox VE
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    Hypervisor Foundation
+                  <td className="cmp-feat">
+                    <Cpu size={16} /> Hypervisor Foundation
                   </td>
                   <td className="col-vs">Proprietary Type-1 (ESXi)</td>
-                  <td className="col-prox">Open-Source Type-1 (KVM)</td>
-                  <td className="col-check">Equivalent performance</td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    Container Support
-                  </td>
-                  <td className="col-vs">Requires Tanzu (Extra Addon)</td>
-                  <td className="col-prox">Built-in LXC Containers</td>
-                  <td className="col-check">
-                    Native Linux container virtualization
+                  <td className="col-prox">
+                    Open-Source Type-1 (KVM)
+                    <span className="cmp-check">✓</span>
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    High Availability & DRS
+                  <td className="cmp-feat">
+                    <Boxes size={16} /> Container Support
+                  </td>
+                  <td className="col-vs">Requires Tanzu (Extra Add-on)</td>
+                  <td className="col-prox">
+                    Built-in LXC Containers
+                    <span className="cmp-check">✓</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="cmp-feat">
+                    <ShieldCheck size={16} /> High Availability &amp; DRS
                   </td>
                   <td className="col-vs">Paid licensing tier required</td>
-                  <td className="col-prox">Included / Free (Corosync)</td>
-                  <td className="col-check">
-                    Configured automatically by Shift Evidence
+                  <td className="col-prox">
+                    Included / Free (Corosync)
+                    <span className="cmp-check">✓</span>
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    Storage Virtualization
+                  <td className="cmp-feat">
+                    <HardDrive size={16} /> Storage Virtualization
                   </td>
                   <td className="col-vs">vSAN (Separate licensing fee)</td>
-                  <td className="col-prox">Ceph RBD / ZFS (Built-in)</td>
-                  <td className="col-check">
-                    Mapped to Ceph for high availability
+                  <td className="col-prox">
+                    Ceph RBD / ZFS (Built-in)
+                    <span className="cmp-check">✓</span>
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    Backup Infrastructure
+                  <td className="cmp-feat">
+                    <Archive size={16} /> Backup Infrastructure
                   </td>
-                  <td className="col-vs">Veeam/Cohesity (Paid licensing)</td>
-                  <td className="col-prox">Proxmox Backup Server (Free)</td>
-                  <td className="col-check">
-                    Includes PBS configuration & setup
+                  <td className="col-vs">Veeam / Cohesity (Paid)</td>
+                  <td className="col-prox">
+                    Proxmox Backup Server (Free)
+                    <span className="cmp-check">✓</span>
                   </td>
                 </tr>
-                <tr>
-                  <td style={{ fontWeight: 600, color: "white" }}>
-                    3-Year Subscription Cost Model
+                <tr className="cmp-cost-row">
+                  <td className="cmp-feat">
+                    <DollarSign size={16} /> 3-Year Subscription Cost
                   </td>
-                  <td className="col-vs" style={{ color: "#ef4444" }}>
-                    High recurring subscription per core
+                  <td className="col-vs">
+                    <strong>High recurring cost</strong>
+                    <span className="cmp-sub">Licensed per physical core</span>
                   </td>
-                  <td className="col-prox" style={{ color: "#22d3ee" }}>
-                    Low per-socket subscription pricing
-                  </td>
-                  <td className="col-check" style={{ fontWeight: 800 }}>
-                    Up to 80% lower annual subscription costs
+                  <td className="col-prox">
+                    <strong>Low per-socket pricing</strong>
+                    <span className="cmp-sub">
+                      Up to 80% lower annual subscription costs
+                    </span>
                   </td>
                 </tr>
               </tbody>

@@ -2046,41 +2046,142 @@ p {
 }
 
 .comparison-table th {
-    background: rgba(13, 18, 36, 0.9);
-    padding: 1.25rem 1.5rem;
+    background: rgba(13, 18, 36, 0.95);
+    padding: 1.5rem 2rem;
     font-weight: 700;
     font-size: 0.95rem;
     color: white;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.06);
 }
 
 .comparison-table td {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
+    vertical-align: middle;
 }
 
 .comparison-table tr:hover td {
     background: rgba(255, 255, 255, 0.015);
-    color: var(--text-main);
 }
 
+/* Brand header with isologo */
+.cmp-th-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* Feature name cell */
+.cmp-feat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: white !important;
+}
+
+.cmp-feat svg {
+    flex-shrink: 0;
+    opacity: 0.5;
+}
+
+/* VMware column: brand crimson */
 .col-vs {
-    font-weight: 700;
-    color: #f87171; /* VMware red color shade */
-    background: rgba(239, 68, 68, 0.03);
+    font-weight: 600;
+    color: #e88b8e;
+    background: rgba(184, 54, 59, 0.06);
 }
 
+/* Proxmox column: brand orange */
 .col-prox {
-    font-weight: 700;
-    color: #38bdf8; /* Proxmox cyan color shade */
-    background: rgba(6, 182, 212, 0.03);
+    font-weight: 600;
+    color: #f5a960;
+    background: rgba(229, 112, 0, 0.06);
 }
 
-.col-check {
+/* Green checkmark for Proxmox advantage */
+.cmp-check {
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: #4ade80;
     font-weight: 700;
-    color: hsl(var(--success));
+    font-size: 0.85rem;
+}
+
+/* Sub-text in cells */
+.cmp-sub {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 400;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+}
+
+/* Last row: cost highlight */
+.cmp-cost-row td {
+    border-bottom: none;
+    padding-top: 1.75rem;
+    padding-bottom: 1.75rem;
+}
+
+.cmp-cost-row {
+    border-top: 2px solid rgba(255, 255, 255, 0.06);
+}
+
+.cmp-cost-row .col-vs {
+    background: rgba(184, 54, 59, 0.1);
+}
+
+.cmp-cost-row .col-prox {
+    background: rgba(229, 112, 0, 0.1);
+}
+
+.cmp-cost-row .cmp-sub {
+    font-size: 0.8rem;
+    opacity: 0.85;
+}
+
+/* Mobile: stack rows as cards */
+@media (max-width: 768px) {
+    .comparison-table thead {
+        display: none;
+    }
+    .comparison-table tbody,
+    .comparison-table tr,
+    .comparison-table td {
+        display: block;
+    }
+    .comparison-table tr {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .comparison-table td {
+        padding: 0.35rem 0;
+        border-bottom: none;
+        background: none !important;
+    }
+    .comparison-table td.col-vs::before {
+        content: "VMware: ";
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+    .comparison-table td.col-prox::before {
+        content: "Proxmox: ";
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+    .cmp-cost-row {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
 }
 
 /* Steps Timeline */
