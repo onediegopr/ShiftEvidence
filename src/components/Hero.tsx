@@ -43,7 +43,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           </div>
 
         <div className="hero-visual">
-          <svg className="migration-flow-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible', width: '100%', maxWidth: '580px' }}>
+          <svg className="migration-flow-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible', width: '100%', maxWidth: '500px' }}>
             <defs>
               {/* Gradients */}
               <linearGradient id="vmwareGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -625,8 +625,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           </div>
           <div className="hero-callout-list">
             <div className="hero-callout-item">
-              <div className="callout-icon-box check-emerald">
-                <Check size={12} />
+              <div className="callout-icon-box check-animated-1">
+                <Check size={12} className="check-svg" />
               </div>
               <div className="item-text">
                 <strong className="text-white">Start with RVTools</strong>
@@ -634,8 +634,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </div>
             </div>
             <div className="hero-callout-item">
-              <div className="callout-icon-box check-emerald">
-                <Check size={12} />
+              <div className="callout-icon-box check-animated-2">
+                <Check size={12} className="check-svg" />
               </div>
               <div className="item-text">
                 <strong className="text-white">No Agents Required</strong>
@@ -643,8 +643,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </div>
             </div>
             <div className="hero-callout-item">
-              <div className="callout-icon-box check-emerald">
-                <Check size={12} />
+              <div className="callout-icon-box check-animated-3">
+                <Check size={12} className="check-svg" />
               </div>
               <div className="item-text">
                 <strong className="text-white">Zero Credentials & Production Access</strong>
