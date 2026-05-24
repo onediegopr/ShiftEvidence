@@ -368,10 +368,18 @@ p {
   -webkit-text-fill-color: transparent;
 }
 
-.hero-description {
-  font-size: 1.2rem;
+.hero-description-group {
   margin-bottom: 2.5rem;
   max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.hero-description-group p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .hero-actions {
@@ -1147,7 +1155,7 @@ p {
     text-align: center;
     gap: 3rem;
   }
-  .hero-description {
+  .hero-description-group {
     margin-left: auto;
     margin-right: auto;
   }

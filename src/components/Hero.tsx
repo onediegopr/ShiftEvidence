@@ -26,13 +26,25 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           <h1 className="hero-title">
             Ditch VMware Licensing Hikes.<br />
             <span className="text-gradient">Shift to Proxmox</span><br />
-            with Zero Risk.
+            with Confidence.
           </h1>
-          <p className="hero-description text-muted">
-            The Broadcom VMware license increases are hitting enterprises hard. Infrashift automates
-            pre-migration checks, configurations mapping, and zero-downtime cutovers to Proxmox VE.
-            <strong> Save up to 80% on infrastructure overhead</strong> while assuring absolute safety.
-          </p>
+          <div className="hero-description-group">
+            <p className="text-muted">
+              Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Infrashift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
+            </p>
+            <p className="text-muted">
+              The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.
+            </p>
+            <p className="text-muted">
+              It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
+            </p>
+            <p className="text-muted">
+              Before you migrate, quote or deliver a Proxmox project, get a clear audit-style report that shows what looks ready, what needs validation and what should not move yet.
+            </p>
+            <p className="text-emerald font-semibold" style={{ borderLeft: '2px solid #10b981', paddingLeft: '0.75rem', marginTop: '0.4rem' }}>
+              Start with RVTools. No agents. No mandatory credentials. No production access.
+            </p>
+          </div>
           <div className="hero-actions">
             <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
               Audit Your Cluster
