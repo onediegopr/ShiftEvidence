@@ -147,7 +147,41 @@ export default function SavingsCalculator() {
         {/* ========== COMPARISON HEADER ========== */}
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
-            <Server size={20} className="cmp-header-icon" color="#ef4444" />
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="1"
+                y="1"
+                width="26"
+                height="26"
+                rx="6"
+                fill="rgba(239,68,68,0.1)"
+                stroke="#ef4444"
+                strokeWidth="1.5"
+              />
+              <rect x="7" y="7" width="14" height="3" rx="1.5" fill="#ef4444" />
+              <rect
+                x="7"
+                y="12.5"
+                width="14"
+                height="3"
+                rx="1.5"
+                fill="#ef4444"
+              />
+              <rect
+                x="7"
+                y="18"
+                width="14"
+                height="3"
+                rx="1.5"
+                fill="#ef4444"
+              />
+            </svg>
             <span className="cmp-header-title">Current VMware Environment</span>
             <span className="cmp-header-sub">Legacy Subscription Model</span>
           </div>
@@ -155,7 +189,33 @@ export default function SavingsCalculator() {
             <ArrowRight size={28} />
           </div>
           <div className="cmp-header-badge proxmox">
-            <Server size={20} className="cmp-header-icon" color="#ea580c" />
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="1"
+                y="1"
+                width="26"
+                height="26"
+                rx="6"
+                fill="rgba(234,88,12,0.1)"
+                stroke="#ea580c"
+                strokeWidth="1.5"
+              />
+              <circle
+                cx="14"
+                cy="14"
+                r="6"
+                fill="none"
+                stroke="#ea580c"
+                strokeWidth="2"
+              />
+              <circle cx="14" cy="14" r="2.5" fill="#ea580c" />
+            </svg>
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
           </div>
