@@ -335,49 +335,6 @@ export default function SavingsCalculator() {
               </p>
             </div>
 
-            {/* ---- Proxmox Subscription Tier ---- */}
-            <div className="slider-group">
-              <span className="slider-label">
-                <Shield size={16} className="cmp-input-icon" color="#ea580c" />
-                Proxmox Subscription Tier
-              </span>
-              <div className="radio-group proxmox-radio-group">
-                {(Object.keys(PROXMOX_DEFAULTS) as ProxmoxTier[]).map(
-                  (tier) => (
-                    <button
-                      key={tier}
-                      onClick={() => setProxmoxTier(tier)}
-                      className={`radio-btn ${proxmoxTier === tier ? "active" : ""}`}
-                    >
-                      {PROXMOX_DEFAULTS[tier].label}
-                      <span className="radio-sub">
-                        {PROXMOX_DEFAULTS[tier].sublabel}
-                      </span>
-                    </button>
-                  ),
-                )}
-              </div>
-              <div className="price-edit-row">
-                <span className="price-edit-label">
-                  Price per socket/year (EUR):
-                </span>
-                <div className="price-input-wrapper">
-                  <span className="price-currency">€</span>
-                  <input
-                    type="number"
-                    value={proxmoxPriceEur}
-                    onChange={(e) => setProxmoxPriceEur(Number(e.target.value))}
-                    className="price-input"
-                    min={0}
-                    step={1}
-                  />
-                </div>
-                <span className="price-usd-equiv">
-                  ≈ {formatCurrency(proxmoxPriceEur * eurUsdRate)}/skt/yr
-                </span>
-              </div>
-            </div>
-
             {/* ---- Advanced Options ---- */}
             <button
               className="collapse-toggle"
@@ -424,6 +381,49 @@ export default function SavingsCalculator() {
 
           {/* ========== RIGHT PANEL: TARGET PROXMOX COST MODEL ========== */}
           <div className="calc-results">
+            {/* ---- Proxmox Subscription Tier ---- */}
+            <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
+              <span className="slider-label">
+                <Shield size={16} className="cmp-input-icon" color="#ea580c" />
+                Proxmox Subscription Tier
+              </span>
+              <div className="radio-group proxmox-radio-group">
+                {(Object.keys(PROXMOX_DEFAULTS) as ProxmoxTier[]).map(
+                  (tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setProxmoxTier(tier)}
+                      className={`radio-btn ${proxmoxTier === tier ? "active" : ""}`}
+                    >
+                      {PROXMOX_DEFAULTS[tier].label}
+                      <span className="radio-sub">
+                        {PROXMOX_DEFAULTS[tier].sublabel}
+                      </span>
+                    </button>
+                  ),
+                )}
+              </div>
+              <div className="price-edit-row">
+                <span className="price-edit-label">
+                  Price per socket/year (EUR):
+                </span>
+                <div className="price-input-wrapper">
+                  <span className="price-currency">€</span>
+                  <input
+                    type="number"
+                    value={proxmoxPriceEur}
+                    onChange={(e) => setProxmoxPriceEur(Number(e.target.value))}
+                    className="price-input"
+                    min={0}
+                    step={1}
+                  />
+                </div>
+                <span className="price-usd-equiv">
+                  ≈ {formatCurrency(proxmoxPriceEur * eurUsdRate)}/skt/yr
+                </span>
+              </div>
+            </div>
+
             {/* ---- Hero Savings Card ---- */}
             <div className="cmp-savings-hero">
               <div className="cmp-savings-hero-label">
