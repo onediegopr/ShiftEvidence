@@ -137,7 +137,7 @@ export default function SavingsCalculator() {
         {/* ========== SECTION HEADER ========== */}
         <div className="text-center mb-6">
           <div className="badge badge-cyan">Return on Investment</div>
-          <h2 className="mb-4">Calculate Your Licensing Impact</h2>
+          <h2 className="mb-4">Calculate your Licensing Impact</h2>
           <p className="mx-auto" style={{ maxWidth: "650px" }}>
             Compare modeled VMware and Proxmox subscription costs based on your
             environment size. All estimates in USD.
