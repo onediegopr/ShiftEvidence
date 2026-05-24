@@ -148,27 +148,16 @@ export default function SavingsCalculator() {
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
             <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
+              width="38"
+              height="38"
+              viewBox="0 0 38 38"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect width="32" height="32" rx="7" fill="#b8363b" />
-              <path
-                d="M7 13L16 5L25 13L16 21L7 13Z"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M11 18L16 11L21 18"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-                opacity="0.6"
+              <rect width="38" height="38" rx="8" fill="#b8363b" />
+              <polygon
+                points="19,7 7,31 14,31 19,18 24,31 31,31"
+                fill="white"
               />
             </svg>
             <span className="cmp-header-title">Current VMware Environment</span>
@@ -179,31 +168,22 @@ export default function SavingsCalculator() {
           </div>
           <div className="cmp-header-badge proxmox">
             <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
+              width="38"
+              height="38"
+              viewBox="0 0 38 38"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect width="32" height="32" rx="7" fill="#e57000" />
+              <rect width="38" height="38" rx="8" fill="#e57000" />
               <circle
-                cx="16"
-                cy="16"
-                r="8"
+                cx="19"
+                cy="19"
+                r="10"
                 fill="none"
                 stroke="white"
-                strokeWidth="2.5"
+                strokeWidth="3"
               />
-              <circle cx="16" cy="16" r="3.5" fill="white" />
-              <circle
-                cx="16"
-                cy="16"
-                r="11"
-                fill="none"
-                stroke="white"
-                strokeWidth="1"
-                opacity="0.4"
-              />
+              <circle cx="19" cy="19" r="4" fill="white" />
             </svg>
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
