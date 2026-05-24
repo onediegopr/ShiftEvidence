@@ -62,9 +62,7 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
               strokeDasharray="3 3"
             />
           </svg>
-          <span>
-            Shift Evidence<span className="text-cyan">.</span>
-          </span>
+          <span>Shift Evidence</span>
         </a>
 
         <nav>

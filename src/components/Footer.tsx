@@ -42,9 +42,7 @@ export default function Footer() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>
-                Shift Evidence<span className="text-cyan">.</span>
-              </span>
+              <span>Shift Evidence</span>
             </a>
             <p style={{ fontSize: "0.85rem" }}>
               Enterprise-grade VMware to Proxmox migration assessments. Fully
