@@ -1,4 +1,4 @@
-import { Shield, ArrowRight, DollarSign } from 'lucide-react';
+import { Shield, ArrowRight, DollarSign, Check } from 'lucide-react';
 
 interface HeroProps {
   onOpenScanner: () => void;
@@ -17,45 +17,40 @@ export default function Hero({ onOpenScanner }: HeroProps) {
       <div className="glow-orb" style={{ top: '20%', left: '10%', width: '400px', height: '400px', background: 'rgba(99, 102, 241, 0.15)' }}></div>
       <div className="glow-orb" style={{ bottom: '10%', right: '5%', width: '350px', height: '350px', background: 'rgba(6, 182, 212, 0.12)', animationDelay: '-5s' }}></div>
 
-      <div className="container hero-grid">
-        <div>
-          <div className="badge">
-            <Shield size={14} className="text-emerald" />
-            100% Audited & Secure Migration
+      <div className="container">
+        <div className="hero-grid">
+          <div>
+            <div className="badge">
+              <Shield size={14} className="text-emerald" />
+              100% Audited & Secure Migration
+            </div>
+            <h1 className="hero-title">
+              Ditch VMware Licensing Hikes.<br />
+              <span className="text-gradient">Shift to Proxmox</span><br />
+              with Confidence.
+            </h1>
+            <div className="hero-description-group">
+              <p className="text-muted">
+                Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Infrashift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
+              </p>
+              <p className="text-muted">
+                The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.
+              </p>
+              <p className="text-muted">
+                It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
+              </p>
+            </div>
+            <div className="hero-actions">
+              <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
+                Audit Your Cluster
+                <ArrowRight size={18} />
+              </button>
+              <button onClick={() => scrollToSection('savings')} className="btn btn-secondary">
+                Calculate Savings
+                <DollarSign size={18} className="text-cyan" />
+              </button>
+            </div>
           </div>
-          <h1 className="hero-title">
-            Ditch VMware Licensing Hikes.<br />
-            <span className="text-gradient">Shift to Proxmox</span><br />
-            with Confidence.
-          </h1>
-          <div className="hero-description-group">
-            <p className="text-muted">
-              Broadcom’s VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Infrashift helps you plan the move before production is touched — whether you are assessing your own environment or preparing a client migration.
-            </p>
-            <p className="text-muted">
-              The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware → Proxmox readiness audit report.
-            </p>
-            <p className="text-muted">
-              It analyzes the migration from multiple angles: workload risk, infrastructure sizing, backup gaps, storage and network complexity, missing evidence, migration waves, no-go items and executive decision criteria.
-            </p>
-            <p className="text-muted">
-              Before you migrate, quote or deliver a Proxmox project, get a clear audit-style report that shows what looks ready, what needs validation and what should not move yet.
-            </p>
-            <p className="text-emerald font-semibold" style={{ borderLeft: '2px solid #10b981', paddingLeft: '0.75rem', marginTop: '0.4rem' }}>
-              Start with RVTools. No agents. No mandatory credentials. No production access.
-            </p>
-          </div>
-          <div className="hero-actions">
-            <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
-              Audit Your Cluster
-              <ArrowRight size={18} />
-            </button>
-            <button onClick={() => scrollToSection('savings')} className="btn btn-secondary">
-              Calculate Savings
-              <DollarSign size={18} className="text-cyan" />
-            </button>
-          </div>
-        </div>
 
         <div className="hero-visual">
           <svg className="migration-flow-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible', width: '100%', maxWidth: '580px' }}>
@@ -613,6 +608,53 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           </svg>
         </div>
       </div>
-    </section>
-  );
+
+      {/* Transition Callout Bar */}
+      <div className="hero-bottom-callout">
+        <div className="hero-callout-info">
+          <span className="hero-callout-tag">Migration Assurance</span>
+          <p className="hero-callout-text">
+            Before you migrate, quote, or deliver a Proxmox project, get a clear audit-style report that shows what <span className="highlight-ready">looks ready</span>, what <span className="highlight-validation">needs validation</span>, and what <span className="highlight-danger">should not move yet</span>.
+          </p>
+        </div>
+        
+        <div className="hero-callout-card">
+          <div className="hero-callout-card-title">
+            <div className="hero-callout-card-dot"></div>
+            <span className="hero-callout-card-label">100% Agentless Security</span>
+          </div>
+          <div className="hero-callout-list">
+            <div className="hero-callout-item">
+              <div className="callout-icon-box check-emerald">
+                <Check size={12} />
+              </div>
+              <div className="item-text">
+                <strong className="text-white">Start with RVTools</strong>
+                <span className="text-muted-sm">Simply upload your VMware config export</span>
+              </div>
+            </div>
+            <div className="hero-callout-item">
+              <div className="callout-icon-box check-emerald">
+                <Check size={12} />
+              </div>
+              <div className="item-text">
+                <strong className="text-white">No Agents Required</strong>
+                <span className="text-muted-sm">Zero performance impact on VM hosts</span>
+              </div>
+            </div>
+            <div className="hero-callout-item">
+              <div className="callout-icon-box check-emerald">
+                <Check size={12} />
+              </div>
+              <div className="item-text">
+                <strong className="text-white">Zero Credentials & Production Access</strong>
+                <span className="text-muted-sm">Audit your cluster with zero data exposure risk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 }
