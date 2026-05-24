@@ -1386,34 +1386,34 @@ p {
 }
 
 .cmp-header-badge.vmware {
-    border-color: rgba(239, 68, 68, 0.4);
-    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(184, 54, 59, 0.5);
+    background: rgba(184, 54, 59, 0.08);
 }
 
 .cmp-header-badge.vmware .cmp-header-title {
-    color: #fca5a5;
+    color: #e88b8e;
 }
 
 .cmp-header-badge.vmware:hover {
-    border-color: rgba(239, 68, 68, 0.6);
+    border-color: rgba(184, 54, 59, 0.7);
     box-shadow:
-        0 0 20px rgba(239, 68, 68, 0.1),
+        0 0 25px rgba(184, 54, 59, 0.15),
         0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .cmp-header-badge.proxmox {
-    border-color: rgba(234, 88, 12, 0.4);
-    background: rgba(234, 88, 12, 0.06);
+    border-color: rgba(229, 112, 0, 0.5);
+    background: rgba(229, 112, 0, 0.08);
 }
 
 .cmp-header-badge.proxmox .cmp-header-title {
-    color: #fdba74;
+    color: #f5a960;
 }
 
 .cmp-header-badge.proxmox:hover {
-    border-color: rgba(234, 88, 12, 0.6);
+    border-color: rgba(229, 112, 0, 0.7);
     box-shadow:
-        0 0 20px rgba(234, 88, 12, 0.1),
+        0 0 25px rgba(229, 112, 0, 0.15),
         0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -1544,14 +1544,14 @@ p {
 }
 
 .cmp-bar-row.vmware {
-    background: rgba(239, 68, 68, 0.2);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: rgba(184, 54, 59, 0.2);
+    border: 1px solid rgba(184, 54, 59, 0.35);
     width: 100%;
 }
 
 .cmp-bar-row.proxmox {
-    background: rgba(234, 88, 12, 0.2);
-    border: 1px solid rgba(234, 88, 12, 0.3);
+    background: rgba(229, 112, 0, 0.2);
+    border: 1px solid rgba(229, 112, 0, 0.35);
 }
 
 .cmp-bar-inner {
@@ -1566,13 +1566,13 @@ p {
 }
 
 .cmp-bar-row.vmware .cmp-bar-inner {
-    background: rgba(239, 68, 68, 0.35);
-    color: #fca5a5;
+    background: rgba(184, 54, 59, 0.4);
+    color: #e88b8e;
 }
 
 .cmp-bar-row.proxmox .cmp-bar-inner {
-    background: rgba(234, 88, 12, 0.35);
-    color: #fdba74;
+    background: rgba(229, 112, 0, 0.4);
+    color: #f5a960;
 }
 
 .cmp-bar-delta {
@@ -1625,11 +1625,11 @@ p {
 }
 
 .cmp-breakdown-row.vmware .cmp-br-total {
-    color: #f87171;
+    color: #e88b8e;
 }
 
 .cmp-breakdown-row.proxmox .cmp-br-total {
-    color: #f97316;
+    color: #f5a960;
 }
 
 /* ======== ASSUMPTIONS TOGGLE ======== */

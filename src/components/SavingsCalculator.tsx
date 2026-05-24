@@ -148,38 +148,27 @@ export default function SavingsCalculator() {
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
             <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect
-                x="1"
-                y="1"
-                width="26"
-                height="26"
-                rx="6"
-                fill="rgba(239,68,68,0.1)"
-                stroke="#ef4444"
+              <rect width="32" height="32" rx="7" fill="#b8363b" />
+              <path
+                d="M7 13L16 5L25 13L16 21L7 13Z"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M11 18L16 11L21 18"
+                fill="none"
+                stroke="white"
                 strokeWidth="1.5"
-              />
-              <rect x="7" y="7" width="14" height="3" rx="1.5" fill="#ef4444" />
-              <rect
-                x="7"
-                y="12.5"
-                width="14"
-                height="3"
-                rx="1.5"
-                fill="#ef4444"
-              />
-              <rect
-                x="7"
-                y="18"
-                width="14"
-                height="3"
-                rx="1.5"
-                fill="#ef4444"
+                strokeLinejoin="round"
+                opacity="0.6"
               />
             </svg>
             <span className="cmp-header-title">Current VMware Environment</span>
@@ -190,31 +179,31 @@ export default function SavingsCalculator() {
           </div>
           <div className="cmp-header-badge proxmox">
             <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect
-                x="1"
-                y="1"
-                width="26"
-                height="26"
-                rx="6"
-                fill="rgba(234,88,12,0.1)"
-                stroke="#ea580c"
-                strokeWidth="1.5"
-              />
+              <rect width="32" height="32" rx="7" fill="#e57000" />
               <circle
-                cx="14"
-                cy="14"
-                r="6"
+                cx="16"
+                cy="16"
+                r="8"
                 fill="none"
-                stroke="#ea580c"
-                strokeWidth="2"
+                stroke="white"
+                strokeWidth="2.5"
               />
-              <circle cx="14" cy="14" r="2.5" fill="#ea580c" />
+              <circle cx="16" cy="16" r="3.5" fill="white" />
+              <circle
+                cx="16"
+                cy="16"
+                r="11"
+                fill="none"
+                stroke="white"
+                strokeWidth="1"
+                opacity="0.4"
+              />
             </svg>
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
@@ -228,7 +217,7 @@ export default function SavingsCalculator() {
             {/* ---- VMware License Tier ---- */}
             <div className="slider-group">
               <span className="slider-label">
-                <Server size={16} className="cmp-input-icon" color="#ef4444" />
+                <Server size={16} className="cmp-input-icon" color="#b8363b" />
                 VMware License Tier
               </span>
               <div className="radio-group">
@@ -444,7 +433,7 @@ export default function SavingsCalculator() {
             {/* ---- Proxmox Subscription Tier ---- */}
             <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
               <span className="slider-label">
-                <Shield size={16} className="cmp-input-icon" color="#ea580c" />
+                <Shield size={16} className="cmp-input-icon" color="#e57000" />
                 Proxmox Subscription Tier
               </span>
               <div className="radio-group proxmox-radio-group">
