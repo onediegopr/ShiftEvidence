@@ -389,7 +389,7 @@ p {
 /* Interactive SVG Flow Visual */
 .migration-flow-svg {
   width: 100%;
-  max-width: 480px;
+  max-width: 580px;
   height: auto;
   filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.1));
 }

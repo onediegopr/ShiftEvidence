@@ -50,26 +50,40 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <defs>
               {/* Gradients */}
               <linearGradient id="vmwareGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#f87171" />
-                <stop offset="100%" stopColor="#ef4444" />
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#1d4ed8" />
               </linearGradient>
               <linearGradient id="proxmoxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#22d3ee" />
-                <stop offset="100%" stopColor="#06b6d4" />
+                <stop offset="0%" stopColor="#ea580c" />
+                <stop offset="100%" stopColor="#ff781f" />
               </linearGradient>
               <linearGradient id="shiftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#c084fc" />
-                <stop offset="100%" stopColor="#6366f1" />
+                <stop offset="0%" stopColor="#a855f7" />
+                <stop offset="50%" stopColor="#6366f1" />
+                <stop offset="100%" stopColor="#06b6d4" />
+              </linearGradient>
+              <linearGradient id="vmwareBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#080c18" />
+                <stop offset="100%" stopColor="#03050a" />
+              </linearGradient>
+              <linearGradient id="proxmoxBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#140b06" />
+                <stop offset="100%" stopColor="#060302" />
               </linearGradient>
               <linearGradient id="tunnelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="rgba(239, 68, 68, 0.3)" />
-                <stop offset="50%" stopColor="rgba(139, 92, 246, 0.5)" />
-                <stop offset="100%" stopColor="rgba(6, 182, 212, 0.3)" />
+                <stop offset="0%" stopColor="rgba(239, 68, 68, 0.4)" />
+                <stop offset="45%" stopColor="rgba(139, 92, 246, 0.7)" />
+                <stop offset="55%" stopColor="rgba(139, 92, 246, 0.7)" />
+                <stop offset="100%" stopColor="rgba(16, 185, 129, 0.4)" />
               </linearGradient>
 
               {/* Glow Filters */}
               <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
-                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <filter id="strongGlow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
             </defs>
@@ -79,205 +93,320 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <path d="M 0,0 L 0,400 M 50,0 L 50,400 M 100,0 L 100,400 M 150,0 L 150,400 M 200,0 L 200,400 M 250,0 L 250,400 M 300,0 L 300,400 M 350,0 L 350,400 M 400,0 L 400,400 M 450,0 L 450,400 M 500,0 L 500,400 M 550,0 L 550,400" stroke="rgba(255,255,255,0.015)" strokeWidth="1" />
 
             {/* Connection Migration Tunnel */}
-            <path d="M 85,180 Q 300,70 515,180" fill="none" stroke="url(#tunnelGrad)" strokeWidth="10" strokeLinecap="round" />
-            <path d="M 85,180 Q 300,70 515,180" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="2.5" strokeDasharray="6 6" />
+            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="url(#tunnelGrad)" strokeWidth="12" strokeLinecap="round" opacity="0.85" />
+            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2.5" strokeDasharray="6 6" />
 
-            {/* VMware Source Rack Enclosure (Bigger & Detailed) */}
-            <g transform="translate(10, 100)">
-              {/* Outer Enclosure */}
-              <rect x="0" y="0" width="150" height="160" rx="10" fill="rgba(8, 10, 18, 0.95)" stroke="rgba(239, 68, 68, 0.5)" strokeWidth="1.5" />
-              <rect x="0" y="0" width="150" height="160" rx="10" fill="none" stroke="#ef4444" strokeWidth="1.5" opacity="0.2" filter="url(#glow)" />
+            {/* Glowing Flow Particles */}
+            <path d="M 90,195 Q 300,45 510,195" fill="none" stroke="url(#shiftGrad)" strokeWidth="2.5" strokeDasharray="15 50" strokeLinecap="round" opacity="0.7">
+              <animate attributeName="stroke-dashoffset" values="300;0" dur="4s" repeatCount="indefinite" />
+            </path>
+
+            {/* VMware Source Rack Enclosure (X: 10, Y: 65, W: 160, H: 260) */}
+            <g transform="translate(10, 65)">
+              {/* Outer Enclosure with double border and glow */}
+              <rect x="0" y="0" width="160" height="260" rx="12" fill="url(#vmwareBg)" stroke="#1d4ed8" strokeWidth="2" />
+              <rect x="0" y="0" width="160" height="260" rx="12" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.3" filter="url(#glow)" />
               
-              {/* Vertical Side Rails */}
-              <line x1="6" y1="0" x2="6" y2="160" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
-              <line x1="144" y1="0" x2="144" y2="160" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
+              {/* Vertical Side Rails with mount holes */}
+              <line x1="6" y1="0" x2="6" y2="260" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+              <line x1="154" y1="0" x2="154" y2="260" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+              <line x1="6" y1="0" x2="6" y2="260" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1 8" />
+              <line x1="154" y1="0" x2="154" y2="260" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1 8" />
 
-              {/* Header Titles */}
-              <text x="75" y="18" fill="#ef4444" fontSize="10.5" fontWeight="900" textAnchor="middle" letterSpacing="0.08em">VMWARE CLUSTER</text>
-              <text x="75" y="28" fill="rgba(255,255,255,0.4)" fontSize="7.5" fontWeight="600" textAnchor="middle">vSphere ESXi Nodes</text>
-              
-              {/* Server Blade 1 */}
-              <g transform="translate(12, 38)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0f101a" stroke="rgba(239, 68, 68, 0.2)" strokeWidth="1" />
-                
-                {/* Animated Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(239, 68, 68, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(239, 68, 68, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
-                </g>
-
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#ef4444">
-                  <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />
+              {/* Header Title & Status */}
+              <g transform="translate(80, 20)">
+                <text x="0" y="0" fill="#60a5fa" fontSize="10" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">VMWARE vSPHERE</text>
+                <text x="0" y="9" fill="#ef4444" fontSize="6.5" fontWeight="600" textAnchor="middle" letterSpacing="0.05em">LEGACY INFRASTRUCTURE</text>
+                <circle cx="-62" cy="-4" r="3" fill="#ef4444">
+                  <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
                 </circle>
-
-                {/* Grid vents */}
-                <line x1="48" y1="12" x2="100" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="100" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
+              </g>
+              
+              {/* Bay 1: Network (Y: 36) */}
+              <g transform="translate(12, 36)">
+                <rect x="0" y="0" width="136" height="46" rx="4" fill="#05070e" stroke="rgba(59, 130, 246, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 01 | NETWORK (vSwitch)</text>
                 
-                {/* Active interfaces */}
-                <rect x="110" y="10" width="8" height="12" rx="1" fill="#ef4444" opacity="0.8" />
+                {/* Ports */}
+                <g transform="translate(8, 16)">
+                  {Array.from({ length: 8 }).map((_, idx) => (
+                    <g key={idx} transform={`translate(${idx * 15}, 0)`}>
+                      <rect x="0" y="0" width="10" height="9" rx="1.5" fill="#111827" stroke="rgba(59, 130, 246, 0.4)" strokeWidth="0.8" />
+                      {/* Port lights */}
+                      <circle cx="5" cy="-2.5" r="1" fill={idx % 3 === 0 ? "#ef4444" : "#f59e0b"}>
+                        <animate attributeName="opacity" values="1;0.2;1" dur={`${1 + (idx % 3) * 0.4}s`} repeatCount="indefinite" />
+                      </circle>
+                    </g>
+                  ))}
+                </g>
+                {/* Legacy wiring visualization */}
+                <path d="M 18,25 C 25,38 45,38 52,25 M 63,25 C 70,38 90,38 97,25" fill="none" stroke="rgba(239, 68, 68, 0.35)" strokeWidth="1" />
               </g>
 
-              {/* Server Blade 2 */}
-              <g transform="translate(12, 76)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0f101a" stroke="rgba(239, 68, 68, 0.2)" strokeWidth="1" />
+              {/* Bay 2: Compute (Y: 88) */}
+              <g transform="translate(12, 88)">
+                <rect x="0" y="0" width="136" height="50" rx="4" fill="#05070e" stroke="rgba(59, 130, 246, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 02 | COMPUTE (ESXi Nodes)</text>
                 
-                {/* Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(239, 68, 68, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(239, 68, 68, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
+                {/* Node 1 */}
+                <g transform="translate(8, 14)">
+                  <rect x="0" y="0" width="120" height="13" rx="2" fill="#0a0f1d" stroke="rgba(59, 130, 246, 0.15)" strokeWidth="0.8" />
+                  <circle cx="8" cy="6.5" r="2" fill="#ef4444" />
+                  <rect x="22" y="5" width="40" height="3" rx="1" fill="#1e293b" />
+                  <rect x="22" y="5" width="34" height="3" rx="1" fill="#ef4444" /> {/* 85% Load */}
+                  {/* Rotating fan */}
+                  <g transform="translate(108, 6.5)">
+                    <circle r="4.5" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.8" />
+                    <path d="M -3.5,0 L 3.5,0 M 0,-3.5 L 0,3.5" stroke="rgba(239, 68, 68, 0.5)" strokeWidth="1" strokeLinecap="round">
+                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite" />
+                    </path>
+                  </g>
                 </g>
 
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#f59e0b">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" repeatCount="indefinite" />
-                </circle>
-
-                {/* Vents */}
-                <line x1="48" y1="12" x2="100" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="100" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                
-                {/* Interfaces */}
-                <rect x="110" y="10" width="8" height="12" rx="1" fill="#f59e0b" opacity="0.8" />
+                {/* Node 2 */}
+                <g transform="translate(8, 31)">
+                  <rect x="0" y="0" width="120" height="13" rx="2" fill="#0a0f1d" stroke="rgba(59, 130, 246, 0.15)" strokeWidth="0.8" />
+                  <circle cx="8" cy="6.5" r="2" fill="#f59e0b" />
+                  <rect x="22" y="5" width="40" height="3" rx="1" fill="#1e293b" />
+                  <rect x="22" y="5" width="28" height="3" rx="1" fill="#f59e0b" /> {/* 70% Load */}
+                  {/* Rotating fan */}
+                  <g transform="translate(108, 6.5)">
+                    <circle r="4.5" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.8" />
+                    <path d="M -3.5,0 L 3.5,0 M 0,-3.5 L 0,3.5" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" strokeLinecap="round">
+                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.8s" repeatCount="indefinite" />
+                    </path>
+                  </g>
+                </g>
               </g>
 
-              {/* Server Blade 3 */}
-              <g transform="translate(12, 114)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0f101a" stroke="rgba(239, 68, 68, 0.2)" strokeWidth="1" />
+              {/* Bay 3: Databases / BBDD (Y: 144) */}
+              <g transform="translate(12, 144)">
+                <rect x="0" y="0" width="136" height="50" rx="4" fill="#05070e" stroke="rgba(59, 130, 246, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 03 | DATABASES (SQL / Oracle)</text>
                 
-                {/* Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(239, 68, 68, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(239, 68, 68, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
+                {/* DB Cylinder 1 */}
+                <g transform="translate(25, 26)">
+                  <ellipse cx="0" cy="-8" rx="8" ry="2.2" fill="#1e293b" stroke="#f87171" strokeWidth="0.8" />
+                  <path d="M -8,-8 v 10 c 0,1.2 3.5,2.2 8,2.2 s 8,-1 8,-2.2 v -10" fill="#0f172a" stroke="#f87171" strokeWidth="0.8" />
+                  <line x1="-8" y1="-3" x2="8" y2="-3" stroke="rgba(248, 113, 113, 0.5)" strokeWidth="0.6" />
+                  <line x1="-8" y1="1" x2="8" y2="1" stroke="rgba(248, 113, 113, 0.5)" strokeWidth="0.6" />
+                  <circle cx="0" cy="5" r="1.2" fill="#ef4444" />
+                </g>
+                
+                {/* DB Cylinder 2 */}
+                <g transform="translate(70, 26)">
+                  <ellipse cx="0" cy="-8" rx="8" ry="2.2" fill="#1e293b" stroke="#94a3b8" strokeWidth="0.8" />
+                  <path d="M -8,-8 v 10 c 0,1.2 3.5,2.2 8,2.2 s 8,-1 8,-2.2 v -10" fill="#0f172a" stroke="#94a3b8" strokeWidth="0.8" />
+                  <line x1="-8" y1="-3" x2="8" y2="-3" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="0.6" />
+                  <line x1="-8" y1="1" x2="8" y2="1" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="0.6" />
+                  <circle cx="0" cy="5" r="1.2" fill="#94a3b8" />
                 </g>
 
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#ef4444">
-                  <animate attributeName="opacity" values="1;0.4;1" dur="0.8s" repeatCount="indefinite" />
-                </circle>
+                {/* DB Cylinder 3 */}
+                <g transform="translate(111, 26)">
+                  <ellipse cx="0" cy="-8" rx="8" ry="2.2" fill="#1e293b" stroke="#f87171" strokeWidth="0.8" />
+                  <path d="M -8,-8 v 10 c 0,1.2 3.5,2.2 8,2.2 s 8,-1 8,-2.2 v -10" fill="#0f172a" stroke="#f87171" strokeWidth="0.8" />
+                  <line x1="-8" y1="-3" x2="8" y2="-3" stroke="rgba(248, 113, 113, 0.5)" strokeWidth="0.6" />
+                  <line x1="-8" y1="1" x2="8" y2="1" stroke="rgba(248, 113, 113, 0.5)" strokeWidth="0.6" />
+                  <circle cx="0" cy="5" r="1.2" fill="#ef4444" />
+                </g>
+              </g>
 
-                {/* Vents */}
-                <line x1="48" y1="12" x2="100" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="100" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
+              {/* Bay 4: Storage (Y: 200) */}
+              <g transform="translate(12, 200)">
+                <rect x="0" y="0" width="136" height="48" rx="4" fill="#05070e" stroke="rgba(59, 130, 246, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 04 | STORAGE (vSAN / VMFS)</text>
                 
-                {/* Interfaces */}
-                <rect x="110" y="10" width="8" height="12" rx="1" fill="#ef4444" opacity="0.8" />
+                {/* Legacy disks */}
+                <g transform="translate(8, 14)">
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <g key={idx} transform={`translate(${idx * 30}, 0)`}>
+                      <rect x="0" y="0" width="24" height="24" rx="2" fill="#0c1226" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="0.8" />
+                      <line x1="4" y1="6" x2="20" y2="6" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="1" />
+                      <line x1="4" y1="12" x2="20" y2="12" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                      <line x1="4" y1="18" x2="20" y2="18" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                      <circle cx="18" cy="18" r="1.5" fill="#ef4444">
+                        <animate attributeName="opacity" values="1;0.3;1" dur={`${0.8 + idx * 0.3}s`} repeatCount="indefinite" />
+                      </circle>
+                    </g>
+                  ))}
+                </g>
               </g>
             </g>
 
-            {/* Proxmox Target Rack Enclosure (Bigger & Detailed) */}
-            <g transform="translate(440, 100)">
-              {/* Outer Enclosure */}
-              <rect x="0" y="0" width="150" height="160" rx="10" fill="rgba(8, 10, 18, 0.95)" stroke="rgba(6, 182, 212, 0.5)" strokeWidth="1.5" />
-              <rect x="0" y="0" width="150" height="160" rx="10" fill="none" stroke="#06b6d4" strokeWidth="1.5" opacity="0.2" filter="url(#glow)" />
+            {/* Proxmox Target Rack Enclosure (X: 430, Y: 65, W: 160, H: 260) */}
+            <g transform="translate(430, 65)">
+              {/* Outer Enclosure with orange border and glow */}
+              <rect x="0" y="0" width="160" height="260" rx="12" fill="url(#proxmoxBg)" stroke="#ea580c" strokeWidth="2" />
+              <rect x="0" y="0" width="160" height="260" rx="12" fill="none" stroke="#ff781f" strokeWidth="1" opacity="0.3" filter="url(#glow)" />
               
-              {/* Vertical Side Rails */}
-              <line x1="6" y1="0" x2="6" y2="160" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
-              <line x1="144" y1="0" x2="144" y2="160" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
+              {/* Vertical Side Rails with mount holes */}
+              <line x1="6" y1="0" x2="6" y2="260" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+              <line x1="154" y1="0" x2="154" y2="260" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+              <line x1="6" y1="0" x2="6" y2="260" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1 8" />
+              <line x1="154" y1="0" x2="154" y2="260" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1 8" />
 
-              {/* Header Titles */}
-              <text x="75" y="18" fill="#06b6d4" fontSize="10.5" fontWeight="900" textAnchor="middle" letterSpacing="0.08em">PROXMOX VE</text>
-              <text x="75" y="28" fill="rgba(255,255,255,0.4)" fontSize="7.5" fontWeight="600" textAnchor="middle">KVM / LXC Cluster</text>
-              
-              {/* Server Blade 1 */}
-              <g transform="translate(12, 38)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0b0e17" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="1" />
-                
-                {/* Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(6, 182, 212, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
-                </g>
+              {/* Header Title with Proxmox Chevron Logo & Status */}
+              <g transform="translate(80, 20)">
+                {/* Brand Chevron Logo */}
+                <path d="M -66,-10 L -60,-5 L -66,0 L -63,0 L -57,-5 L -63,-10 Z" fill="#ea580c" />
+                <path d="M -58,-2 L -52,-2 L -52,0 L -58,0 Z" fill="#ea580c" />
 
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#10b981">
-                  <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite" />
+                <text x="6" y="0" fill="#f97316" fontSize="10" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">PROXMOX VE</text>
+                <text x="6" y="9" fill="#10b981" fontSize="6.5" fontWeight="600" textAnchor="middle" letterSpacing="0.05em">OPEN SOURCE CLUSTER</text>
+                <circle cx="68" cy="-4" r="3" fill="#10b981">
+                  <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite" />
                 </circle>
-
-                {/* Vents */}
-                <line x1="48" y1="12" x2="90" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="90" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
+              </g>
+              
+              {/* Bay 1: Network (Y: 36) */}
+              <g transform="translate(12, 36)">
+                <rect x="0" y="0" width="136" height="46" rx="4" fill="#090605" stroke="rgba(234, 88, 12, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 01 | NETWORK (SDN / Bridges)</text>
                 
-                {/* Ceph cluster storage indicators */}
-                <circle cx="106" cy="16" r="2" fill="#06b6d4" />
-                <circle cx="114" cy="16" r="2" fill="#10b981" />
+                {/* Ports */}
+                <g transform="translate(8, 16)">
+                  {Array.from({ length: 8 }).map((_, idx) => (
+                    <g key={idx} transform={`translate(${idx * 15}, 0)`}>
+                      <rect x="0" y="0" width="10" height="9" rx="1.5" fill="#111827" stroke="rgba(234, 88, 12, 0.4)" strokeWidth="0.8" />
+                      {/* Port lights - Green for active SDN */}
+                      <circle cx="5" cy="-2.5" r="1" fill="#10b981">
+                        <animate attributeName="opacity" values="1;0.2;1" dur={`${0.6 + (idx % 2) * 0.3}s`} repeatCount="indefinite" />
+                      </circle>
+                    </g>
+                  ))}
+                </g>
+                {/* SDN active link animation */}
+                <path d="M 12,28 L 124,28" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1.2" strokeDasharray="4 8">
+                  <animate attributeName="stroke-dashoffset" values="12;0" dur="1.5s" repeatCount="indefinite" />
+                </path>
               </g>
 
-              {/* Server Blade 2 */}
-              <g transform="translate(12, 76)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0b0e17" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="1" />
+              {/* Bay 2: Compute (Y: 88) */}
+              <g transform="translate(12, 88)">
+                <rect x="0" y="0" width="136" height="50" rx="4" fill="#090605" stroke="rgba(234, 88, 12, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 02 | COMPUTE (KVM & LXC Core)</text>
                 
-                {/* Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(6, 182, 212, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
+                {/* Node 1 */}
+                <g transform="translate(8, 14)">
+                  <rect x="0" y="0" width="120" height="13" rx="2" fill="#100b08" stroke="rgba(234, 88, 12, 0.15)" strokeWidth="0.8" />
+                  <circle cx="8" cy="6.5" r="2" fill="#10b981" />
+                  <rect x="22" y="5" width="40" height="3" rx="1" fill="#1e293b" />
+                  <rect x="22" y="5" width="18" height="3" rx="1" fill="#10b981" /> {/* 45% Load - Optimized */}
+                  {/* Rotating fan */}
+                  <g transform="translate(108, 6.5)">
+                    <circle r="4.5" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.8" />
+                    <path d="M -3.5,0 L 3.5,0 M 0,-3.5 L 0,3.5" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1" strokeLinecap="round">
+                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
+                    </path>
+                  </g>
                 </g>
 
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#10b981">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="1s" repeatCount="indefinite" />
-                </circle>
-
-                {/* Vents */}
-                <line x1="48" y1="12" x2="90" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="90" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                
-                {/* Ceph Storage */}
-                <circle cx="106" cy="16" r="2" fill="#06b6d4" />
-                <circle cx="114" cy="16" r="2" fill="#10b981" />
+                {/* Node 2 */}
+                <g transform="translate(8, 31)">
+                  <rect x="0" y="0" width="120" height="13" rx="2" fill="#100b08" stroke="rgba(234, 88, 12, 0.15)" strokeWidth="0.8" />
+                  <circle cx="8" cy="6.5" r="2" fill="#10b981" />
+                  <rect x="22" y="5" width="40" height="3" rx="1" fill="#1e293b" />
+                  <rect x="22" y="5" width="12" height="3" rx="1" fill="#10b981" /> {/* 30% Load */}
+                  {/* Rotating fan */}
+                  <g transform="translate(108, 6.5)">
+                    <circle r="4.5" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.8" />
+                    <path d="M -3.5,0 L 3.5,0 M 0,-3.5 L 0,3.5" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1" strokeLinecap="round">
+                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2.5s" repeatCount="indefinite" />
+                    </path>
+                  </g>
+                </g>
               </g>
 
-              {/* Server Blade 3 */}
-              <g transform="translate(12, 114)">
-                <rect x="0" y="0" width="126" height="32" rx="4" fill="#0b0e17" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="1" />
+              {/* Bay 3: Databases / BBDD (Y: 144) */}
+              <g transform="translate(12, 144)">
+                <rect x="0" y="0" width="136" height="50" rx="4" fill="#090605" stroke="rgba(234, 88, 12, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 03 | CONTAINERS (Optimized DBs)</text>
                 
-                {/* Rotating Fan */}
-                <g transform="translate(18, 16)">
-                  <circle r="9" fill="none" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M -8,0 L 8,0 M 0,-8 L 0,8" stroke="rgba(6, 182, 212, 0.6)" strokeWidth="1.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite" />
-                  </path>
+                {/* Optimized DB Container 1 */}
+                <g transform="translate(25, 26)">
+                  <rect x="-10" y="-12" width="20" height="20" rx="3" fill="#0c1817" stroke="#10b981" strokeWidth="1.2" />
+                  <path d="M -6,-6 h 12 M -6,-2 h 12 M -6,2 h 6" stroke="rgba(16, 185, 129, 0.5)" strokeWidth="0.8" />
+                  <circle cx="5" cy="2" r="1.5" fill="#10b981">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
+                  </circle>
+                </g>
+                
+                {/* Optimized DB Container 2 */}
+                <g transform="translate(70, 26)">
+                  <rect x="-10" y="-12" width="20" height="20" rx="3" fill="#0c1817" stroke="#10b981" strokeWidth="1.2" />
+                  <path d="M -6,-6 h 12 M -6,-2 h 12 M -6,2 h 6" stroke="rgba(16, 185, 129, 0.5)" strokeWidth="0.8" />
+                  <circle cx="5" cy="2" r="1.5" fill="#10b981">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite" />
+                  </circle>
                 </g>
 
-                {/* Status LED */}
-                <circle cx="36" cy="16" r="3" fill="#10b981">
-                  <animate attributeName="opacity" values="1;0.4;1" dur="1.2s" repeatCount="indefinite" />
-                </circle>
+                {/* Optimized DB Container 3 */}
+                <g transform="translate(111, 26)">
+                  <rect x="-10" y="-12" width="20" height="20" rx="3" fill="#0c1817" stroke="#10b981" strokeWidth="1.2" />
+                  <path d="M -6,-6 h 12 M -6,-2 h 12 M -6,2 h 6" stroke="rgba(16, 185, 129, 0.5)" strokeWidth="0.8" />
+                  <circle cx="5" cy="2" r="1.5" fill="#10b981">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
+                  </circle>
+                </g>
+              </g>
 
-                {/* Vents */}
-                <line x1="48" y1="12" x2="90" y2="12" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
-                <line x1="48" y1="20" x2="90" y2="20" stroke="rgba(255,255,255,0.06)" strokeWidth="2" strokeDasharray="2 2" />
+              {/* Bay 4: Storage (Y: 200) */}
+              <g transform="translate(12, 200)">
+                <rect x="0" y="0" width="136" height="48" rx="4" fill="#090605" stroke="rgba(234, 88, 12, 0.25)" strokeWidth="1" />
+                <text x="8" y="10" fill="rgba(255, 255, 255, 0.4)" fontSize="6" fontWeight="bold">BAY 04 | STORAGE (Ceph / ZFS Mirror)</text>
                 
-                {/* Ceph Storage */}
-                <circle cx="106" cy="16" r="2" fill="#06b6d4" />
-                <circle cx="114" cy="16" r="2" fill="#10b981" />
+                {/* Ceph mesh network diagram */}
+                <g transform="translate(8, 12)">
+                  <path d="M 20,10 L 60,25 L 100,10 L 20,10" fill="none" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1" strokeDasharray="2 2" />
+                  <circle cx="20" cy="10" r="3.5" fill="#ea580c" stroke="#10b981" strokeWidth="1" />
+                  <circle cx="60" cy="25" r="3.5" fill="#ea580c" stroke="#10b981" strokeWidth="1" />
+                  <circle cx="100" cy="10" r="3.5" fill="#ea580c" stroke="#10b981" strokeWidth="1" />
+                  
+                  {/* Glowing core activity dots */}
+                  <circle cx="20" cy="10" r="1" fill="#fff"><animate attributeName="opacity" values="0.2;1;0.2" dur="1.2s" repeatCount="indefinite" /></circle>
+                  <circle cx="60" cy="25" r="1" fill="#fff"><animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" /></circle>
+                  <circle cx="100" cy="10" r="1" fill="#fff"><animate attributeName="opacity" values="0.2;1;0.2" dur="1.5s" repeatCount="indefinite" /></circle>
+                </g>
               </g>
             </g>
 
-            {/* Infrashift Validator Shield in middle (Bigger) */}
-            <g transform="translate(250, 70)">
-              <circle cx="50" cy="50" r="42" fill="rgba(6, 9, 19, 0.95)" stroke="url(#shiftGrad)" strokeWidth="2.2" filter="url(#glow)" />
+            {/* Infrashift Validator Shield in middle (Center: X=300, Y=120) */}
+            <g transform="translate(300, 120)">
+              {/* Pulsing Sonar Scanning Waves */}
+              <circle cx="0" cy="0" r="42" fill="none" stroke="url(#shiftGrad)" strokeWidth="2.5" opacity="0.3">
+                <animate attributeName="r" values="42;72" dur="2.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.6;0" dur="2.2s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="0" r="42" fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.2">
+                <animate attributeName="r" values="42;90" dur="3.3s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.4;0" dur="3.3s" repeatCount="indefinite" />
+              </circle>
+
+              {/* Rotating Telemetry Rings */}
+              <circle cx="0" cy="0" r="48" fill="none" stroke="url(#shiftGrad)" strokeWidth="1" strokeDasharray="8 6 15 5" opacity="0.6">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="12s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="0" r="54" fill="none" stroke="#22d3ee" strokeWidth="0.8" strokeDasharray="4 8 16 6" opacity="0.5">
+                <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="9s" repeatCount="indefinite" />
+              </circle>
+
+              {/* Validator Shield Background */}
+              <circle cx="0" cy="0" r="40" fill="rgba(8, 12, 26, 0.95)" stroke="url(#shiftGrad)" strokeWidth="2" filter="url(#strongGlow)" />
               
-              {/* Scan Line Laser Beam */}
-              <line x1="20" y1="50" x2="80" y2="50" stroke="#06b6d4" strokeWidth="2" opacity="0.8">
-                <animate attributeName="y1" values="25;75;25" dur="3s" repeatCount="indefinite" />
-                <animate attributeName="y2" values="25;75;25" dur="3s" repeatCount="indefinite" />
+              {/* Digital Grid overlay */}
+              <line x1="-30" y1="0" x2="30" y2="0" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+              <line x1="0" y1="-30" x2="0" y2="30" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+              
+              {/* Sweeping Laser Scanner Beam */}
+              <line x1="-32" y1="0" x2="32" y2="0" stroke="#22d3ee" strokeWidth="3" opacity="0.8" filter="url(#glow)">
+                <animate attributeName="y1" values="-26;26;-26" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="y2" values="-26;26;-26" dur="2.5s" repeatCount="indefinite" />
               </line>
 
               {/* Shield Icon SVG */}
               <path 
-                d="M50 30L68 36.5V51C68 62.25 60 72.85 50 75C40 72.85 32 62.25 32 51V36.5L50 30Z" 
+                d="M 0,-16 L 14,-11 V 2 C 14,10 7,18 0,20 C -7,18 -14,10 -14,2 V -11 Z" 
                 fill="none" 
                 stroke="#10b981" 
                 strokeWidth="2.5" 
@@ -286,33 +415,64 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               />
               {/* Checkmark inside shield */}
               <path 
-                d="M44 52.5L48 56L56 48.5" 
+                d="M -5,1 L -1,4.5 L 6 -2" 
                 stroke="#10b981" 
                 strokeWidth="2.5" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
               />
-              <text x="50" y="90" fill="rgba(255,255,255,0.7)" fontSize="8.5" fontWeight="700" textAnchor="middle">VERIFIED</text>
+
+              {/* Outer Scanning beads / indicator LEDs */}
+              <circle cx="-40" cy="0" r="2" fill="#c084fc">
+                <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="40" cy="0" r="2" fill="#22d3ee">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="-40" r="2" fill="#10b981">
+                <animate attributeName="opacity" values="1;0.3;1" dur="0.8s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="0" cy="40" r="2" fill="#fbbf24">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+
+              {/* Scanner Core Titles */}
+              <text x="0" y="34" fill="rgba(255,255,255,0.7)" fontSize="7.5" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">INFRASHIFT CORE</text>
+              <text x="0" y="42" fill="#10b981" fontSize="5.5" fontWeight="900" textAnchor="middle" letterSpacing="0.12em">100% VALIDATED</text>
             </g>
 
-            {/* Animated Nodes Traveling (VMs migrating as cards - Bigger) */}
+            {/* Animated Nodes Traveling (VMs migrating as cards) */}
             
             {/* VM 1: DB workload */}
             <g>
-              {/* Staging Dashboard Tag Container */}
-              <rect x="-34" y="-12" width="68" height="24" rx="4" fill="rgba(6, 8, 16, 0.95)" stroke="#8b5cf6" strokeWidth="1.2" filter="url(#glow)" />
+              {/* Card Container - Color morphs from warning red, to validator purple, to active green */}
+              <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
+                <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+              </rect>
               
-              {/* Database cylinder icon */}
-              <ellipse cx="-22" cy="-5" rx="5" ry="1.8" fill="none" stroke="#a5b4fc" strokeWidth="0.9" />
-              <path d="M -27,-5 v 4 c 0,1 2.2,1.8 5,1.8 s 5,-0.8 5,-1.8 v -4" fill="none" stroke="#a5b4fc" strokeWidth="0.9" />
-              <path d="M -27,1 v 4 c 0,1 2.2,1.8 5,1.8 s 5,-0.8 5,-1.8 v -4" fill="none" stroke="#a5b4fc" strokeWidth="0.9" />
+              {/* Database cylinder icon with animated color */}
+              <g transform="translate(-5, 0)">
+                <ellipse cx="-20" cy="-5" rx="5" ry="1.6" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </ellipse>
+                <path d="M -25,-5 v 5 C -25,1.2 -22.8,2 -20,2 C -17.2,2 -15,1.2 -15,0.8 v -5" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </path>
+                <path d="M -25,0 v 5 C -25,6.2 -22.8,7 -20,7 C -17.2,7 -15,6.2 -15,5.8 v -5" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="0s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </path>
+              </g>
               
-              {/* Tag Title */}
-              <text x="10" y="3" fill="#a5b4fc" fontSize="8" fontWeight="800" textAnchor="middle" fontFamily="var(--font-mono)">PROD-DB</text>
+              {/* Tag Title with animated color */}
+              <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="fill" dur="6s" begin="0s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                PROD-DB
+              </text>
               
               <animateMotion 
-                path="M 85,180 Q 300,70 515,180" 
-                dur="4.5s" 
+                path="M 90,195 Q 300,45 510,195" 
+                dur="6s" 
+                begin="0s"
                 repeatCount="indefinite" 
                 keyPoints="0;0.5;1"
                 keyTimes="0;0.5;1"
@@ -321,20 +481,31 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
             {/* VM 2: Web workload */}
             <g>
-              {/* Tag Container */}
-              <rect x="-34" y="-12" width="68" height="24" rx="4" fill="rgba(6, 8, 16, 0.95)" stroke="#06b6d4" strokeWidth="1.2" filter="url(#glow)" />
+              {/* Card Container - Color morphs */}
+              <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
+                <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+              </rect>
               
-              {/* Web browser monitor icon */}
-              <rect x="-27" y="-7" width="10" height="9" rx="1.5" fill="none" stroke="#22d3ee" strokeWidth="0.9" />
-              <path d="M -22,2 L -22,5 M -25,5 L -19,5" stroke="#22d3ee" strokeWidth="0.9" />
+              {/* Web browser monitor icon with animated color */}
+              <g transform="translate(-5, 0)">
+                <rect x="-25" y="-8" width="11" height="9" rx="1.5" fill="none" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </rect>
+                <path d="M -20,1 v 4 M -23,5 h 6" stroke="#ef4444" strokeWidth="0.9">
+                  <animate attributeName="stroke" dur="6s" begin="2s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </path>
+              </g>
               
-              {/* Tag Title */}
-              <text x="10" y="3" fill="#e0f2fe" fontSize="8" fontWeight="800" textAnchor="middle" fontFamily="var(--font-mono)">WEB-APP</text>
+              {/* Tag Title with animated color */}
+              <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="fill" dur="6s" begin="2s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                WEB-APP
+              </text>
               
               <animateMotion 
-                path="M 85,180 Q 300,70 515,180" 
-                dur="4.5s" 
-                begin="1.5s"
+                path="M 90,195 Q 300,45 510,195" 
+                dur="6s" 
+                begin="2s"
                 repeatCount="indefinite" 
                 keyPoints="0;0.5;1"
                 keyTimes="0;0.5;1"
@@ -343,23 +514,40 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
             {/* VM 3: API Gateway workload */}
             <g>
-              {/* Tag Container */}
-              <rect x="-34" y="-12" width="68" height="24" rx="4" fill="rgba(6, 8, 16, 0.95)" stroke="#c084fc" strokeWidth="1.2" filter="url(#glow)" />
+              {/* Card Container - Color morphs */}
+              <rect x="-40" y="-14" width="80" height="28" rx="6" fill="rgba(8, 10, 20, 0.95)" stroke="#ef4444" strokeWidth="1.2" filter="url(#glow)">
+                <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #8b5cf6; #10b981; #10b981" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+              </rect>
               
-              {/* Connected node cluster icon */}
-              <circle cx="-25" cy="-2" r="1.5" fill="#f3e8ff" />
-              <circle cx="-20" cy="-6" r="1.5" fill="#f3e8ff" />
-              <circle cx="-20" cy="2" r="1.5" fill="#f3e8ff" />
-              <line x1="-25" y1="-2" x2="-20" y2="-6" stroke="#f3e8ff" strokeWidth="0.7" />
-              <line x1="-25" y1="-2" x2="-20" y2="2" stroke="#f3e8ff" strokeWidth="0.7" />
+              {/* Connected node cluster icon with animated color */}
+              <g transform="translate(-4, -1)">
+                <circle cx="-22" cy="-4" r="1.5" fill="#ef4444">
+                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </circle>
+                <circle cx="-16" cy="-4" r="1.5" fill="#ef4444">
+                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </circle>
+                <circle cx="-19" cy="3" r="1.5" fill="#ef4444">
+                  <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </circle>
+                <line x1="-22" y1="-4" x2="-19" y2="3" stroke="#ef4444" strokeWidth="0.8">
+                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </line>
+                <line x1="-16" y1="-4" x2="-19" y2="3" stroke="#ef4444" strokeWidth="0.8">
+                  <animate attributeName="stroke" dur="6s" begin="4s" repeatCount="indefinite" values="#ef4444; #ef4444; #c084fc; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                </line>
+              </g>
               
-              {/* Tag Title */}
-              <text x="10" y="3" fill="#f3e8ff" fontSize="8" fontWeight="800" textAnchor="middle" fontFamily="var(--font-mono)">API-GW</text>
+              {/* Tag Title with animated color */}
+              <text x="14" y="3" fill="#f87171" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="var(--font-mono)">
+                <animate attributeName="fill" dur="6s" begin="4s" repeatCount="indefinite" values="#f87171; #f87171; #e9d5ff; #34d399; #34d399" keyTimes="0; 0.3; 0.5; 0.7; 1" />
+                API-GW
+              </text>
               
               <animateMotion 
-                path="M 85,180 Q 300,70 515,180" 
-                dur="4.5s" 
-                begin="3s"
+                path="M 90,195 Q 300,45 510,195" 
+                dur="6s" 
+                begin="4s"
                 repeatCount="indefinite" 
                 keyPoints="0;0.5;1"
                 keyTimes="0;0.5;1"
