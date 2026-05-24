@@ -20,9 +20,10 @@ export default function Hero({ onOpenScanner }: HeroProps) {
       <div className="container">
         <div className="hero-grid">
           <div>
-            <div className="badge">
-              <Shield size={14} className="text-emerald" />
-              100% Audited & Secure Migration
+            <div className="badge badge-premium">
+              <span className="badge-pulse-dot"></span>
+              <Shield size={13} className="text-emerald" />
+              <span>Pre-Migration Auditing | 100% Agentless & Compatibility Verified</span>
             </div>
             <h1 className="hero-title">
               Ditch VMware Licensing Hikes.<br />
