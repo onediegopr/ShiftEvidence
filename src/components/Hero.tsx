@@ -26,8 +26,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               <span>Pre-Migration Auditing | 100% Agentless & Compatibility Verified</span>
             </div>
             <h1 className="hero-title">
-              Ditch VMware Licensing Hikes.<br />
-              <span className="text-gradient">Shift to Proxmox</span><br />
+              Ditch <span className="brand-vmware">VMware</span> Licensing Hikes.<br />
+              Shift to <span className="brand-proxmox">Proxmox</span><br />
               with Confidence.
             </h1>
             <div className="hero-description-group">

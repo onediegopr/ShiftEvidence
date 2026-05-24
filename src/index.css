@@ -415,6 +415,22 @@ p {
   -webkit-text-fill-color: transparent;
 }
 
+.brand-vmware {
+  color: #00a2ff;
+  -webkit-text-fill-color: #00a2ff;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 12px rgba(0, 162, 255, 0.2);
+}
+
+.brand-proxmox {
+  color: #ff781f;
+  -webkit-text-fill-color: #ff781f;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 12px rgba(255, 120, 31, 0.2);
+}
+
 .hero-description-group {
   margin-bottom: 2.5rem;
   max-width: 550px;
