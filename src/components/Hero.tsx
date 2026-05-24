@@ -602,7 +602,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           </div>
 
           <div className="hero-actions">
-            <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
+            <button onClick={onOpenScanner} className="btn btn-primary">
               Audit Your Cluster
               <ArrowRight size={18} />
             </button>
