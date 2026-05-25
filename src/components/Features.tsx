@@ -146,8 +146,8 @@ export default function Features() {
                   <th className="col-vs">
                     <div className="cmp-th-brand">
                       <svg
-                        width="22"
-                        height="22"
+                        width="28"
+                        height="28"
                         viewBox="0 0 22 22"
                         fill="none"
                       >
@@ -163,8 +163,8 @@ export default function Features() {
                   <th className="col-prox">
                     <div className="cmp-th-brand">
                       <svg
-                        width="22"
-                        height="22"
+                        width="28"
+                        height="28"
                         viewBox="0 0 22 22"
                         fill="none"
                       >

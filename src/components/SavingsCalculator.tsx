@@ -148,8 +148,8 @@ export default function SavingsCalculator() {
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
             <svg
-              width="38"
-              height="38"
+              width="48"
+              height="48"
               viewBox="0 0 38 38"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -168,8 +168,8 @@ export default function SavingsCalculator() {
           </div>
           <div className="cmp-header-badge proxmox">
             <svg
-              width="38"
-              height="38"
+              width="48"
+              height="48"
               viewBox="0 0 38 38"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

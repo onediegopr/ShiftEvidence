@@ -196,7 +196,7 @@ export default function App() {
               {/* Mini brand badges */}
               <div className="cta-brands">
                 <div className="cta-brand vmware">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
                     <rect width="20" height="20" rx="4" fill="#b8363b" />
                     <polygon
                       points="10,3 4,16 7.5,16 10,9 12.5,16 16,16"
@@ -207,7 +207,7 @@ export default function App() {
                 </div>
                 <ArrowRight size={18} className="cta-arrow" />
                 <div className="cta-brand proxmox">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
                     <rect width="20" height="20" rx="4" fill="#e57000" />
                     <circle
                       cx="10"
