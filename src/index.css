@@ -2431,16 +2431,71 @@ p {
 }
 
 .cta-box {
-    max-width: 800px;
+    max-width: 750px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    padding: 4rem 3rem;
 }
 
+/* Brand badges row */
+.cta-brands {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.cta-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: 1px solid;
+}
+
+.cta-brand.vmware {
+    color: #e88b8e;
+    border-color: rgba(184, 54, 59, 0.35);
+    background: rgba(184, 54, 59, 0.1);
+}
+
+.cta-brand.proxmox {
+    color: #f5a960;
+    border-color: rgba(229, 112, 0, 0.35);
+    background: rgba(229, 112, 0, 0.1);
+}
+
+.cta-arrow {
+    color: var(--text-dark);
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+/* Subtitle */
+.cta-subtitle {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.cta-pain {
+    color: #e88b8e;
+    font-weight: 600;
+}
+
+/* Form */
 .cta-form {
     display: flex;
     gap: 0.75rem;
-    max-width: 500px;
-    margin: 2.5rem auto 0;
+    max-width: 520px;
+    margin: 0 auto;
 }
 
 .form-input {
@@ -2448,16 +2503,42 @@ p {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid var(--border-color);
     border-radius: 9999px;
-    padding: 0.75rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     color: white;
     font-size: 0.95rem;
     outline: none;
     transition: all 0.2s;
+    font-family: inherit;
 }
 
 .form-input:focus {
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2);
+    border-color: #e57000;
+    box-shadow: 0 0 20px rgba(229, 112, 0, 0.15);
+}
+
+.cta-btn {
+    flex-shrink: 0;
+}
+
+/* Trust badges */
+.cta-trust {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.cta-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    font-size: 0.82rem;
+    color: var(--text-muted);
 }
 
 /* Footer styling */
