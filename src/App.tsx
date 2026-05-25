@@ -6,7 +6,14 @@ import Features from "./components/Features";
 import Process from "./components/Process";
 import Footer from "./components/Footer";
 import ReadinessValidator from "./components/ReadinessValidator";
-import { ArrowRight, ShieldCheck, HelpCircle } from "lucide-react";
+import {
+  ArrowRight,
+  ShieldCheck,
+  HelpCircle,
+  BarChart3,
+  FileText,
+  Shield,
+} from "lucide-react";
 
 export default function App() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -27,11 +34,122 @@ export default function App() {
       <main style={{ flexGrow: 1 }}>
         <Hero onOpenScanner={handleOpenScanner} />
 
+        {/* Credibility Strip */}
+        <section className="credibility-strip">
+          <div className="container">
+            <div className="credibility-header">
+              <span className="credibility-eyebrow">Methodology</span>
+              <h3 className="credibility-title">
+                Enterprise VMware discipline, without production access.
+              </h3>
+              <p className="credibility-body">
+                This independent readiness methodology was developed by a former
+                VMware Technical Account Manager and is designed to bring
+                enterprise-grade risk review, evidence discipline and migration
+                planning structure to VMware → Proxmox decisions.
+              </p>
+            </div>
+            <div className="credibility-cards">
+              <div className="credibility-card">
+                <Shield size={22} className="text-cyan" />
+                <span className="credibility-card-title">
+                  Former VMware TAM-led methodology
+                </span>
+                <span className="credibility-card-desc">
+                  Built from real-world enterprise advisory experience, not
+                  guesswork.
+                </span>
+              </div>
+              <div className="credibility-card">
+                <BarChart3 size={22} className="text-cyan" />
+                <span className="credibility-card-title">
+                  Evidence-based, not guess-based
+                </span>
+                <span className="credibility-card-desc">
+                  Every risk, gap and recommendation is backed by collected
+                  infrastructure evidence.
+                </span>
+              </div>
+              <div className="credibility-card">
+                <ShieldCheck size={22} className="text-emerald" />
+                <span className="credibility-card-title">
+                  No production changes
+                </span>
+                <span className="credibility-card-desc">
+                  Read-only assessment. Zero agents, zero credentials, zero
+                  impact on running workloads.
+                </span>
+              </div>
+              <div className="credibility-card">
+                <FileText size={22} className="text-cyan" />
+                <span className="credibility-card-title">
+                  Executive + technical outputs
+                </span>
+                <span className="credibility-card-desc">
+                  Ready-to-share reports for both engineering teams and business
+                  stakeholders.
+                </span>
+              </div>
+            </div>
+            <p className="credibility-disclaimer">
+              Independent methodology. Not affiliated with, endorsed by or
+              certified by VMware/Broadcom.
+            </p>
+          </div>
+        </section>
+
         <SavingsCalculator />
 
         <Features />
 
         <Process />
+
+        {/* FAQ Section */}
+        <section className="section faq-section">
+          <div className="container">
+            <div className="text-center mb-8">
+              <div className="badge badge-cyan">FAQ</div>
+              <h2 className="mb-4">Frequently Asked Questions</h2>
+            </div>
+            <div className="faq-list">
+              <div className="faq-item">
+                <div className="faq-q">
+                  Is this assessment certified by VMware or Proxmox?
+                </div>
+                <div className="faq-a">
+                  No. This is an independent readiness assessment. It is not
+                  affiliated with, endorsed by or certified by VMware, Broadcom
+                  or Proxmox. The methodology was developed by a former VMware
+                  Technical Account Manager to bring enterprise-grade risk
+                  review and evidence discipline to VMware → Proxmox planning.
+                </div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">
+                  What does &ldquo;Former VMware TAM-led methodology&rdquo;
+                  mean?
+                </div>
+                <div className="faq-a">
+                  It means the assessment structure was designed from real-world
+                  VMware enterprise advisory experience: evidence review, risk
+                  classification, migration readiness, gaps, executive
+                  communication and validation points. It does not mean VMware
+                  officially certifies or endorses the report.
+                </div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">Why does that matter?</div>
+                <div className="faq-a">
+                  VMware → Proxmox migration is not only a technical import
+                  task. It requires risk prioritization, evidence quality
+                  review, workload classification, business continuity thinking
+                  and a clear plan for what should move first, what needs
+                  remediation and what should wait.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Bottom Call-To-Action (CTA) Section */}
         <section

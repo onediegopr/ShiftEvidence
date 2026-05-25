@@ -17,6 +17,8 @@ export default function Process() {
       description:
         "We connect our audit appliance to your vCenter API. We scan CPU profiles, disk formats, and virtual network associations, generating a complete translation blueprint.",
       action: "Generates your custom Migration compatibility Scorecard.",
+      callout:
+        "Advisor Lens: Former VMware TAM-led methodology helps distinguish what can be automated, what must be validated, and what should not move first.",
     },
     {
       num: "02",
@@ -138,6 +140,11 @@ export default function Process() {
 
                   {/* Description */}
                   <p className="pipeline-desc">{step.description}</p>
+
+                  {/* Advisor Lens callout */}
+                  {step.callout && (
+                    <div className="pipeline-callout">{step.callout}</div>
+                  )}
 
                   {/* Key Result */}
                   <div

@@ -126,6 +126,16 @@ export default function Footer() {
           </span>
           <span>Open-Source Powered. Securely Configured.</span>
         </div>
+
+        <div className="footer-legal">
+          <p>
+            Shift Evidence is an independent assessment service. It is not
+            affiliated with, endorsed by or certified by VMware, Broadcom or
+            Proxmox. VMware, Broadcom and Proxmox names may be trademarks of
+            their respective owners and are used only to describe migration
+            context and compatibility targets.
+          </p>
+        </div>
       </div>
     </footer>
   );
