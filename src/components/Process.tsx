@@ -15,58 +15,58 @@ export default function Process() {
     {
       num: "01",
       icon: Search,
-      title: "Analizar y mapear",
-      duration: "Día 1 - 2",
+      title: "Analyze and map",
+      duration: "Day 1 - 2",
       color: "#06b6d4",
       description:
-        "Conectamos nuestro appliance de auditoría a tu API de vCenter. Analizamos perfiles de CPU, formatos de disco y asociaciones de red virtual, generando un plano completo de traducción.",
-      action: "Genera tu scorecard personalizada de compatibilidad de migración.",
+        "We connect our audit appliance to your vCenter API. We analyze CPU profiles, disk formats and virtual network associations, generating a complete translation map.",
+      action: "Generate your custom migration compatibility scorecard.",
       callout:
-        "Mirada de asesor: la metodología liderada por un ex VMware TAM ayuda a distinguir qué se puede automatizar, qué debe validarse y qué no debería moverse primero.",
+        "Advisor lens: the former VMware TAM-led methodology helps distinguish what can be automated, what must be validated and what should not move first.",
     },
     {
       num: "02",
       icon: RefreshCw,
-      title: "Preparación en segundo plano",
-      duration: "Día 3 - 5",
+      title: "Background preparation",
+      duration: "Day 3 - 5",
       color: "#8b5cf6",
       description:
-        "Configuramos el clúster destino de Proxmox. Nuestro convertidor replica discos virtuales de VM de forma asíncrona en segundo plano. Tus cargas VMware permanecen activas y sin cambios.",
+        "We configure the target Proxmox cluster. Our converter replicates VM virtual disks asynchronously in the background. Your VMware workloads remain active and unchanged.",
       action:
-        "Sincroniza bloques de datos progresivamente sin impacto en el tráfico de red.",
+        "Synchronize data blocks progressively without impacting network traffic.",
     },
     {
       num: "03",
       icon: ShieldCheck,
-      title: "Verificación en sandbox",
-      duration: "Día 6",
+      title: "Sandbox verification",
+      duration: "Day 6",
       color: "#f59e0b",
       description:
-        "Arrancamos las máquinas virtuales migradas en una red de prueba aislada y sin ruteo. Verificamos integridad de drivers, layouts de particiones y salud de bases de datos antes del corte.",
+        "We boot the migrated virtual machines in an isolated, unrouted test network. We verify driver integrity, partition layouts and database health before cutover.",
       action:
-        "Asegura una tasa de arranque exitosa del 100% en los hipervisores Proxmox destino.",
+        "Ensure a 100% successful boot rate on the target Proxmox hypervisors.",
     },
     {
       num: "04",
       icon: Rocket,
-      title: "Corte activo",
-      duration: "Día 7 (ventana)",
+      title: "Live cutover",
+      duration: "Day 7 (window)",
       color: "#ea580c",
       description:
-        "Apagamos de forma controlada la VM origen de VMware, sincronizamos los bloques delta finales (solo lleva minutos) y mapeamos el gateway de red al nuevo clúster Proxmox.",
+        "We gracefully shut down the source VMware VM, synchronize the final delta blocks (only minutes) and remap the network gateway to the new Proxmox cluster.",
       action:
-        "Completa los cortes de VM con un downtime mínimo (normalmente <10 minutos).",
+        "Complete VM cutovers with minimal downtime (typically <10 minutes).",
     },
     {
       num: "05",
       icon: BarChart3,
-      title: "Ajuste fino de PBS y Ceph",
-      duration: "Día 8+",
+      title: "PBS and Ceph tuning",
+      duration: "Day 8+",
       color: "#10b981",
       description:
-        "Optimizamos el cacheo de ZFS, definimos métricas de rendimiento de almacenamiento en Ceph y verificamos horarios de deduplicación incremental en Proxmox Backup Server.",
+        "We optimize ZFS caching, define storage performance metrics in Ceph and verify incremental deduplication schedules in Proxmox Backup Server.",
       action:
-        "Traslada la gestión del sistema a las métricas del dashboard definidas por el cliente.",
+        "Move system management to the customer-defined dashboard metrics.",
     },
   ];
 
@@ -75,8 +75,8 @@ export default function Process() {
       <div className="bg-mesh"></div>
       <div className="container">
         <div className="text-center mb-8">
-          <div className="badge">Pipeline de ejecución</div>
-          <h2 className="mb-4">El pipeline de migración de Shift Evidence</h2>
+          <div className="badge">Execution Pipeline</div>
+          <h2 className="mb-4">The Shift Evidence Migration Pipeline</h2>
           <p className="mx-auto" style={{ maxWidth: "650px" }}>
             We guarantee zero data loss and minimal system interruption by
             following a rigorous, step-by-step verification methodology.

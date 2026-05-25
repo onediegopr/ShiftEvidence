@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Percent,
   ChevronDown,
@@ -163,11 +163,7 @@ export default function SavingsCalculator() {
       : 100;
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(val);
+    return new Intl.NumberFormat("en-US").format(val);
   };
 
   return (
@@ -179,8 +175,8 @@ export default function SavingsCalculator() {
       <div className="container">
         {/* ========== SECTION HEADER ========== */}
         <div className="text-center mb-6">
-          <div className="badge badge-cyan">Retorno de inversión</div>
-          <h2 className="mb-4">Calculá el impacto de tu licenciamiento</h2>
+          <div className="badge badge-cyan">Return on Investment</div>
+          <h2 className="mb-4">Calculate your Licensing Impact</h2>
           <p className="mx-auto" style={{ maxWidth: "650px" }}>
             Compare modeled VMware and Proxmox subscription costs based on your
             environment size. All estimates in USD.
@@ -191,16 +187,16 @@ export default function SavingsCalculator() {
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
             <img src={vmwareLogo} alt="" className="cmp-logo-icon" />
-            <span className="cmp-header-title">Entorno VMware actual</span>
-            <span className="cmp-header-sub">Modelo de suscripción heredado</span>
+            <span className="cmp-header-title">Current VMware Environment</span>
+            <span className="cmp-header-sub">Legacy Subscription Model</span>
           </div>
           <div className="cmp-header-arrow">
             <ArrowRight size={28} />
           </div>
           <div className="cmp-header-badge proxmox">
             <img src={proxmoxLogo} alt="" className="cmp-logo-icon" />
-            <span className="cmp-header-title">Entorno destino Proxmox</span>
-            <span className="cmp-header-sub">Modelo de infraestructura abierta</span>
+            <span className="cmp-header-title">Target Proxmox Environment</span>
+            <span className="cmp-header-sub">Open Infrastructure Model</span>
           </div>
         </div>
 
@@ -208,11 +204,11 @@ export default function SavingsCalculator() {
         <div className="glass-card calc-container">
           {/* ========== LEFT PANEL: CURRENT VMWARE ENVIRONMENT ========== */}
           <div className="calc-inputs">
-            {/* ---- Nivel de licencia VMware ---- */}
+            {/* ---- VMware License Tier ---- */}
             <div className="slider-group">
               <span className="slider-label">
                 <img src={vmwareLogo} alt="" className="cmp-label-logo" />
-                Nivel de licencia VMware
+                VMware License Tier
               </span>
               <div className="radio-group">
                 {(Object.keys(VMWARE_DEFAULTS) as VmwareTier[]).map((tier) => (
@@ -230,7 +226,7 @@ export default function SavingsCalculator() {
               </div>
               <div className="price-edit-row">
                 <span className="price-edit-label">
-                  Precio por núcleo/año (USD):
+                  Price per core/year (USD):
                 </span>
                 <div className="price-input-wrapper">
                   <span className="price-currency">$</span>
@@ -248,11 +244,11 @@ export default function SavingsCalculator() {
               </div>
             </div>
 
-            {/* ---- Tamaño del entorno ---- */}
+            {/* ---- Environment Size ---- */}
             <div className="slider-group">
               <span className="slider-label">
                 <Cpu size={16} className="cmp-input-icon" color="#6366f1" />
-                Tamaño del entorno
+                Environment Size
               </span>
 
               {/* Servers */}
@@ -263,7 +259,7 @@ export default function SavingsCalculator() {
                     className="cmp-input-icon"
                     color="var(--text-dark)"
                   />
-                  Servidores físicos / nodos
+                  Physical Servers / Nodes
                 </span>
                 <span className="slider-value">{servers}</span>
               </div>
@@ -285,7 +281,7 @@ export default function SavingsCalculator() {
                     className="cmp-input-icon"
                     color="var(--text-dark)"
                   />
-                  Sockets de CPU por servidor
+                  CPU Sockets per Server
                 </span>
                 <span className="slider-value">{socketsPerServer}</span>
               </div>
@@ -306,7 +302,7 @@ export default function SavingsCalculator() {
                   className="cmp-input-icon"
                   color="var(--text-dark)"
                 />
-                Núcleos por socket
+                Cores per Socket
               </span>
               <div className="cores-group">
                 {CORES_OPTIONS.map((c) => (
@@ -323,30 +319,30 @@ export default function SavingsCalculator() {
               {/* Calculated summary */}
               <div className="calc-summary">
                 <div className="calc-summary-item">
-                  <span>Sockets totales</span>
+                  <span>Total sockets</span>
                   <strong>{totalSockets}</strong>
                 </div>
                 <div className="calc-summary-item">
-                  <span>Núcleos licenciados</span>
+                  <span>Licensed Cores</span>
                   <strong>{licensedCores}</strong>
                   {coresBumped && (
                     <span className="calc-note">
-                      Se aplicó mínimo de 16 núcleos por CPU
+                      16-core min per CPU applied
                     </span>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* ---- Contexto de cargas (now visible by default) ---- */}
+            {/* ---- Workload context (now visible by default) ---- */}
             <div className="slider-group">
               <span className="slider-label">
                 <Monitor size={16} className="cmp-input-icon" color="#a855f7" />
-                Contexto de cargas
+                Workload Context
               </span>
 
               <div className="slider-header">
-                <span className="slider-sub-label">Máquinas virtuales</span>
+                <span className="slider-sub-label">Virtual Machines</span>
                 <span className="slider-value">{vms} VMs</span>
               </div>
               <input
@@ -360,7 +356,7 @@ export default function SavingsCalculator() {
               />
 
               <div className="slider-header" style={{ marginTop: "0.75rem" }}>
-                <span className="slider-sub-label">Huella de almacenamiento</span>
+                <span className="slider-sub-label">Storage Footprint</span>
                 <span className="slider-value">{storage} TB</span>
               </div>
               <input
@@ -378,12 +374,12 @@ export default function SavingsCalculator() {
               </p>
             </div>
 
-            {/* ---- Opciones avanzadas ---- */}
+            {/* ---- Advanced options ---- */}
             <button
               className="collapse-toggle"
               onClick={() => setShowOptions(!showOptions)}
             >
-              <span>Opciones avanzadas</span>
+              <span>Advanced Options</span>
               {showOptions ? (
                 <ChevronUp size={16} />
               ) : (
@@ -398,12 +394,12 @@ export default function SavingsCalculator() {
                     checked={includeEscalation}
                     onChange={(e) => setIncludeEscalation(e.target.checked)}
                   />
-                  <span>
-                    Incluir estimaciones de escalada anual de Broadcom (+10% interanual)
-                  </span>
+                    <span>
+                      Include annual Broadcom escalation estimates (+10% YoY)
+                    </span>
                 </label>
                 <p className="fx-note" style={{ marginTop: "0.75rem" }}>
-                  La conversión de FX es automática. Fuente actual: {" "}
+                  FX conversion is automatic. Current source: {" "}
                   {fxStatus === "live" ? "live feed" : "fallback rate"}.
                 </p>
               </div>
@@ -412,11 +408,11 @@ export default function SavingsCalculator() {
 
           {/* ========== RIGHT PANEL: TARGET PROXMOX COST MODEL ========== */}
           <div className="calc-results">
-            {/* ---- Nivel de suscripción Proxmox ---- */}
+            {/* ---- Proxmox Subscription Tier ---- */}
             <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
               <span className="slider-label">
                 <img src={proxmoxLogo} alt="" className="cmp-label-logo" />
-                Nivel de suscripción Proxmox
+                Proxmox Subscription Tier
               </span>
               <div className="radio-group proxmox-radio-group">
                 {(Object.keys(PROXMOX_DEFAULTS) as ProxmoxTier[]).map(
@@ -447,13 +443,13 @@ export default function SavingsCalculator() {
             <div className="cmp-savings-hero">
               <div className="cmp-savings-hero-label">
                 <TrendingDown size={14} color="#4ade80" />
-                AHORRO ESTIMADO
+                ESTIMATED SAVINGS
               </div>
               <div className="cmp-savings-hero-amount">
                 {formatCurrency(Math.abs(threeYearSavings))}
               </div>
               <div className="cmp-savings-hero-sub">
-                Delta de suscripción a 3 años
+                3-Year Subscription Delta
               </div>
               <div className="cmp-savings-hero-pct">
                 <div
@@ -461,7 +457,7 @@ export default function SavingsCalculator() {
                   style={{ textTransform: "none" }}
                 >
                   <Percent size={12} style={{ marginRight: "4px" }} />
-                  {threeYearSavings >= 0 ? "Ahorro de " : "Aumento de costo de "}
+                  {threeYearSavings >= 0 ? "Savings of " : "Cost increase of "}
                   {Math.abs(threeYearSavingsPercent).toFixed(1)}% on modeled
                   subscription costs
                 </div>
@@ -470,7 +466,7 @@ export default function SavingsCalculator() {
               {/* Annual delta inside hero */}
               <div className="cmp-savings-hero-annual">
                 <Calendar size={14} />
-                <span>{formatCurrency(annualSavings)} / año</span>
+                <span>{formatCurrency(annualSavings)} / year</span>
                 <span className="cmp-annual-pct">
                   ({annualSavings >= 0 ? "-" : "+"}
                   {Math.abs(annualSavingsPercent).toFixed(1)}%)
@@ -481,7 +477,7 @@ export default function SavingsCalculator() {
             {/* ---- Comparison Bars ---- */}
             <div className="cmp-savings-bar-section">
               <div className="cmp-savings-bar-label">
-                Comparación de costos (3 años)
+                Cost Comparison (3-Year)
               </div>
               <div className="cmp-savings-bar">
                 <div className="cmp-bar-row vmware">
@@ -502,7 +498,7 @@ export default function SavingsCalculator() {
               </div>
               {threeYearSavings > 0 && (
                 <div className="cmp-bar-delta">
-                  Ahorrás {formatCurrency(threeYearSavings)} en 3 años
+                  You save {formatCurrency(threeYearSavings)} over 3 years
                 </div>
               )}
             </div>
@@ -510,7 +506,7 @@ export default function SavingsCalculator() {
             {/* ---- Breakdown ---- */}
             <div className="cmp-breakdown">
               <div className="cmp-breakdown-row vmware">
-                <span className="cmp-br-label">Estimación VMware a 3 años</span>
+                <span className="cmp-br-label">VMware 3-Year Estimate</span>
                 <span className="cmp-br-total">
                   {formatCurrency(vmware3Year)}
                 </span>
@@ -519,7 +515,7 @@ export default function SavingsCalculator() {
                 </span>
               </div>
               <div className="cmp-breakdown-row proxmox">
-                <span className="cmp-br-label">Estimación Proxmox a 3 años</span>
+                <span className="cmp-br-label">Proxmox 3-Year Estimate</span>
                 <span className="cmp-br-total">
                   {formatCurrency(proxmox3Year)}
                 </span>
@@ -535,7 +531,7 @@ export default function SavingsCalculator() {
               onClick={() => setShowAssumptions(!showAssumptions)}
             >
               <Info size={13} />
-              <span>Ver supuestos</span>
+              <span>View assumptions</span>
               {showAssumptions ? (
                 <ChevronUp size={12} />
               ) : (
@@ -545,7 +541,7 @@ export default function SavingsCalculator() {
             {showAssumptions && (
               <div className="cmp-assumptions-content">
                 <p>
-                  <strong>Supuestos:</strong> VMware pricing is modeled from
+                  <strong>Assumptions:</strong> VMware pricing is modeled from
                   public reference pricing and licensed core calculations
                   (16-core minimum per physical CPU for VCF/VVF). Proxmox
                   pricing reflects the selected subscription tier, total CPU

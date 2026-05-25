@@ -1,4 +1,4 @@
-﻿import {
+import {
   createContext,
   type ReactNode,
   useContext,
@@ -7,7 +7,16 @@
   useState,
 } from "react";
 
-export type Locale = "en" | "es";
+export type Locale = "en" | "de" | "fr" | "es" | "pt" | "it";
+
+export const LANGUAGE_OPTIONS: Array<{ code: Locale; label: string }> = [
+  { code: "en", label: "Inglés" },
+  { code: "de", label: "Alemán" },
+  { code: "fr", label: "Francés" },
+  { code: "es", label: "Español" },
+  { code: "pt", label: "Portugués" },
+  { code: "it", label: "Italiano" },
+];
 
 const STORAGE_KEY = "shift-evidence-locale";
 
@@ -28,13 +37,45 @@ const SEO_META: Record<Locale, SeoMeta> = {
     ogUrl: "https://shiftevidence.com/",
     ogLocale: "en_US",
   },
-  es: {
-    title: "Shift Evidence | AuditorÃ­a de MigraciÃ³n de VMware a Proxmox",
+  de: {
+    title: "Shift Evidence | VMware-zu-Proxmox-Migrationsaudit",
     description:
-      "Planifica migraciones de VMware a Proxmox, reemplazos de VMware y salidas de licenciamiento Broadcom con una auditorÃ­a en solo lectura, modelo de costos, pipeline de migraciÃ³n y criterios ejecutivos.",
+      "Planen Sie VMware-zu-Proxmox-Migrationen, VMware-Ersatzprojekte und Broadcom-Lizenzausstiege mit einem Read-only-Readiness-Audit, Kostenmodell, Migrationspipeline und Executive-Entscheidungskriterien.",
+    canonical: "https://shiftevidence.com/de/",
+    ogUrl: "https://shiftevidence.com/de/",
+    ogLocale: "de_DE",
+  },
+  fr: {
+    title: "Shift Evidence | Audit de migration VMware vers Proxmox",
+    description:
+      "Planifiez les migrations VMware vers Proxmox, les projets de remplacement VMware et les sorties de licences Broadcom avec un audit en lecture seule, un modèle de coûts, une pipeline de migration et des critères de décision exécutifs.",
+    canonical: "https://shiftevidence.com/fr/",
+    ogUrl: "https://shiftevidence.com/fr/",
+    ogLocale: "fr_FR",
+  },
+  es: {
+    title: "Shift Evidence | Auditoría de Migración de VMware a Proxmox",
+    description:
+      "Planifica migraciones de VMware a Proxmox, reemplazos de VMware y salidas de licenciamiento Broadcom con una auditoría en solo lectura, modelo de costos, pipeline de migración y criterios ejecutivos.",
     canonical: "https://shiftevidence.com/es/",
     ogUrl: "https://shiftevidence.com/es/",
     ogLocale: "es_ES",
+  },
+  pt: {
+    title: "Shift Evidence | Auditoria de Migração VMware para Proxmox",
+    description:
+      "Planeje migrações VMware para Proxmox, projetos de substituição VMware e saídas de licenciamento Broadcom com uma auditoria somente leitura, modelo de custos, pipeline de migração e critérios executivos.",
+    canonical: "https://shiftevidence.com/pt/",
+    ogUrl: "https://shiftevidence.com/pt/",
+    ogLocale: "pt_PT",
+  },
+  it: {
+    title: "Shift Evidence | Audit di migrazione VMware verso Proxmox",
+    description:
+      "Pianifica migrazioni VMware verso Proxmox, progetti di sostituzione VMware e uscite di licenze Broadcom con un audit in sola lettura, modello di costi, pipeline di migrazione e criteri decisionali esecutivi.",
+    canonical: "https://shiftevidence.com/it/",
+    ogUrl: "https://shiftevidence.com/it/",
+    ogLocale: "it_IT",
   },
 };
 
@@ -51,14 +92,23 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 const getPathLocale = () => {
   if (typeof window === "undefined") return null;
   const pathname = window.location.pathname.toLowerCase();
-  if (pathname === "/es" || pathname.startsWith("/es/")) return "es" as const;
-  if (pathname === "/en" || pathname.startsWith("/en/")) return "en" as const;
+  if (pathname === "/" || pathname === "") return null;
+  const code = pathname.slice(1, 3);
+  if (["en", "de", "fr", "es", "pt", "it"].includes(code)) {
+    return code as Locale;
+  }
   return null;
 };
 
 const getBrowserLocale = (): Locale => {
   if (typeof navigator === "undefined") return "en";
-  return navigator.language.toLowerCase().startsWith("es") ? "es" : "en";
+  const lower = navigator.language.toLowerCase();
+  if (lower.startsWith("de")) return "de";
+  if (lower.startsWith("fr")) return "fr";
+  if (lower.startsWith("es")) return "es";
+  if (lower.startsWith("pt")) return "pt";
+  if (lower.startsWith("it")) return "it";
+  return "en";
 };
 
 const buildLocalePath = (locale: Locale) => {
@@ -66,17 +116,11 @@ const buildLocalePath = (locale: Locale) => {
 
   const { pathname, search, hash } = window.location;
   const stripped = pathname
-    .replace(/^\/es(\/|$)/i, "/")
-    .replace(/^\/en(\/|$)/i, "/")
+    .replace(/^\/(en|de|fr|es|pt|it)(\/|$)/i, "/")
     .replace(/\/+/g, "/");
 
   const basePath = stripped === "/" ? "/" : stripped;
-  const targetPath =
-    locale === "es"
-      ? basePath === "/"
-        ? "/es/"
-        : `/es${basePath}`
-      : basePath;
+  const targetPath = basePath === "/" ? `/${locale}/` : `/${locale}${basePath}`;
 
   return `${targetPath}${search}${hash}`;
 };
@@ -161,31 +205,28 @@ const applySeo = (locale: Locale) => {
   );
   alternates.forEach((link) => link.remove());
 
-  const en = document.createElement("link");
-  en.rel = "alternate";
-  en.hreflang = "en";
-  en.href = "https://shiftevidence.com/";
-  document.head.appendChild(en);
-
-  const es = document.createElement("link");
-  es.rel = "alternate";
-  es.hreflang = "es";
-  es.href = "https://shiftevidence.com/es/";
-  document.head.appendChild(es);
+  for (const option of LANGUAGE_OPTIONS) {
+    const link = document.createElement("link");
+    link.rel = "alternate";
+    link.hreflang = option.code;
+    link.href = SEO_META[option.code].canonical;
+    document.head.appendChild(link);
+  }
 
   const xDefault = document.createElement("link");
   xDefault.rel = "alternate";
   xDefault.hreflang = "x-default";
-  xDefault.href = "https://shiftevidence.com/";
+  xDefault.href = SEO_META.en.canonical;
   document.head.appendChild(xDefault);
 };
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const pathLocale = getPathLocale();
-    const stored = typeof window !== "undefined"
-      ? window.localStorage.getItem(STORAGE_KEY)
-      : null;
+    const stored =
+      typeof window !== "undefined"
+        ? (window.localStorage.getItem(STORAGE_KEY) as Locale | null)
+        : null;
     const browserLocale = getBrowserLocale();
     return (pathLocale ?? stored ?? browserLocale) as Locale;
   });
@@ -193,10 +234,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const pathLocale = getPathLocale();
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (!pathLocale && !stored && getBrowserLocale() === "es") {
-      const nextPath = buildLocalePath("es");
+    const browserLocale = getBrowserLocale();
+    if (!pathLocale && !stored && browserLocale !== "en") {
+      const nextPath = buildLocalePath(browserLocale);
       window.history.replaceState({}, "", nextPath);
-      setLocaleState("es");
+      setLocaleState(browserLocale);
     }
   }, []);
 
@@ -211,7 +253,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       if (next) {
         setLocaleState(next);
       } else {
-        setLocaleState(window.localStorage.getItem(STORAGE_KEY) === "es" ? "es" : "en");
+        const stored = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
+        setLocaleState(stored && ["en", "de", "fr", "es", "pt", "it"].includes(stored) ? stored : "en");
       }
     };
     window.addEventListener("popstate", onPopState);
@@ -223,13 +266,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       locale,
       setLocale: (next: Locale) => {
         if (next === locale) return;
-        window.history.pushState({}, "", buildLocalePath(next));
-        setLocaleState(next);
+        window.location.assign(buildLocalePath(next));
       },
       toggleLocale: () => {
         const next = locale === "en" ? "es" : "en";
-        window.history.pushState({}, "", buildLocalePath(next));
-        setLocaleState(next);
+        window.location.assign(buildLocalePath(next));
       },
       t: (en, es) => (locale === "es" ? es ?? en : en),
       seo: SEO_META[locale],

@@ -1,12 +1,10 @@
-﻿import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
-import { useLocale } from "../i18n";
+import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
 
 interface HeroProps {
   onOpenScanner: () => void;
 }
 
 export default function Hero({ onOpenScanner }: HeroProps) {
-  const { t } = useLocale();
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -45,35 +43,30 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           <div>
             <div className="badge badge-premium">
               <Shield size={13} className="shield-blink" />
-              <span>
-                {t(
-                  "Pre-Migration Auditing | 100% Agentless & Compatibility Verified",
-                  "AuditorÃ­a previa a la migraciÃ³n | 100% sin agentes y compatibilidad verificada",
-                )}
-              </span>
+              <span>Pre-Migration Auditing | 100% Agentless & Compatibility Verified</span>
             </div>
             <h1 className="hero-title">
-              {t("Ditch ", "DejÃ¡ atrÃ¡s ")}
+              Ditch{" "}
               <span className="brand-vmware">VMware</span>{" "}
-              {t("Licensing Hikes.", "los aumentos de licencias.")}
+              Licensing Hikes.
               <br />
-              {t("Shift to ", "PasÃ¡ a ")}
+              Shift to{" "}
               <span className="brand-proxmox">Proxmox</span>
               <br />
-              {t("with Confidence.", "con confianza.")}
+              with Confidence.
             </h1>
-                        <div className="hero-description-group">
+            <div className="hero-description-group">
               <p className="text-muted">
-                {t(
-                  "Broadcom's VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Shift Evidence helps you plan the move before production is touched - whether you are assessing your own environment or preparing a client migration.",
-                  "Los cambios de licenciamiento de VMware impulsados por Broadcom están obligando a empresas, MSPs y equipos de infraestructura a replantear su estrategia. Shift Evidence te ayuda a planificar el cambio antes de tocar producción, tanto si evaluás tu propio entorno como si preparás una migración para un cliente.",
-                )}
+                Broadcom's VMware licensing changes are forcing companies, MSPs
+                and infrastructure teams to rethink their VMware strategy. Shift
+                Evidence helps you plan the move before production is touched -
+                whether you are assessing your own environment or preparing a
+                client migration.
               </p>
               <p className="text-muted">
-                {t(
-                  "The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware to Proxmox readiness audit report.",
-                  "La plataforma convierte exports de RVTools, evidencias de backup, datos de configuración e información del destino Proxmox en un informe completo de preparación para VMware a Proxmox.",
-                )}
+                The platform turns RVTools exports, backup evidence,
+                configuration data and Proxmox target information into a
+                comprehensive VMware to Proxmox readiness audit report.
               </p>
             </div>
           </div>

@@ -52,7 +52,7 @@ export default function Features() {
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "Our automated compatibility engine scans vSphere hosts, storage formats, and distributed networks, flagging potential migration bottlenecks before they happen.",
-                  "Nuestro motor automatizado de compatibilidad analiza hosts vSphere, formatos de almacenamiento y redes distribuidas, detectando posibles cuellos de botella de migración antes de que ocurran.",
+                "Nuestro motor automatizado de compatibilidad analiza hosts vSphere, storage formats y distributed networks, detectando posibles cuellos de botella de migración antes de que ocurran.",
                 )}
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function Features() {
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "Instantly converts VMDK virtual disks into Proxmox-native RAW or QCOW2 files. Automatically injects VirtIO drivers to prevent boot failures.",
-                  "Convierte al instante discos virtuales VMDK a archivos RAW o QCOW2 nativos de Proxmox. Inyecta automáticamente drivers VirtIO para evitar fallos de arranque.",
+                "Convierte al instante discos virtuales VMDK a archivos RAW o QCOW2 nativos de Proxmox. Inyecta automáticamente drivers VirtIO para evitar fallos de arranque.",
                 )}
               </p>
             </div>
@@ -84,7 +84,7 @@ export default function Features() {
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "Sync virtual machine blocks asynchronously in the background. Keep your production systems running on VMware, only executing a brief restart during final cutover.",
-                  "Sincroniza bloques de máquinas virtuales asíncronamente en segundo plano. Mantené los sistemas de producción ejecutándose en VMware y solo ejecutá un reinicio breve durante el corte final.",
+                "Sincroniza bloques de virtual machines asíncronamente en segundo plano. Mantené los systems de production ejecutándose en VMware y solo ejecutá un reinicio breve durante el corte final.",
                 )}
               </p>
             </div>
@@ -100,7 +100,7 @@ export default function Features() {
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "We operate on a strict read-only mode for VMware assets. In the highly unlikely event of a migration anomaly, you can boot the source VMware cluster immediately.",
-                  "Operamos en modo estricto de solo lectura sobre los activos VMware. En el improbable caso de una anomalía de migración, podés arrancar inmediatamente el clúster VMware origen.",
+                "Operamos en modo estricto de solo lectura sobre los activos VMware. En el improbable caso de una anomalía de migración, podés arrancar inmediatamente el cluster VMware origen.",
                 )}
               </p>
             </div>
@@ -111,12 +111,12 @@ export default function Features() {
                 <Database size={24} />
               </div>
               <h3 style={{ color: "white", fontSize: "1.25rem" }}>
-                {t("Ceph Storage Setup", "Configuración de almacenamiento Ceph")}
+                {t("Ceph Storage Setup", "Ceph Storage Setup")}
               </h3>
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "We design and configure highly available Proxmox storage layers (Ceph RBD) to replace expensive vSAN and proprietary storage controllers with open standards.",
-                  "Diseñamos y configuramos capas de almacenamiento Proxmox altamente disponibles (Ceph RBD) para reemplazar vSAN costoso y controladores propietarios por estándares abiertos.",
+                "Diseñamos y configuramos capas de storage Proxmox altamente disponibles (Ceph RBD) para reemplazar vSAN costoso y controladores propietarios por estándares abiertos.",
                 )}
               </p>
             </div>
@@ -132,7 +132,7 @@ export default function Features() {
               <p style={{ fontSize: "0.9rem" }}>
                 {t(
                   "Save on Veeam licenses. We build and deploy Proxmox Backup Server (PBS) setups, implementing deduplication, encryption, and incremental backup routines.",
-                  "Ahorrá en licencias de Veeam. Construimos y desplegamos entornos Proxmox Backup Server (PBS), implementando deduplicación, cifrado y rutinas de backup incremental.",
+                "Ahorrá en licencias de Veeam. Construimos y desplegamos entornos Proxmox Backup Server (PBS), implementando deduplicación, cifrado y rutinas de backup incremental.",
                 )}
               </p>
             </div>
@@ -145,10 +145,10 @@ export default function Features() {
         <div className="bg-mesh"></div>
         <div className="container">
           <div className="text-center mb-8">
-            <div className="badge badge-cyan">Plano de capacidades</div>
-            <h2 className="mb-4">Comparando arquitectura y costos</h2>
+            <div className="badge badge-cyan">Capability Matrix</div>
+            <h2 className="mb-4">Comparing architecture and costs</h2>
             <p className="mx-auto" style={{ maxWidth: "650px" }}>
-              Proxmox VE ofrece capacidades de virtualización equivalentes a nivel enterprise con una arquitectura modular y abierta que libera a tu empresa del vendor lock-in.
+              Proxmox VE offers enterprise-grade virtualization capabilities with a modular, open architecture that frees your company from vendor lock-in.
             </p>
           </div>
 
@@ -156,11 +156,11 @@ export default function Features() {
             <table className="comparison-table">
               <thead>
                 <tr>
-                  <th>{t("Feature Capability", "Capacidad de la función")}</th>
+                  <th>{t("Feature Capability", "Feature Capability")}</th>
                   <th className="col-vs">
                     <div className="cmp-th-brand">
                       <img src={vmwareLogo} alt="" className="cmp-table-logo" />
-                      {t("VMware vSphere Suite", "Suite VMware vSphere")}
+                      {t("VMware vSphere Suite", "VMware vSphere Suite")}
                     </div>
                   </th>
                   <th className="col-prox">
@@ -204,7 +204,7 @@ export default function Features() {
                 </tr>
                 <tr>
                   <td className="cmp-feat">
-                    <HardDrive size={16} /> {t("Storage Virtualization", "Virtualización de almacenamiento")}
+                    <HardDrive size={16} /> {t("Storage Virtualization", "Storage Virtualization")}
                   </td>
                   <td className="col-vs">{t("vSAN (Separate licensing fee)", "vSAN (licencia separada)")}</td>
                   <td className="col-prox">

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import SavingsCalculator from "./components/SavingsCalculator";
@@ -33,7 +33,7 @@ export default function App() {
   return (
     <>
       {/* Scrollable Main Container */}
-      <Navbar onOpenScanner={handleOpenScanner} />
+      <Navbar />
 
       <main style={{ flexGrow: 1 }}>
         <Hero onOpenScanner={handleOpenScanner} />
@@ -47,13 +47,13 @@ export default function App() {
               <h2 className="credibility-title">
                 {t(
                   "Enterprise VMware discipline, without production access.",
-                  "Disciplina enterprise de VMware, sin acceso a producciÃ³n.",
+                  "Disciplina enterprise de VMware, sin acceso a producción.",
                 )}
               </h2>
               <p className="credibility-body">
                 {t(
                   "This independent readiness methodology was developed by a former VMware Technical Account Manager and is designed to bring enterprise-grade risk review, evidence discipline and migration planning structure to VMware to Proxmox decisions.",
-                  "Esta metodologÃ­a independiente de preparaciÃ³n fue desarrollada por un ex VMware Technical Account Manager y estÃ¡ diseÃ±ada para aportar revisiÃ³n de riesgo de nivel enterprise, disciplina de evidencias y una estructura de planificaciÃ³n de migraciÃ³n para decisiones de VMware a Proxmox.",
+                  "Esta metodología independiente de preparación fue desarrollada por un ex VMware Technical Account Manager y está diseñada para aportar revisión de riesgo de nivel enterprise, disciplina de evidencias y una estructura de planning de migration para decisiones de VMware a Proxmox.",
                 )}
               </p>
             </div>
@@ -67,13 +67,13 @@ export default function App() {
                   <strong>
                     {t(
                       "Former VMware TAM-led methodology",
-                      "MetodologÃ­a liderada por un ex VMware TAM",
+                      "Metodología liderada por un ex VMware TAM",
                     )}
                   </strong>
                   <span>
                     {t(
                       "Built from real-world enterprise advisory experience, not guesswork.",
-                      "Basada en experiencia real de asesorÃ­a enterprise, no en suposiciones.",
+                      "Basada en experiencia real de asesoría enterprise, no en suposiciones.",
                     )}
                   </span>
                 </div>
@@ -86,13 +86,13 @@ export default function App() {
                   <strong>
                     {t(
                       "Evidence-based, not guess-based",
-                      "Basada en evidencias, no en intuiciÃ³n",
+                      "Basada en evidencias, no en intuición",
                     )}
                   </strong>
                   <span>
                     {t(
                       "Every risk, gap and recommendation is backed by collected infrastructure evidence.",
-                      "Cada riesgo, brecha y recomendaciÃ³n estÃ¡ respaldado por evidencias de infraestructura recolectadas.",
+                      "Cada riesgo, brecha y recomendación está respaldado por evidencias de infraestructura recolectadas.",
                     )}
                   </span>
                 </div>
@@ -102,11 +102,11 @@ export default function App() {
                   <ShieldCheck size={22} />
                 </div>
                 <div className="cred-card-text">
-                  <strong>{t("No production changes", "Sin cambios en producciÃ³n")}</strong>
+                  <strong>{t("No production changes")}</strong>
                   <span>
                     {t(
                       "Read-only assessment. Zero agents, zero credentials, zero impact on running workloads.",
-                      "AuditorÃ­a en solo lectura. Cero agentes, cero credenciales, cero impacto sobre las cargas en ejecuciÃ³n.",
+                      "Auditoría en solo lectura. Cero agentes, cero credenciales, cero impacto sobre las cargas en ejecución.",
                     )}
                   </span>
                 </div>
@@ -119,13 +119,13 @@ export default function App() {
                   <strong>
                     {t(
                       "Executive + technical outputs",
-                      "Entregables ejecutivos + tÃ©cnicos",
+                      "Entregables ejecutivos + técnicos",
                     )}
                   </strong>
                   <span>
                     {t(
                       "Ready-to-share reports for both engineering teams and business stakeholders.",
-                      "Informes listos para compartir con equipos tÃ©cnicos y con las Ã¡reas de negocio.",
+                      "Informes listos para compartir con equipos técnicos y con las áreas de negocio.",
                     )}
                   </span>
                 </div>
@@ -136,7 +136,7 @@ export default function App() {
               <span className="credibility-disclaimer">
                 {t(
                   "Independent methodology. Not affiliated with, endorsed by or certified by VMware/Broadcom.",
-                  "MetodologÃ­a independiente. No afiliada, respaldada ni certificada por VMware/Broadcom.",
+                  "Metodología independiente. No afiliada, respaldada ni certificada por VMware/Broadcom.",
                 )}
               </span>
             </div>
@@ -166,7 +166,7 @@ export default function App() {
                 </div>
               </div>
               <h2 className="mb-4">
-                {t("Frequently Asked Questions", "Preguntas frecuentes")}
+                {t("Frequently Asked Questions")}
               </h2>
             </div>
             <div className="faq-list">
@@ -174,13 +174,13 @@ export default function App() {
                 <div className="faq-q">
                   {t(
                     "Is this assessment certified by VMware or Proxmox?",
-                    "Â¿Esta auditorÃ­a estÃ¡ certificada por VMware o Proxmox?",
+                    "¿Esta auditoría está certificada por VMware o Proxmox?",
                   )}
                 </div>
                 <div className="faq-a">
                   {t(
                     "No. This is an independent readiness assessment. It is not affiliated with, endorsed by or certified by VMware, Broadcom or Proxmox. The methodology was developed by a former VMware Technical Account Manager to bring enterprise-grade risk review and evidence discipline to VMware to Proxmox planning.",
-                    "No. Esta es una auditorÃ­a independiente de preparaciÃ³n. No estÃ¡ afiliada, respaldada ni certificada por VMware, Broadcom ni Proxmox. La metodologÃ­a fue desarrollada por un ex VMware Technical Account Manager para aportar revisiÃ³n de riesgo de nivel enterprise y disciplina de evidencias a la planificaciÃ³n de VMware a Proxmox.",
+                    "No. Esta es una auditoría independiente de preparación. No está afiliada, respaldada ni certificada por VMware, Broadcom ni Proxmox. La metodología fue desarrollada por un ex VMware Technical Account Manager para aportar revisión de riesgo de nivel enterprise y disciplina de evidencias a la planificación de VMware a Proxmox.",
                   )}
                 </div>
               </div>
@@ -188,22 +188,22 @@ export default function App() {
                 <div className="faq-q">
                   {t(
                     'What does "Former VMware TAM-led methodology" mean?',
-                    'Â¿QuÃ© significa "MetodologÃ­a liderada por un ex VMware TAM"?',
+                    '¿Qué significa "Metodología liderada por un ex VMware TAM"?',
                   )}
                 </div>
                 <div className="faq-a">
                   {t(
                     "It means the assessment structure was designed from real-world VMware enterprise advisory experience: evidence review, risk classification, migration readiness, gaps, executive communication and validation points. It does not mean VMware officially certifies or endorses the report.",
-                    "Significa que la estructura de la auditorÃ­a fue diseÃ±ada a partir de experiencia real de asesorÃ­a enterprise en VMware: revisiÃ³n de evidencias, clasificaciÃ³n de riesgo, preparaciÃ³n de migraciÃ³n, brechas, comunicaciÃ³n ejecutiva y puntos de validaciÃ³n. No significa que VMware certifique o respalde oficialmente el informe.",
+                    "Significa que la estructura de la auditoría fue diseñada a partir de experiencia real de asesoría enterprise en VMware: revisión de evidencias, clasificación de riesgo, preparación de migración, brechas, comunicación ejecutiva y puntos de validación. No significa que VMware certifique o respalde oficialmente el informe.",
                   )}
                 </div>
               </div>
               <div className="faq-item">
-                <div className="faq-q">{t("Why does that matter?", "Â¿Por quÃ© importa?")}</div>
+                <div className="faq-q">{t("Why does that matter?")}</div>
                 <div className="faq-a">
                   {t(
                     "VMware to Proxmox migration is not only a technical import task. It requires risk prioritization, evidence quality review, workload classification, business continuity thinking and a clear plan for what should move first, what needs remediation and what should wait.",
-                    "La migraciÃ³n de VMware a Proxmox no es solo una tarea tÃ©cnica de importaciÃ³n. Requiere priorizaciÃ³n de riesgos, revisiÃ³n de calidad de evidencias, clasificaciÃ³n de cargas, enfoque de continuidad de negocio y un plan claro sobre quÃ© debe moverse primero, quÃ© necesita remediaciÃ³n y quÃ© debe esperar.",
+                    "La migración de VMware a Proxmox no es solo una tarea técnica de importación. Requiere priorización de riesgos, revisión de calidad de evidencias, clasificación de workloads, enfoque de continuidad de negocio y un plan claro sobre qué debe moverse primero, qué necesita remediación y qué debe esperar.",
                   )}
                 </div>
               </div>
@@ -254,25 +254,25 @@ export default function App() {
               </div>
 
               <h2 className="mb-2" style={{ color: "white" }}>
-                {t("Assure Your Proxmox Shift", "AsegurÃ¡ tu salto a Proxmox")}
+                {t("Assure Your Proxmox Shift")}
               </h2>
               <p className="cta-subtitle">
                 <span className="cta-pain">
                   {t(
                     "Stop paying VMware renewal bills.",
-                    "DejÃ¡ de pagar renovaciones de VMware.",
+                    "Dejá de pagar renovaciones de VMware.",
                   )}
                 </span>{" "}
                 {t(
                   "Run our pre-flight cluster check to receive a detailed compatibility scorecard and technical migration plan.",
-                  "EjecutÃ¡ nuestro chequeo previo del clÃºster para recibir una tarjeta de compatibilidad detallada y un plan tÃ©cnico de migraciÃ³n.",
+                  "Ejecutá nuestro chequeo previo del cluster para recibir una tarjeta de compatibilidad detallada y un plan técnico de migración.",
                 )}
               </p>
 
               <form onSubmit={handleCtaSubmit} className="cta-form">
                 <input
                   type="email"
-                  placeholder={t("Enter corporate email", "IngresÃ¡ tu correo corporativo")}
+                  placeholder={t("Enter corporate email")}
                   required
                   className="form-input"
                 />
@@ -280,7 +280,7 @@ export default function App() {
                   type="submit"
                   className="btn btn-primary btn-glow cta-btn"
                 >
-                  {t("Initialize Scan", "Iniciar escaneo")}
+                  {t("Initialize Scan")}
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -288,14 +288,14 @@ export default function App() {
               <div className="cta-trust">
                 <div className="cta-trust-item">
                   <ShieldCheck size={18} />
-                  <span>{t("No ESXi agents required", "No requiere agentes ESXi")}</span>
+                  <span>{t("No ESXi agents required")}</span>
                 </div>
                 <div className="cta-trust-item">
                   <HelpCircle size={18} />
                   <span>
                     {t(
                       "Read-only configuration check",
-                      "Chequeo de configuraciÃ³n en solo lectura",
+                      "Chequeo de configuración en solo lectura",
                     )}
                   </span>
                 </div>
