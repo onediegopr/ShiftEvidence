@@ -1,14 +1,85 @@
 import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
+import { useLocale } from "../i18n";
 
 interface HeroProps {
   onOpenScanner: () => void;
 }
 
 export default function Hero({ onOpenScanner }: HeroProps) {
+  const { locale } = useLocale();
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
+
+  const copy = {
+    en: {
+      badge: "Pre-Migration Auditing | 100% Agentless & Compatibility Verified",
+      title1: "Ditch",
+      title2: "Licensing Hikes.",
+      title3: "Shift to",
+      title4: "with Confidence.",
+      body1:
+        "Broadcom's VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Shift Evidence helps you plan the move before production is touched - whether you are assessing your own environment or preparing a client migration.",
+      body2:
+        "The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware to Proxmox readiness audit report.",
+    },
+    de: {
+      badge: "Vor-Migrations-Audit | 100% agentenlos & kompatibilitätsgeprüft",
+      title1: "Raus aus",
+      title2: "den Lizenzsteigerungen.",
+      title3: "Wechseln zu",
+      title4: "mit Vertrauen.",
+      body1:
+        "Die VMware-Lizenzänderungen von Broadcom zwingen Unternehmen, MSPs und Infrastrukturteams dazu, ihre VMware-Strategie neu zu denken. Shift Evidence hilft dabei, den Umstieg zu planen, bevor die Produktion berührt wird - egal ob Sie Ihre eigene Umgebung prüfen oder eine Kundenmigration vorbereiten.",
+      body2:
+        "Die Plattform verwandelt RVTools-Exporte, Backup-Nachweise, Konfigurationsdaten und Proxmox-Zielinformationen in einen umfassenden VMware-zu-Proxmox-Readiness-Auditbericht.",
+    },
+    fr: {
+      badge: "Audit pré-migration | 100 % sans agent & compatibilité vérifiée",
+      title1: "Quittez",
+      title2: "les hausses de licences.",
+      title3: "Passez à",
+      title4: "en toute confiance.",
+      body1:
+        "Les changements de licences VMware imposés par Broadcom obligent les entreprises, MSP et équipes infrastructure à repenser leur stratégie VMware. Shift Evidence vous aide à planifier la transition avant que la production ne soit touchée - que vous évaluiez votre propre environnement ou une migration client.",
+      body2:
+        "La plateforme transforme les exports RVTools, les preuves de backup, les données de configuration et les informations de destination Proxmox en un rapport d'audit de readiness VMware vers Proxmox complet.",
+    },
+    es: {
+      badge: "Auditoría previa a migración | 100% sin agentes y compatibilidad verificada",
+      title1: "Dejá atrás",
+      title2: "los aumentos de licencias.",
+      title3: "Pasate a",
+      title4: "con confianza.",
+      body1:
+        "Los cambios de licenciamiento de VMware de Broadcom están obligando a empresas, MSPs y equipos de infraestructura a replantear su estrategia VMware. Shift Evidence te ayuda a planificar el cambio antes de tocar producción, ya sea que estés evaluando tu propio entorno o preparando una migración de cliente.",
+      body2:
+        "La plataforma convierte exports de RVTools, evidencias de backup, datos de configuración e información de destino Proxmox en un informe completo de readiness audit de VMware a Proxmox.",
+    },
+    pt: {
+      badge: "Auditoria pré-migração | 100% sem agentes e compatibilidade verificada",
+      title1: "Deixe para trás",
+      title2: "os aumentos de licenças.",
+      title3: "Mude para",
+      title4: "com confiança.",
+      body1:
+        "As mudanças de licenciamento do VMware pela Broadcom estão forçando empresas, MSPs e times de infraestrutura a repensar sua estratégia VMware. O Shift Evidence ajuda você a planejar a mudança antes de tocar a produção - seja avaliando seu próprio ambiente ou preparando uma migração de cliente.",
+      body2:
+        "A plataforma transforma exports do RVTools, evidências de backup, dados de configuração e informações de destino Proxmox em um relatório completo de readiness audit de VMware para Proxmox.",
+    },
+    it: {
+      badge: "Audit pre-migrazione | 100% senza agenti e compatibilità verificata",
+      title1: "Lascia perdere",
+      title2: "gli aumenti di licenza.",
+      title3: "Passa a",
+      title4: "con fiducia.",
+      body1:
+        "I cambiamenti di licensing VMware di Broadcom stanno costringendo aziende, MSP e team infrastrutturali a ripensare la strategia VMware. Shift Evidence ti aiuta a pianificare il passaggio prima che la produzione venga toccata - sia che tu stia valutando il tuo ambiente o preparando una migrazione cliente.",
+      body2:
+        "La piattaforma trasforma export RVTools, evidenze di backup, dati di configurazione e informazioni di destinazione Proxmox in un report completo di readiness audit da VMware a Proxmox.",
+    },
+  }[locale];
 
   return (
     <section
@@ -43,30 +114,24 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           <div>
             <div className="badge badge-premium">
               <Shield size={13} className="shield-blink" />
-              <span>Pre-Migration Auditing | 100% Agentless & Compatibility Verified</span>
+              <span>{copy.badge}</span>
             </div>
             <h1 className="hero-title">
-              Ditch{" "}
+              {copy.title1}{" "}
               <span className="brand-vmware">VMware</span>{" "}
-              Licensing Hikes.
+              {copy.title2}
               <br />
-              Shift to{" "}
+              {copy.title3}{" "}
               <span className="brand-proxmox">Proxmox</span>
               <br />
-              with Confidence.
+              {copy.title4}
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                Broadcom's VMware licensing changes are forcing companies, MSPs
-                and infrastructure teams to rethink their VMware strategy. Shift
-                Evidence helps you plan the move before production is touched -
-                whether you are assessing your own environment or preparing a
-                client migration.
+                {copy.body1}
               </p>
               <p className="text-muted">
-                The platform turns RVTools exports, backup evidence,
-                configuration data and Proxmox target information into a
-                comprehensive VMware to Proxmox readiness audit report.
+                {copy.body2}
               </p>
             </div>
           </div>
