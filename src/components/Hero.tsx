@@ -1,85 +1,16 @@
 import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
-import { useLocale } from "../i18n";
+import vmwareLogo from "../../images/vmware.svg";
+import proxmoxLogo from "../../images/proxmox.svg";
 
 interface HeroProps {
   onOpenScanner: () => void;
 }
 
 export default function Hero({ onOpenScanner }: HeroProps) {
-  const { locale } = useLocale();
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
-
-  const copy = {
-    en: {
-      badge: "Pre-Migration Auditing | 100% Agentless & Compatibility Verified",
-      title1: "Ditch",
-      title2: "Licensing Hikes.",
-      title3: "Shift to",
-      title4: "with Confidence.",
-      body1:
-        "Broadcom's VMware licensing changes are forcing companies, MSPs and infrastructure teams to rethink their VMware strategy. Shift Evidence helps you plan the move before production is touched - whether you are assessing your own environment or preparing a client migration.",
-      body2:
-        "The platform turns RVTools exports, backup evidence, configuration data and Proxmox target information into a comprehensive VMware to Proxmox readiness audit report.",
-    },
-    de: {
-      badge: "Vor-Migrations-Audit | 100% agentenlos & kompatibilitätsgeprüft",
-      title1: "Raus aus",
-      title2: "den Lizenzsteigerungen.",
-      title3: "Wechseln zu",
-      title4: "mit Vertrauen.",
-      body1:
-        "Die VMware-Lizenzänderungen von Broadcom zwingen Unternehmen, MSPs und Infrastrukturteams dazu, ihre VMware-Strategie neu zu denken. Shift Evidence hilft dabei, den Umstieg zu planen, bevor die Produktion berührt wird - egal ob Sie Ihre eigene Umgebung prüfen oder eine Kundenmigration vorbereiten.",
-      body2:
-        "Die Plattform verwandelt RVTools-Exporte, Backup-Nachweise, Konfigurationsdaten und Proxmox-Zielinformationen in einen umfassenden VMware-zu-Proxmox-Readiness-Auditbericht.",
-    },
-    fr: {
-      badge: "Audit pré-migration | 100 % sans agent & compatibilité vérifiée",
-      title1: "Quittez",
-      title2: "les hausses de licences.",
-      title3: "Passez à",
-      title4: "en toute confiance.",
-      body1:
-        "Les changements de licences VMware imposés par Broadcom obligent les entreprises, MSP et équipes infrastructure à repenser leur stratégie VMware. Shift Evidence vous aide à planifier la transition avant que la production ne soit touchée - que vous évaluiez votre propre environnement ou une migration client.",
-      body2:
-        "La plateforme transforme les exports RVTools, les preuves de backup, les données de configuration et les informations de destination Proxmox en un rapport d'audit de readiness VMware vers Proxmox complet.",
-    },
-    es: {
-      badge: "Auditoría previa a migración | 100% sin agentes y compatibilidad verificada",
-      title1: "Dejá atrás",
-      title2: "los aumentos de licencias.",
-      title3: "Pasate a",
-      title4: "con confianza.",
-      body1:
-        "Los cambios de licenciamiento de VMware de Broadcom están obligando a empresas, MSPs y equipos de infraestructura a replantear su estrategia VMware. Shift Evidence te ayuda a planificar el cambio antes de tocar producción, ya sea que estés evaluando tu propio entorno o preparando una migración de cliente.",
-      body2:
-        "La plataforma convierte exports de RVTools, evidencias de backup, datos de configuración e información de destino Proxmox en un informe completo de readiness audit de VMware a Proxmox.",
-    },
-    pt: {
-      badge: "Auditoria pré-migração | 100% sem agentes e compatibilidade verificada",
-      title1: "Deixe para trás",
-      title2: "os aumentos de licenças.",
-      title3: "Mude para",
-      title4: "com confiança.",
-      body1:
-        "As mudanças de licenciamento do VMware pela Broadcom estão forçando empresas, MSPs e times de infraestrutura a repensar sua estratégia VMware. O Shift Evidence ajuda você a planejar a mudança antes de tocar a produção - seja avaliando seu próprio ambiente ou preparando uma migração de cliente.",
-      body2:
-        "A plataforma transforma exports do RVTools, evidências de backup, dados de configuração e informações de destino Proxmox em um relatório completo de readiness audit de VMware para Proxmox.",
-    },
-    it: {
-      badge: "Audit pre-migrazione | 100% senza agenti e compatibilità verificata",
-      title1: "Lascia perdere",
-      title2: "gli aumenti di licenza.",
-      title3: "Passa a",
-      title4: "con fiducia.",
-      body1:
-        "I cambiamenti di licensing VMware di Broadcom stanno costringendo aziende, MSP e team infrastrutturali a ripensare la strategia VMware. Shift Evidence ti aiuta a pianificare il passaggio prima che la produzione venga toccata - sia che tu stia valutando il tuo ambiente o preparando una migrazione cliente.",
-      body2:
-        "La piattaforma trasforma export RVTools, evidenze di backup, dati di configurazione e informazioni di destinazione Proxmox in un report completo di readiness audit da VMware a Proxmox.",
-    },
-  }[locale];
 
   return (
     <section
@@ -114,24 +45,30 @@ export default function Hero({ onOpenScanner }: HeroProps) {
           <div>
             <div className="badge badge-premium">
               <Shield size={13} className="shield-blink" />
-              <span>{copy.badge}</span>
+              <span>
+                Pre-Migration Auditing | 100% Agentless & Compatibility Verified
+              </span>
             </div>
             <h1 className="hero-title">
-              {copy.title1}{" "}
-              <span className="brand-vmware">VMware</span>{" "}
-              {copy.title2}
+              Ditch <span className="brand-vmware">VMware</span> Licensing
+              Hikes.
               <br />
-              {copy.title3}{" "}
-              <span className="brand-proxmox">Proxmox</span>
+              Shift to <span className="brand-proxmox">Proxmox</span>
               <br />
-              {copy.title4}
+              with Confidence.
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                {copy.body1}
+                Broadcom’s VMware licensing changes are forcing companies, MSPs
+                and infrastructure teams to rethink their VMware strategy. Shift
+                Evidence helps you plan the move before production is touched —
+                whether you are assessing your own environment or preparing a
+                client migration.
               </p>
               <p className="text-muted">
-                {copy.body2}
+                The platform turns RVTools exports, backup evidence,
+                configuration data and Proxmox target information into a
+                comprehensive VMware → Proxmox readiness audit report.
               </p>
             </div>
           </div>
@@ -416,14 +353,21 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   >
                     LEGACY INFRASTRUCTURE
                   </text>
-                  <circle cx="-62" cy="-4" r="3" fill="#ef4444">
+                  <image
+                    href={vmwareLogo}
+                    x="-67"
+                    y="-10"
+                    width="11"
+                    height="11"
+                    opacity="1"
+                  >
                     <animate
                       attributeName="opacity"
-                      values="1;0.3;1"
+                      values="1;0.35;1"
                       dur="1.5s"
                       repeatCount="indefinite"
                     />
-                  </circle>
+                  </image>
                 </g>
 
                 {/* Bay 1: Network (Y: 36) */}
@@ -892,15 +836,21 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
                 {/* Header Title with Proxmox Chevron Logo & Status */}
                 <g transform="translate(80, 20)">
-                  {/* Brand Chevron Logo */}
-                  <path
-                    d="M -66,-10 L -60,-5 L -66,0 L -63,0 L -57,-5 L -63,-10 Z"
-                    fill="#ea580c"
-                  />
-                  <path
-                    d="M -58,-2 L -52,-2 L -52,0 L -58,0 Z"
-                    fill="#ea580c"
-                  />
+                  <image
+                    href={proxmoxLogo}
+                    x="-70"
+                    y="-6"
+                    width="10"
+                    height="10"
+                    opacity="1"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      values="1;0.35;1"
+                      dur="1s"
+                      repeatCount="indefinite"
+                    />
+                  </image>
 
                   <text
                     x="6"
@@ -924,14 +874,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   >
                     OPEN SOURCE CLUSTER
                   </text>
-                  <circle cx="68" cy="-4" r="3" fill="#10b981">
-                    <animate
-                      attributeName="opacity"
-                      values="1;0.3;1"
-                      dur="1s"
-                      repeatCount="indefinite"
-                    />
-                  </circle>
                 </g>
 
                 {/* Bay 1: Network (Y: 36) */}
@@ -1465,22 +1407,101 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
                 {/* Sector 2: VERIFY Sector (Middle scanner) */}
                 <g transform="translate(0, -10)">
-                  {/* Shield Outline */}
-                  <path
-                    d="M 0,-16 L 14,-11 V 2 C 14,10 7,18 0,20 C -7,18 -14,10 -14,2 V -11 Z"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M -5,1 L -1,4.5 L 6 -2"
-                    stroke="#10b981"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r="18.5"
+                    fill="rgba(8, 12, 30, 0.28)"
+                    filter="url(#glow)"
+                  >
+                    <animate
+                      attributeName="r"
+                      values="17.5;19.8;17.5"
+                      dur="4.4s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="0.22;0.5;0.22"
+                      dur="4.4s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <g>
+                    <animateTransform
+                      attributeName="transform"
+                      type="translate"
+                      values="0 0; 0.6 0; 0 0; -0.6 0; 0 0"
+                      dur="6s"
+                      repeatCount="indefinite"
+                    />
+                    <g>
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        values="-0.6 0 0; 0.6 0 0; -0.6 0 0"
+                        dur="8s"
+                        repeatCount="indefinite"
+                      />
+                      <g transform="scale(3.2)">
+                        <circle
+                          cx="-4"
+                          cy="0"
+                          r="6.5"
+                          fill="none"
+                          stroke="#22d3ee"
+                          strokeWidth="1.8"
+                        />
+                        <path
+                          d="M -8,0 H 8"
+                          fill="none"
+                          stroke="#8b5cf6"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M 3,-3 L 8,0 L 3,3"
+                          fill="none"
+                          stroke="#8b5cf6"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="-2 0; 2 0; -2 0"
+                            dur="2.1s"
+                            repeatCount="indefinite"
+                          />
+                        </path>
+                      <circle cx="-8" cy="0" r="1.4" fill="#22d3ee">
+                        <animate
+                          attributeName="opacity"
+                          values="1;0.35;1"
+                          dur="1.8s"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                        <g transform="translate(0, -4)">
+                          <path
+                            d="M -5,1 H 5"
+                            fill="none"
+                            stroke="rgba(34, 211, 238, 0.5)"
+                            strokeWidth="1.1"
+                            strokeDasharray="2 4"
+                          >
+                            <animate
+                              attributeName="stroke-dashoffset"
+                              values="0;-10"
+                              dur="1.8s"
+                              repeatCount="indefinite"
+                            />
+                          </path>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
                 </g>
 
                 {/* Sweeping Laser Beam across the scan sector */}
