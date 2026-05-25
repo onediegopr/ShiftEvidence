@@ -36,12 +36,13 @@ export default function App() {
 
         {/* Credibility Strip */}
         <section className="credibility-strip">
+          <div className="bg-mesh"></div>
           <div className="container">
             <div className="credibility-header">
-              <span className="credibility-eyebrow">Methodology</span>
-              <h3 className="credibility-title">
+              <div className="badge badge-cyan">Methodology</div>
+              <h2 className="credibility-title">
                 Enterprise VMware discipline, without production access.
-              </h3>
+              </h2>
               <p className="credibility-body">
                 This independent readiness methodology was developed by a former
                 VMware Technical Account Manager and is designed to bring
@@ -49,52 +50,64 @@ export default function App() {
                 planning structure to VMware → Proxmox decisions.
               </p>
             </div>
+
             <div className="credibility-cards">
-              <div className="credibility-card">
-                <Shield size={22} className="text-cyan" />
-                <span className="credibility-card-title">
-                  Former VMware TAM-led methodology
-                </span>
-                <span className="credibility-card-desc">
-                  Built from real-world enterprise advisory experience, not
-                  guesswork.
-                </span>
+              <div className="cred-card">
+                <div className="cred-card-icon cred-icon-cyan">
+                  <Shield size={22} />
+                </div>
+                <div className="cred-card-text">
+                  <strong>Former VMware TAM-led methodology</strong>
+                  <span>
+                    Built from real-world enterprise advisory experience, not
+                    guesswork.
+                  </span>
+                </div>
               </div>
-              <div className="credibility-card">
-                <BarChart3 size={22} className="text-cyan" />
-                <span className="credibility-card-title">
-                  Evidence-based, not guess-based
-                </span>
-                <span className="credibility-card-desc">
-                  Every risk, gap and recommendation is backed by collected
-                  infrastructure evidence.
-                </span>
+              <div className="cred-card">
+                <div className="cred-card-icon cred-icon-cyan">
+                  <BarChart3 size={22} />
+                </div>
+                <div className="cred-card-text">
+                  <strong>Evidence-based, not guess-based</strong>
+                  <span>
+                    Every risk, gap and recommendation is backed by collected
+                    infrastructure evidence.
+                  </span>
+                </div>
               </div>
-              <div className="credibility-card">
-                <ShieldCheck size={22} className="text-emerald" />
-                <span className="credibility-card-title">
-                  No production changes
-                </span>
-                <span className="credibility-card-desc">
-                  Read-only assessment. Zero agents, zero credentials, zero
-                  impact on running workloads.
-                </span>
+              <div className="cred-card">
+                <div className="cred-card-icon cred-icon-emerald">
+                  <ShieldCheck size={22} />
+                </div>
+                <div className="cred-card-text">
+                  <strong>No production changes</strong>
+                  <span>
+                    Read-only assessment. Zero agents, zero credentials, zero
+                    impact on running workloads.
+                  </span>
+                </div>
               </div>
-              <div className="credibility-card">
-                <FileText size={22} className="text-cyan" />
-                <span className="credibility-card-title">
-                  Executive + technical outputs
-                </span>
-                <span className="credibility-card-desc">
-                  Ready-to-share reports for both engineering teams and business
-                  stakeholders.
-                </span>
+              <div className="cred-card">
+                <div className="cred-card-icon cred-icon-cyan">
+                  <FileText size={22} />
+                </div>
+                <div className="cred-card-text">
+                  <strong>Executive + technical outputs</strong>
+                  <span>
+                    Ready-to-share reports for both engineering teams and
+                    business stakeholders.
+                  </span>
+                </div>
               </div>
             </div>
-            <p className="credibility-disclaimer">
-              Independent methodology. Not affiliated with, endorsed by or
-              certified by VMware/Broadcom.
-            </p>
+
+            <div className="credibility-footer">
+              <span className="credibility-disclaimer">
+                Independent methodology. Not affiliated with, endorsed by or
+                certified by VMware/Broadcom.
+              </span>
+            </div>
           </div>
         </section>
 
