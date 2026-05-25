@@ -48,10 +48,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 Pre-Migration Auditing | 100% Agentless & Compatibility Verified
               </span>
             </div>
-            <div className="badge badge-tam">
-              <Shield size={12} />
-              <span>Former VMware TAM-led readiness methodology</span>
-            </div>
             <h1 className="hero-title">
               Ditch <span className="brand-vmware">VMware</span> Licensing
               Hikes.
@@ -1929,6 +1925,11 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 />
               </g>
             </svg>
+
+            <div className="badge badge-tam" style={{ marginBottom: "0" }}>
+              <Shield size={12} />
+              <span>Former VMware TAM-led readiness methodology</span>
+            </div>
 
             <div
               className="hero-description-group"
