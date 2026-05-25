@@ -10,6 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
+storage
+uploads
+.tmp
+*.tmp
+.env
+*.tsbuildinfo
 *.local
 
 # Editor directories and files

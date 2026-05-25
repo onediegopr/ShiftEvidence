@@ -85,15 +85,6 @@ export default function SavingsCalculator() {
   const [vms, setVms] = useState(120);
   const [storage, setStorage] = useState(80);
 
-  // Sync price defaults when tier changes
-  useEffect(() => {
-    setVmwarePricePerCore(VMWARE_DEFAULTS[vmwareTier].price);
-  }, [vmwareTier]);
-
-  useEffect(() => {
-    setProxmoxPriceEur(PROXMOX_DEFAULTS[proxmoxTier].priceEur);
-  }, [proxmoxTier]);
-
   useEffect(() => {
     const controller = new AbortController();
 
@@ -166,6 +157,16 @@ export default function SavingsCalculator() {
     return new Intl.NumberFormat("en-US").format(val);
   };
 
+  const selectVmwareTier = (tier: VmwareTier) => {
+    setVmwareTier(tier);
+    setVmwarePricePerCore(VMWARE_DEFAULTS[tier].price);
+  };
+
+  const selectProxmoxTier = (tier: ProxmoxTier) => {
+    setProxmoxTier(tier);
+    setProxmoxPriceEur(PROXMOX_DEFAULTS[tier].priceEur);
+  };
+
   return (
     <section
       id="savings"
@@ -214,7 +215,7 @@ export default function SavingsCalculator() {
                 {(Object.keys(VMWARE_DEFAULTS) as VmwareTier[]).map((tier) => (
                   <button
                     key={tier}
-                    onClick={() => setVmwareTier(tier)}
+                    onClick={() => selectVmwareTier(tier)}
                     className={`radio-btn ${vmwareTier === tier ? "active" : ""}`}
                   >
                     {VMWARE_DEFAULTS[tier].label}
@@ -419,7 +420,7 @@ export default function SavingsCalculator() {
                   (tier) => (
                     <button
                       key={tier}
-                      onClick={() => setProxmoxTier(tier)}
+                      onClick={() => selectProxmoxTier(tier)}
                       className={`radio-btn ${proxmoxTier === tier ? "active" : ""}`}
                     >
                       {PROXMOX_DEFAULTS[tier].label}

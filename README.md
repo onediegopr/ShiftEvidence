@@ -1,73 +1,142 @@
-# React + TypeScript + Vite
+# Shift Evidence / ShiftReadiness
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Shift Evidence is the public brand. ShiftReadiness is the first product module.
 
-Currently, two official plugins are available:
+Tagline:
+Infrastructure readiness before you migrate.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
+- Next.js App Router
+- React 19
+- TypeScript
+- CSS global existing from the original landing
+- Prisma + Neon Postgres
+- Better Auth
 
-## React Compiler
+## Public routes
+- `/`
+- `/shiftreadiness`
+- `/contact`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Auth routes
+- `/sign-in`
+- `/sign-up`
 
-## Expanding the ESLint configuration
+## Private routes
+- `/dashboard`
+- `/dashboard/assessments`
+- `/dashboard/assessments/new`
+- `/dashboard/assessments/[id]`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Scripts
+- `npm run dev`
+- `npm run build`
+- `npm run start`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run prisma:validate`
+- `npm run prisma:generate`
+- `npm run prisma:migrate`
+- `npm run prisma:deploy`
+- `npm run prisma:studio`
+- `npm run deploy:check`
+- `npm run storage:check`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Environment variables
+Required:
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `NEXT_PUBLIC_APP_URL`
+- `HOSTINGER_STORAGE_ROOT`
+- `MAX_UPLOAD_SIZE_MB`
+- `ADMIN_EMAILS`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Optional for future work:
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Prisma
+- Schema: `prisma/schema.prisma`
+- Better Auth schema is generated into Prisma format.
+- Use `npm run prisma:validate` before migrations.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Notes
+- The landing page and `/shiftreadiness` are preserved.
+- The dashboard and assessment shell are foundation work for the next milestone.
+- RVTools evidence upload, secure local storage, secure download and basic RVTools parsing are implemented.
+- The parser is preliminary and stores inventory rows plus a summary.
+- Inventory-driven cost/risk findings, readiness scores and the VM risk matrix are implemented as preliminary signals.
+- Report Preview, locked sections and upgrade intent tracking are implemented as preview UX only.
+- PDF Preview v1 is implemented with private storage and secure download.
+- Manual unlock requests, protected admin review and entitlement grants are implemented without checkout.
+- Admin unlock hardening validates `ADMIN_EMAILS`, fail-closed behavior, non-admin blocking and entitlement idempotency.
+- Hostinger deployment hardening adds runtime env checks, storage permission checks, `prisma:deploy`, Node engine guidance and production smoke runbooks.
+- Pricing checkout is not implemented yet.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Documentation
+- `docs/hito-1-technical-foundation.md`
+- `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
+- `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`
+- `docs/hito-3-rvtools-upload-secure-local-storage.md`
+- `docs/assessment-crud-v1.md`
+- `docs/manual-infrastructure-intake-v1.md`
+- `docs/cost-risk-assumptions-v1.md`
+- `docs/preliminary-risk-scoring-v1.md`
+- `docs/storage-readiness-optional-v1.md`
+- `docs/evidence-file-model-v1.md`
+- `docs/local-storage-security-v1.md`
+- `docs/evidence-upload-flow-v1.md`
+- `docs/secure-download-delete-v1.md`
+- `docs/hostinger-storage-runbook-v1.md`
+- `docs/hito-4-rvtools-parser-basic-inventory.md`
+- `docs/rvtools-parser-architecture-v1.md`
+- `docs/parsed-inventory-data-model-v1.md`
+- `docs/rvtools-sheet-column-mapping-v1.md`
+- `docs/parser-error-handling-v1.md`
+- `docs/inventory-ui-v1.md`
+- `docs/hito-5-inventory-driven-cost-risk-vm-risk-matrix.md`
+- `docs/risk-findings-engine-v1.md`
+- `docs/vm-risk-matrix-v1.md`
+- `docs/readiness-confidence-scoring-v1.md`
+- `docs/inventory-driven-cost-risk-v1.md`
+- `docs/locked-insights-upgrade-hooks-v1.md`
+- `docs/hito-6-report-preview-locked-sections-upgrade-ux.md`
+- `docs/report-preview-v1.md`
+- `docs/report-sections-visibility-v1.md`
+- `docs/upgrade-ux-v1.md`
+- `docs/report-entitlements-v1.md`
+- `docs/upgrade-events-v1.md`
+- `docs/hito-7-pdf-report-generation-v1.md`
+- `docs/report-generation-service-v1.md`
+- `docs/pdf-report-template-v1.md`
+- `docs/report-storage-download-v1.md`
+- `docs/report-status-lifecycle-v1.md`
+- `docs/pdf-limitations-v1.md`
+- `docs/hito-8-manual-payment-unlock-flow.md`
+- `docs/hito-8-1-admin-unlock-hardening.md`
+- `docs/hito-9-hostinger-deployment-hardening.md`
+- `docs/unlock-request-model-v1.md`
+- `docs/manual-unlock-admin-v1.md`
+- `docs/entitlements-unlock-flow-v1.md`
+- `docs/admin-emails-configuration-runbook.md`
+- `docs/admin-unlock-smoke-test-results.md`
+- `docs/unlock-idempotency-checks-v1.md`
+- `docs/hostinger-deployment-runbook-v1.md`
+- `docs/hostinger-env-vars-v1.md`
+- `docs/hostinger-storage-persistence-v1.md`
+- `docs/prisma-neon-production-migrations-v1.md`
+- `docs/production-smoke-test-checklist-v1.md`
+- `docs/hostinger-rollback-runbook-v1.md`
+- `docs/production-runtime-hardening-v1.md`
+- `docs/commercial-status-v1.md`
+- `docs/report-unlock-behavior-v1.md`
+- `docs/migration-vite-to-next-notes.md`
+- `docs/auth-dashboard-assessment-shell.md`
+- `docs/auth-smoke-test-results.md`
+- `docs/assessment-shell-smoke-test-results.md`
+- `docs/data-model-v1.md`
+- `docs/neon-prisma-migration-runbook.md`
+- `docs/preserved-public-pages-hito-1.md`
+- `docs/public-pages-smoke-test-hito-1-1.md`
+- `docs/hostinger-foundation-notes.md`

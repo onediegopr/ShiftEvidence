@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import {
   X,
   ShieldCheck,
@@ -18,6 +18,7 @@ interface ReadinessValidatorProps {
 }
 
 type Step = "setup" | "scanning" | "results";
+type LogType = "info" | "success" | "warn";
 
 export default function ReadinessValidator({
   isOpen,
@@ -26,7 +27,7 @@ export default function ReadinessValidator({
   const [currentStep, setCurrentStep] = useState<Step>("setup");
   const [setupSubStep, setSetupSubStep] = useState(1);
   const [logs, setLogs] = useState<string[]>([]);
-  const [logType, setLogType] = useState<("info" | "success" | "warn")[]>([]);
+  const [logType, setLogType] = useState<LogType[]>([]);
 
   // User setup selections
   const [storageType, setStorageType] = useState("san");
@@ -51,7 +52,7 @@ export default function ReadinessValidator({
     setLogs([]);
     setLogType([]);
 
-    const mockLogs = [
+    const mockLogs: Array<{ text: string; type: LogType }> = [
       {
         text: "[INFO] Initializing Shift Evidence Audit Engine v2.1.0...",
         type: "info",
@@ -147,7 +148,7 @@ export default function ReadinessValidator({
       if (currentLogIndex < mockLogs.length) {
         const nextLog = mockLogs[currentLogIndex];
         setLogs((prev) => [...prev, nextLog.text]);
-        setLogType((prev) => [...prev, nextLog.type as any]);
+        setLogType((prev) => [...prev, nextLog.type]);
         currentLogIndex++;
       } else {
         clearInterval(interval);
@@ -171,6 +172,8 @@ export default function ReadinessValidator({
     setSetupSubStep(1);
     setLogs([]);
   };
+
+  const scoreStyle: CSSProperties = { "--score": getScore() } as CSSProperties;
 
   return (
     <div className="modal-overlay">
@@ -489,7 +492,7 @@ export default function ReadinessValidator({
                 <div className="score-hero">
                   <div
                     className="score-dial"
-                    style={{ "--score": getScore() } as any}
+                    style={scoreStyle}
                   >
                     <span className="score-number">{getScore()}%</span>
                   </div>

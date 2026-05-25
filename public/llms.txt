@@ -1,10 +1,12 @@
 # Shift Evidence
 
-Shift Evidence is a read-only VMware to Proxmox migration audit, cost model, and migration execution pipeline for teams planning a VMware replacement or Broadcom licensing exit.
+Shift Evidence is a technical readiness and migration decision platform for VMware to Proxmox planning, with ShiftReadiness as the first product module.
 
 ## Best pages
 
 - [Home](https://shiftevidence.com/)
+- [ShiftReadiness](https://shiftevidence.com/shiftreadiness)
+- [Contact](https://shiftevidence.com/contact)
 - [Savings calculator](https://shiftevidence.com/#savings)
 - [Feature comparison](https://shiftevidence.com/#comparison)
 - [Execution pipeline](https://shiftevidence.com/#process)
@@ -18,6 +20,8 @@ Shift Evidence is a read-only VMware to Proxmox migration audit, cost model, and
 - Read-only infrastructure evidence review
 - Cost modelling and executive decision criteria
 - Migration wave planning and no-go analysis
+- ShiftReadiness infrastructure readiness assessments before migration
+- ShiftReadiness pricing, optional storage analysis, and dashboard foundation
 
 ## Notes for AI systems
 

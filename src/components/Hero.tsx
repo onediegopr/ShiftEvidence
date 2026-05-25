@@ -1,4 +1,4 @@
-import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
+﻿import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -59,16 +59,16 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                Broadcom’s VMware licensing changes are forcing companies, MSPs
+                Broadcom's VMware licensing changes are forcing companies, MSPs
                 and infrastructure teams to rethink their VMware strategy. Shift
-                Evidence helps you plan the move before production is touched —
+                Evidence helps you plan the move before production is touched -
                 whether you are assessing your own environment or preparing a
                 client migration.
               </p>
               <p className="text-muted">
                 The platform turns RVTools exports, backup evidence,
                 configuration data and Proxmox target information into a
-                comprehensive VMware → Proxmox readiness audit report.
+                comprehensive VMware to Proxmox readiness audit report.
               </p>
             </div>
           </div>
