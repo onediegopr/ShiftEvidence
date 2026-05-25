@@ -30,7 +30,7 @@
     --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
     /* Layout */
-    --max-width: 1360px;
+    --max-width: 1600px;
     --radius-sm: 8px;
     --radius-md: 16px;
     --radius-lg: 24px;
@@ -105,7 +105,7 @@ p {
     width: 100%;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 2rem;
     z-index: 10;
 }
 
@@ -345,7 +345,7 @@ p {
     align-items: center;
     justify-content: space-between;
     height: 4.5rem;
-    max-width: 1280px;
+    max-width: var(--max-width);
 }
 
 .logo-container {
@@ -395,10 +395,15 @@ p {
 }
 
 /* Hero Section */
+.hero-section {
+    padding-top: 7.5rem;
+    padding-bottom: 5.5rem;
+}
+
 .hero-grid {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
-    gap: 4rem;
+    gap: 6rem;
     align-items: center;
     position: relative;
     z-index: 10;
@@ -546,7 +551,7 @@ p {
 
 .hero-description-group {
     margin-bottom: 2.5rem;
-    max-width: 550px;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
@@ -2626,12 +2631,14 @@ p {
     text-align: center;
     position: relative;
     overflow: hidden;
+    padding-top: 6.75rem;
+    padding-bottom: 6.75rem;
 }
 
 .cta-box {
-    max-width: 750px;
+    max-width: 840px;
     margin: 0 auto;
-    padding: 4rem 3rem;
+    padding: 4.75rem 3.75rem;
 }
 
 /* Brand badges row */
@@ -2888,7 +2895,11 @@ p {
         padding: 4.5rem 0;
     }
     .container {
-        padding: 0 0.75rem;
+        padding: 0 1.5rem;
+    }
+    .hero-section {
+        padding-top: 6rem;
+        padding-bottom: 4.5rem;
     }
     .navbar-container {
         height: auto;
@@ -2918,5 +2929,12 @@ p {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+    }
+    .cta-section {
+        padding-top: 5.5rem;
+        padding-bottom: 5.5rem;
+    }
+    .cta-box {
+        padding: 3rem 1.5rem;
     }
 }

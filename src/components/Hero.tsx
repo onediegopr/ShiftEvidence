@@ -12,8 +12,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
   return (
     <section
-      className="section"
-      style={{ paddingTop: "6rem", paddingBottom: "4rem" }}
+      className="section hero-section"
     >
       <div className="bg-mesh"></div>
       <div className="bg-grid"></div>
@@ -77,7 +76,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               className="migration-flow-svg"
               viewBox="0 0 600 400"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ overflow: "visible", width: "100%", maxWidth: "500px" }}
+              style={{ overflow: "visible", width: "100%", maxWidth: "700px" }}
             >
               <defs>
                 {/* Gradients */}
@@ -1934,7 +1933,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <div
               className="hero-description-group"
               style={{
-                maxWidth: "500px",
+                maxWidth: "620px",
                 marginTop: "1.5rem",
                 marginBottom: "1.5rem",
                 textAlign: "center",
@@ -1942,7 +1941,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             >
               <p
                 className="text-muted"
-                style={{ fontSize: "0.95rem", lineHeight: "1.5", margin: 0 }}
+                style={{ fontSize: "1rem", lineHeight: "1.6", margin: 0 }}
               >
                 It analyzes the migration from multiple angles: workload risk,
                 infrastructure sizing, backup gaps, storage and network
