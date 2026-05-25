@@ -1,4 +1,4 @@
-import {
+﻿import {
   Search,
   RefreshCw,
   ShieldCheck,
@@ -8,63 +8,65 @@ import {
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
+
 export default function Process() {
+
   const steps = [
     {
       num: "01",
       icon: Search,
-      title: "Analyze & Map",
-      duration: "Day 1 - 2",
+      title: "Analizar y mapear",
+      duration: "Día 1 - 2",
       color: "#06b6d4",
       description:
-        "We connect our audit appliance to your vCenter API. We scan CPU profiles, disk formats, and virtual network associations, generating a complete translation blueprint.",
-      action: "Generates your custom Migration compatibility Scorecard.",
+        "Conectamos nuestro appliance de auditoría a tu API de vCenter. Analizamos perfiles de CPU, formatos de disco y asociaciones de red virtual, generando un plano completo de traducción.",
+      action: "Genera tu scorecard personalizada de compatibilidad de migración.",
       callout:
-        "Advisor Lens: Former VMware TAM-led methodology helps distinguish what can be automated, what must be validated, and what should not move first.",
+        "Mirada de asesor: la metodología liderada por un ex VMware TAM ayuda a distinguir qué se puede automatizar, qué debe validarse y qué no debería moverse primero.",
     },
     {
       num: "02",
       icon: RefreshCw,
-      title: "Background Staging",
-      duration: "Day 3 - 5",
+      title: "Preparación en segundo plano",
+      duration: "Día 3 - 5",
       color: "#8b5cf6",
       description:
-        "We set up the Proxmox target host cluster. Our converter replicates VM virtual disks asynchronously in the background. Your VMware workloads remain active and untouched.",
+        "Configuramos el clúster destino de Proxmox. Nuestro convertidor replica discos virtuales de VM de forma asíncrona en segundo plano. Tus cargas VMware permanecen activas y sin cambios.",
       action:
-        "Syncs data blocks progressively with zero impact on network traffic.",
+        "Sincroniza bloques de datos progresivamente sin impacto en el tráfico de red.",
     },
     {
       num: "03",
       icon: ShieldCheck,
-      title: "Sandboxed Verification",
-      duration: "Day 6",
+      title: "Verificación en sandbox",
+      duration: "Día 6",
       color: "#f59e0b",
       description:
-        "We boot the migrated virtual machines in an isolated, non-routing test network. We verify driver integrity, partition layouts, and database health before cutover.",
+        "Arrancamos las máquinas virtuales migradas en una red de prueba aislada y sin ruteo. Verificamos integridad de drivers, layouts de particiones y salud de bases de datos antes del corte.",
       action:
-        "Assures a 100% successful boot rate on target Proxmox hypervisors.",
+        "Asegura una tasa de arranque exitosa del 100% en los hipervisores Proxmox destino.",
     },
     {
       num: "04",
       icon: Rocket,
-      title: "Active Cutover",
-      duration: "Day 7 (Window)",
+      title: "Corte activo",
+      duration: "Día 7 (ventana)",
       color: "#ea580c",
       description:
-        "We gracefully shutdown the source VMware VM, sync the final delta disk blocks (taking only minutes), and map the network gateway to the new Proxmox cluster.",
+        "Apagamos de forma controlada la VM origen de VMware, sincronizamos los bloques delta finales (solo lleva minutos) y mapeamos el gateway de red al nuevo clúster Proxmox.",
       action:
-        "Completes VM cutovers with minimal downtime (usually <10 minutes).",
+        "Completa los cortes de VM con un downtime mínimo (normalmente <10 minutos).",
     },
     {
       num: "05",
       icon: BarChart3,
-      title: "PBS & Ceph Fine-Tuning",
-      duration: "Day 8+",
+      title: "Ajuste fino de PBS y Ceph",
+      duration: "Día 8+",
       color: "#10b981",
       description:
-        "We optimize ZFS caching, establish storage performance metrics on Ceph, and verify incremental deduplication schedules on Proxmox Backup Server.",
+        "Optimizamos el cacheo de ZFS, definimos métricas de rendimiento de almacenamiento en Ceph y verificamos horarios de deduplicación incremental en Proxmox Backup Server.",
       action:
-        "Switches system management to our client-defined dashboard metrics.",
+        "Traslada la gestión del sistema a las métricas del dashboard definidas por el cliente.",
     },
   ];
 
@@ -73,8 +75,8 @@ export default function Process() {
       <div className="bg-mesh"></div>
       <div className="container">
         <div className="text-center mb-8">
-          <div className="badge">Execution Pipeline</div>
-          <h2 className="mb-4">The Shift Evidence Migration Pipeline</h2>
+          <div className="badge">Pipeline de ejecución</div>
+          <h2 className="mb-4">El pipeline de migración de Shift Evidence</h2>
           <p className="mx-auto" style={{ maxWidth: "650px" }}>
             We guarantee zero data loss and minimal system interruption by
             following a rigorous, step-by-step verification methodology.

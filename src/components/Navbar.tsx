@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { ArrowRight } from "lucide-react";
+﻿import { useState, useEffect } from "react";
+import { ArrowRight, Globe } from "lucide-react";
 import vmwareLogo from "../../images/vmware.svg";
+import { useLocale } from "../i18n";
 
 interface NavbarProps {
   onOpenScanner: () => void;
@@ -8,6 +9,7 @@ interface NavbarProps {
 
 export default function Navbar({ onOpenScanner }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { locale, setLocale, t } = useLocale();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,23 +36,44 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
           <ul className="nav-links">
             <li>
               <a href="#savings" className="nav-link">
-                Savings Calculator
+                {t("Savings Calculator", "Calculadora de ahorro")}
               </a>
             </li>
             <li>
               <a href="#features" className="nav-link">
-                Core Features
+                {t("Core Features", "Funciones clave")}
               </a>
             </li>
             <li>
               <a href="#comparison" className="nav-link">
-                VMware vs Proxmox
+                {t("VMware vs Proxmox", "VMware vs Proxmox")}
               </a>
             </li>
             <li>
               <a href="#process" className="nav-link">
-                Migration Pipeline
+                {t("Migration Pipeline", "Pipeline de migraciÃ³n")}
               </a>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => setLocale(locale === "en" ? "es" : "en")}
+                className="btn btn-secondary"
+                style={{
+                  padding: "0.45rem 0.9rem",
+                  fontSize: "0.8rem",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                }}
+                aria-label={t("Switch language", "Cambiar idioma")}
+              >
+                <Globe size={14} />
+                <span aria-hidden="true">{locale === "en" ? "EN" : "ES"}</span>
+                <span style={{ fontSize: "0.72rem", letterSpacing: "0.08em" }}>
+                  {locale === "en" ? "English" : "EspaÃ±ol"}
+                </span>
+              </button>
             </li>
             <li>
               <button
@@ -58,7 +81,7 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
                 className="btn btn-secondary"
                 style={{ padding: "0.5rem 1.25rem", fontSize: "0.85rem" }}
               >
-                Scan Cluster
+                {t("Scan Cluster", "Escanear clÃºster")}
               </button>
             </li>
             <li>
@@ -67,7 +90,7 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
                 className="btn btn-primary btn-glow"
                 style={{ padding: "0.5rem 1.25rem", fontSize: "0.85rem" }}
               >
-                Run Free Audit
+                {t("Run Free Audit", "Ejecutar auditorÃ­a gratis")}
                 <ArrowRight size={14} />
               </button>
             </li>

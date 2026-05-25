@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import SavingsCalculator from "./components/SavingsCalculator";
@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import ReadinessValidator from "./components/ReadinessValidator";
 import vmwareLogo from "../images/vmware.svg";
 import proxmoxLogo from "../images/proxmox.svg";
+import { useLocale } from "./i18n";
 import {
   ArrowRight,
   ShieldCheck,
@@ -19,6 +20,7 @@ import {
 
 export default function App() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const { t } = useLocale();
 
   const handleOpenScanner = () => setIsScannerOpen(true);
   const handleCloseScanner = () => setIsScannerOpen(false);
@@ -43,13 +45,16 @@ export default function App() {
             <div className="credibility-header">
               <div className="badge badge-cyan">Methodology</div>
               <h2 className="credibility-title">
-                Enterprise VMware discipline, without production access.
+                {t(
+                  "Enterprise VMware discipline, without production access.",
+                  "Disciplina enterprise de VMware, sin acceso a producciÃ³n.",
+                )}
               </h2>
               <p className="credibility-body">
-                This independent readiness methodology was developed by a former
-                VMware Technical Account Manager and is designed to bring
-                enterprise-grade risk review, evidence discipline and migration
-                planning structure to VMware → Proxmox decisions.
+                {t(
+                  "This independent readiness methodology was developed by a former VMware Technical Account Manager and is designed to bring enterprise-grade risk review, evidence discipline and migration planning structure to VMware to Proxmox decisions.",
+                  "Esta metodologÃ­a independiente de preparaciÃ³n fue desarrollada por un ex VMware Technical Account Manager y estÃ¡ diseÃ±ada para aportar revisiÃ³n de riesgo de nivel enterprise, disciplina de evidencias y una estructura de planificaciÃ³n de migraciÃ³n para decisiones de VMware a Proxmox.",
+                )}
               </p>
             </div>
 
@@ -59,10 +64,17 @@ export default function App() {
                   <Shield size={22} />
                 </div>
                 <div className="cred-card-text">
-                  <strong>Former VMware TAM-led methodology</strong>
+                  <strong>
+                    {t(
+                      "Former VMware TAM-led methodology",
+                      "MetodologÃ­a liderada por un ex VMware TAM",
+                    )}
+                  </strong>
                   <span>
-                    Built from real-world enterprise advisory experience, not
-                    guesswork.
+                    {t(
+                      "Built from real-world enterprise advisory experience, not guesswork.",
+                      "Basada en experiencia real de asesorÃ­a enterprise, no en suposiciones.",
+                    )}
                   </span>
                 </div>
               </div>
@@ -71,10 +83,17 @@ export default function App() {
                   <BarChart3 size={22} />
                 </div>
                 <div className="cred-card-text">
-                  <strong>Evidence-based, not guess-based</strong>
+                  <strong>
+                    {t(
+                      "Evidence-based, not guess-based",
+                      "Basada en evidencias, no en intuiciÃ³n",
+                    )}
+                  </strong>
                   <span>
-                    Every risk, gap and recommendation is backed by collected
-                    infrastructure evidence.
+                    {t(
+                      "Every risk, gap and recommendation is backed by collected infrastructure evidence.",
+                      "Cada riesgo, brecha y recomendaciÃ³n estÃ¡ respaldado por evidencias de infraestructura recolectadas.",
+                    )}
                   </span>
                 </div>
               </div>
@@ -83,10 +102,12 @@ export default function App() {
                   <ShieldCheck size={22} />
                 </div>
                 <div className="cred-card-text">
-                  <strong>No production changes</strong>
+                  <strong>{t("No production changes", "Sin cambios en producciÃ³n")}</strong>
                   <span>
-                    Read-only assessment. Zero agents, zero credentials, zero
-                    impact on running workloads.
+                    {t(
+                      "Read-only assessment. Zero agents, zero credentials, zero impact on running workloads.",
+                      "AuditorÃ­a en solo lectura. Cero agentes, cero credenciales, cero impacto sobre las cargas en ejecuciÃ³n.",
+                    )}
                   </span>
                 </div>
               </div>
@@ -95,10 +116,17 @@ export default function App() {
                   <FileText size={22} />
                 </div>
                 <div className="cred-card-text">
-                  <strong>Executive + technical outputs</strong>
+                  <strong>
+                    {t(
+                      "Executive + technical outputs",
+                      "Entregables ejecutivos + tÃ©cnicos",
+                    )}
+                  </strong>
                   <span>
-                    Ready-to-share reports for both engineering teams and
-                    business stakeholders.
+                    {t(
+                      "Ready-to-share reports for both engineering teams and business stakeholders.",
+                      "Informes listos para compartir con equipos tÃ©cnicos y con las Ã¡reas de negocio.",
+                    )}
                   </span>
                 </div>
               </div>
@@ -106,8 +134,10 @@ export default function App() {
 
             <div className="credibility-footer">
               <span className="credibility-disclaimer">
-                Independent methodology. Not affiliated with, endorsed by or
-                certified by VMware/Broadcom.
+                {t(
+                  "Independent methodology. Not affiliated with, endorsed by or certified by VMware/Broadcom.",
+                  "MetodologÃ­a independiente. No afiliada, respaldada ni certificada por VMware/Broadcom.",
+                )}
               </span>
             </div>
           </div>
@@ -120,7 +150,7 @@ export default function App() {
         <Process />
 
         {/* FAQ Section */}
-        <section className="section faq-section">
+        <section id="faq" className="section faq-section">
           <div className="container">
             <div className="text-center mb-8">
               <div className="badge badge-cyan">FAQ</div>
@@ -135,42 +165,46 @@ export default function App() {
                   Proxmox
                 </div>
               </div>
-              <h2 className="mb-4">Frequently Asked Questions</h2>
+              <h2 className="mb-4">
+                {t("Frequently Asked Questions", "Preguntas frecuentes")}
+              </h2>
             </div>
             <div className="faq-list">
               <div className="faq-item">
                 <div className="faq-q">
-                  Is this assessment certified by VMware or Proxmox?
+                  {t(
+                    "Is this assessment certified by VMware or Proxmox?",
+                    "Â¿Esta auditorÃ­a estÃ¡ certificada por VMware o Proxmox?",
+                  )}
                 </div>
                 <div className="faq-a">
-                  No. This is an independent readiness assessment. It is not
-                  affiliated with, endorsed by or certified by VMware, Broadcom
-                  or Proxmox. The methodology was developed by a former VMware
-                  Technical Account Manager to bring enterprise-grade risk
-                  review and evidence discipline to VMware → Proxmox planning.
+                  {t(
+                    "No. This is an independent readiness assessment. It is not affiliated with, endorsed by or certified by VMware, Broadcom or Proxmox. The methodology was developed by a former VMware Technical Account Manager to bring enterprise-grade risk review and evidence discipline to VMware to Proxmox planning.",
+                    "No. Esta es una auditorÃ­a independiente de preparaciÃ³n. No estÃ¡ afiliada, respaldada ni certificada por VMware, Broadcom ni Proxmox. La metodologÃ­a fue desarrollada por un ex VMware Technical Account Manager para aportar revisiÃ³n de riesgo de nivel enterprise y disciplina de evidencias a la planificaciÃ³n de VMware a Proxmox.",
+                  )}
                 </div>
               </div>
               <div className="faq-item">
                 <div className="faq-q">
-                  What does &ldquo;Former VMware TAM-led methodology&rdquo;
-                  mean?
+                  {t(
+                    'What does "Former VMware TAM-led methodology" mean?',
+                    'Â¿QuÃ© significa "MetodologÃ­a liderada por un ex VMware TAM"?',
+                  )}
                 </div>
                 <div className="faq-a">
-                  It means the assessment structure was designed from real-world
-                  VMware enterprise advisory experience: evidence review, risk
-                  classification, migration readiness, gaps, executive
-                  communication and validation points. It does not mean VMware
-                  officially certifies or endorses the report.
+                  {t(
+                    "It means the assessment structure was designed from real-world VMware enterprise advisory experience: evidence review, risk classification, migration readiness, gaps, executive communication and validation points. It does not mean VMware officially certifies or endorses the report.",
+                    "Significa que la estructura de la auditorÃ­a fue diseÃ±ada a partir de experiencia real de asesorÃ­a enterprise en VMware: revisiÃ³n de evidencias, clasificaciÃ³n de riesgo, preparaciÃ³n de migraciÃ³n, brechas, comunicaciÃ³n ejecutiva y puntos de validaciÃ³n. No significa que VMware certifique o respalde oficialmente el informe.",
+                  )}
                 </div>
               </div>
               <div className="faq-item">
-                <div className="faq-q">Why does that matter?</div>
+                <div className="faq-q">{t("Why does that matter?", "Â¿Por quÃ© importa?")}</div>
                 <div className="faq-a">
-                  VMware → Proxmox migration is not only a technical import
-                  task. It requires risk prioritization, evidence quality
-                  review, workload classification, business continuity thinking
-                  and a clear plan for what should move first, what needs
-                  remediation and what should wait.
+                  {t(
+                    "VMware to Proxmox migration is not only a technical import task. It requires risk prioritization, evidence quality review, workload classification, business continuity thinking and a clear plan for what should move first, what needs remediation and what should wait.",
+                    "La migraciÃ³n de VMware a Proxmox no es solo una tarea tÃ©cnica de importaciÃ³n. Requiere priorizaciÃ³n de riesgos, revisiÃ³n de calidad de evidencias, clasificaciÃ³n de cargas, enfoque de continuidad de negocio y un plan claro sobre quÃ© debe moverse primero, quÃ© necesita remediaciÃ³n y quÃ© debe esperar.",
+                  )}
                 </div>
               </div>
             </div>
@@ -220,20 +254,25 @@ export default function App() {
               </div>
 
               <h2 className="mb-2" style={{ color: "white" }}>
-                Assure Your Proxmox Shift
+                {t("Assure Your Proxmox Shift", "AsegurÃ¡ tu salto a Proxmox")}
               </h2>
               <p className="cta-subtitle">
                 <span className="cta-pain">
-                  Stop paying VMware renewal bills.
+                  {t(
+                    "Stop paying VMware renewal bills.",
+                    "DejÃ¡ de pagar renovaciones de VMware.",
+                  )}
                 </span>{" "}
-                Run our pre-flight cluster check to receive a detailed
-                compatibility scorecard and technical migration plan.
+                {t(
+                  "Run our pre-flight cluster check to receive a detailed compatibility scorecard and technical migration plan.",
+                  "EjecutÃ¡ nuestro chequeo previo del clÃºster para recibir una tarjeta de compatibilidad detallada y un plan tÃ©cnico de migraciÃ³n.",
+                )}
               </p>
 
               <form onSubmit={handleCtaSubmit} className="cta-form">
                 <input
                   type="email"
-                  placeholder="Enter corporate email"
+                  placeholder={t("Enter corporate email", "IngresÃ¡ tu correo corporativo")}
                   required
                   className="form-input"
                 />
@@ -241,7 +280,7 @@ export default function App() {
                   type="submit"
                   className="btn btn-primary btn-glow cta-btn"
                 >
-                  Initialize Scan
+                  {t("Initialize Scan", "Iniciar escaneo")}
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -249,11 +288,16 @@ export default function App() {
               <div className="cta-trust">
                 <div className="cta-trust-item">
                   <ShieldCheck size={18} />
-                  <span>No ESXi agents required</span>
+                  <span>{t("No ESXi agents required", "No requiere agentes ESXi")}</span>
                 </div>
                 <div className="cta-trust-item">
                   <HelpCircle size={18} />
-                  <span>Read-only configuration check</span>
+                  <span>
+                    {t(
+                      "Read-only configuration check",
+                      "Chequeo de configuraciÃ³n en solo lectura",
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
