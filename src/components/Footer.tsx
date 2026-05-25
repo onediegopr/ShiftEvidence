@@ -124,7 +124,9 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Shift Evidence. All rights
             reserved.
           </span>
-          <span>Open-Source Powered. Securely Configured.</span>
+          <span>
+            Open-source infrastructure. Enterprise-grade migration readiness.
+          </span>
         </div>
 
         <div className="footer-legal">
