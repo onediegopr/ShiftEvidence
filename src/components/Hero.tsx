@@ -139,6 +139,28 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   <stop offset="55%" stopColor="rgba(139, 92, 246, 0.7)" />
                   <stop offset="100%" stopColor="rgba(16, 185, 129, 0.4)" />
                 </linearGradient>
+                <linearGradient
+                  id="storageTopologyGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="rgba(249, 115, 22, 0.2)" />
+                  <stop offset="45%" stopColor="rgba(16, 185, 129, 0.75)" />
+                  <stop offset="100%" stopColor="rgba(34, 211, 238, 0.45)" />
+                </linearGradient>
+                <linearGradient
+                  id="engineSweepGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="rgba(34, 211, 238, 0)" />
+                  <stop offset="50%" stopColor="rgba(34, 211, 238, 0.9)" />
+                  <stop offset="100%" stopColor="rgba(168, 85, 247, 0)" />
+                </linearGradient>
 
                 {/* Glow Filters */}
                 <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
@@ -169,7 +191,44 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 strokeWidth="1"
               />
 
-              {/* 3 Migration Track Lanes */}
+              {/* Conceptual layer labels */}
+              <g opacity="0.76">
+                <text
+                  x="90"
+                  y="48"
+                  fill="rgba(96, 165, 250, 0.9)"
+                  fontSize="7"
+                  fontWeight="800"
+                  textAnchor="middle"
+                  letterSpacing="0.14em"
+                >
+                  SOURCE INFRASTRUCTURE
+                </text>
+                <text
+                  x="300"
+                  y="48"
+                  fill="rgba(192, 132, 252, 0.95)"
+                  fontSize="7"
+                  fontWeight="800"
+                  textAnchor="middle"
+                  letterSpacing="0.14em"
+                >
+                  ASSESSMENT ENGINE
+                </text>
+                <text
+                  x="510"
+                  y="48"
+                  fill="rgba(249, 115, 22, 0.92)"
+                  fontSize="7"
+                  fontWeight="800"
+                  textAnchor="middle"
+                  letterSpacing="0.14em"
+                >
+                  TARGET ARCHITECTURE
+                </text>
+              </g>
+
+              {/* Intelligent transformation lanes */}
 
               {/* Lane 1: Database (Y: 234 -> 195 -> 234) */}
               <path
@@ -266,6 +325,46 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   repeatCount="indefinite"
                 />
               </path>
+
+              {/* Branching validation paths for dependency and topology analysis */}
+              <g opacity="0.78">
+                <path
+                  d="M 155,126 C 214,108 236,130 300,158 C 364,130 388,108 445,126"
+                  fill="none"
+                  stroke="rgba(34, 211, 238, 0.18)"
+                  strokeWidth="1.1"
+                  strokeDasharray="2 8"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="60;0" dur="6s" repeatCount="indefinite" />
+                </path>
+                <path
+                  d="M 154,250 C 214,270 236,248 300,232 C 364,248 388,270 446,250"
+                  fill="none"
+                  stroke="rgba(16, 185, 129, 0.18)"
+                  strokeWidth="1.1"
+                  strokeDasharray="2 9"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="0;66" dur="7s" repeatCount="indefinite" />
+                </path>
+                {[0, 1, 2].map((idx) => (
+                  <circle key={`route-packet-${idx}`} r="2.2" fill={idx === 1 ? "#10b981" : "#22d3ee"} filter="url(#glow)">
+                    <animateMotion
+                      path={
+                        idx === 0
+                          ? "M 155,126 C 214,108 236,130 300,158 C 364,130 388,108 445,126"
+                          : idx === 1
+                            ? "M 154,250 C 214,270 236,248 300,232 C 364,248 388,270 446,250"
+                            : "M 90,178 C 180,178 220,195 300,195 C 380,195 420,178 510,178"
+                      }
+                      dur={`${5.8 + idx * 0.7}s`}
+                      begin={`${idx * 0.9}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                ))}
+              </g>
 
               {/* VMware Source Rack Enclosure (X: 10, Y: 65, W: 160, H: 260) */}
               <g transform="translate(10, 65)">
@@ -389,7 +488,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 01 | NETWORK (vSwitch)
+                    BAY 01 | NETWORK + DEPENDENCIES
                   </text>
 
                   {/* Ports */}
@@ -451,7 +550,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 02 | COMPUTE (ESXi Nodes)
+                    BAY 02 | ESXi COMPUTE NODES
                   </text>
 
                   {/* Node 1 */}
@@ -586,7 +685,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 03 | DATABASES (SQL / Oracle)
+                    BAY 03 | WORKLOADS + DATASTORES
                   </text>
 
                   {/* DB Cylinder 1 */}
@@ -717,7 +816,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 04 | STORAGE (vSAN / VMFS)
+                    BAY 04 | LEGACY STORAGE TOPOLOGY
                   </text>
 
                   {/* Legacy disks */}
@@ -769,6 +868,64 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                       </g>
                     ))}
                   </g>
+                </g>
+
+                {/* Source telemetry and dependency traces */}
+                <g opacity="0.92">
+                  <rect
+                    x="28"
+                    y="28"
+                    width="104"
+                    height="9"
+                    rx="4.5"
+                    fill="rgba(15, 23, 42, 0.72)"
+                    stroke="rgba(96, 165, 250, 0.28)"
+                    strokeWidth="0.7"
+                  />
+                  <text
+                    x="80"
+                    y="35"
+                    fill="rgba(147, 197, 253, 0.86)"
+                    fontSize="5.4"
+                    fontWeight="800"
+                    textAnchor="middle"
+                    letterSpacing="0.08em"
+                  >
+                    vCENTER INVENTORY
+                  </text>
+                  <path
+                    d="M 80,37 V 82 M 80,138 V 144 M 80,194 V 200"
+                    fill="none"
+                    stroke="rgba(34, 211, 238, 0.3)"
+                    strokeWidth="0.8"
+                    strokeDasharray="2 5"
+                  >
+                    <animate attributeName="stroke-dashoffset" values="0;-28" dur="4.8s" repeatCount="indefinite" />
+                  </path>
+                  <path
+                    d="M 25,74 C 52,91 104,91 134,74 M 28,186 C 62,171 98,171 132,186"
+                    fill="none"
+                    stroke="rgba(239, 68, 68, 0.25)"
+                    strokeWidth="0.8"
+                    strokeDasharray="3 7"
+                    strokeLinecap="round"
+                  >
+                    <animate attributeName="stroke-dashoffset" values="44;0" dur="5.5s" repeatCount="indefinite" />
+                  </path>
+                  {[
+                    { x: 136, y: 78, label: "CPU" },
+                    { x: 132, y: 132, label: "RAM" },
+                    { x: 134, y: 191, label: "IO" },
+                  ].map((alert, idx) => (
+                    <g key={`source-alert-${alert.label}`} transform={`translate(${alert.x}, ${alert.y})`}>
+                      <path d="M 0,-4 L 4,4 H -4 Z" fill="rgba(239, 68, 68, 0.16)" stroke="#ef4444" strokeWidth="0.7">
+                        <animate attributeName="opacity" values="0.45;1;0.45" dur={`${1.4 + idx * 0.35}s`} repeatCount="indefinite" />
+                      </path>
+                      <text x="-7" y="12" fill="rgba(248, 113, 113, 0.65)" fontSize="4.3" fontWeight="800">
+                        {alert.label}
+                      </text>
+                    </g>
+                  ))}
                 </g>
               </g>
 
@@ -872,7 +1029,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     textAnchor="middle"
                     letterSpacing="0.05em"
                   >
-                    OPEN SOURCE CLUSTER
+                    TARGET ARCHITECTURE
                   </text>
                 </g>
 
@@ -895,7 +1052,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 01 | NETWORK (SDN / Bridges)
+                    BAY 01 | NETWORK FABRIC
                   </text>
 
                   {/* Ports */}
@@ -959,7 +1116,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 02 | COMPUTE (KVM & LXC Core)
+                    BAY 02 | COMPUTE LAYER (KVM / LXC)
                   </text>
 
                   {/* Node 1 */}
@@ -1094,7 +1251,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 03 | CONTAINERS (Optimized DBs)
+                    BAY 03 | WORKLOAD LAYER (OPTIMIZED)
                   </text>
 
                   {/* Optimized DB Container 1 */}
@@ -1198,79 +1355,124 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 04 | STORAGE (Ceph / ZFS Mirror)
+                    BAY 04 | STORAGE ARCHITECTURE
                   </text>
 
-                  {/* Ceph mesh network diagram */}
+                  {/* Vendor-neutral adaptive storage topology */}
                   <g transform="translate(8, 12)">
                     <path
-                      d="M 20,10 L 60,25 L 100,10 L 20,10"
+                      d="M 18,9 L 58,6 L 102,11 L 92,29 L 52,32 L 18,9 M 58,6 L 52,32 M 102,11 L 52,32 M 18,9 L 92,29"
                       fill="none"
-                      stroke="rgba(16, 185, 129, 0.3)"
+                      stroke="url(#storageTopologyGrad)"
                       strokeWidth="1"
-                      strokeDasharray="2 2"
-                    />
-                    <circle
-                      cx="20"
-                      cy="10"
-                      r="3.5"
-                      fill="#ea580c"
-                      stroke="#10b981"
-                      strokeWidth="1"
-                    />
-                    <circle
-                      cx="60"
-                      cy="25"
-                      r="3.5"
-                      fill="#ea580c"
-                      stroke="#10b981"
-                      strokeWidth="1"
-                    />
-                    <circle
-                      cx="100"
-                      cy="10"
-                      r="3.5"
-                      fill="#ea580c"
-                      stroke="#10b981"
-                      strokeWidth="1"
-                    />
-
-                    {/* Glowing core activity dots */}
-                    <circle cx="20" cy="10" r="1" fill="#fff">
-                      <animate
-                        attributeName="opacity"
-                        values="0.2;1;0.2"
-                        dur="1.2s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                    <circle cx="60" cy="25" r="1" fill="#fff">
-                      <animate
-                        attributeName="opacity"
-                        values="1;0.2;1"
-                        dur="1s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                    <circle cx="100" cy="10" r="1" fill="#fff">
-                      <animate
-                        attributeName="opacity"
-                        values="0.2;1;0.2"
-                        dur="1.5s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
+                      strokeDasharray="3 4"
+                      strokeLinecap="round"
+                    >
+                      <animate attributeName="stroke-dashoffset" values="40;0" dur="4.8s" repeatCount="indefinite" />
+                    </path>
+                    <path
+                      d="M 18,9 C 44,22 68,22 102,11 M 52,32 C 65,23 78,23 92,29"
+                      fill="none"
+                      stroke="rgba(34, 211, 238, 0.18)"
+                      strokeWidth="0.9"
+                      strokeDasharray="2 8"
+                    >
+                      <animate attributeName="stroke-dashoffset" values="0;-36" dur="6.2s" repeatCount="indefinite" />
+                    </path>
+                    {[
+                      { x: 18, y: 9, label: "SAN" },
+                      { x: 58, y: 6, label: "NAS" },
+                      { x: 102, y: 11, label: "NFS" },
+                      { x: 92, y: 29, label: "ZFS" },
+                      { x: 52, y: 32, label: "iSCSI" },
+                    ].map((node, idx) => (
+                      <g key={`storage-node-${node.label}`} transform={`translate(${node.x}, ${node.y})`}>
+                        <circle
+                          r="4.2"
+                          fill="rgba(16, 185, 129, 0.12)"
+                          stroke={idx < 2 ? "#f97316" : "#10b981"}
+                          strokeWidth="1"
+                          filter="url(#glow)"
+                        >
+                          <animate attributeName="r" values="3.8;4.8;3.8" dur={`${2.2 + idx * 0.25}s`} repeatCount="indefinite" />
+                        </circle>
+                        <circle r="1.25" fill="#ffffff">
+                          <animate attributeName="opacity" values="0.35;1;0.35" dur={`${1.2 + idx * 0.2}s`} repeatCount="indefinite" />
+                        </circle>
+                        <text
+                          x="0"
+                          y={idx === 4 ? "10" : "-7"}
+                          fill="rgba(226, 232, 240, 0.54)"
+                          fontSize="3.8"
+                          fontWeight="800"
+                          textAnchor="middle"
+                        >
+                          {node.label}
+                        </text>
+                      </g>
+                    ))}
+                    <text x="60" y="42" fill="rgba(16, 185, 129, 0.78)" fontSize="5" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">
+                      ADAPTIVE TOPOLOGY
+                    </text>
                   </g>
+                </g>
+
+                {/* Target architecture health and routing overlay */}
+                <g opacity="0.9">
+                  <path
+                    d="M 24,82 C 60,112 100,112 136,82 M 25,190 C 58,176 102,176 136,190"
+                    fill="none"
+                    stroke="rgba(16, 185, 129, 0.26)"
+                    strokeWidth="0.9"
+                    strokeDasharray="3 7"
+                    strokeLinecap="round"
+                  >
+                    <animate attributeName="stroke-dashoffset" values="0;-44" dur="5.6s" repeatCount="indefinite" />
+                  </path>
+                  <rect
+                    x="25"
+                    y="28"
+                    width="110"
+                    height="9"
+                    rx="4.5"
+                    fill="rgba(6, 18, 15, 0.76)"
+                    stroke="rgba(16, 185, 129, 0.28)"
+                    strokeWidth="0.7"
+                  />
+                  <text
+                    x="80"
+                    y="35"
+                    fill="rgba(52, 211, 153, 0.9)"
+                    fontSize="5.2"
+                    fontWeight="900"
+                    textAnchor="middle"
+                    letterSpacing="0.1em"
+                  >
+                    HA READY | BALANCED
+                  </text>
+                  {[
+                    { x: 135, y: 74 },
+                    { x: 134, y: 130 },
+                    { x: 135, y: 191 },
+                  ].map((point, idx) => (
+                    <g key={`target-validated-${idx}`} transform={`translate(${point.x}, ${point.y})`}>
+                      <circle r="4.4" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" strokeWidth="0.8">
+                        <animate attributeName="opacity" values="0.45;1;0.45" dur={`${1.8 + idx * 0.35}s`} repeatCount="indefinite" />
+                      </circle>
+                      <path d="M -2,0.2 L -0.4,2 L 2.6,-2" fill="none" stroke="#10b981" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" />
+                    </g>
+                  ))}
                 </g>
               </g>
 
-              {/* Shift Evidence Validator Core (Center: X=300, Y=195) - 50% LARGER */}
+              {/* Shift Evidence Assessment & Verification Engine */}
               <g transform="translate(300, 195)">
+                <g transform="scale(1.1)">
                 {/* Outer Scanning Radar Waves */}
                 <circle
                   cx="0"
                   cy="0"
-                  r="62"
+                  r="66"
                   fill="none"
                   stroke="url(#shiftGrad)"
                   strokeWidth="3"
@@ -1278,7 +1480,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 >
                   <animate
                     attributeName="r"
-                    values="62;95"
+                    values="66;101"
                     dur="2.4s"
                     repeatCount="indefinite"
                   />
@@ -1292,7 +1494,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 <circle
                   cx="0"
                   cy="0"
-                  r="62"
+                  r="66"
                   fill="none"
                   stroke="#22d3ee"
                   strokeWidth="1.5"
@@ -1300,7 +1502,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 >
                   <animate
                     attributeName="r"
-                    values="62;112"
+                    values="66;119"
                     dur="3.6s"
                     repeatCount="indefinite"
                   />
@@ -1316,7 +1518,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 <circle
                   cx="0"
                   cy="0"
-                  r="72"
+                  r="78"
                   fill="none"
                   stroke="url(#shiftGrad)"
                   strokeWidth="1"
@@ -1335,7 +1537,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 <circle
                   cx="0"
                   cy="0"
-                  r="80"
+                  r="86"
                   fill="none"
                   stroke="#22d3ee"
                   strokeWidth="0.8"
@@ -1352,11 +1554,39 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   />
                 </circle>
 
+                {/* Orbital validation nodes */}
+                <g opacity="0.9">
+                  {[
+                    { x: -74, y: -28, c: "#22d3ee" },
+                    { x: 74, y: -28, c: "#a855f7" },
+                    { x: -78, y: 30, c: "#10b981" },
+                    { x: 78, y: 30, c: "#10b981" },
+                  ].map((node, idx) => (
+                    <g key={`engine-orbit-${idx}`} transform={`translate(${node.x}, ${node.y})`}>
+                      <circle r="5.8" fill="rgba(8, 12, 30, 0.88)" stroke={node.c} strokeWidth="0.9" filter="url(#glow)">
+                        <animate attributeName="r" values="5;6.2;5" dur={`${3 + idx * 0.4}s`} repeatCount="indefinite" />
+                      </circle>
+                      <circle r="1.7" fill={node.c}>
+                        <animate attributeName="opacity" values="0.35;1;0.35" dur={`${1.4 + idx * 0.25}s`} repeatCount="indefinite" />
+                      </circle>
+                    </g>
+                  ))}
+                  <path
+                    d="M -74,-28 C -38,-68 38,-68 74,-28 M -78,30 C -40,70 40,70 78,30"
+                    fill="none"
+                    stroke="rgba(148, 163, 184, 0.16)"
+                    strokeWidth="0.8"
+                    strokeDasharray="3 8"
+                  >
+                    <animate attributeName="stroke-dashoffset" values="40;0" dur="8s" repeatCount="indefinite" />
+                  </path>
+                </g>
+
                 {/* Main Core Body */}
                 <circle
                   cx="0"
                   cy="0"
-                  r="62"
+                  r="68"
                   fill="rgba(8, 12, 30, 0.96)"
                   stroke="url(#shiftGrad)"
                   strokeWidth="2.5"
@@ -1384,45 +1614,71 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 {/* Sector 1: AUDIT Sector (Top) */}
                 <text
                   x="0"
-                  y="-46"
+                  y="-52"
                   fill="#c084fc"
-                  fontSize="7"
+                  fontSize="8"
                   fontWeight="bold"
                   textAnchor="middle"
                   letterSpacing="0.08em"
                 >
-                  AUDITING
+                  ASSESSMENT
                 </text>
                 <text
                   x="0"
-                  y="-37"
+                  y="-42"
                   fill="rgba(255,255,255,0.4)"
-                  fontSize="5"
+                  fontSize="6"
                   fontWeight="bold"
                   textAnchor="middle"
                   letterSpacing="0.05em"
                 >
-                  VERIFICATION MATRIX
+                  INTELLIGENCE MATRIX
                 </text>
+
+                {/* Compact validation matrix */}
+                <g transform="translate(-47, -34)" opacity="0.92">
+                  {[
+                    { y: 0, w: 34, c: "#22d3ee" },
+                    { y: 8, w: 44, c: "#a855f7" },
+                    { y: 16, w: 38, c: "#10b981" },
+                  ].map((bar, idx) => (
+                    <g key={`matrix-bar-${idx}`}>
+                      <rect x="0" y={bar.y} width="54" height="3.8" rx="1.9" fill="rgba(15, 23, 42, 0.9)" />
+                      <rect x="0" y={bar.y} width={bar.w} height="3.8" rx="1.9" fill={bar.c}>
+                        <animate attributeName="width" values={`${bar.w - 7};${bar.w};${bar.w - 7}`} dur={`${2.8 + idx * 0.35}s`} repeatCount="indefinite" />
+                      </rect>
+                    </g>
+                  ))}
+                </g>
+                <g transform="translate(20, -34)" opacity="0.9">
+                  {["MAP", "RISK", "HA"].map((label, idx) => (
+                    <g key={`engine-chip-${label}`} transform={`translate(0, ${idx * 9})`}>
+                      <rect x="0" y="0" width="32" height="6.4" rx="3.2" fill="rgba(6, 12, 24, 0.84)" stroke={idx === 1 ? "rgba(168, 85, 247, 0.45)" : "rgba(34, 211, 238, 0.4)"} strokeWidth="0.5" />
+                      <text x="16" y="4.7" fill="rgba(226, 232, 240, 0.72)" fontSize="4.2" fontWeight="900" textAnchor="middle">
+                        {label}
+                      </text>
+                    </g>
+                  ))}
+                </g>
 
                 {/* Sector 2: VERIFY Sector (Middle scanner) */}
                 <g transform="translate(0, -10)">
                   <circle
                     cx="0"
                     cy="0"
-                    r="18.5"
+                    r="21"
                     fill="rgba(8, 12, 30, 0.28)"
                     filter="url(#glow)"
                   >
                     <animate
                       attributeName="r"
-                      values="17.5;19.8;17.5"
+                      values="19;22.5;19"
                       dur="4.4s"
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="opacity"
-                      values="0.22;0.5;0.22"
+                      values="0.24;0.56;0.24"
                       dur="4.4s"
                       repeatCount="indefinite"
                     />
@@ -1443,27 +1699,27 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                         dur="8s"
                         repeatCount="indefinite"
                       />
-                      <g transform="scale(3.2)">
+                      <g transform="scale(3.6)">
                         <circle
                           cx="-4"
                           cy="0"
-                          r="6.5"
+                          r="7.2"
                           fill="none"
                           stroke="#22d3ee"
-                          strokeWidth="1.8"
+                          strokeWidth="2"
                         />
                         <path
                           d="M -8,0 H 8"
                           fill="none"
                           stroke="#8b5cf6"
-                          strokeWidth="2.2"
+                          strokeWidth="2.4"
                           strokeLinecap="round"
                         />
                         <path
                           d="M 3,-3 L 8,0 L 3,3"
                           fill="none"
                           stroke="#8b5cf6"
-                          strokeWidth="2.2"
+                          strokeWidth="2.4"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
@@ -1475,7 +1731,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                             repeatCount="indefinite"
                           />
                         </path>
-                      <circle cx="-8" cy="0" r="1.4" fill="#22d3ee">
+                      <circle cx="-8" cy="0" r="1.6" fill="#22d3ee">
                         <animate
                           attributeName="opacity"
                           values="1;0.35;1"
@@ -1485,10 +1741,10 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                       </circle>
                         <g transform="translate(0, -4)">
                           <path
-                            d="M -5,1 H 5"
+                            d="M -5.5,1 H 5.5"
                             fill="none"
                             stroke="rgba(34, 211, 238, 0.5)"
-                            strokeWidth="1.1"
+                            strokeWidth="1.2"
                             strokeDasharray="2 4"
                           >
                             <animate
@@ -1510,9 +1766,9 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   y1="0"
                   x2="52"
                   y2="0"
-                  stroke="#22d3ee"
-                  strokeWidth="2.5"
-                  opacity="0.85"
+                  stroke="url(#engineSweepGrad)"
+                  strokeWidth="3.2"
+                  opacity="0.82"
                   filter="url(#glow)"
                 >
                   <animate
@@ -1566,79 +1822,79 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 {/* Sector 3: DECISION Sector (Bottom) */}
                 <line
                   x1="-54"
-                  y1="18"
-                  x2="54"
-                  y2="18"
+                  y1="20"
+                  x2="58"
+                  y2="20"
                   stroke="rgba(255,255,255,0.15)"
                   strokeWidth="0.8"
                   strokeDasharray="3 3"
                 />
 
-                {/* Decision 1: Rollback Console (Left) */}
+                {/* Decision 1: rollback simulation status */}
                 <g transform="translate(-4, 0)">
                   <rect
                     x="-48"
-                    y="24"
-                    width="46"
-                    height="24"
+                    y="22"
+                    width="52"
+                    height="26"
                     rx="4"
-                    fill="#1b0c0f"
-                    stroke="#ef4444"
+                    fill="rgba(31, 12, 24, 0.88)"
+                    stroke="#a855f7"
                     strokeWidth="0.8"
                   />
                   <text
-                    x="-25"
-                    y="34"
-                    fill="#f87171"
-                    fontSize="6.5"
+                    x="-22"
+                    y="33"
+                    fill="#c084fc"
+                    fontSize="6.4"
                     fontWeight="bold"
                     textAnchor="middle"
                   >
-                    ROLLBACK
+                    SIMULATE
                   </text>
                   {/* Flash LED */}
-                  <circle cx="-40" cy="39" r="1.8" fill="#ef4444">
+                  <circle cx="-40" cy="39" r="1.9" fill="#a855f7">
                     <animate
                       attributeName="opacity"
-                      values="1;0.2;1"
-                      dur="0.6s"
+                      values="1;0.35;1"
+                      dur="1.1s"
                       repeatCount="indefinite"
                     />
                   </circle>
-                  {/* Bouncing Back Arrow */}
+                  {/* rollback simulation loop */}
                   <path
-                    d="M -13,39 L -19,39 L -16,36 M -16,42 L -19,39"
+                    d="M -12,39 C -17,35 -22,36 -24,40 M -24,40 L -20,39 M -24,40 L -22,36"
                     fill="none"
-                    stroke="#ef4444"
+                    stroke="#c084fc"
                     strokeWidth="1"
                     strokeLinecap="round"
                   />
                 </g>
 
-                {/* Decision 2: Approve Console (Right) */}
+                {/* Decision 2: readiness status */}
                 <g transform="translate(4, 0)">
                   <rect
                     x="2"
-                    y="24"
-                    width="46"
-                    height="24"
+                    y="22"
+                    width="52"
+                    height="26"
                     rx="4"
                     fill="#081812"
                     stroke="#10b981"
                     strokeWidth="0.8"
                   />
                   <text
-                    x="25"
-                    y="34"
+                    x="28"
+                    y="33"
                     fill="#34d399"
-                    fontSize="6.5"
+                    fontSize="6.8"
                     fontWeight="bold"
                     textAnchor="middle"
                   >
-                    APPROVE
+                    READY
                   </text>
                   {/* Flash LED */}
-                  <circle cx="10" cy="39" r="1.8" fill="#10b981">
+                  <circle cx="10" cy="39" r="1.9" fill="#10b981">
                     <animate
                       attributeName="opacity"
                       values="1;0.2;1"
@@ -1655,6 +1911,44 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     strokeLinecap="round"
                   />
                 </g>
+              </g>
+
+              {/* Engine status tags */}
+              <g opacity="0.92">
+                {[
+                  { x: -118, y: -84, text: "COMPATIBLE", c: "#22d3ee", w: 82 },
+                  { x: 36, y: -84, text: "VERIFIED", c: "#10b981", w: 68 },
+                  { x: -118, y: 82, text: "LOW RISK", c: "#10b981", w: 70 },
+                  { x: 24, y: 82, text: "SAFE CUTOVER", c: "#a855f7", w: 92 },
+                ].map((tag, idx) => (
+                  <g key={`engine-status-${tag.text}`} transform={`translate(${tag.x}, ${tag.y})`}>
+                    <rect
+                      x="0"
+                      y="0"
+                      width={tag.w}
+                      height="16"
+                      rx="7"
+                      fill="rgba(8, 12, 30, 0.82)"
+                      stroke={tag.c}
+                      strokeWidth="0.75"
+                      opacity="0.75"
+                    >
+                      <animate attributeName="opacity" values="0.55;0.9;0.55" dur={`${3.8 + idx * 0.4}s`} repeatCount="indefinite" />
+                    </rect>
+                    <text
+                      x={tag.w / 2}
+                      y="10.5"
+                      fill={tag.c}
+                      fontSize="6.1"
+                      fontWeight="900"
+                      textAnchor="middle"
+                      letterSpacing="0.04em"
+                    >
+                      {tag.text}
+                    </text>
+                  </g>
+                ))}
+              </g>
               </g>
 
               {/* Animated Nodes Traveling (VMs migrating as cards) */}
