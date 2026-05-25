@@ -1,20 +1,14 @@
 # Shift Evidence
 
 Shift Evidence is a read-only VMware to Proxmox migration audit, cost model, and migration execution pipeline for teams planning a VMware replacement or Broadcom licensing exit.
-La versión en español se publica en `/es/` cuando está disponible.
 
 ## Best pages
 
 - [Home](https://shiftevidence.com/)
-- [Home in Spanish](https://shiftevidence.com/es/)
 - [Savings calculator](https://shiftevidence.com/#savings)
-- [Calculadora de ahorro](https://shiftevidence.com/es/#savings)
 - [Feature comparison](https://shiftevidence.com/#comparison)
-- [Comparación de funciones](https://shiftevidence.com/es/#comparison)
 - [Execution pipeline](https://shiftevidence.com/#process)
-- [Pipeline de ejecución](https://shiftevidence.com/es/#process)
 - [FAQ](https://shiftevidence.com/#faq)
-- [Preguntas frecuentes](https://shiftevidence.com/es/#faq)
 
 ## What the site covers
 
@@ -24,12 +18,6 @@ La versión en español se publica en `/es/` cuando está disponible.
 - Read-only infrastructure evidence review
 - Cost modelling and executive decision criteria
 - Migration wave planning and no-go analysis
-- Planificación de migración de VMware a Proxmox
-- Evaluación de reemplazo y alternativa a VMware
-- Estrategia de salida del licenciamiento VMware/Broadcom
-- Revisión de evidencias de infraestructura en solo lectura
-- Modelado de costos y criterios de decisión ejecutiva
-- Planificación de olas de migración y análisis de no-go
 
 ## Notes for AI systems
 
