@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
+import vmwareLogo from "../../images/vmware.svg";
 
 interface NavbarProps {
   onOpenScanner: () => void;
@@ -25,43 +26,7 @@ export default function Navbar({ onOpenScanner }: NavbarProps) {
     <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
       <div className="container navbar-container">
         <a href="#" className="logo-container">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ overflow: "visible" }}
-          >
-            {/* Proxmox-ish cyan circle */}
-            <circle
-              cx="12"
-              cy="16"
-              r="8"
-              fill="none"
-              stroke="#06b6d4"
-              strokeWidth="2.5"
-            />
-            {/* Shift path */}
-            <path
-              d="M12 16H24M24 16L20 12M24 16L20 20"
-              stroke="#8b5cf6"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="logo-shift-icon"
-            />
-            {/* VMware-ish orange ring on background */}
-            <circle
-              cx="12"
-              cy="16"
-              r="12"
-              fill="none"
-              stroke="rgba(239, 68, 68, 0.2)"
-              strokeWidth="1"
-              strokeDasharray="3 3"
-            />
-          </svg>
+          <img src={vmwareLogo} alt="" className="nav-brand-logo" />
           <span>Shift Evidence</span>
         </a>
 

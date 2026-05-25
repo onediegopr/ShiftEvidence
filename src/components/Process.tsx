@@ -5,6 +5,8 @@ import {
   Rocket,
   BarChart3,
 } from "lucide-react";
+import vmwareLogo from "../../images/vmware.svg";
+import proxmoxLogo from "../../images/proxmox.svg";
 
 export default function Process() {
   const steps = [
@@ -83,13 +85,7 @@ export default function Process() {
         <div className="pipeline">
           {/* Endpoint: VMware */}
           <div className="pipeline-endpoint vmware">
-            <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
-              <rect width="20" height="20" rx="4" fill="#b8363b" />
-              <polygon
-                points="10,3 4,16 7.5,16 10,9 12.5,16 16,16"
-                fill="white"
-              />
-            </svg>
+            <img src={vmwareLogo} alt="" className="pipeline-endpoint-logo" />
             VMware
           </div>
 
@@ -161,18 +157,7 @@ export default function Process() {
 
           {/* Endpoint: Proxmox */}
           <div className="pipeline-endpoint proxmox">
-            <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
-              <rect width="20" height="20" rx="4" fill="#e57000" />
-              <circle
-                cx="10"
-                cy="10"
-                r="5"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.8"
-              />
-              <circle cx="10" cy="10" r="2" fill="white" />
-            </svg>
+            <img src={proxmoxLogo} alt="" className="pipeline-endpoint-logo" />
             Proxmox
           </div>
         </div>

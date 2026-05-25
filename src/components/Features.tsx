@@ -9,6 +9,8 @@ import {
   Boxes,
   DollarSign,
 } from "lucide-react";
+import vmwareLogo from "../../images/vmware.svg";
+import proxmoxLogo from "../../images/proxmox.svg";
 
 export default function Features() {
   return (
@@ -145,40 +147,13 @@ export default function Features() {
                   <th>Feature Capability</th>
                   <th className="col-vs">
                     <div className="cmp-th-brand">
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                      >
-                        <rect width="22" height="22" rx="5" fill="#b8363b" />
-                        <polygon
-                          points="11,4 4,18 8,18 11,10 14,18 18,18"
-                          fill="white"
-                        />
-                      </svg>
+                      <img src={vmwareLogo} alt="" className="cmp-table-logo" />
                       VMware vSphere Suite
                     </div>
                   </th>
                   <th className="col-prox">
                     <div className="cmp-th-brand">
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                      >
-                        <rect width="22" height="22" rx="5" fill="#e57000" />
-                        <circle
-                          cx="11"
-                          cy="11"
-                          r="6"
-                          fill="none"
-                          stroke="white"
-                          strokeWidth="2"
-                        />
-                        <circle cx="11" cy="11" r="2.5" fill="white" />
-                      </svg>
+                      <img src={proxmoxLogo} alt="" className="cmp-table-logo" />
                       Proxmox VE
                     </div>
                   </th>

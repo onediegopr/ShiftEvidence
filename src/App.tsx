@@ -6,6 +6,8 @@ import Features from "./components/Features";
 import Process from "./components/Process";
 import Footer from "./components/Footer";
 import ReadinessValidator from "./components/ReadinessValidator";
+import vmwareLogo from "../images/vmware.svg";
+import proxmoxLogo from "../images/proxmox.svg";
 import {
   ArrowRight,
   ShieldCheck,
@@ -122,6 +124,17 @@ export default function App() {
           <div className="container">
             <div className="text-center mb-8">
               <div className="badge badge-cyan">FAQ</div>
+              <div className="faq-brands">
+                <div className="faq-brand vmware">
+                  <img src={vmwareLogo} alt="" className="faq-brand-logo" />
+                  VMware
+                </div>
+                <ArrowRight size={16} className="cta-arrow" />
+                <div className="faq-brand proxmox">
+                  <img src={proxmoxLogo} alt="" className="faq-brand-logo" />
+                  Proxmox
+                </div>
+              </div>
               <h2 className="mb-4">Frequently Asked Questions</h2>
             </div>
             <div className="faq-list">
@@ -196,29 +209,12 @@ export default function App() {
               {/* Mini brand badges */}
               <div className="cta-brands">
                 <div className="cta-brand vmware">
-                  <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
-                    <rect width="20" height="20" rx="4" fill="#b8363b" />
-                    <polygon
-                      points="10,3 4,16 7.5,16 10,9 12.5,16 16,16"
-                      fill="white"
-                    />
-                  </svg>
+                  <img src={vmwareLogo} alt="" className="cta-brand-logo" />
                   VMware
                 </div>
                 <ArrowRight size={18} className="cta-arrow" />
                 <div className="cta-brand proxmox">
-                  <svg width="26" height="26" viewBox="0 0 20 20" fill="none">
-                    <rect width="20" height="20" rx="4" fill="#e57000" />
-                    <circle
-                      cx="10"
-                      cy="10"
-                      r="5"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="1.8"
-                    />
-                    <circle cx="10" cy="10" r="2" fill="white" />
-                  </svg>
+                  <img src={proxmoxLogo} alt="" className="cta-brand-logo" />
                   Proxmox
                 </div>
               </div>

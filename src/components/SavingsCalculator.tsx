@@ -6,15 +6,18 @@ import {
   Server,
   Cpu,
   Monitor,
-  Shield,
   TrendingDown,
   Calendar,
   ArrowRight,
   Info,
 } from "lucide-react";
+import vmwareLogo from "../../images/vmware.svg";
+import proxmoxLogo from "../../images/proxmox.svg";
 
 type VmwareTier = "standard" | "vvf" | "vcf";
 type ProxmoxTier = "community" | "basic" | "standard" | "premium";
+
+type FxStatus = "loading" | "live" | "fallback";
 
 const VMWARE_DEFAULTS: Record<
   VmwareTier,
@@ -35,20 +38,19 @@ const VMWARE_DEFAULTS: Record<
 
 const PROXMOX_DEFAULTS: Record<
   ProxmoxTier,
-  { label: string; priceEur: number; sublabel: string }
+  { label: string; priceEur: number }
 > = {
-  community: {
-    label: "Community",
-    priceEur: 120,
-    sublabel: "\u20AC120/skt/yr",
-  },
-  basic: { label: "Basic", priceEur: 370, sublabel: "\u20AC370/skt/yr" },
-  standard: { label: "Standard", priceEur: 550, sublabel: "\u20AC550/skt/yr" },
-  premium: { label: "Premium", priceEur: 1100, sublabel: "\u20AC1,100/skt/yr" },
+  community: { label: "Community", priceEur: 120 },
+  basic: { label: "Basic", priceEur: 370 },
+  standard: { label: "Standard", priceEur: 550 },
+  premium: { label: "Premium", priceEur: 1100 },
 };
 
 const CORES_OPTIONS = [16, 24, 32, 48, 64];
-const EUR_USD_DEFAULT = 1.12;
+const FX_FALLBACK_EUR_PER_USD = 1.16;
+const FX_FALLBACK_USD_PER_EUR = 1 / FX_FALLBACK_EUR_PER_USD;
+const FX_RATE_URL =
+  "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD";
 
 export default function SavingsCalculator() {
   // --- Environment ---
@@ -68,8 +70,11 @@ export default function SavingsCalculator() {
     PROXMOX_DEFAULTS["premium"].priceEur,
   );
 
+  // --- FX ---
+  const [usdPerEur, setUsdPerEur] = useState(FX_FALLBACK_USD_PER_EUR);
+  const [fxStatus, setFxStatus] = useState<FxStatus>("loading");
+
   // --- Options ---
-  const [eurUsdRate, setEurUsdRate] = useState(EUR_USD_DEFAULT);
   const [includeEscalation, setIncludeEscalation] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showAssumptions, setShowAssumptions] = useState(false);
@@ -87,6 +92,41 @@ export default function SavingsCalculator() {
     setProxmoxPriceEur(PROXMOX_DEFAULTS[proxmoxTier].priceEur);
   }, [proxmoxTier]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadFxRate = async () => {
+      try {
+        const response = await fetch(FX_RATE_URL, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`FX request failed with ${response.status}`);
+        }
+
+        const data: { rates?: { USD?: number } } = await response.json();
+        const liveRate = data.rates?.USD;
+
+        if (typeof liveRate !== "number" || !Number.isFinite(liveRate)) {
+          throw new Error("FX response missing USD rate");
+        }
+
+        setUsdPerEur(liveRate);
+        setFxStatus("live");
+      } catch {
+        if (!controller.signal.aborted) {
+          setUsdPerEur(FX_FALLBACK_USD_PER_EUR);
+          setFxStatus("fallback");
+        }
+      }
+    };
+
+    loadFxRate();
+
+    return () => controller.abort();
+  }, []);
+
   // ===================== CALCULATIONS =====================
 
   const totalSockets = servers * socketsPerServer;
@@ -97,7 +137,8 @@ export default function SavingsCalculator() {
 
   // --- Annual ---
   const vmwareAnnual = licensedCores * vmwarePricePerCore;
-  const proxmoxAnnualUsd = totalSockets * proxmoxPriceEur * eurUsdRate;
+  const proxmoxPriceUsd = proxmoxPriceEur * usdPerEur;
+  const proxmoxAnnualUsd = totalSockets * proxmoxPriceUsd;
 
   // --- 3-Year ---
   // Broadcom escalation: +10% YoY when enabled
@@ -147,19 +188,7 @@ export default function SavingsCalculator() {
         {/* ========== COMPARISON HEADER ========== */}
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 38 38"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="38" height="38" rx="8" fill="#b8363b" />
-              <polygon
-                points="19,7 7,31 14,31 19,18 24,31 31,31"
-                fill="white"
-              />
-            </svg>
+            <img src={vmwareLogo} alt="" className="cmp-logo-icon" />
             <span className="cmp-header-title">Current VMware Environment</span>
             <span className="cmp-header-sub">Legacy Subscription Model</span>
           </div>
@@ -167,24 +196,7 @@ export default function SavingsCalculator() {
             <ArrowRight size={28} />
           </div>
           <div className="cmp-header-badge proxmox">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 38 38"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="38" height="38" rx="8" fill="#e57000" />
-              <circle
-                cx="19"
-                cy="19"
-                r="10"
-                fill="none"
-                stroke="white"
-                strokeWidth="3"
-              />
-              <circle cx="19" cy="19" r="4" fill="white" />
-            </svg>
+            <img src={proxmoxLogo} alt="" className="cmp-logo-icon" />
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
           </div>
@@ -197,7 +209,7 @@ export default function SavingsCalculator() {
             {/* ---- VMware License Tier ---- */}
             <div className="slider-group">
               <span className="slider-label">
-                <Server size={16} className="cmp-input-icon" color="#b8363b" />
+                <img src={vmwareLogo} alt="" className="cmp-label-logo" />
                 VMware License Tier
               </span>
               <div className="radio-group">
@@ -388,22 +400,10 @@ export default function SavingsCalculator() {
                     Include Broadcom annual escalation estimates (+10% YoY)
                   </span>
                 </label>
-                <div
-                  className="price-edit-row"
-                  style={{ marginTop: "0.75rem" }}
-                >
-                  <span className="price-edit-label">EUR/USD rate:</span>
-                  <input
-                    type="number"
-                    value={eurUsdRate}
-                    onChange={(e) => setEurUsdRate(Number(e.target.value))}
-                    className="price-input"
-                    style={{ width: "80px" }}
-                    min={0.5}
-                    max={2}
-                    step={0.01}
-                  />
-                </div>
+                <p className="fx-note" style={{ marginTop: "0.75rem" }}>
+                  FX conversion is automatic. Current source: {" "}
+                  {fxStatus === "live" ? "live feed" : "fallback rate"}.
+                </p>
               </div>
             )}
           </div>
@@ -413,7 +413,7 @@ export default function SavingsCalculator() {
             {/* ---- Proxmox Subscription Tier ---- */}
             <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
               <span className="slider-label">
-                <Shield size={16} className="cmp-input-icon" color="#e57000" />
+                <img src={proxmoxLogo} alt="" className="cmp-label-logo" />
                 Proxmox Subscription Tier
               </span>
               <div className="radio-group proxmox-radio-group">
@@ -426,31 +426,19 @@ export default function SavingsCalculator() {
                     >
                       {PROXMOX_DEFAULTS[tier].label}
                       <span className="radio-sub">
-                        {PROXMOX_DEFAULTS[tier].sublabel}
+                        {formatCurrency(
+                          PROXMOX_DEFAULTS[tier].priceEur * usdPerEur,
+                        )}
+                        /skt/yr
                       </span>
                     </button>
                   ),
                 )}
               </div>
-              <div className="price-edit-row">
-                <span className="price-edit-label">
-                  Price per socket/year (EUR):
-                </span>
-                <div className="price-input-wrapper">
-                  <span className="price-currency">€</span>
-                  <input
-                    type="number"
-                    value={proxmoxPriceEur}
-                    onChange={(e) => setProxmoxPriceEur(Number(e.target.value))}
-                    className="price-input"
-                    min={0}
-                    step={1}
-                  />
-                </div>
-                <span className="price-usd-equiv">
-                  ≈ {formatCurrency(proxmoxPriceEur * eurUsdRate)}/skt/yr
-                </span>
-              </div>
+              <p className="fx-note">
+                Converted automatically to USD from a live FX feed, with a
+                fixed fallback if the feed is unavailable.
+              </p>
             </div>
 
             {/* ---- Hero Savings Card ---- */}
@@ -558,8 +546,8 @@ export default function SavingsCalculator() {
                   <strong>Assumptions:</strong> VMware pricing is modeled from
                   public reference pricing and licensed core calculations
                   (16-core minimum per physical CPU for VCF/VVF). Proxmox
-                  pricing reflects the selected subscription tier and total CPU
-                  sockets.
+                  pricing reflects the selected subscription tier, total CPU
+                  sockets, and automatic USD conversion.
                   {includeEscalation &&
                     " VMware estimate includes 10% YoY Broadcom escalation."}
                 </p>
@@ -568,7 +556,7 @@ export default function SavingsCalculator() {
                   only. They do not include hardware, backup platforms,
                   migration services, internal labor, downtime risk, taxes,
                   currency fluctuations, or contract-specific discounts. All
-                  figures in USD. EUR converted at {eurUsdRate} rate.
+                  figures in USD.
                 </p>
               </div>
             )}
@@ -578,3 +566,4 @@ export default function SavingsCalculator() {
     </section>
   );
 }
+
