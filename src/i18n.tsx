@@ -10,15 +10,16 @@ import {
 export type Locale = "en" | "de" | "fr" | "es" | "pt" | "it";
 
 export const LANGUAGE_OPTIONS: Array<{ code: Locale; label: string }> = [
-  { code: "en", label: "Inglés" },
-  { code: "de", label: "Alemán" },
-  { code: "fr", label: "Francés" },
+  { code: "en", label: "English" },
+  { code: "de", label: "Deutsch" },
+  { code: "fr", label: "Français" },
   { code: "es", label: "Español" },
-  { code: "pt", label: "Portugués" },
+  { code: "pt", label: "Português" },
   { code: "it", label: "Italiano" },
 ];
 
 const STORAGE_KEY = "shift-evidence-locale";
+const ROUTE_QUERY_KEY = "path";
 
 type SeoMeta = {
   title: string;
@@ -100,6 +101,19 @@ const getPathLocale = () => {
   return null;
 };
 
+const getQueryLocale = () => {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  const rawPath = params.get(ROUTE_QUERY_KEY);
+  if (!rawPath) return null;
+
+  const code = rawPath.replace(/^\/+/, "").slice(0, 2).toLowerCase();
+  if (["en", "de", "fr", "es", "pt", "it"].includes(code)) {
+    return code as Locale;
+  }
+  return null;
+};
+
 const getBrowserLocale = (): Locale => {
   if (typeof navigator === "undefined") return "en";
   const lower = navigator.language.toLowerCase();
@@ -115,6 +129,9 @@ const buildLocalePath = (locale: Locale) => {
   if (typeof window === "undefined") return "/";
 
   const { pathname, search, hash } = window.location;
+  const params = new URLSearchParams(search);
+  params.delete(ROUTE_QUERY_KEY);
+  const cleanSearch = params.toString();
   const stripped = pathname
     .replace(/^\/(en|de|fr|es|pt|it)(\/|$)/i, "/")
     .replace(/\/+/g, "/");
@@ -122,7 +139,7 @@ const buildLocalePath = (locale: Locale) => {
   const basePath = stripped === "/" ? "/" : stripped;
   const targetPath = basePath === "/" ? `/${locale}/` : `/${locale}${basePath}`;
 
-  return `${targetPath}${search}${hash}`;
+  return `${targetPath}${cleanSearch ? `?${cleanSearch}` : ""}${hash}`;
 };
 
 const applySeo = (locale: Locale) => {
@@ -222,7 +239,7 @@ const applySeo = (locale: Locale) => {
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
-    const pathLocale = getPathLocale();
+    const pathLocale = getPathLocale() ?? getQueryLocale();
     const stored =
       typeof window !== "undefined"
         ? (window.localStorage.getItem(STORAGE_KEY) as Locale | null)
@@ -233,8 +250,15 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const pathLocale = getPathLocale();
+    const queryLocale = getQueryLocale();
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const browserLocale = getBrowserLocale();
+    if (queryLocale && !pathLocale) {
+      const nextPath = buildLocalePath(queryLocale);
+      window.history.replaceState({}, "", nextPath);
+      setLocaleState(queryLocale);
+      return;
+    }
     if (!pathLocale && !stored && browserLocale !== "en") {
       const nextPath = buildLocalePath(browserLocale);
       window.history.replaceState({}, "", nextPath);
@@ -249,7 +273,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onPopState = () => {
-      const next = getPathLocale();
+      const next = getPathLocale() ?? getQueryLocale();
       if (next) {
         setLocaleState(next);
       } else {
@@ -266,11 +290,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       locale,
       setLocale: (next: Locale) => {
         if (next === locale) return;
-        window.location.assign(buildLocalePath(next));
+        window.history.pushState({}, "", buildLocalePath(next));
+        setLocaleState(next);
       },
       toggleLocale: () => {
         const next = locale === "en" ? "es" : "en";
-        window.location.assign(buildLocalePath(next));
+        window.history.pushState({}, "", buildLocalePath(next));
+        setLocaleState(next);
       },
       t: (en, es) => (locale === "es" ? es ?? en : en),
       seo: SEO_META[locale],

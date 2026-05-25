@@ -123,7 +123,7 @@ export default function Navbar() {
 
                 {isLanguageOpen && (
                   <div className="language-picker-menu" role="menu">
-                    <div className="language-picker-header">Landing</div>
+                    <div className="language-picker-header">Language</div>
                     {LANGUAGE_OPTIONS.map((option) => (
                       <button
                         key={option.code}
