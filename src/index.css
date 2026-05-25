@@ -30,7 +30,7 @@
     --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
     /* Layout */
-    --max-width: 1200px;
+    --max-width: 1360px;
     --radius-sm: 8px;
     --radius-md: 16px;
     --radius-lg: 24px;
@@ -105,7 +105,7 @@ p {
     width: 100%;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1rem;
     z-index: 10;
 }
 
@@ -2886,6 +2886,9 @@ p {
 @media (max-width: 768px) {
     .section {
         padding: 4.5rem 0;
+    }
+    .container {
+        padding: 0 0.75rem;
     }
     .navbar-container {
         height: auto;
