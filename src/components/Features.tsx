@@ -9,6 +9,7 @@ import {
   Boxes,
   DollarSign,
 } from "lucide-react";
+import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -46,6 +47,9 @@ const copy = {
 };
 
 export default function Features() {
+  const vmwareLogoSrc = assetSrc(vmwareLogo);
+  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
+
   return (
     <>
       <section id="features" className="section" style={{ position: "relative" }}>
@@ -123,13 +127,13 @@ export default function Features() {
                   <th>Feature Capability</th>
                   <th className="col-vs">
                     <div className="cmp-th-brand">
-                      <img src={vmwareLogo} alt="" className="cmp-table-logo" />
+                      <img src={vmwareLogoSrc} alt="" className="cmp-table-logo" />
                       VMware vSphere Suite
                     </div>
                   </th>
                   <th className="col-prox">
                     <div className="cmp-th-brand">
-                      <img src={proxmoxLogo} alt="" className="cmp-table-logo" />
+                      <img src={proxmoxLogoSrc} alt="" className="cmp-table-logo" />
                       Proxmox VE
                     </div>
                   </th>

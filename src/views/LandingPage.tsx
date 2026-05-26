@@ -8,6 +8,7 @@ import Features from "../components/Features";
 import Process from "../components/Process";
 import Footer from "../components/Footer";
 import ReadinessValidator from "../components/ReadinessValidator";
+import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 import {
@@ -59,6 +60,8 @@ const appCopy = {
 
 export default function LandingPage() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const vmwareLogoSrc = assetSrc(vmwareLogo);
+  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
 
   const handleOpenScanner = () => setIsScannerOpen(true);
   const handleCloseScanner = () => setIsScannerOpen(false);
@@ -73,8 +76,6 @@ export default function LandingPage() {
       <Navbar />
 
       <main style={{ flexGrow: 1 }}>
-        <Hero onOpenScanner={handleOpenScanner} />
-
         <section className="section shiftreadiness-promo-section">
           <div className="container">
             <div className="glass-card shiftreadiness-promo">
@@ -93,6 +94,8 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <Hero onOpenScanner={handleOpenScanner} />
 
         <section className="credibility-strip">
           <div className="bg-mesh"></div>
@@ -158,12 +161,12 @@ export default function LandingPage() {
               <div className="badge badge-cyan">FAQ</div>
               <div className="faq-brands">
                 <div className="faq-brand vmware">
-                  <img src={vmwareLogo} alt="" className="faq-brand-logo" />
+                  <img src={vmwareLogoSrc} alt="" className="faq-brand-logo" />
                   VMware
                 </div>
                 <ArrowRight size={16} className="cta-arrow" />
                 <div className="faq-brand proxmox">
-                  <img src={proxmoxLogo} alt="" className="faq-brand-logo" />
+                  <img src={proxmoxLogoSrc} alt="" className="faq-brand-logo" />
                   Proxmox
                 </div>
               </div>
@@ -213,12 +216,12 @@ export default function LandingPage() {
             <div className="glass-card cta-box">
               <div className="cta-brands">
                 <div className="cta-brand vmware">
-                  <img src={vmwareLogo} alt="" className="cta-brand-logo" />
+                  <img src={vmwareLogoSrc} alt="" className="cta-brand-logo" />
                   VMware
                 </div>
                 <ArrowRight size={18} className="cta-arrow" />
                 <div className="cta-brand proxmox">
-                  <img src={proxmoxLogo} alt="" className="cta-brand-logo" />
+                  <img src={proxmoxLogoSrc} alt="" className="cta-brand-logo" />
                   Proxmox
                 </div>
               </div>

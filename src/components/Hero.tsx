@@ -1,4 +1,5 @@
 ﻿import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
+import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -7,6 +8,9 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenScanner }: HeroProps) {
+  const vmwareLogoSrc = assetSrc(vmwareLogo);
+  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -453,7 +457,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     LEGACY INFRASTRUCTURE
                   </text>
                   <image
-                    href={vmwareLogo}
+                    href={vmwareLogoSrc}
                     x="-67"
                     y="-10"
                     width="11"
@@ -994,7 +998,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 {/* Header Title with Proxmox Chevron Logo & Status */}
                 <g transform="translate(80, 20)">
                   <image
-                    href={proxmoxLogo}
+                    href={proxmoxLogoSrc}
                     x="-70"
                     y="-6"
                     width="10"

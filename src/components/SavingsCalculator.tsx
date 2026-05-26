@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Info,
 } from "lucide-react";
+import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -54,6 +55,8 @@ const FX_RATE_URL =
   "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD";
 
 export default function SavingsCalculator() {
+  const vmwareLogoSrc = assetSrc(vmwareLogo);
+  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
 
   // --- Environment ---
   const [servers, setServers] = useState(8);
@@ -187,7 +190,7 @@ export default function SavingsCalculator() {
         {/* ========== COMPARISON HEADER ========== */}
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
-            <img src={vmwareLogo} alt="" className="cmp-logo-icon" />
+            <img src={vmwareLogoSrc} alt="" className="cmp-logo-icon" />
             <span className="cmp-header-title">Current VMware Environment</span>
             <span className="cmp-header-sub">Legacy Subscription Model</span>
           </div>
@@ -195,7 +198,7 @@ export default function SavingsCalculator() {
             <ArrowRight size={28} />
           </div>
           <div className="cmp-header-badge proxmox">
-            <img src={proxmoxLogo} alt="" className="cmp-logo-icon" />
+            <img src={proxmoxLogoSrc} alt="" className="cmp-logo-icon" />
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
           </div>
@@ -208,7 +211,7 @@ export default function SavingsCalculator() {
             {/* ---- VMware License Tier ---- */}
             <div className="slider-group">
               <span className="slider-label">
-                <img src={vmwareLogo} alt="" className="cmp-label-logo" />
+                <img src={vmwareLogoSrc} alt="" className="cmp-label-logo" />
                 VMware License Tier
               </span>
               <div className="radio-group">
@@ -412,7 +415,7 @@ export default function SavingsCalculator() {
             {/* ---- Proxmox Subscription Tier ---- */}
             <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
               <span className="slider-label">
-                <img src={proxmoxLogo} alt="" className="cmp-label-logo" />
+                <img src={proxmoxLogoSrc} alt="" className="cmp-label-logo" />
                 Proxmox Subscription Tier
               </span>
               <div className="radio-group proxmox-radio-group">
