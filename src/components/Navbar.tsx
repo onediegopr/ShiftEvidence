@@ -50,22 +50,22 @@ export default function Navbar() {
         <nav>
           <ul className="nav-links">
             <li>
-              <a href="#savings" className="nav-link">
+              <a href="/#savings" className="nav-link">
                 Savings Calculator
               </a>
             </li>
             <li>
-              <a href="#features" className="nav-link">
+              <a href="/#features" className="nav-link">
                 Core Features
               </a>
             </li>
             <li>
-              <a href="#comparison" className="nav-link">
+              <a href="/#comparison" className="nav-link">
                 VMware vs Proxmox
               </a>
             </li>
             <li>
-              <a href="#process" className="nav-link">
+              <a href="/#process" className="nav-link">
                 Migration Pipeline
               </a>
             </li>

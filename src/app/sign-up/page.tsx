@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { authClient } from "../../lib/auth-client";
+import Navbar from "../../components/Navbar";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -37,7 +38,9 @@ export default function SignUpPage() {
   };
 
   return (
-    <main className="auth-page">
+    <>
+      <Navbar />
+      <main className="auth-page">
       <div className="auth-glow-1"></div>
       <div className="auth-glow-2"></div>
       
@@ -128,5 +131,6 @@ export default function SignUpPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }
