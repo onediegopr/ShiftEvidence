@@ -246,3 +246,26 @@ Recommended next hito:
 Alternative if returning to production:
 
 - `HITO 9.2 - Hostinger env vars + storage gate completion`
+
+## HITO 10.2 QA outcome
+
+Follow-up HITO 10.2 executed the entitled local report path.
+
+Validated:
+
+- Free-preview generation remained stable.
+- Sparse assessment without entitlement generated `free_preview`, not `readiness_report`.
+- Parsed assessment with local entitlement generated `readiness_report`.
+- Full report download worked with owner session.
+- No-session download redirected to `/sign-in`.
+- Invalid assessment/report pairing returned `404`.
+- Report history showed both preview and readiness report entries.
+
+Bugfixes applied in HITO 10.2:
+
+- Secure report download now catches ownership/report lookup failures and returns `404`.
+- Report preview UI now shows `Full report: Unlocked` when `full_report_unlocked` is granted.
+
+Remaining note:
+
+- A strict manual visual pass in a foreground desktop PDF viewer remains recommended. PDF files opened and decoded content was verified, but screenshot capture could not confirm visual layout because the PDF window did not become the active foreground window.

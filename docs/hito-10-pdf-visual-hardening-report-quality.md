@@ -247,3 +247,36 @@ Remaining follow-up:
 
 - manual visual review in a desktop PDF viewer;
 - full entitled `readiness_report` QA after intentionally granting a local entitlement.
+
+## HITO 10.2 QA outcome
+
+HITO 10.2 validated the local entitled report path.
+
+Validated:
+
+- free-preview baseline still works;
+- sparse assessment without entitlement still generates `free_preview`;
+- full report remains locked without entitlement;
+- local `readiness_report` entitlement can be granted using existing local DB models;
+- report page reflects `Readiness Report: Unlocked` after entitlement;
+- authenticated generation creates `reportType = readiness_report`;
+- full report download works;
+- report history lists the full readiness report;
+- no-session download redirects to `/sign-in`;
+- invalid assessment/report pairing returns `404` instead of `500`.
+
+Bugfixes applied:
+
+- hardened secure download lookup for inaccessible report paths;
+- fixed report preview UI to derive full report status from entitlement state.
+
+PDF artifact checks:
+
+- preview PDF: valid `%PDF-1.3`, EOF present, 33-page count marker;
+- full readiness report PDF: valid `%PDF-1.3`, EOF present, 33-page count marker;
+- decoded PDF streams include cover, executive summary, evidence overview, readiness/confidence, environment summary, top findings, VM risk matrix, migration waves, required validations, next evidence, next steps and disclaimers.
+
+Remaining strict QA note:
+
+- The PDF files were opened through the local desktop handler, but the agent could not bring the PDF viewer to the foreground for screenshot-based inspection.
+- A final human visual pass is still recommended before marking manual visual review as fully closed.

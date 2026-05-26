@@ -33,11 +33,17 @@ export async function GET(
     authProvider: "better-auth",
   });
 
-  const report = await getReportForDownload({
-    userId: session.user.id,
-    assessmentId,
-    reportId,
-  });
+  let report: Awaited<ReturnType<typeof getReportForDownload>>;
+
+  try {
+    report = await getReportForDownload({
+      userId: session.user.id,
+      assessmentId,
+      reportId,
+    });
+  } catch {
+    return NextResponse.json({ error: "Report not found." }, { status: 404 });
+  }
 
   if (!report) {
     return NextResponse.json({ error: "Report not found." }, { status: 404 });
@@ -79,4 +85,3 @@ export async function GET(
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

@@ -48,7 +48,7 @@ export type ReportPreviewData = {
   planLabel: string;
   planRank: number;
   reportPreviewStatus: ReportPreviewStatus;
-  fullReportStatus: "locked";
+  fullReportStatus: "locked" | "unlocked";
   pdfStatus: string;
   commercialStatus: ReturnType<typeof getCommercialStatusForAssessment>;
   completionScore: number;
@@ -451,18 +451,23 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
 
   const reportPreviewStatus = completion.reportPreviewStatus as ReportPreviewStatus;
   const costRiskStatus = getCostRiskStatus(assessment);
+  const fullReportStatus = commercialStatus.hasFullReportUnlocked ? "unlocked" : "locked";
   const reportCards = [
     {
       label: "Report preview",
       value: completion.reportPreviewStatus === "available" ? "Available" : completion.reportPreviewStatus === "partial" ? "Partial" : "Locked",
       tone: completion.reportPreviewStatus === "available" ? "good" : completion.reportPreviewStatus === "partial" ? "warning" : "neutral",
-      note: "Structured preview only. Full report remains locked.",
+      note: commercialStatus.hasFullReportUnlocked
+        ? "Structured preview remains available. Full report is unlocked."
+        : "Structured preview only. Full report remains locked.",
     },
     {
       label: "Full report",
-      value: "Locked",
-      tone: "neutral",
-      note: "A full export-ready report is not available yet.",
+      value: commercialStatus.hasFullReportUnlocked ? "Unlocked" : "Locked",
+      tone: commercialStatus.hasFullReportUnlocked ? "good" : "neutral",
+      note: commercialStatus.hasFullReportUnlocked
+        ? "A full export-ready report is available for this assessment."
+        : "A full export-ready report is not available yet.",
     },
     {
       label: "PDF Preview",
@@ -499,7 +504,7 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
     planLabel: reportPlan.planLabel,
     planRank: reportPlan.planRank,
     reportPreviewStatus,
-    fullReportStatus: "locked",
+    fullReportStatus,
     pdfStatus: completion.pdfStatus,
     commercialStatus,
     completionScore: completion.completionScore,

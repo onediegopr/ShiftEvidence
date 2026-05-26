@@ -144,6 +144,7 @@ function renderStatusTone(value: string) {
     case "selected":
     case "parsed":
     case "available":
+    case "unlocked":
     case "moderate":
     case "generated":
     case "fulfilled":
@@ -400,7 +401,10 @@ export default async function ReportPreviewPage({
           <h1>{assessment.title}</h1>
           <p>
             Preliminary report preview for {assessment.clientLabel ?? "the current assessment"}.
-            {" "}The full report remains locked until a plan is unlocked.
+            {" "}
+            {report.commercialStatus.hasFullReportUnlocked
+              ? "The full readiness report is unlocked for this assessment."
+              : "The full report remains locked until a plan is unlocked."}
           </p>
         </div>
         <div className="dashboard-hero-actions">
@@ -490,7 +494,7 @@ export default async function ReportPreviewPage({
         </div>
         <div className="report-preview-footer">
           {renderStatusPill(`Preview: ${statusLabel(completion.reportPreviewStatus)}`, renderStatusTone(completion.reportPreviewStatus))}
-          {renderStatusPill(`Full report: ${statusLabel(completion.fullReportStatus)}`, "neutral")}
+          {renderStatusPill(`Full report: ${statusLabel(report.fullReportStatus)}`, renderStatusTone(report.fullReportStatus))}
           {renderStatusPill(`PDF: ${statusLabel(completion.pdfStatus)}`, "neutral")}
         </div>
       </section>
