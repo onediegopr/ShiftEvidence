@@ -17,13 +17,13 @@ This hito is local-only and does not solve Hostinger deployment.
 
 ## Problemas detectados
 
-1. The landing CTA existed in source but was still too easy to miss because it appeared after the hero in a long public page.
+1. The landing CTA existed in source but was still too easy to miss in the original long public page.
 2. VMware and Proxmox SVG imports were rendered directly as React values in `<img src>` and SVG `<image href>`.
 3. In Next.js, imported SVG assets can resolve to an object with a `src` property. Passing that object directly produced `src="[object Object]"` or `href="[object Object]"`, breaking vendor icons.
 
 ## Alcance
 
-- Move the existing ShiftReadiness promo card above the hero so it is visible near the top of `/`.
+- Keep the existing ShiftReadiness promo card visible near the top of `/`, without hiding it in long lower sections.
 - Add a small `assetSrc` helper to resolve imported image assets to URL strings.
 - Use that helper across public landing components that render VMware/Proxmox icons.
 - Validate local routes and HTML.
@@ -129,7 +129,7 @@ Actions taken during reopen:
 
 Result:
 
-- The CTA is visible immediately below the top navigation and above the main hero.
+- At reopen time, the CTA was made visible immediately below the top navigation and above the main hero.
 - The block shows `New product`, `ShiftReadiness`, the readiness workspace description, and `Explore ShiftReadiness`.
 - The CTA uses `href="/shiftreadiness"`.
 - The block does not depend on animation, client state, `document`, `window`, or `useEffect`.
@@ -148,6 +148,20 @@ Production remains separate:
 
 - This reopen did not touch Hostinger.
 - `https://shiftevidence.com/shiftreadiness` remains a Hostinger/static routing issue until the domain serves the real Next.js Node app.
+
+## Micro-hotfix CTA position
+
+After visual review, the CTA position directly below the navbar was considered too invasive because it appeared before the primary landing hero message. The CTA was moved from above the hero to immediately after the main hero and before the longer credibility/methodology sections.
+
+Current placement:
+
+- The main hero remains first after the navigation.
+- The ShiftReadiness CTA appears immediately after the hero.
+- The CTA is still near the beginning of the page and visible without being buried in long sections.
+- The required copy remains unchanged: `New product`, `ShiftReadiness`, the VMware to Proxmox readiness description, and `Explore ShiftReadiness`.
+- The CTA still points to `/shiftreadiness`.
+- VMware and Proxmox icon fixes remain in place.
+- Production was not touched; Hostinger remains a separate static/runtime issue.
 
 ## Riesgos pendientes
 

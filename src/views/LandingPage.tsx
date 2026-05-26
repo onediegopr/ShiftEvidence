@@ -76,6 +76,8 @@ export default function LandingPage() {
       <Navbar />
 
       <main style={{ flexGrow: 1 }}>
+        <Hero onOpenScanner={handleOpenScanner} />
+
         <section className="section shiftreadiness-promo-section">
           <div className="container">
             <div className="glass-card shiftreadiness-promo">
@@ -94,8 +96,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        <Hero onOpenScanner={handleOpenScanner} />
 
         <section className="credibility-strip">
           <div className="bg-mesh"></div>
