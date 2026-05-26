@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, type CSSProperties, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
@@ -22,8 +21,7 @@ import {
   User,
   Lock,
   ChevronRight,
-  Download,
-  AlertTriangle
+  Download
 } from "lucide-react";
 
 type Step = "setup" | "scanning" | "results" | "download";
@@ -31,12 +29,12 @@ type LogType = "info" | "success" | "warn";
 type EvidenceSource = "none" | "file" | "manual";
 
 export default function SignUpPage() {
-  const router = useRouter();
-
   // Signup states
   const [isRegistered, setIsRegistered] = useState(false);
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() =>
+    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("email") ?? "",
+  );
   const [company, setCompany] = useState("");
   const [clusterSize, setClusterSize] = useState("< 50 VMs");
   const [password, setPassword] = useState("");
@@ -58,17 +56,6 @@ export default function SignUpPage() {
   const [backupSystem, setBackupSystem] = useState("veeam");
 
   const consoleEndRef = useRef<HTMLDivElement>(null);
-
-  // Prefill email from query parameter if present
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const emailParam = params.get("email");
-      if (emailParam) {
-        setEmail(emailParam);
-      }
-    }
-  }, []);
 
   // Auto-scroll logs terminal
   useEffect(() => {
