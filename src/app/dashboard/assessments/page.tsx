@@ -8,9 +8,9 @@ import { listAssessmentsForCurrentWorkspace } from "../../../server/assessments/
 import { getEvidenceUploadStatus } from "../../../server/evidence/evidenceFileService";
 
 type AssessmentsPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     archived?: string;
-  };
+  }>;
 };
 
 function formatMoney(value: number | null | undefined) {
@@ -34,6 +34,7 @@ function formatDate(value: Date | string) {
 }
 
 export default async function AssessmentsPage({ searchParams }: AssessmentsPageProps) {
+  const resolvedSearchParams = await searchParams;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -73,7 +74,7 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
         </Link>
       </section>
 
-      {searchParams?.archived === "1" ? (
+      {resolvedSearchParams?.archived === "1" ? (
         <div className="dashboard-banner dashboard-banner-success">
           Assessment archived successfully.
         </div>
