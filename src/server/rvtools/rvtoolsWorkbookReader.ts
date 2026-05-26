@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import path from "path";
 import type { SheetDetectionResult, WorkbookSheet } from "./rvtoolsParserTypes";
-import { normalizeHeader } from "./rvtoolsColumnMapper";
+import { inferRoleFromDetection, normalizeHeader } from "./rvtoolsColumnMapper";
 
 function detectRoleFromSheet(sheetName: string, headers: string[], rowCount: number) {
   const normalizedSheetName = normalizeHeader(sheetName);
@@ -75,9 +75,11 @@ function detectRoleFromSheet(sheetName: string, headers: string[], rowCount: num
     score: 0,
   });
 
+  const explicitRole = inferRoleFromDetection(sheetName, headers, rowCount);
+
   return {
     sheetName,
-    role: best.score > 0 ? best.role : "unknown",
+    role: explicitRole !== "unknown" ? explicitRole : best.score > 0 ? best.role : "unknown",
     score: best.score,
     headers,
     rowCount,

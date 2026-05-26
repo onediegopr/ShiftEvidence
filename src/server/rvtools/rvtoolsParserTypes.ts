@@ -1,6 +1,13 @@
 import type { ParsedRiskLevel } from "@prisma/client";
 
-export type SheetRole = "vm" | "host" | "datastore" | "snapshot" | "unknown";
+export type SheetRole =
+  | "vm"
+  | "vm_enrichment"
+  | "host"
+  | "datastore"
+  | "snapshot"
+  | "partial_or_future"
+  | "unknown";
 
 export type ParserWarning = {
   code: string;

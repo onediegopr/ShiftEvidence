@@ -1,5 +1,11 @@
 import { EvidenceType } from "@prisma/client";
-import { getRoleSpecificWarnings, inferRoleFromDetection, mapRowsByRole } from "./rvtoolsColumnMapper";
+import {
+  getRoleSpecificWarnings,
+  inferRoleFromDetection,
+  mapRowsByRole,
+  mergeVmEnrichmentRows,
+  normalizeEntityName,
+} from "./rvtoolsColumnMapper";
 import { readRvtoolsWorkbookFromBuffer } from "./rvtoolsWorkbookReader";
 import type {
   ParsedDatastoreRow,
@@ -83,6 +89,71 @@ function detectMissingExpectedSheets(detections: SheetDetectionResult[]) {
     })) satisfies ParserWarning[];
 }
 
+function buildDuplicateVmWarning(params: {
+  vmName: string;
+  sheetName: string;
+  rowNumber: number;
+}) {
+  return {
+    code: "duplicate_vm_in_vInfo",
+    message: `Merged duplicate canonical VM row for "${params.vmName}".`,
+    sheetName: params.sheetName,
+    rowNumber: params.rowNumber,
+  } satisfies ParserWarning;
+}
+
+function mergeDuplicateCanonicalVms(rows: ParsedVmRow[]) {
+  const merged = new Map<string, ParsedVmRow>();
+  const warnings: ParserWarning[] = [];
+
+  for (const row of rows) {
+    const key = normalizeEntityName(row.vmName);
+    const existing = merged.get(key);
+    if (!existing) {
+      merged.set(key, row);
+      continue;
+    }
+
+    warnings.push(
+      buildDuplicateVmWarning({
+        vmName: row.vmName,
+        sheetName: row.sourceSheetName,
+        rowNumber: row.sourceRowNumber,
+      }),
+    );
+
+    merged.set(key, {
+      ...existing,
+      powerState: existing.powerState ?? row.powerState,
+      guestOs: existing.guestOs ?? row.guestOs,
+      cpuCount: existing.cpuCount ?? row.cpuCount,
+      memoryMb: existing.memoryMb ?? row.memoryMb,
+      diskCount: existing.diskCount ?? row.diskCount,
+      provisionedGb: existing.provisionedGb ?? row.provisionedGb,
+      usedGb: existing.usedGb ?? row.usedGb,
+      nicCount: existing.nicCount ?? row.nicCount,
+      toolsStatus: existing.toolsStatus ?? row.toolsStatus,
+      datastoreName: existing.datastoreName ?? row.datastoreName,
+      clusterName: existing.clusterName ?? row.clusterName,
+      hostName: existing.hostName ?? row.hostName,
+      riskLevel: existing.riskLevel ?? row.riskLevel,
+      recommendation: existing.recommendation ?? row.recommendation,
+      rawJson: {
+        ...existing.rawJson,
+        __duplicateCanonicalRows: [
+          ...((existing.rawJson.__duplicateCanonicalRows as Record<string, unknown>[] | undefined) ?? []),
+          row.rawJson,
+        ],
+      },
+    });
+  }
+
+  return {
+    rows: [...merged.values()],
+    warnings,
+  };
+}
+
 function hasUsefulRows(sheets: WorkbookSheet[]) {
   return sheets.some((sheet) => sheet.rowCount > 0);
 }
@@ -112,6 +183,7 @@ export function parseRvtoolsWorkbook(params: {
   }
 
   const parsedVMs: ParsedVmRow[] = [];
+  const vmEnrichmentSheets: WorkbookSheet[] = [];
   const parsedHosts: ParsedHostRow[] = [];
   const parsedDatastores: ParsedDatastoreRow[] = [];
   const parsedSnapshots: ParsedSnapshotRow[] = [];
@@ -132,12 +204,49 @@ export function parseRvtoolsWorkbook(params: {
 
     if (role === "vm") {
       parsedVMs.push(...(parsed.rows as ParsedVmRow[]));
+    } else if (role === "vm_enrichment") {
+      vmEnrichmentSheets.push(sheet);
     } else if (role === "host") {
       parsedHosts.push(...(parsed.rows as ParsedHostRow[]));
     } else if (role === "datastore") {
       parsedDatastores.push(...(parsed.rows as ParsedDatastoreRow[]));
     } else if (role === "snapshot") {
       parsedSnapshots.push(...(parsed.rows as ParsedSnapshotRow[]));
+    }
+  }
+
+  const hasCanonicalVmSheet = detections.some((detection) => detection.role === "vm");
+  if (!hasCanonicalVmSheet && vmEnrichmentSheets.length > 0) {
+    warnings.push({
+      code: "missing_canonical_vm_sheet",
+      message: "No canonical vInfo sheet was detected; VM parsing used fallback sheet detection only.",
+    });
+  }
+
+  const deduplicated = mergeDuplicateCanonicalVms(parsedVMs);
+  parsedVMs.splice(0, parsedVMs.length, ...deduplicated.rows);
+  warnings.push(...deduplicated.warnings);
+
+  if (parsedVMs.length > 0) {
+    for (const enrichmentSheet of vmEnrichmentSheets) {
+      const merged = mergeVmEnrichmentRows({
+        canonicalVms: parsedVMs,
+        rows: enrichmentSheet.rows,
+        sheetName: enrichmentSheet.sheetName,
+      });
+      warnings.push(...merged.warnings);
+    }
+  } else {
+    for (const enrichmentSheet of vmEnrichmentSheets) {
+      const parsed = mapRowsByRole({
+        role: "vm",
+        rows: enrichmentSheet.rows,
+        assessmentId: params.assessmentId,
+        evidenceFileId: params.evidenceFileId,
+        sheetName: enrichmentSheet.sheetName,
+      });
+      warnings.push(...parsed.warnings);
+      parsedVMs.push(...(parsed.rows as ParsedVmRow[]));
     }
   }
 

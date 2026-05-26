@@ -245,3 +245,24 @@ Ejecutar un hito especifico de parser hardening P0 antes de usar RVTools reales 
 - canonical VM merge;
 - datastore usage normalization;
 - fixture test con el workbook sintetico.
+
+## HITO 12 outcome
+HITO 12 corrigio el P0 principal detectado aqui.
+
+Resultado after:
+
+- workbook RVTools-like esperado: 23 VMs;
+- `ParsedVM`: 23, antes 150;
+- `ParsedHost`: 5;
+- `ParsedDatastore`: 6;
+- `ParsedSnapshot`: 5;
+- `RiskFinding`: 22 en flujo real post-fix;
+- datastore usage: normalizado, incluyendo `Free %`;
+- CSV simple: preservado.
+
+Quedan como backlog P1/P2:
+
+- network/tools/disks como modelos/signals first-class;
+- parser coverage visible en UI/PDF;
+- soporte parcial de `vHealth`, `vCluster` y `vPartitions`;
+- QA con export RVTools real anonimizado.
