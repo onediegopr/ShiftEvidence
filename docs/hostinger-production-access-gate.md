@@ -11,6 +11,46 @@ Este documento define las condiciones mínimas que deben existir antes de reinte
 - Motivo: falta acceso real, dominio, app root, método deploy, logs y control de reinicio
 - Git debe estar limpio antes del reintento
 
+## Discovery HITO 9.1.6
+
+Datos confirmados por inspeccion publica:
+
+- Dominio: `https://shiftevidence.com`
+- HTTPS responde: SI
+- `/`: `200 OK`
+- Servidor: LiteSpeed / Hostinger
+- Headers observados: `platform: hostinger`, `panel: hpanel`
+- DNS observado: A `147.93.65.5`, AAAA `2a02:4780:13:1295:0:2628:44f:10`
+- `/shiftreadiness`: `404 Not Found`
+- `/sign-in`: `404 Not Found`
+- `/sign-up`: `404 Not Found`
+- `/dashboard`: `404 Not Found`
+- HTML de `/`: contiene `Shift Evidence`, no contiene `ShiftReadiness`, no contiene `__next` ni rutas `/_next/`
+
+Interpretacion:
+
+- El dominio parece servir contenido estatico desde LiteSpeed/Hostinger.
+- No hay evidencia publica de que el dominio este asociado a la app Next.js/Node actual.
+- HITO 9.2 no debe reintentarse hasta confirmar Node App Manager/Application Root/Startup File/logs/restart.
+
+Datos pendientes:
+
+- Acceso hPanel/SSH/SFTP/File Manager.
+- Contenido real de `public_html`.
+- Existencia de Node.js App.
+- Dominio asociado a Node.js App.
+- Application Root.
+- Startup File.
+- Node version disponible.
+- Metodo deploy/start/restart/logs.
+- Ruta absoluta real de usuario Hostinger.
+- `HOSTINGER_STORAGE_ROOT` productivo.
+
+Decision:
+
+- Reintentar HITO 9.2: NO
+- Motivo: el dominio responde, pero no sirve rutas Next.js y falta discovery real de Node runtime.
+
 ## Gate 1 — Acceso Hostinger
 
 Completar antes de reintentar:
