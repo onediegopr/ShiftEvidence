@@ -6,7 +6,6 @@ import {
   Server,
   Network,
   Layers,
-  AlertTriangle,
   ArrowRight,
   Play,
   Check,
@@ -48,6 +47,24 @@ export default function ReadinessValidator({
       consoleEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [logs]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -187,9 +204,20 @@ export default function ReadinessValidator({
   const scoreStyle: CSSProperties = { "--score": getScore() } as CSSProperties;
 
   return (
-    <div className="modal-overlay">
+    <div
+      className="modal-overlay"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div
         className="glass-card modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="readiness-validator-title"
+        onMouseDown={(event) => event.stopPropagation()}
         style={{ display: "flex", flexDirection: "column" }}
       >
         {/* Header */}
@@ -198,9 +226,11 @@ export default function ReadinessValidator({
             style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
           >
             <Terminal className="text-cyan" size={24} />
-            <h3 className="wizard-title">Start Your VMware Readiness Assessment</h3>
+            <h3 id="readiness-validator-title" className="wizard-title">
+              Start Your VMware Readiness Assessment
+            </h3>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button className="close-btn" onClick={onClose} aria-label="Close readiness assessment">
             <X size={20} />
           </button>
         </div>

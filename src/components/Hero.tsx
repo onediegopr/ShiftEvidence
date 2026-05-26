@@ -1,4 +1,4 @@
-import { Shield, ArrowRight, DollarSign, Check, FileText } from "lucide-react";
+import { Shield, ArrowRight, Check, FileText } from "lucide-react";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -1702,7 +1702,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                         dur="8s"
                         repeatCount="indefinite"
                       />
-                      <g transform="scale(3.6)">
+                      <g transform="scale(2.8)">
                         <circle
                           cx="-4"
                           cy="0"
