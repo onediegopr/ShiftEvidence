@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "../../../../../../../lib/auth";
 import { upsertUserProfileFromSession } from "../../../../../../../server/user/userProfileService";
 import { getReportForDownload } from "../../../../../../../server/reports/reportGenerationService";
+import { getReportTypeLabel } from "../../../../../../../server/reports/reportHistoryService";
 import { readReportFile } from "../../../../../../../server/reports/reportStorageService";
 import { prisma } from "../../../../../../../lib/prisma";
 
@@ -58,7 +59,7 @@ export async function GET(
         workspaceId: report.workspaceId,
         assessmentId: report.assessmentId,
         eventType: "report_downloaded",
-        message: "Downloaded a PDF preview.",
+        message: `Downloaded ${getReportTypeLabel(report.reportType)}.`,
         metadataJson: {
           reportId: report.id,
           reportType: report.reportType,
@@ -81,7 +82,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to download the report preview.";
+    const message = error instanceof Error ? error.message : "Unable to download the report.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

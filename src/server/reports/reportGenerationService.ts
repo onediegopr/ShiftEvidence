@@ -123,7 +123,7 @@ export async function generatePdfReportForAssessment(params: {
     workspaceId: assessment.workspaceId,
     assessmentId: assessment.id,
     eventType: "report_generation_started",
-    message: "Started generating a PDF preview.",
+    message: `Started generating ${getReportTypeLabel(reportType)}.`,
     metadataJson: {
       reportId: report.id,
       reportType,
@@ -172,7 +172,7 @@ export async function generatePdfReportForAssessment(params: {
       workspaceId: assessment.workspaceId,
       assessmentId: assessment.id,
       eventType: "report_generated",
-      message: "Generated a PDF preview.",
+      message: `Generated ${getReportTypeLabel(reportType)}.`,
       metadataJson: {
         reportId: updated.id,
         reportType,
@@ -187,7 +187,7 @@ export async function generatePdfReportForAssessment(params: {
       workspaceId: assessment.workspaceId,
       assessmentId: assessment.id,
       eventType: "pdf_preview_generated",
-      message: "Generated a preliminary PDF preview.",
+      message: `Generated ${getReportTypeLabel(reportType)} PDF output.`,
       metadataJson: {
         reportId: updated.id,
         reportType,
@@ -221,7 +221,7 @@ export async function generatePdfReportForAssessment(params: {
       workspaceId: assessment.workspaceId,
       assessmentId: assessment.id,
       eventType: "report_generation_failed",
-      message: "PDF preview generation failed.",
+      message: `${getReportTypeLabel(reportType)} generation failed.`,
       metadataJson: {
         reportId: report.id,
         reportType,
@@ -274,7 +274,7 @@ export async function softDeleteReport(params: {
         workspaceId: assessment.workspaceId,
         assessmentId: assessment.id,
         eventType: "report_deleted",
-        message: "Deleted generated PDF preview.",
+        message: `Deleted generated ${getReportTypeLabel(existing.reportType)}.`,
         metadataJson: {
           reportId: existing.id,
           reportType: existing.reportType,
