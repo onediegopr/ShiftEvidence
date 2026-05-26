@@ -1,5 +1,24 @@
 # Production Smoke Test Checklist v1
 
+## Status
+- Local pre-deploy checks: passed on 2026-05-26.
+- Real Hostinger execution: pending.
+- Hito 9.2 was stopped at initial audit because real Hostinger access details and a clean readiness gate were not available.
+- Do not mark production smoke as passed until a real HTTPS Hostinger domain, production env vars, persistent storage, migrations, runtime logs and functional flows are verified.
+- Complete `docs/hostinger-production-access-gate.md` before reattempting Hito 9.2.
+
+## Hostinger prerequisites
+- Production domain available.
+- Hostinger app root known.
+- Node.js runtime supports the project engine requirement.
+- Runtime logs are accessible.
+- App restart control is available.
+- `DATABASE_URL` points to the intended Neon database.
+- `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` are HTTPS production URLs, not localhost.
+- `HOSTINGER_STORAGE_ROOT` is absolute, private and persistent.
+- `ADMIN_EMAILS` includes the real admin test email.
+- `npx prisma migrate deploy` is used in production, not `migrate dev`.
+
 ## Public pages
 - `/` responde 200.
 - `/shiftreadiness` responde 200.

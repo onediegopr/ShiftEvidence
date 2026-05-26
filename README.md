@@ -72,6 +72,8 @@ Optional for future work:
 - Manual unlock requests, protected admin review and entitlement grants are implemented without checkout.
 - Admin unlock hardening validates `ADMIN_EMAILS`, fail-closed behavior, non-admin blocking and entitlement idempotency.
 - Hostinger deployment hardening adds runtime env checks, storage permission checks, `prisma:deploy`, Node engine guidance and production smoke runbooks.
+- Hostinger production smoke is prepared but still requires real Hostinger access, production domain, runtime logs and storage validation before it can be marked OK.
+- Hito 9.2 remains gated until the Hostinger Production Access Gate is completed with real access details.
 - Pricing checkout is not implemented yet.
 
 ## Documentation
@@ -116,6 +118,7 @@ Optional for future work:
 - `docs/hito-8-manual-payment-unlock-flow.md`
 - `docs/hito-8-1-admin-unlock-hardening.md`
 - `docs/hito-9-hostinger-deployment-hardening.md`
+- `docs/hito-9-1-production-smoke-hostinger.md`
 - `docs/unlock-request-model-v1.md`
 - `docs/manual-unlock-admin-v1.md`
 - `docs/entitlements-unlock-flow-v1.md`
@@ -127,6 +130,12 @@ Optional for future work:
 - `docs/hostinger-storage-persistence-v1.md`
 - `docs/prisma-neon-production-migrations-v1.md`
 - `docs/production-smoke-test-checklist-v1.md`
+- `docs/hostinger-production-smoke-results.md`
+- `docs/hostinger-runtime-logs-review.md`
+- `docs/hostinger-storage-live-validation.md`
+- `docs/hostinger-auth-domain-validation.md`
+- `docs/hostinger-post-deploy-rollback-notes.md`
+- `docs/hostinger-production-access-gate.md`
 - `docs/hostinger-rollback-runbook-v1.md`
 - `docs/production-runtime-hardening-v1.md`
 - `docs/commercial-status-v1.md`

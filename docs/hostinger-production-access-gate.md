@@ -1,0 +1,156 @@
+# Hostinger Production Access Gate
+
+## Objetivo
+
+Este documento define las condiciones mínimas que deben existir antes de reintentar el HITO 9.2 — Real Hostinger Deployment & Production Smoke Execution.
+
+## Estado actual
+
+- Production launched: NO
+- Hostinger smoke real: NO ejecutado
+- Motivo: falta acceso real, dominio, app root, método deploy, logs y control de reinicio
+- Git debe estar limpio antes del reintento
+
+## Gate 1 — Acceso Hostinger
+
+Completar antes de reintentar:
+
+- Acceso al panel Hostinger:
+- Acceso SSH/SFTP si aplica:
+- Usuario responsable:
+- App root:
+- Carpeta de deploy:
+- Método de subida:
+- Método de instalación dependencias:
+- Método de start:
+- Método de restart:
+- Método para ver logs:
+- Método para detener proceso:
+- Método para volver al build anterior:
+
+## Gate 2 — Dominio productivo
+
+Completar antes de reintentar:
+
+- Dominio final:
+- URL HTTPS:
+- SSL activo:
+- DNS apuntando correctamente:
+- Ruta pública esperada:
+- ¿La app responde en dominio real?:
+- ¿Hay proxy/rewrite?:
+- ¿Hay puerto específico?:
+
+## Gate 3 — Variables productivas
+
+No escribir secretos. Sólo confirmar nombre y estado.
+
+- DATABASE_URL:
+- DIRECT_URL:
+- BETTER_AUTH_SECRET:
+- BETTER_AUTH_URL:
+- NEXT_PUBLIC_APP_URL:
+- HOSTINGER_STORAGE_ROOT:
+- MAX_UPLOAD_SIZE_MB:
+- ADMIN_EMAILS:
+
+Reglas:
+
+- BETTER_AUTH_URL debe apuntar a https://dominio-real
+- NEXT_PUBLIC_APP_URL debe apuntar a https://dominio-real
+- HOSTINGER_STORAGE_ROOT debe ser ruta absoluta
+- HOSTINGER_STORAGE_ROOT no debe estar dentro de .next
+- HOSTINGER_STORAGE_ROOT no debe estar en carpeta pública
+- ADMIN_EMAILS debe incluir el email real del admin
+
+## Gate 4 — Storage persistente
+
+Completar antes de reintentar:
+
+- Ruta absoluta:
+- Existe:
+- Permisos write/read/delete:
+- No pública:
+- Fuera de build:
+- Fuera de .next:
+- Sobrevive restart:
+- Sobrevive deploy:
+- Política de backup:
+
+## Gate 5 — Base de datos
+
+Completar antes de reintentar:
+
+- Neon proyecto productivo identificado:
+- DATABASE_URL disponible en proceso:
+- Prisma validate posible:
+- Prisma migrate status posible:
+- Prisma migrate deploy permitido:
+- Prohibido prisma migrate reset:
+- Backup/snapshot DB antes de deploy:
+
+## Gate 6 — Auth
+
+Completar antes de reintentar:
+
+- Usuario de prueba:
+- Usuario admin:
+- Email admin incluido en ADMIN_EMAILS:
+- Login esperado:
+- Logout esperado:
+- Dashboard protegido:
+- Cookies bajo dominio real:
+- Incógnito probado:
+
+## Gate 7 — Smoke data
+
+Preparar antes de reintentar:
+
+- Assessment de prueba:
+- Archivo RVTools/XLSX/CSV no sensible:
+- Archivo inválido para prueba de error:
+- Usuario no admin:
+- Usuario admin:
+- Criterio para borrar datos de prueba:
+
+## Gate 8 — Rollback
+
+Completar antes de reintentar:
+
+- Último commit estable:
+- Cómo volver al commit anterior:
+- Cómo restaurar env vars previas:
+- Cómo detener proceso:
+- Cómo reiniciar proceso anterior:
+- Cómo preservar storage:
+- Cómo preservar logs:
+- Qué NO hacer:
+  - no borrar storage
+  - no migrate reset
+  - no tocar DB sin backup
+  - no cambiar dominio sin validar auth
+
+## Checklist final antes de HITO 9.2
+
+El HITO 9.2 sólo puede reintentarse si todo esto está confirmado:
+
+- [ ] Git limpio
+- [ ] Acceso Hostinger disponible
+- [ ] Dominio HTTPS disponible
+- [ ] App root identificado
+- [ ] Método deploy confirmado
+- [ ] Método start/restart confirmado
+- [ ] Logs accesibles
+- [ ] Node >=22 confirmado o plan para confirmarlo
+- [ ] Env vars productivas preparadas
+- [ ] Storage persistente definido
+- [ ] Admin email confirmado
+- [ ] Archivo de prueba disponible
+- [ ] Rollback documentado
+
+## Decisión
+
+- Reintentar HITO 9.2: NO
+- Motivo: faltan acceso Hostinger real, dominio HTTPS, app root, método deploy, logs, restart control y datos productivos mínimos.
+- Fecha: 2026-05-26
+- Responsable:
