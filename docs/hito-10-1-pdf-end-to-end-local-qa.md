@@ -266,6 +266,18 @@ Bugfixes applied in HITO 10.2:
 - Secure report download now catches ownership/report lookup failures and returns `404`.
 - Report preview UI now shows `Full report: Unlocked` when `full_report_unlocked` is granted.
 
-Remaining note:
+## HITO 10.2.1 visual acceptance outcome
 
-- A strict manual visual pass in a foreground desktop PDF viewer remains recommended. PDF files opened and decoded content was verified, but screenshot capture could not confirm visual layout because the PDF window did not become the active foreground window.
+The strict visual QA follow-up was completed in HITO 10.2.1.
+
+Validated:
+
+- preview/free PDF opens and renders;
+- full `readiness_report` opens and renders;
+- both PDFs have 11 real pages after fixing the blank-page footer issue;
+- cover, executive summary, evidence, scores, environment, findings, VM matrix, migration waves, validations, next steps and disclaimer pages were visually reviewed;
+- no severe table, text-cut or blank-page issue remained after fixes.
+
+Decision:
+
+- HITO 10 free-preview and full-report PDF QA is complete locally.

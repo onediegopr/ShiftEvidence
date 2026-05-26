@@ -272,11 +272,30 @@ Bugfixes applied:
 
 PDF artifact checks:
 
-- preview PDF: valid `%PDF-1.3`, EOF present, 33-page count marker;
-- full readiness report PDF: valid `%PDF-1.3`, EOF present, 33-page count marker;
-- decoded PDF streams include cover, executive summary, evidence overview, readiness/confidence, environment summary, top findings, VM risk matrix, migration waves, required validations, next evidence, next steps and disclaimers.
+- preview PDF: valid `%PDF-1.3`, 11 rendered pages;
+- full readiness report PDF: valid `%PDF-1.3`, 11 rendered pages;
+- rendered pages include cover, executive summary, evidence overview, readiness/confidence, environment summary, top findings, VM risk matrix, migration waves, required validations, next evidence, next steps and disclaimers.
 
-Remaining strict QA note:
+## HITO 10.2.1 Visual acceptance outcome
 
-- The PDF files were opened through the local desktop handler, but the agent could not bring the PDF viewer to the foreground for screenshot-based inspection.
-- A final human visual pass is still recommended before marking manual visual review as fully closed.
+HITO 10.2.1 completed the final local manual visual acceptance pass.
+
+Validated:
+
+- preview PDF opened locally and rendered;
+- full readiness report PDF opened locally and rendered;
+- both PDFs have a consistent 11-page count;
+- no severe blank pages remain;
+- no severe table breakage remains;
+- no `[object Object]` was observed;
+- page numbers render consistently from `Page 1 of 11` to `Page 11 of 11`;
+- visual structure is acceptable for the current professional assessment report.
+
+Bugfixes applied:
+
+- moved PDF footer/page numbers into a safe PDFKit content area to prevent extra blank pages;
+- reset `doc.x` before the VM Risk Matrix note to prevent right-edge clipping.
+
+Decision:
+
+- HITO 10 is closed at 100% for local PDF quality and entitlement QA.

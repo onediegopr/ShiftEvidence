@@ -328,8 +328,7 @@ Known warning:
 
 ## Riesgos pendientes
 
-- Strict manual visual QA still needs a human foreground pass in a desktop PDF viewer.
-- Preview and full PDFs currently share the same page count and mostly the same structure; entitlement controls report type and access, not a materially different PDF layout yet.
+- Preview and full PDFs currently share the same core structure; entitlement controls report type and access, not a materially different PDF layout yet.
 - Pro report, storage add-on and technical review entitlements remain locked and were not fully tested in this hito.
 - Hostinger remains blocked by production env vars and storage configuration, especially `DATABASE_URL`.
 
@@ -344,16 +343,28 @@ Functional entitlement QA is complete locally:
 - secure download is hardened;
 - report history reflects generated full reports.
 
-Strict manual visual review is partially complete:
+## HITO 10.2.1 visual acceptance outcome
 
-- PDF files were opened and structurally inspected;
-- a final human visual pass is still recommended before declaring manual visual QA fully closed.
+The strict visual review follow-up was completed.
+
+Validated:
+
+- preview PDF opens and renders in local viewer flow;
+- full `readiness_report` opens and renders in local viewer flow;
+- both final PDFs have 11 real rendered pages;
+- extra blank pages caused by footer/page-number placement were fixed;
+- VM Risk Matrix note clipping was fixed;
+- cover, executive summary, evidence, scores, environment, findings, VM matrix, waves, validations, next evidence, next steps and disclaimer pages are visually acceptable.
+
+Decision:
+
+- HITO 10 is closed at 100% for local PDF visual quality, entitlement and secure-download QA.
 
 ## Próximo paso recomendado
 
 Recommended:
 
-- If strict visual sign-off is required: perform a human desktop PDF review of the downloaded preview and full PDFs.
-- If functional QA is sufficient: proceed to the next local product QA hito.
+- Proceed to the next local product QA hito.
+- Resume Hostinger only after production env vars and storage path are ready.
 
 Do not resume Hostinger until production env vars and storage path are ready.

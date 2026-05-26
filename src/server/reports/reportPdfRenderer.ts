@@ -511,18 +511,22 @@ function addPageNumbers(doc: PDFKit.PDFDocument) {
   for (let i = range.start; i < range.start + range.count; i += 1) {
     doc.switchToPage(i);
     const pageNo = i + 1;
+    const footerLineY = doc.page.height - 86;
+    const footerTextY = doc.page.height - 74;
     doc
       .strokeColor("#e2e8f0")
       .lineWidth(0.5)
-      .moveTo(MARGIN, doc.page.height - 46)
-      .lineTo(doc.page.width - MARGIN, doc.page.height - 46)
+      .moveTo(MARGIN, footerLineY)
+      .lineTo(doc.page.width - MARGIN, footerLineY)
       .stroke();
-    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("ShiftReadiness - Evidence-based readiness assessment", MARGIN, doc.page.height - 34, {
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("ShiftReadiness - Evidence-based readiness assessment", MARGIN, footerTextY, {
       width: 280,
+      lineBreak: false,
     });
-    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text(`Page ${pageNo} of ${range.count}`, doc.page.width - 150, doc.page.height - 34, {
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text(`Page ${pageNo} of ${range.count}`, doc.page.width - 150, footerTextY, {
       width: 106,
       align: "right",
+      lineBreak: false,
     });
   }
 }
@@ -740,6 +744,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     } else {
       vmRiskTable(doc, preview.vmMatrixPreview.rows);
       doc.moveDown(0.7);
+      doc.x = MARGIN;
       paragraph(doc, "The matrix is a technical signal only. Application dependency evidence can change migration grouping and wave order.");
     }
 
