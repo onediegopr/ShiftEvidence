@@ -29,11 +29,7 @@ import {
   getUnlockRequestStatusTone,
   getUnlockRequestTypeLabel,
 } from "../../../../../server/unlocks/unlockRequestService";
-import {
-  deleteReportAction,
-  generatePdfReportAction,
-  requestUnlockAction,
-} from "./actions";
+import { requestUnlockAction } from "./actions";
 
 type ReportPageProps = {
   params: Promise<{
@@ -358,7 +354,7 @@ function ReportHistoryCard({
         ) : (
           <span className="assessment-inline-note">Download available once generation completes.</span>
         )}
-        <form action={deleteReportAction.bind(null, assessmentId, report.id)}>
+        <form action={`/api/assessments/${assessmentId}/reports/${report.id}/delete`} method="post">
           <button type="submit" className="btn btn-secondary">
             Delete
           </button>
@@ -408,7 +404,7 @@ export default async function ReportPreviewPage({
           </p>
         </div>
         <div className="dashboard-hero-actions">
-          <form action={generatePdfReportAction.bind(null, assessment.id)}>
+          <form action={`/api/assessments/${assessment.id}/reports/generate`} method="post">
             <button type="submit" className="btn btn-primary btn-glow">
               <FileText size={16} />
               {generateButtonLabel}

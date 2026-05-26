@@ -221,3 +221,29 @@ Recommended next hito:
 - `HITO 10.1 - PDF QA with Sparse and Populated Assessments`
 
 Hostinger remains paused until production env vars and storage path are ready.
+
+## HITO 10.1 QA outcome
+
+HITO 10.1 validated the real local dashboard flow after the visual hardening work.
+
+Validated:
+
+- authenticated report preview route;
+- free-preview PDF generation from the dashboard;
+- secure PDF download;
+- report history;
+- soft-delete of report history entries;
+- sparse/incomplete assessment fallback behavior;
+- parsed inventory assessment behavior;
+- ownership boundary for unowned assessments;
+- production-like `next start` route behavior.
+
+Two local production-like bugs were fixed:
+
+- PDF generation no longer depends on the Server Action form path; it now posts to `/api/assessments/[id]/reports/generate`.
+- PDFKit standard font data now uses the standalone PDFKit bundle to avoid the `C:\ROOT\node_modules\pdfkit\js\data\Helvetica.afm` runtime path failure.
+
+Remaining follow-up:
+
+- manual visual review in a desktop PDF viewer;
+- full entitled `readiness_report` QA after intentionally granting a local entitlement.
