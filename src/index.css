@@ -327,18 +327,17 @@ p {
     left: 0;
     right: 0;
     z-index: 100;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
     border-bottom: 1px solid transparent;
 }
 
 .navbar-scrolled {
-    background: var(--bg-nav);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: var(--bg-base); /* Solid background to prevent overlapping text/content */
     border-bottom: 1px solid var(--border-color);
-    padding: 0.75rem 0;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
+
 
 .navbar-container {
     display: flex;

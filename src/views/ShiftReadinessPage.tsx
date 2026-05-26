@@ -578,11 +578,14 @@ export default function ShiftReadinessPage() {
               <div className="sr-comparison-metrics">
                 <div className="sr-comparison-metric sr-comparison-metric-cyan">
                   <label>Timeframe</label>
-                  <span>Minutes (Instant Preview)</span>
+                  <span>Minutes to first preview</span>
+                  <small style={{ display: "block", fontSize: "0.72rem", color: "var(--text-dark)", marginTop: "0.2rem", fontWeight: 500, lineHeight: 1.3 }}>
+                    Full report available after completing assumptions.
+                  </small>
                 </div>
                 <div className="sr-comparison-metric sr-comparison-metric-cyan">
                   <label>Typical Cost</label>
-                  <span>Free to $690</span>
+                  <span>Free preview, professional reports from $249</span>
                 </div>
               </div>
               <ul className="sr-comparison-list sr-comparison-list-cyan">
@@ -604,7 +607,7 @@ export default function ShiftReadinessPage() {
                 </li>
               </ul>
               <a href="/sign-up" className="btn btn-primary btn-glow">
-                Generate your readiness view
+                Generate your migration baseline
                 <ArrowRight size={16} />
               </a>
             </article>
