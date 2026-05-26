@@ -37,6 +37,7 @@ import {
   getMissingEvidenceSummary,
   getNextStepsSummary,
 } from "../../../../server/assessments/assessmentCompletionService";
+import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
   getEvidenceUploadStatus,
   getLatestRvtoolsEvidence,
@@ -450,6 +451,7 @@ export default async function AssessmentDetailPage({
   const canGenerateRiskInsights = Boolean(latestRvtoolsEvidence || parsedInventory?.summary);
   const maxUploadSizeMb = Math.round(getMaxUploadSizeBytes() / 1024 / 1024);
   const evidenceFiles = assessment.evidenceFiles ?? [];
+  const uploadPrerequisites = getEvidenceUploadPrerequisites(assessment);
 
   const editDefaults = getEditBasicsDefaults(assessment);
 
@@ -569,7 +571,7 @@ export default async function AssessmentDetailPage({
         </div>
       </section>
 
-      <section className="assessment-section glass-card">
+      <section id="assessment-basics" className="assessment-section glass-card">
         <SectionTitle
           icon={<Layers3 size={18} />}
           eyebrow="Overview"
@@ -609,7 +611,7 @@ export default async function AssessmentDetailPage({
         </form>
       </section>
 
-      <section className="assessment-section glass-card">
+      <section id="infrastructure-intake" className="assessment-section glass-card">
         <SectionTitle
           icon={<Server size={18} />}
           eyebrow="Infrastructure Intake"
@@ -693,7 +695,7 @@ export default async function AssessmentDetailPage({
         </form>
       </section>
 
-      <section className="assessment-section glass-card">
+      <section id="cost-risk-assumptions" className="assessment-section glass-card">
         <SectionTitle
           icon={<BadgePercent size={18} />}
           eyebrow="Cost / Risk Assumptions"
@@ -948,52 +950,80 @@ export default async function AssessmentDetailPage({
         </div>
       </section>
 
-      <section className="assessment-section glass-card">
+      <section id="evidence-upload" className="assessment-section glass-card">
         <SectionTitle
           icon={<Upload size={18} />}
           eyebrow="Evidence upload"
           title="RVTools evidence upload"
-          description="Upload RVTools or CSV evidence. Files are stored privately and attached to this assessment. Parsing will be added in a later milestone."
+          description={
+            uploadPrerequisites.canUploadEvidence
+              ? "Upload RVTools or CSV evidence. Files are stored privately and attached to this assessment."
+              : "Complete the assessment basics before uploading evidence. This helps ShiftReadiness interpret your RVTools file correctly and generate a more reliable report."
+          }
         />
 
         <div className="assessment-status-row">
           {renderStatusPill(`RVTools: ${statusLabel(rvtoolsStatus)}`, renderStatusTone(rvtoolsStatus))}
           {renderStatusPill(`Max size: ${maxUploadSizeMb} MB`, "neutral")}
           {renderStatusPill(`Evidence files: ${evidenceFiles.length}`, evidenceFiles.length > 0 ? "good" : "neutral")}
+          {renderStatusPill(
+            uploadPrerequisites.canUploadEvidence ? "Upload gate: ready" : "Upload gate: blocked",
+            uploadPrerequisites.canUploadEvidence ? "good" : "warning",
+          )}
         </div>
 
         <div className="assessment-evidence-grid">
           <form action={uploadEvidenceAction.bind(null, assessment.id)} encType="multipart/form-data" className="assessment-evidence-form assessment-subcard">
-            <label className="form-label">
-              Evidence type
-              <select name="evidenceType" className="form-input">
-                <option value="rvtools">RVTools export</option>
-                <option value="manual_csv">Manual CSV</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-            <label className="form-label">
-              Evidence file
-              <input
-                name="file"
-                className="form-input"
-                type="file"
-                accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain,application/octet-stream"
-              />
-            </label>
-            <p className="assessment-storage-note">
-              Uploaded evidence is not parsed yet. This milestone only stores the file privately and
-              prepares the parser-ready workflow.
-            </p>
-            <div className="assessment-inline-actions">
-              <button type="submit" className="btn btn-primary btn-glow">
-                <Upload size={16} />
-                Upload evidence
-              </button>
-              <span className="assessment-inline-note">
-                Allowed types: .xlsx, .xls, .csv, .txt. Max {maxUploadSizeMb} MB.
-              </span>
-            </div>
+            {!uploadPrerequisites.canUploadEvidence ? (
+              <div className="assessment-storage-note" role="status">
+                <strong>Upload is locked until the assessment basics are complete.</strong>
+                <p>Complete the required context first so uploaded RVTools or CSV evidence can be interpreted correctly.</p>
+                <ul className="assessment-bullet-list">
+                  {uploadPrerequisites.missingPrerequisites.map((item) => (
+                    <li key={item.key}>
+                      {item.href ? <a href={item.href}>{item.label}</a> : item.label}
+                      {item.description ? ` - ${item.description}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <fieldset
+              disabled={!uploadPrerequisites.canUploadEvidence}
+              aria-disabled={!uploadPrerequisites.canUploadEvidence}
+              style={{ border: 0, padding: 0, margin: 0 }}
+            >
+              <label className="form-label">
+                Evidence type
+                <select name="evidenceType" className="form-input">
+                  <option value="rvtools">RVTools export</option>
+                  <option value="manual_csv">Manual CSV</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label className="form-label">
+                Evidence file
+                <input
+                  name="file"
+                  className="form-input"
+                  type="file"
+                  accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain,application/octet-stream"
+                />
+              </label>
+              <p className="assessment-storage-note">
+                Uploaded evidence is stored privately and parsed into inventory signals when supported.
+              </p>
+              <div className="assessment-inline-actions">
+                <button type="submit" className="btn btn-primary btn-glow" disabled={!uploadPrerequisites.canUploadEvidence}>
+                  <Upload size={16} />
+                  {uploadPrerequisites.canUploadEvidence ? "Upload evidence" : "Complete basics first"}
+                </button>
+                <span className="assessment-inline-note">
+                  Allowed types: .xlsx, .xls, .csv, .txt. Max {maxUploadSizeMb} MB.
+                </span>
+              </div>
+            </fieldset>
           </form>
 
           <article className="glass-card assessment-subcard">

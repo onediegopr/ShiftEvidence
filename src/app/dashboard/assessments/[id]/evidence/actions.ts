@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "../../../../../lib/auth";
 import { ensureAssessmentOwnership } from "../../../../../server/assessments/assessmentService";
+import { assertCanUploadEvidence } from "../../../../../server/assessments/assessmentUploadPrerequisites";
 import { upsertUserProfileFromSession } from "../../../../../server/user/userProfileService";
 import { createEvidenceFileRecord, softDeleteEvidenceFile } from "../../../../../server/evidence/evidenceFileService";
 import { deletePhysicalFileIfExists, writeUploadedFile } from "../../../../../server/evidence/localStorageService";
@@ -59,6 +60,7 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
       userId: session.user.id,
       assessmentId,
     });
+    assertCanUploadEvidence(assessment);
 
     const buffer = Buffer.from(await fileEntry.arrayBuffer());
     const stored = await writeUploadedFile({
