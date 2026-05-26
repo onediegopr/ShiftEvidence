@@ -1,4 +1,4 @@
-﻿import {
+import {
   Search,
   RefreshCw,
   ShieldCheck,
@@ -79,10 +79,9 @@ export default function Process() {
       <div className="container">
         <div className="text-center mb-8">
           <div className="badge">Execution Pipeline</div>
-          <h2 className="mb-4">The Shift Evidence Migration Pipeline</h2>
-          <p className="mx-auto" style={{ maxWidth: "650px" }}>
-            We guarantee zero data loss and minimal system interruption by
-            following a rigorous, step-by-step verification methodology.
+          <h2 className="mb-4">From Readiness to Controlled Execution</h2>
+          <p className="mx-auto" style={{ maxWidth: "750px" }}>
+            Once your VMware environment has been assessed, Shift Evidence turns the findings into a staged execution pipeline: validate assumptions, design the Proxmox target, plan the migration waves, verify backups, execute controlled cutovers, and document every decision.
           </p>
         </div>
 
@@ -165,6 +164,18 @@ export default function Process() {
             <img src={proxmoxLogoSrc} alt="" className="pipeline-endpoint-logo" />
             Proxmox
           </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "3.5rem" }}>
+          <button
+            onClick={() => {
+              const el = document.getElementById("final-cta");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="btn btn-secondary"
+          >
+            View Execution Methodology
+          </button>
         </div>
       </div>
     </section>

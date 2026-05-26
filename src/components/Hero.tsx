@@ -1,4 +1,4 @@
-﻿import { Shield, ArrowRight, DollarSign, Check } from "lucide-react";
+import { Shield, ArrowRight, DollarSign, Check, FileText } from "lucide-react";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -54,12 +54,11 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </span>
             </div>
             <h1 className="hero-title">
-              Ditch <span className="brand-vmware">VMware</span> Licensing
-              Hikes.
+              VMware exit decisions
               <br />
-              Shift to <span className="brand-proxmox">Proxmox</span>
+              need <span className="text-gradient">evidence</span>,
               <br />
-              with Confidence.
+              not guesses.
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
@@ -2335,16 +2334,16 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             </div>
 
             <div className="hero-actions">
-              <button onClick={onOpenScanner} className="btn btn-primary">
+              <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
                 Audit Your Cluster
                 <ArrowRight size={18} />
               </button>
               <button
-                onClick={() => scrollToSection("savings")}
+                onClick={() => scrollToSection("sample-output")}
                 className="btn btn-secondary"
               >
-                Calculate Savings
-                <DollarSign size={18} className="text-cyan" />
+                View Sample Report
+                <FileText size={18} className="text-cyan" />
               </button>
             </div>
           </div>

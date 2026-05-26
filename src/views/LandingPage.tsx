@@ -20,6 +20,13 @@ import {
   Shield,
   Layers,
   Search,
+  Check,
+  TrendingUp,
+  ShieldAlert,
+  Database,
+  FileSpreadsheet,
+  DollarSign,
+  AlertTriangle,
 } from "lucide-react";
 
 const appCopy = {
@@ -43,11 +50,11 @@ const appCopy = {
   a2: "It means the assessment structure was designed from real-world VMware enterprise advisory experience: evidence review, risk classification, migration readiness, gaps, executive communication and validation points. It does not mean VMware officially certifies or endorses the report.",
   q3: "Why does that matter?",
   a3: "VMware to Proxmox migration is not only a technical import task. It requires risk prioritization, evidence quality review, workload classification, business continuity thinking and a clear plan for what should move first, what needs remediation and what should wait.",
-  ctaTitle: "Assure Your Proxmox Shift",
-  ctaPain: "Stop paying VMware renewal bills.",
-  ctaBody: "Run our pre-flight cluster check to receive a detailed compatibility scorecard and technical migration plan.",
+  ctaTitle: "Start Your VMware Readiness Assessment",
+  ctaPain: "VMware exit decisions need evidence, not guesses.",
+  ctaBody: "Generate a preliminary evidence-backed view of cost exposure, migration blockers, and storage target configurations today.",
   ctaInput: "Enter corporate email",
-  ctaBtn: "Initialize Scan",
+  ctaBtn: "Initialize Assessment",
   noAgents: "No ESXi agents required",
   readOnly: "Read-only configuration check",
   footerTag: "Platform",
@@ -79,6 +86,51 @@ export default function LandingPage() {
 
       <main style={{ flexGrow: 1 }}>
         <Hero onOpenScanner={handleOpenScanner} />
+
+        <section id="problem-pain" className="section pain-section">
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="text-center mb-8">
+              <div className="badge badge-cyan">The Transition Challenge</div>
+              <h2 className="mb-4">Why VMware Exits Stall Before They Start</h2>
+              <p className="mx-auto" style={{ maxWidth: "650px" }}>
+                Broadcom licensing shifts are forcing teams to rethink vSphere. But moving core hypervisors without solid evidence introduces critical business risks.
+              </p>
+            </div>
+
+            <div className="pain-grid">
+              <div className="pain-card warning">
+                <div className="pain-icon-wrapper">
+                  <TrendingUp size={22} />
+                </div>
+                <h3>Broadcom Cost Exposure</h3>
+                <p>
+                  Unpredictable licensing bundles and steep pricing increases are blowing up IT budgets. Teams are forced to pay for unused features.
+                </p>
+              </div>
+
+              <div className="pain-card">
+                <div className="pain-icon-wrapper">
+                  <ShieldAlert size={22} />
+                </div>
+                <h3>Migration Risk & Downtime</h3>
+                <p>
+                  Moving live production workloads to Proxmox VE without architectural validation risks data loss, storage mismatches, and system disruption.
+                </p>
+              </div>
+
+              <div className="pain-card warning">
+                <div className="pain-icon-wrapper">
+                  <Database size={22} />
+                </div>
+                <h3>Blind Decisions</h3>
+                <p>
+                  Without a validated configuration inventory, teams guess target capacity, overlook backup requirements, and miss critical storage dependencies.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
 
         <section className="credibility-strip">
@@ -134,10 +186,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        <SavingsCalculator />
-        <Features />
-        <Process />
 
         <section id="readiness-showcase" className="section shiftreadiness-promo-showcase-section">
           <div className="bg-mesh"></div>
@@ -281,6 +329,94 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <Features />
+
+        <SavingsCalculator />
+
+        {/* 5. Sample Output / What You Get */}
+        <section id="sample-output" className="section sample-output-section">
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="text-center mb-8">
+              <div className="badge">Diagnostic Report</div>
+              <h2 className="mb-4">Your Migration Baseline: What You Get</h2>
+              <p className="mx-auto" style={{ maxWidth: "650px" }}>
+                Shift Evidence compiles your cluster configuration and inventory details into actionable, decision-ready reports.
+              </p>
+            </div>
+
+            <div className="sample-output-grid">
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <BarChart3 size={20} />
+                  </div>
+                  <h3>Readiness Scorecard</h3>
+                  <p>A standardized compatibility index showing what percentage of your configurations map natively to Proxmox VE targets.</p>
+                </div>
+                <div className="sample-card-tag">Readiness Score</div>
+              </div>
+
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <AlertTriangle size={20} />
+                  </div>
+                  <h3>Migration Blockers</h3>
+                  <p>Early warning flags for nested switches, vSAN layouts, incompatible CPU configurations, and raw device mapping dependencies.</p>
+                </div>
+                <div className="sample-card-tag">Risk Index</div>
+              </div>
+
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <DollarSign size={20} />
+                  </div>
+                  <h3>Cost Delta Analysis</h3>
+                  <p>Automated subscription comparison calculating your exact savings from removing broadcom-style vCPU licensing surcharges.</p>
+                </div>
+                <div className="sample-card-tag">Financial Plan</div>
+              </div>
+
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <FileSpreadsheet size={20} />
+                  </div>
+                  <h3>Evidence Gaps Log</h3>
+                  <p>Identifies missing backups, undocumented network port groups, and sizing metrics that need validation before staging.</p>
+                </div>
+                <div className="sample-card-tag">Data Completeness</div>
+              </div>
+
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <Layers size={20} />
+                  </div>
+                  <h3>Proxmox Fit Specifications</h3>
+                  <p>Architectural target blueprints recommending storage configurations (ZFS, Ceph, SAN) and VM cluster layouts.</p>
+                </div>
+                <div className="sample-card-tag">Architecture Target</div>
+              </div>
+
+              <div className="sample-card">
+                <div className="sample-card-header">
+                  <div className="sample-card-icon">
+                    <Check size={20} />
+                  </div>
+                  <h3>Recommended Next Actions</h3>
+                  <p>A staged checklist outlining migration wave prioritization, backup validation steps, and pilot cluster targets.</p>
+                </div>
+                <div className="sample-card-tag">Execution Waves</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <Process />
+
         <section id="faq" className="section faq-section">
           <div className="container">
             <div className="text-center mb-8">
@@ -315,7 +451,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.4)" }}>
+        <section id="final-cta" className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.4)" }}>
           <div className="bg-mesh"></div>
           <div
             className="glow-orb"

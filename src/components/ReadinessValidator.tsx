@@ -10,6 +10,8 @@ import {
   ArrowRight,
   Play,
   Check,
+  FileText,
+  UploadCloud,
 } from "lucide-react";
 
 interface ReadinessValidatorProps {
@@ -19,17 +21,20 @@ interface ReadinessValidatorProps {
 
 type Step = "setup" | "scanning" | "results";
 type LogType = "info" | "success" | "warn";
+type EvidenceSource = "none" | "file" | "manual";
 
 export default function ReadinessValidator({
   isOpen,
   onClose,
 }: ReadinessValidatorProps) {
   const [currentStep, setCurrentStep] = useState<Step>("setup");
+  const [evidenceSource, setEvidenceSource] = useState<EvidenceSource>("none");
+  const [fileName, setFileName] = useState<string>("");
   const [setupSubStep, setSetupSubStep] = useState(1);
   const [logs, setLogs] = useState<string[]>([]);
   const [logType, setLogType] = useState<LogType[]>([]);
 
-  // User setup selections
+  // User manual setup selections
   const [storageType, setStorageType] = useState("san");
   const [networkType, setNetworkType] = useState("dvs");
   const [haRequired, setHaRequired] = useState(true);
@@ -47,101 +52,96 @@ export default function ReadinessValidator({
   if (!isOpen) return null;
 
   // Mock console log stream
-  const startDiagnosticCheck = () => {
+  const startDiagnosticCheck = (source: EvidenceSource, uploadedName?: string) => {
     setCurrentStep("scanning");
     setLogs([]);
     setLogType([]);
 
-    const mockLogs: Array<{ text: string; type: LogType }> = [
-      {
-        text: "[INFO] Initializing Shift Evidence Audit Engine v2.1.0...",
-        type: "info",
-      },
-      {
-        text: "[INFO] Establishing connection to VMware API endpoints (simulation)...",
-        type: "info",
-      },
-      {
-        text: "[INFO] Fetching cluster topology... 4 Hypervisor nodes found.",
-        type: "info",
-      },
-      {
-        text: `[INFO] Evaluating storage architecture: Target type is [${storageType.toUpperCase()}].`,
-        type: "info",
-      },
-      storageType === "vsan"
-        ? {
-            text: "[WARN] VMware vSAN detected. Mapping to Proxmox VE Ceph Cluster storage topology...",
-            type: "warn",
-          }
-        : {
-            text: "[INFO] External SAN/NFS target detected. Storage volume mapping verified.",
-            type: "success",
-          },
-      {
-        text: `[INFO] Parsing virtual switch configurations... [${networkType === "dvs" ? "Distributed" : "Standard"}] Switch found.`,
-        type: "info",
-      },
-      networkType === "dvs"
-        ? {
-            text: "[WARN] vSphere Distributed Switch (dVS) requires mapping to Proxmox Open vSwitch (OVS) Bridges. Auto-converter configured.",
-            type: "warn",
-          }
-        : {
-            text: "[INFO] Standard vSwitch maps cleanly to Linux Bridges (vmbr).",
-            type: "success",
-          },
-      {
-        text: "[INFO] Checking VM CPU allocations... Checking EVC (Enhanced vMotion Compatibility) compatibility...",
-        type: "info",
-      },
-      {
-        text: "[INFO] Scanning VM virtual disk layout... VMDK partitions verified.",
-        type: "info",
-      },
-      {
-        text: "[INFO] Analyzing replication pipeline capacity for hot-migration...",
-        type: "info",
-      },
-      haRequired
-        ? {
-            text: "[INFO] High Availability enabled. Checking corosync cluster communication configuration...",
-            type: "info",
-          }
-        : {
-            text: "[INFO] HA disabled. Standalone host orchestration mapping prepared.",
+    const activeFileName = uploadedName || fileName || "rvtools_export.xlsx";
+
+    const mockLogs: Array<{ text: string; type: LogType }> = source === "file"
+      ? [
+          { text: "[INFO] Initializing Shift Evidence Audit Engine v2.1.0...", type: "info" },
+          { text: `[INFO] Parsing uploaded RVTools inventory file: [${activeFileName}]...`, type: "info" },
+          { text: "[INFO] vSphere Cluster metadata successfully parsed: 12 Hosts, 245 VMs.", type: "success" },
+          { text: "[INFO] Scanning hypervisor CPU configurations... Intel Xeon Gold detected.", type: "info" },
+          { text: "[INFO] Checking target VM hardware profiles... EVC compatibility verified.", type: "info" },
+          { text: "[INFO] Evaluating VM storage allocations (84.2 TB total across 3 volumes)...", type: "info" },
+          { text: "[INFO] SAN/NFS fiber channel multipathing configurations verified.", type: "success" },
+          { text: "[WARN] VM vSAN datastore detected on cluster-2. Mapping to Ceph Cluster replica targets.", type: "warn" },
+          { text: "[INFO] Mapping vSphere Distributed Switch port groups to target Linux OVS Bridges...", type: "info" },
+          { text: "[INFO] Scanning active backup software integrations...", type: "info" },
+          { text: "[INFO] Veeam Backup & Replication hooks detected. Pre-mapping to Proxmox Backup Server.", type: "success" },
+          { text: "[INFO] Checking for High Availability (HA) cluster corosync readiness...", type: "info" },
+          { text: "[SUCCESS] Inventory data validation completed. 0 execution-blocking errors.", type: "success" },
+          { text: "[SUCCESS] Readiness scorecard and cost delta report compiled.", type: "success" }
+        ]
+      : [
+          {
+            text: "[INFO] Initializing Shift Evidence Audit Engine v2.1.0...",
             type: "info",
           },
-      {
-        text: `[INFO] Validating backup integration hooks... [${backupSystem.toUpperCase()}] integration analyzed.`,
-        type: "info",
-      },
-      backupSystem === "veeam"
-        ? {
-            text: "[INFO] Veeam detected: Pre-mapping to Proxmox Backup Server (PBS) change-block tracking equivalents...",
-            type: "success",
-          }
-        : {
-            text: "[INFO] Custom backup script hooks flagged for custom migration staging.",
-            type: "warn",
+          {
+            text: "[INFO] Parsing manual guided intake configurations...",
+            type: "info",
           },
-      {
-        text: "[INFO] Running configurations dry-run mapping rules...",
-        type: "info",
-      },
-      {
-        text: "[SUCCESS] VM configuration parser: 0 execution-blocking errors.",
-        type: "success",
-      },
-      {
-        text: "[SUCCESS] Conversion pipeline staging complete. Integrity check verified.",
-        type: "success",
-      },
-      {
-        text: "[SUCCESS] Readiness compatibility score calculated.",
-        type: "success",
-      },
-    ];
+          {
+            text: `[INFO] Evaluating storage architecture: Target type is [${storageType.toUpperCase()}].`,
+            type: "info",
+          },
+          storageType === "vsan"
+            ? {
+                text: "[WARN] VMware vSAN selected. Mapping to Proxmox VE Ceph Cluster storage topology...",
+                type: "warn",
+              }
+            : {
+                text: "[INFO] External SAN/NFS target selected. Storage volume mapping verified.",
+                type: "success",
+              },
+          {
+            text: `[INFO] Parsing network configuration... [${networkType === "dvs" ? "Distributed" : "Standard"}] Switch setup.`,
+            type: "info",
+          },
+          networkType === "dvs"
+            ? {
+                text: "[WARN] vSphere Distributed Switch (dVS) requires mapping to Proxmox Open vSwitch (OVS). Auto-converter mapping configured.",
+                type: "warn",
+              }
+            : {
+                text: "[INFO] Standard vSwitch maps cleanly to Linux Bridges (vmbr).",
+                type: "success",
+              },
+          haRequired
+            ? {
+                text: "[INFO] High Availability enabled. Checking corosync cluster communication configuration...",
+                type: "info",
+              }
+            : {
+                text: "[INFO] HA disabled. Standalone host configuration prepared.",
+                type: "info",
+              },
+          {
+            text: `[INFO] Validating backup integration hooks... [${backupSystem.toUpperCase()}] integration analyzed.`,
+            type: "info",
+          },
+          backupSystem === "veeam"
+            ? {
+                text: "[INFO] Veeam detected: Pre-mapping to Proxmox Backup Server (PBS) change-block tracking...",
+                type: "success",
+              }
+            : {
+                text: "[INFO] Custom backup script hooks flagged for custom migration staging.",
+                type: "warn",
+              },
+          {
+            text: "[SUCCESS] Manual configuration validation complete. 0 execution-blocking errors.",
+            type: "success",
+          },
+          {
+            text: "[SUCCESS] Readiness compatibility score calculated.",
+            type: "success",
+          },
+        ];
 
     let currentLogIndex = 0;
     const interval = setInterval(() => {
@@ -156,10 +156,11 @@ export default function ReadinessValidator({
           setCurrentStep("results");
         }, 800);
       }
-    }, 280);
+    }, 250);
   };
 
   const getScore = () => {
+    if (evidenceSource === "file") return 92; // Constant score for file upload mockup
     let score = 98;
     if (storageType === "vsan") score -= 5;
     if (networkType === "dvs") score -= 3;
@@ -169,8 +170,18 @@ export default function ReadinessValidator({
 
   const resetWizard = () => {
     setCurrentStep("setup");
+    setEvidenceSource("none");
+    setFileName("");
     setSetupSubStep(1);
     setLogs([]);
+  };
+
+  // Handler for simulated file upload
+  const handleFileDropMock = () => {
+    const mockFile = "rvtools_production_cluster.xlsx";
+    setFileName(mockFile);
+    setEvidenceSource("file");
+    startDiagnosticCheck("file", mockFile);
   };
 
   const scoreStyle: CSSProperties = { "--score": getScore() } as CSSProperties;
@@ -187,7 +198,7 @@ export default function ReadinessValidator({
             style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
           >
             <Terminal className="text-cyan" size={24} />
-            <h3 className="wizard-title">Shift Evidence Migration Validator</h3>
+            <h3 className="wizard-title">Start Your VMware Readiness Assessment</h3>
           </div>
           <button className="close-btn" onClick={onClose}>
             <X size={20} />
@@ -198,253 +209,307 @@ export default function ReadinessValidator({
         {currentStep === "setup" && (
           <>
             <div className="wizard-body">
-              {/* Step indicator */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "2rem",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "var(--text-muted)",
-                  }}
-                >
-                  Section {setupSubStep} of 3:{" "}
-                  {setupSubStep === 1
-                    ? "Compute & Storage"
-                    : setupSubStep === 2
-                      ? "Network Topology"
-                      : "High Availability & Tooling"}
-                </span>
-                <div className="step-indicator">
-                  <div
-                    className={`step-dot ${setupSubStep >= 1 ? "active" : ""} ${setupSubStep > 1 ? "completed" : ""}`}
-                  />
-                  <div
-                    className={`step-dot ${setupSubStep >= 2 ? "active" : ""} ${setupSubStep > 2 ? "completed" : ""}`}
-                  />
-                  <div
-                    className={`step-dot ${setupSubStep >= 3 ? "active" : ""}`}
-                  />
-                </div>
-              </div>
-
-              {/* Substep 1: Storage */}
-              {setupSubStep === 1 && (
+              {/* Option Selection: Step 1 */}
+              {evidenceSource === "none" && (
                 <div>
-                  <h4 className="mb-2" style={{ color: "white" }}>
-                    Select VMware Storage Architecture
-                  </h4>
-                  <p className="mb-6" style={{ fontSize: "0.9rem" }}>
-                    How are your current virtual machine files and virtual disks
-                    hosted in the vSphere cluster?
+                  <p className="mb-6" style={{ fontSize: "0.95rem", lineHeight: "1.6" }}>
+                    Upload your RVTools export or complete a guided intake to generate a preliminary evidence-backed view of cost exposure, migration complexity, storage dependencies, backup gaps, and Proxmox readiness.
                   </p>
 
-                  <div className="options-grid">
-                    <div
-                      className={`option-card ${storageType === "san" ? "selected" : ""}`}
-                      onClick={() => setStorageType("san")}
-                    >
-                      <span className="option-card-title">
-                        <Server size={18} className="text-cyan" />
-                        External SAN / NAS
-                      </span>
-                      <span className="option-card-desc">
-                        Fibre Channel, iSCSI, or NFS shares connected to ESXi
-                        hosts.
-                      </span>
-                    </div>
+                  <h4 className="mb-4" style={{ color: "white", fontSize: "1.1rem" }}>
+                    Choose Your Evidence Source
+                  </h4>
 
-                    <div
-                      className={`option-card ${storageType === "vsan" ? "selected" : ""}`}
-                      onClick={() => setStorageType("vsan")}
-                    >
-                      <span className="option-card-title">
-                        <Layers size={18} className="text-cyan" />
-                        vSAN / Distributed Storage
-                      </span>
-                      <span className="option-card-desc">
-                        Local host drives combined by VMware vSAN software
-                        layer.
-                      </span>
+                  {/* Drag and Drop Zone Simulator */}
+                  <div className="drag-drop-zone" onClick={handleFileDropMock}>
+                    <div className="drag-drop-zone-icon">
+                      <UploadCloud size={24} />
                     </div>
-
-                    <div
-                      className={`option-card ${storageType === "local" ? "selected" : ""}`}
-                      onClick={() => setStorageType("local")}
-                    >
-                      <span className="option-card-title">
-                        <Server size={18} className="text-cyan" />
-                        Local Datastores
-                      </span>
-                      <span className="option-card-desc">
-                        Independent storage pools inside single hypervisors
-                        (LVM/ZFS).
+                    <div className="drag-drop-zone-text">
+                      <h5>Upload RVTools / Inventory File</h5>
+                      <p>Recommended for a faster, more accurate assessment.</p>
+                      <span className="btn btn-secondary btn-sm" style={{ marginTop: "0.5rem", display: "inline-block" }}>
+                        Select .xlsx Export
                       </span>
                     </div>
                   </div>
+
+                  <div className="modal-divider">or</div>
+
+                  {/* Manual Guided Intake Card */}
+                  <button
+                    className="intake-option-btn"
+                    onClick={() => setEvidenceSource("manual")}
+                  >
+                    <div className="intake-option-btn-content">
+                      <div className="intake-option-btn-icon">
+                        <FileText size={22} />
+                      </div>
+                      <div className="intake-option-btn-text">
+                        <strong>Manual Guided Intake</strong>
+                        <span>Use this if you do not have an export available yet.</span>
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="text-muted" />
+                  </button>
                 </div>
               )}
 
-              {/* Substep 2: Networking */}
-              {setupSubStep === 2 && (
+              {/* Manual Guided Intake Substeps */}
+              {evidenceSource === "manual" && (
                 <div>
-                  <h4 className="mb-2" style={{ color: "white" }}>
-                    Select Network Switch configuration
-                  </h4>
-                  <p className="mb-6" style={{ fontSize: "0.9rem" }}>
-                    How are your VM port groups, VLAN taggings, and switch
-                    adapters organized?
-                  </p>
-
-                  <div className="options-grid">
-                    <div
-                      className={`option-card ${networkType === "standard" ? "selected" : ""}`}
-                      onClick={() => setNetworkType("standard")}
-                    >
-                      <span className="option-card-title">
-                        <Network size={18} className="text-primary" />
-                        vSphere Standard Switches
-                      </span>
-                      <span className="option-card-desc">
-                        Traditional static network switches configured
-                        individually per hypervisor.
-                      </span>
-                    </div>
-
-                    <div
-                      className={`option-card ${networkType === "dvs" ? "selected" : ""}`}
-                      onClick={() => setNetworkType("dvs")}
-                    >
-                      <span className="option-card-title">
-                        <Network size={18} className="text-primary" />
-                        Distributed Switch (dVS)
-                      </span>
-                      <span className="option-card-desc">
-                        Centralized virtual switches managing multi-host
-                        configurations, VLANs, and policies.
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Substep 3: Advanced Options */}
-              {setupSubStep === 3 && (
-                <div>
-                  <h4 className="mb-2" style={{ color: "white" }}>
-                    Orchestration & Backup Tooling
-                  </h4>
-                  <p className="mb-6" style={{ fontSize: "0.9rem" }}>
-                    Specify backup systems and high availability expectations
-                    for your post-migration environment.
-                  </p>
-
+                  {/* Step indicator */}
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "column",
-                      gap: "1.5rem",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "2rem",
                     }}
                   >
-                    <div
+                    <span
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "1rem",
-                        background: "rgba(255,255,255,0.02)",
-                        borderRadius: "var(--radius-sm)",
-                        border: "1px solid var(--border-color)",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        color: "var(--text-muted)",
                       }}
                     >
-                      <div>
-                        <div style={{ fontWeight: 600, color: "white" }}>
-                          Automatic Failover (High Availability)
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "0.8rem",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Proxmox cluster will coordinate automatic VM recovery
-                          if a physical host fails.
-                        </div>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={haRequired}
-                        onChange={(e) => setHaRequired(e.target.checked)}
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          accentColor: "#6366f1",
-                          cursor: "pointer",
-                        }}
+                      Step 2: Map Current Environment (Section {setupSubStep} of 3:{" "}
+                      {setupSubStep === 1
+                        ? "Compute & Storage"
+                        : setupSubStep === 2
+                          ? "Network Topology"
+                          : "High Availability & Tooling"}
+                      )
+                    </span>
+                    <div className="step-indicator">
+                      <div
+                        className={`step-dot ${setupSubStep >= 1 ? "active" : ""} ${setupSubStep > 1 ? "completed" : ""}`}
+                      />
+                      <div
+                        className={`step-dot ${setupSubStep >= 2 ? "active" : ""} ${setupSubStep > 2 ? "completed" : ""}`}
+                      />
+                      <div
+                        className={`step-dot ${setupSubStep >= 3 ? "active" : ""}`}
                       />
                     </div>
+                  </div>
 
-                    <div className="slider-group">
-                      <span className="slider-label">
-                        Current Backup Solution
-                      </span>
-                      <div className="radio-group">
-                        <button
-                          onClick={() => setBackupSystem("veeam")}
-                          className={`radio-btn ${backupSystem === "veeam" ? "active" : ""}`}
+                  {/* Substep 1: Storage */}
+                  {setupSubStep === 1 && (
+                    <div>
+                      <h4 className="mb-2" style={{ color: "white" }}>
+                        Select VMware Storage Architecture
+                      </h4>
+                      <p className="mb-6" style={{ fontSize: "0.9rem" }}>
+                        How are your current virtual machine files and virtual disks
+                        hosted in the vSphere cluster?
+                      </p>
+
+                      <div className="options-grid">
+                        <div
+                          className={`option-card ${storageType === "san" ? "selected" : ""}`}
+                          onClick={() => setStorageType("san")}
                         >
-                          Veeam Backup & Replication
-                        </button>
-                        <button
-                          onClick={() => setBackupSystem("other")}
-                          className={`radio-btn ${backupSystem === "other" ? "active" : ""}`}
+                          <span className="option-card-title">
+                            <Server size={18} className="text-cyan" />
+                            External SAN / NAS
+                          </span>
+                          <span className="option-card-desc">
+                            Fibre Channel, iSCSI, or NFS shares connected to ESXi
+                            hosts.
+                          </span>
+                        </div>
+
+                        <div
+                          className={`option-card ${storageType === "vsan" ? "selected" : ""}`}
+                          onClick={() => setStorageType("vsan")}
                         >
-                          Other API / Direct agent backups
-                        </button>
+                          <span className="option-card-title">
+                            <Layers size={18} className="text-cyan" />
+                            vSAN / Distributed Storage
+                          </span>
+                          <span className="option-card-desc">
+                            Local host drives combined by VMware vSAN software
+                            layer.
+                          </span>
+                        </div>
+
+                        <div
+                          className={`option-card ${storageType === "local" ? "selected" : ""}`}
+                          onClick={() => setStorageType("local")}
+                        >
+                          <span className="option-card-title">
+                            <Server size={18} className="text-cyan" />
+                            Local Datastores
+                          </span>
+                          <span className="option-card-desc">
+                            Independent storage pools inside single hypervisors
+                            (LVM/ZFS).
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Substep 2: Networking */}
+                  {setupSubStep === 2 && (
+                    <div>
+                      <h4 className="mb-2" style={{ color: "white" }}>
+                        Select Network Switch Configuration
+                      </h4>
+                      <p className="mb-6" style={{ fontSize: "0.9rem" }}>
+                        How are your VM port groups, VLAN taggings, and switch
+                        adapters organized?
+                      </p>
+
+                      <div className="options-grid">
+                        <div
+                          className={`option-card ${networkType === "standard" ? "selected" : ""}`}
+                          onClick={() => setNetworkType("standard")}
+                        >
+                          <span className="option-card-title">
+                            <Network size={18} className="text-primary" />
+                            vSphere Standard Switches
+                          </span>
+                          <span className="option-card-desc">
+                            Traditional static network switches configured
+                            individually per hypervisor.
+                          </span>
+                        </div>
+
+                        <div
+                          className={`option-card ${networkType === "dvs" ? "selected" : ""}`}
+                          onClick={() => setNetworkType("dvs")}
+                        >
+                          <span className="option-card-title">
+                            <Network size={18} className="text-primary" />
+                            Distributed Switch (dVS)
+                          </span>
+                          <span className="option-card-desc">
+                            Centralized virtual switches managing multi-host
+                            configurations, VLANs, and policies.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Substep 3: Advanced Options */}
+                  {setupSubStep === 3 && (
+                    <div>
+                      <h4 className="mb-2" style={{ color: "white" }}>
+                        Orchestration & Backup Tooling
+                      </h4>
+                      <p className="mb-6" style={{ fontSize: "0.9rem" }}>
+                        Specify backup systems and high availability expectations
+                        for your post-migration environment.
+                      </p>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "1.5rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "1rem",
+                            background: "rgba(255,255,255,0.02)",
+                            borderRadius: "var(--radius-sm)",
+                            border: "1px solid var(--border-color)",
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontWeight: 600, color: "white" }}>
+                              Automatic Failover (High Availability)
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "var(--text-muted)",
+                              }}
+                            >
+                              Proxmox cluster will coordinate automatic VM recovery
+                              if a physical host fails.
+                            </div>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={haRequired}
+                            onChange={(e) => setHaRequired(e.target.checked)}
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              accentColor: "#6366f1",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </div>
+
+                        <div className="slider-group">
+                          <span className="slider-label">
+                            Current Backup Solution
+                          </span>
+                          <div className="radio-group">
+                            <button
+                              onClick={() => setBackupSystem("veeam")}
+                              className={`radio-btn ${backupSystem === "veeam" ? "active" : ""}`}
+                            >
+                              Veeam Backup & Replication
+                            </button>
+                            <button
+                              onClick={() => setBackupSystem("other")}
+                              className={`radio-btn ${backupSystem === "other" ? "active" : ""}`}
+                            >
+                              Other API / Direct agent backups
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Footer buttons for Setup */}
-            <div className="wizard-footer">
-              <button
-                className="btn btn-secondary"
-                onClick={
-                  setupSubStep === 1
-                    ? onClose
-                    : () => setSetupSubStep((p) => p - 1)
-                }
-              >
-                {setupSubStep === 1 ? "Cancel" : "Back"}
-              </button>
+            {evidenceSource === "manual" && (
+              <div className="wizard-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={
+                    setupSubStep === 1
+                      ? () => setEvidenceSource("none") // Go back to step 1 evidence source choose
+                      : () => setSetupSubStep((p) => p - 1)
+                  }
+                >
+                  Back
+                </button>
 
-              {setupSubStep < 3 ? (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setSetupSubStep((p) => p + 1)}
-                >
-                  Continue
-                  <ArrowRight size={16} />
-                </button>
-              ) : (
-                <button
-                  className="btn btn-primary btn-glow"
-                  onClick={startDiagnosticCheck}
-                >
-                  Run Compatibility Scan
-                  <Play size={16} />
-                </button>
-              )}
-            </div>
+                {setupSubStep < 3 ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setSetupSubStep((p) => p + 1)}
+                  >
+                    Continue
+                    <ArrowRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-primary btn-glow"
+                    onClick={() => startDiagnosticCheck("manual")}
+                  >
+                    Run Compatibility Scan
+                    <Play size={16} />
+                  </button>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -461,8 +526,7 @@ export default function ReadinessValidator({
                   Analyzing Cluster Architecture...
                 </h4>
                 <p style={{ fontSize: "0.85rem" }}>
-                  Evaluating compatibility profiles and configuration
-                  alignments.
+                  Evaluating compatibility profiles and configuration alignments.
                 </p>
               </div>
             </div>
@@ -487,7 +551,7 @@ export default function ReadinessValidator({
         {/* Results Scorecard Phase */}
         {currentStep === "results" && (
           <>
-            <div className="wizard-body">
+            <div className="wizard-body animate-fade-in">
               <div className="result-panel">
                 <div className="score-hero">
                   <div
@@ -501,15 +565,13 @@ export default function ReadinessValidator({
                       className="badge"
                       style={{ margin: 0, width: "fit-content" }}
                     >
-                      Ready for Shift
+                      Assessed & Ready
                     </div>
                     <h4 style={{ color: "white", marginTop: "0.25rem" }}>
-                      Highly Compatible Setup
+                      Generate Preliminary Findings
                     </h4>
-                    <p style={{ fontSize: "0.85rem" }}>
-                      Shift Evidence's automated mapping templates cover{" "}
-                      {getScore()}% of your active configurations. No blocking
-                      hardware issues or compatibility concerns were detected.
+                    <p style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
+                      Shift Evidence templates mapped {getScore()}% of configuration patterns. Upload complete. No blockers found.
                     </p>
                   </div>
                 </div>
@@ -519,10 +581,10 @@ export default function ReadinessValidator({
                     className="mb-4"
                     style={{ color: "white", fontSize: "1.1rem" }}
                   >
-                    Pre-Flight Mapping Summary
+                    Readiness Score & Findings Summary
                   </h4>
                   <div className="recommendations-list">
-                    {/* Storage recommendation */}
+                    {/* Migration blockers */}
                     <div className="recommendation-card ready">
                       <Check
                         className="recommendation-icon text-emerald"
@@ -530,48 +592,15 @@ export default function ReadinessValidator({
                       />
                       <div>
                         <div className="recommendation-title">
-                          Storage Compatibility: Verified
+                          Migration Blockers: None Identified
                         </div>
                         <div className="recommendation-desc">
-                          {storageType === "vsan"
-                            ? "vSAN storage will be auto-migrated using Proxmox Ceph RBD replication templates. Zero data translation loss assured."
-                            : "FC/iSCSI storage interfaces map natively. Disk block converter (vmdk -> qcow2) will process VM files asynchronously without interrupting live hosts."}
+                          No incompatible virtual CPU flags, nested hypervisors, or unsupported SCSI controllers were detected.
                         </div>
                       </div>
                     </div>
 
-                    {/* Network recommendation */}
-                    <div
-                      className={`recommendation-card ${networkType === "dvs" ? "warning" : "ready"}`}
-                    >
-                      {networkType === "dvs" ? (
-                        <AlertTriangle
-                          className="recommendation-icon text-cyan"
-                          size={18}
-                          fill="none"
-                        />
-                      ) : (
-                        <Check
-                          className="recommendation-icon text-emerald"
-                          size={18}
-                        />
-                      )}
-                      <div>
-                        <div className="recommendation-title">
-                          Network Map:{" "}
-                          {networkType === "dvs"
-                            ? "Action Required (Automated)"
-                            : "Verified"}
-                        </div>
-                        <div className="recommendation-desc">
-                          {networkType === "dvs"
-                            ? "vSphere Distributed Port Groups detected. Shift Evidence scripts will map these configurations to Proxmox Open vSwitch (OVS) bridges automatically during container staging."
-                            : "Standard vSwitch maps natively to Linux bridge (vmbr0) devices on target Proxmox VE hypervisors."}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Backup recommendation */}
+                    {/* Cost exposure */}
                     <div className="recommendation-card ready">
                       <Check
                         className="recommendation-icon text-emerald"
@@ -579,12 +608,46 @@ export default function ReadinessValidator({
                       />
                       <div>
                         <div className="recommendation-title">
-                          Backup Strategy: Planned
+                          Cost Exposure: Estimated -70% Delta
                         </div>
                         <div className="recommendation-desc">
-                          {backupSystem === "veeam"
-                            ? "Shift Evidence automates the setup of Proxmox Backup Server (PBS), establishing backup schedules and datastores. Incremental backup structures are mapped cleanly."
-                            : "Custom scripting hook mapped. Backup schedules will be configured on Proxmox VE API schedule lists."}
+                          Transitioning to Proxmox VE subscription models will eliminate broadcom-style vCPU licensing surcharges.
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Storage dependencies */}
+                    <div className="recommendation-card ready">
+                      <Check
+                        className="recommendation-icon text-emerald"
+                        size={18}
+                      />
+                      <div>
+                        <div className="recommendation-title">
+                          Storage Dependencies: Auto-mapped
+                        </div>
+                        <div className="recommendation-desc">
+                          {evidenceSource === "file" || storageType !== "vsan"
+                            ? "External block storage mapping verified. Incremental disk block converter staging available."
+                            : "VMware vSAN storage flagged: will utilize Proxmox Ceph RBD replication scripts."}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Evidence Gaps */}
+                    <div className="recommendation-card ready">
+                      <Check
+                        className="recommendation-icon text-emerald"
+                        size={18}
+                      />
+                      <div>
+                        <div className="recommendation-title">
+                          Evidence Gaps: None (Score Verified)
+                        </div>
+                        <div className="recommendation-desc">
+                          {evidenceSource === "file" 
+                            ? "RVTools data satisfies TAM methodology assessment parameters." 
+                            : "Intake parameters verified. Custom PDF assessment model ready."}
                         </div>
                       </div>
                     </div>
@@ -608,7 +671,7 @@ export default function ReadinessValidator({
                 }}
               >
                 <ShieldCheck size={18} />
-                Get Full Migration Plan
+                Get Full Readiness Report
               </button>
             </div>
           </>
