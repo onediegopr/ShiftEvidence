@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, type CSSProperties, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
-import { authClient } from "../../lib/auth-client";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
   ShieldCheck,
   Terminal,
@@ -31,8 +28,6 @@ type LogType = "info" | "success" | "warn";
 type EvidenceSource = "none" | "file" | "manual";
 
 export default function SignUpPage() {
-  const router = useRouter();
-
   // Signup states
   const [isRegistered, setIsRegistered] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -40,8 +35,6 @@ export default function SignUpPage() {
   const [company, setCompany] = useState("");
   const [clusterSize, setClusterSize] = useState("< 50 VMs");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Scanner wizard states
   const [currentStep, setCurrentStep] = useState<Step>("setup");
@@ -77,28 +70,13 @@ export default function SignUpPage() {
     }
   }, [logs]);
 
-  const handleSignUpSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignUpSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    // Call real Better Auth signup
-    const { error: authError } = await authClient.signUp.email({
-      name: fullName,
-      email: email,
-      password: password,
-      callbackURL: "/dashboard",
-    });
-
-    if (authError) {
-      setError(authError.message ?? "Unable to create account.");
-      setIsSubmitting(false);
-      return;
+    // Simulate signup request
+    if (fullName && email && company && password) {
+      setIsRegistered(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
-    setIsSubmitting(false);
-    setIsRegistered(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Mock console log stream
@@ -368,15 +346,12 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                {error ? <p className="auth-error" style={{ color: "var(--accent-red)", fontSize: "0.85rem", margin: 0 }}>{error}</p> : null}
-
                 <button
                   type="submit"
                   className="btn btn-primary btn-glow"
-                  disabled={isSubmitting}
                   style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
                 >
-                  {isSubmitting ? "Creating Account..." : "Create Account & Start Audit"}
+                  Create Account & Start Audit
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -396,7 +371,7 @@ export default function SignUpPage() {
                   100% Agentless & Secure
                 </span>
                 <span>•</span>
-                <Link href="/sign-in" className="text-cyan" style={{ textDecoration: "underline" }}>Already have an account?</Link>
+                <span>No credit card required</span>
               </div>
             </div>
 
@@ -548,7 +523,7 @@ export default function SignUpPage() {
                   {evidenceSource === "none" && (
                     <div>
                       <p className="mb-6" style={{ fontSize: "0.95rem", lineHeight: "1.6" }}>
-                        Welcome, <strong>{fullName || "User"}</strong>! Choose how you would like to supply your VMware cluster evidence. We will parse it through the TAM-led audit engine to build your assessment.
+                        Welcome, <strong>{fullName}</strong>! Choose how you would like to supply your VMware cluster evidence. We will parse it through the TAM-led audit engine to build your assessment.
                       </p>
 
                       <h4 className="mb-4" style={{ color: "white", fontSize: "1.1rem" }}>
@@ -946,7 +921,7 @@ export default function SignUpPage() {
                     <FileText className="text-cyan" size={32} />
                     <div>
                       <strong style={{ color: "white", display: "block", fontSize: "0.9rem" }}>
-                        Shift_Evidence_Report_{company.replace(/\s+/g, "_") || "Readiness"}.pdf
+                        Shift_Evidence_Report_{company.replace(/\s+/g, "_")}.pdf
                       </strong>
                       <span className="text-muted" style={{ fontSize: "0.8rem" }}>
                         PDF Report • {evidenceSource === "file" ? "RVTools Data" : "Intake Data"} • {getScore()}% score
@@ -964,13 +939,13 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="shiftreadiness-actions" style={{ marginTop: "2rem" }}>
-                  <Link href="/shiftreadiness" className="btn btn-primary">
+                  <a href="/shiftreadiness" className="btn btn-primary">
                     Compare Professional Support Plans
                     <ChevronRight size={16} />
-                  </Link>
-                  <Link href="/" className="btn btn-secondary">
+                  </a>
+                  <a href="/" className="btn btn-secondary">
                     Back to Homepage
-                  </Link>
+                  </a>
                 </div>
               </div>
             )}

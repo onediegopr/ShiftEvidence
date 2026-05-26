@@ -7,7 +7,6 @@ import SavingsCalculator from "../components/SavingsCalculator";
 import Features from "../components/Features";
 import Process from "../components/Process";
 import Footer from "../components/Footer";
-import ReadinessValidator from "../components/ReadinessValidator";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -68,16 +67,17 @@ const appCopy = {
 } as const;
 
 export default function LandingPage() {
-  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [ctaEmail, setCtaEmail] = useState("");
   const vmwareLogoSrc = assetSrc(vmwareLogo);
   const proxmoxLogoSrc = assetSrc(proxmoxLogo);
 
-  const handleOpenScanner = () => setIsScannerOpen(true);
-  const handleCloseScanner = () => setIsScannerOpen(false);
+  const handleOpenScanner = () => {
+    window.location.href = "/sign-up";
+  };
 
   const handleCtaSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsScannerOpen(true);
+    window.location.href = `/sign-up?email=${encodeURIComponent(ctaEmail)}`;
   };
 
   return (
@@ -501,6 +501,8 @@ export default function LandingPage() {
                   placeholder={appCopy.ctaInput}
                   required
                   className="form-input"
+                  value={ctaEmail}
+                  onChange={(e) => setCtaEmail(e.target.value)}
                 />
                 <button type="submit" className="btn btn-primary btn-glow cta-btn">
                   {appCopy.ctaBtn}
@@ -524,7 +526,6 @@ export default function LandingPage() {
       </main>
 
       <Footer />
-      <ReadinessValidator isOpen={isScannerOpen} onClose={handleCloseScanner} />
     </>
   );
 }

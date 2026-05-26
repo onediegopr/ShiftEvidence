@@ -1,6 +1,7 @@
 import LandingPage from "./views/LandingPage";
 import ShiftReadinessPage from "./views/ShiftReadinessPage";
 import PlaceholderPage from "./views/PlaceholderPage";
+import SignUpPage from "./views/SignUpPage";
 
 const getRoute = () => {
   if (typeof window === "undefined") return "/";
@@ -15,17 +16,7 @@ export default function App() {
   }
 
   if (route === "/sign-up") {
-    return (
-      <PlaceholderPage
-        eyebrow="Placeholder"
-        title="Free Readiness Check is coming next."
-        body="This CTA will later connect to the assessment intake flow. For now, explore the ShiftReadiness product page or return to the main landing."
-        primaryLabel="Explore ShiftReadiness"
-        primaryHref="/shiftreadiness"
-        secondaryLabel="Back to landing"
-        secondaryHref="/"
-      />
-    );
+    return <SignUpPage />;
   }
 
   if (route === "/contact") {
