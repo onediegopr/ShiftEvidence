@@ -252,14 +252,12 @@ export default function ShiftReadinessPage() {
         <div className="bg-mesh"></div>
         <div className="container shiftreadiness-hero-grid">
           <div className="shiftreadiness-hero-copy">
-            <div className="badge badge-cyan">ShiftReadiness</div>
+            <div className="badge badge-cyan">VMware exit → Proxmox Assessment</div>
             <h1>
-              Know your VMware {"->"} Proxmox cost, risk and readiness before you migrate.
+              Assess your <span className="text-gradient">VMware exit</span> before committing budget.
             </h1>
             <p className="shiftreadiness-lead">
-              Upload your RVTools export, validate your assumptions, estimate subscription delta,
-              and decide whether your target infrastructure is ready - with optional Storage
-              Destination Readiness when architecture matters.
+              Verify licensing exposure, map target storage compatibility, and identify migration risks with a productized pre-flight check.
             </p>
             <div className="shiftreadiness-actions">
               <a href="/sign-up" className="btn btn-primary btn-glow">
