@@ -249,3 +249,14 @@ Falta confirmar:
 ## Recomendacion final
 
 Antes de HITO 9.2, completar `docs/hostinger-production-access-gate.md` con datos reales del panel Hostinger. El dominio `https://shiftevidence.com` responde, pero actualmente no demuestra estar sirviendo la app Next.js/Node de ShiftReadiness.
+
+## Nota HITO 9.1.7
+
+Local public routing and the landing CTA were validated after HITO 9.1.7:
+
+- `/` returns `200` locally.
+- `/shiftreadiness` returns `200` locally.
+- `/sign-in` returns `200` locally.
+- The landing page includes `New product`, `ShiftReadiness`, and `Explore ShiftReadiness` with `href="/shiftreadiness"`.
+
+Production still serves static Hostinger/LiteSpeed HTML and does not expose the Next.js routes. This hito does not change Hostinger, DNS, `public_html`, env vars, or deployment state.

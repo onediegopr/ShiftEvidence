@@ -194,3 +194,16 @@ El HITO 9.2 sólo puede reintentarse si todo esto está confirmado:
 - Motivo: faltan acceso Hostinger real, dominio HTTPS, app root, método deploy, logs, restart control y datos productivos mínimos.
 - Fecha: 2026-05-26
 - Responsable:
+
+## Nota HITO 9.1.7
+
+After HITO 9.1.7, local public routing is valid and the landing page includes a visible CTA from `/` to `/shiftreadiness`.
+
+Production remains blocked by the Hostinger static/Node runtime mismatch:
+
+- `https://shiftevidence.com/` serves static Hostinger/LiteSpeed HTML.
+- `https://shiftevidence.com/shiftreadiness` returns Hostinger `404`.
+- `https://shiftevidence.com/sign-in` returns Hostinger `404`.
+- No `/_next/` assets are visible in production.
+
+HITO 9.2 must not be retried until the real Hostinger Node.js runtime and domain association are confirmed.

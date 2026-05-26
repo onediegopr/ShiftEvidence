@@ -75,6 +75,25 @@ export default function LandingPage() {
       <main style={{ flexGrow: 1 }}>
         <Hero onOpenScanner={handleOpenScanner} />
 
+        <section className="section shiftreadiness-promo-section">
+          <div className="container">
+            <div className="glass-card shiftreadiness-promo">
+              <div className="shiftreadiness-promo-copy">
+                <div className="badge badge-cyan">New product</div>
+                <h2>ShiftReadiness</h2>
+                <p>
+                  A technical readiness workspace for VMware &rarr; Proxmox
+                  cost, risk and architecture decisions.
+                </p>
+              </div>
+              <a href="/shiftreadiness" className="btn btn-primary btn-glow">
+                Explore ShiftReadiness
+                <ArrowRight size={18} />
+              </a>
+            </div>
+          </div>
+        </section>
+
         <section className="credibility-strip">
           <div className="bg-mesh"></div>
           <div className="container">
@@ -132,25 +151,6 @@ export default function LandingPage() {
         <SavingsCalculator />
         <Features />
         <Process />
-
-        <section className="section shiftreadiness-promo-section">
-          <div className="container">
-            <div className="glass-card shiftreadiness-promo">
-              <div className="shiftreadiness-promo-copy">
-                <div className="badge badge-cyan">New product</div>
-                <h2>ShiftReadiness</h2>
-                <p>
-                  A technical readiness workspace for VMware &rarr; Proxmox
-                  cost, risk and architecture decisions.
-                </p>
-              </div>
-              <a href="/shiftreadiness" className="btn btn-primary btn-glow">
-                Explore ShiftReadiness
-                <ArrowRight size={18} />
-              </a>
-            </div>
-          </div>
-        </section>
 
         <section id="faq" className="section faq-section">
           <div className="container">
