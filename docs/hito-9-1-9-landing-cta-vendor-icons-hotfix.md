@@ -111,6 +111,44 @@ This hito did not touch production.
 
 - `next build` still reports the known non-blocking Turbopack/NFT warning related to `reportStorageService.ts` through the report download route.
 
+## Reopen visual verification
+
+The first closure was not sufficient because the user still could not see the ShiftReadiness CTA in the real local browser flow. The earlier validation proved the text existed in HTML, but it did not provide enough visual evidence that the CTA was actually visible above the fold.
+
+Actions taken during reopen:
+
+- Confirmed local Git remained on `main` with commit `62604d2` present and not pushed.
+- Found an old `next start` process on port `3000`.
+- Stopped the stale Node process.
+- Removed `.next`.
+- Ran a clean `npm run build`.
+- Started a fresh production-like server with `npm run start -- -p 3000`.
+- Rechecked `/`, `/shiftreadiness`, `/sign-in`, and `/dashboard`.
+- Saved the served home HTML for inspection.
+- Captured a local browser screenshot for visual verification.
+
+Result:
+
+- The CTA is visible immediately below the top navigation and above the main hero.
+- The block shows `New product`, `ShiftReadiness`, the readiness workspace description, and `Explore ShiftReadiness`.
+- The CTA uses `href="/shiftreadiness"`.
+- The block does not depend on animation, client state, `document`, `window`, or `useEffect`.
+- The CTA is not inside a hidden, `sr-only`, `opacity-0`, or invisible container.
+- In the served HTML, `New product` appears before the main hero title, confirming the CTA is positioned before the hero content.
+- VMware and Proxmox assets resolve to Next static SVG URLs.
+- `[object Object]` is absent from the served home HTML.
+
+Why the false OK happened:
+
+- The source fix was valid, but the local browser check was affected by stale runtime/cache risk and lacked explicit visual evidence.
+- `curl` and HTML string checks alone were not enough to close a visual regression.
+- Future visual hotfixes must include a clean server restart plus browser or screenshot verification.
+
+Production remains separate:
+
+- This reopen did not touch Hostinger.
+- `https://shiftevidence.com/shiftreadiness` remains a Hostinger/static routing issue until the domain serves the real Next.js Node app.
+
 ## Riesgos pendientes
 
 - Production will not reflect this fix until Hostinger serves the real Next.js app.
