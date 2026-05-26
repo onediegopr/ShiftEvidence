@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -165,41 +162,7 @@ const flowSteps = [
   "Book technical review if needed",
 ];
 
-const productMeta = {
-  title: "ShiftReadiness | Infrastructure readiness before you migrate",
-  description:
-    "ShiftReadiness helps teams assess VMware to Proxmox cost, risk and target architecture before they migrate. No production access, no changes, no migration execution.",
-  canonical: "https://shiftevidence.com/shiftreadiness",
-};
-
-function upsertMeta(name: string, content: string) {
-  let el = document.head.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
-  if (!el) {
-    el = document.createElement("meta");
-    el.setAttribute("name", name);
-    document.head.appendChild(el);
-  }
-  el.setAttribute("content", content);
-}
-
-function upsertCanonical(href: string) {
-  let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.setAttribute("rel", "canonical");
-    document.head.appendChild(link);
-  }
-  link.href = href;
-}
-
 export default function ShiftReadinessPage() {
-  useEffect(() => {
-    document.title = productMeta.title;
-    document.documentElement.lang = "en";
-    upsertMeta("description", productMeta.description);
-    upsertCanonical(productMeta.canonical);
-  }, []);
-
   return (
     <main className="shiftreadiness-page">
       <header className="shiftreadiness-topbar">
