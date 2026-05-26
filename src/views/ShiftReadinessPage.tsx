@@ -595,11 +595,11 @@ export default function ShiftReadinessPage() {
                 </li>
                 <li>
                   <Check size={16} />
-                  <span>Instant calculation of licensing delta & annual savings</span>
+                  <span>Automated calculation of licensing delta & annual savings</span>
                 </li>
                 <li>
                   <Check size={16} />
-                  <span>Standardized, executive-ready PDF report downloaded instantly</span>
+                  <span>Standardized, executive-ready PDF report generated from your assessment</span>
                 </li>
                 <li>
                   <Check size={16} />

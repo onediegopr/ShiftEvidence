@@ -18,7 +18,6 @@ import {
   BarChart3,
   FileText,
   Shield,
-  Check,
   Layers,
   Search,
 } from "lucide-react";
