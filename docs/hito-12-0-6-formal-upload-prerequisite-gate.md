@@ -88,5 +88,14 @@ Build warning conocido:
 ## Decision
 El gate formal queda implementado en UI y server-side sin tocar Hostinger, deploy, Prisma ni DB schema.
 
+## HITO 12.0.7 QA Outcome
+Se ejecutó QA autenticado local posterior:
+
+- Assessment incompleto: UI muestra `Upload gate: blocked`, mensaje claro, checklist de faltantes y fieldset deshabilitado.
+- Assessment completo: UI muestra `Upload gate: ready` y formulario habilitado.
+- Server-side guard: auditado en la action real, después de sesión/ownership y antes de storage/`EvidenceFile`.
+- Bypass directo por `curl` contra Server Actions no alcanzó la action por protocolo de Next (`Failed to find Server Action`), por lo que queda pendiente una prueba browser-driven real del submit multipart.
+- Regresión parser P0: OK con `node scripts/qa-rvtools-parser-p0.mjs`.
+
 ## Next Step
 Ejecutar QA autenticado manual y, si pasa, cerrar remoto con autorización explícita de push.
