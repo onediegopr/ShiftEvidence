@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -163,20 +166,85 @@ const flowSteps = [
 ];
 
 export default function ShiftReadinessPage() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <main className="shiftreadiness-page">
-      <header className="shiftreadiness-topbar">
-        <div className="container shiftreadiness-topbar-inner">
-          <a href="/" className="shiftreadiness-brand">
-            <span className="shiftreadiness-brand-mark">SR</span>
-            <span>
-              <strong>ShiftReadiness</strong>
-              <small>Infrastructure readiness before you migrate.</small>
-            </span>
+      <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
+        <div className="container navbar-container">
+          <a href="/" className="logo-container">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="nav-brand-logo"
+              aria-hidden="true"
+            >
+              <circle
+                cx="12"
+                cy="16"
+                r="8"
+                fill="none"
+                stroke="#06b6d4"
+                strokeWidth="2.5"
+              />
+              <path
+                d="M12 16H24M24 16L20 12M24 16L20 20"
+                stroke="#8b5cf6"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>Shift Evidence</span>
+            <span className="navbar-badge">ShiftReadiness</span>
           </a>
-          <a href="/" className="shiftreadiness-backlink">
-            Back to Shift Evidence
-          </a>
+
+          <nav className="navbar-menu-desktop">
+            <ul className="nav-links">
+              <li>
+                <a href="#what-is" className="nav-link">
+                  Overview
+                </a>
+              </li>
+              <li>
+                <a href="#cost-risk" className="nav-link">
+                  Cost & Risk
+                </a>
+              </li>
+              <li>
+                <a href="#value-framing" className="nav-link">
+                  Comparison
+                </a>
+              </li>
+              <li>
+                <a href="#pricing" className="nav-link">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <div className="navbar-actions">
+            <a href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
+              Start Free Check
+            </a>
+          </div>
         </div>
       </header>
 
@@ -207,27 +275,80 @@ export default function ShiftReadinessPage() {
             </p>
           </div>
 
-          <div className="shiftreadiness-hero-panel glass-card">
-            <div className="shiftreadiness-panel-grid">
-              <div className="shiftreadiness-panel-stat">
-                <span>Included</span>
-                <strong>Cost / Risk Engine</strong>
-                <p>Always part of every assessment.</p>
+          <div className="shiftreadiness-hero-panel glass-card sr-dashboard-mockup">
+            <div className="sr-mockup-header">
+              <span className="sr-mockup-dot red"></span>
+              <span className="sr-mockup-dot yellow"></span>
+              <span className="sr-mockup-dot green"></span>
+              <span className="sr-mockup-title">Readiness Assessment Workspace</span>
+            </div>
+
+            <div className="sr-mockup-body">
+              <div className="sr-mockup-main-row">
+                {/* Circular Gauge */}
+                <div className="sr-mockup-gauge-container">
+                  <div className="sr-mockup-gauge-circle">
+                    <svg width="90" height="90" viewBox="0 0 36 36" className="sr-gauge-svg">
+                      <path
+                        className="sr-gauge-bg"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.06)"
+                        strokeWidth="3.2"
+                      />
+                      <path
+                        className="sr-gauge-fill"
+                        strokeDasharray="84, 100"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="url(#cyanGrad)"
+                        strokeWidth="3.2"
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#06b6d4" />
+                          <stop offset="100%" stopColor="#8b5cf6" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div className="sr-gauge-text">
+                      <strong>84%</strong>
+                      <span>Score</span>
+                    </div>
+                  </div>
+                  <div className="sr-mockup-badge">
+                    Readiness Score
+                  </div>
+                </div>
+
+                {/* Savings Counters */}
+                <div className="sr-mockup-metrics">
+                  <div className="sr-mockup-metric-card">
+                    <span className="sr-mockup-label">Subscription Delta</span>
+                    <strong className="sr-mockup-val text-emerald">-72%</strong>
+                  </div>
+                  <div className="sr-mockup-metric-card">
+                    <span className="sr-mockup-label">Annual Savings</span>
+                    <strong className="sr-mockup-val text-cyan">$148,000</strong>
+                  </div>
+                </div>
               </div>
-              <div className="shiftreadiness-panel-stat">
-                <span>Optional</span>
-                <strong>Storage Destination Readiness</strong>
-                <p>Only when target architecture needs deeper validation.</p>
-              </div>
-              <div className="shiftreadiness-panel-stat">
-                <span>Focus</span>
-                <strong>Evidence before migration</strong>
-                <p>Decision support for VMware exit planning.</p>
-              </div>
-              <div className="shiftreadiness-panel-stat">
-                <span>Output</span>
-                <strong>Readiness report</strong>
-                <p>Executive and technical visibility in one package.</p>
+
+              {/* Sizing Chips & Environment Info */}
+              <div className="sr-mockup-inventory">
+                <div className="sr-inventory-stat">
+                  <span>Detected Workloads</span>
+                  <strong>245 VMs <small>/ 12 Hosts</small></strong>
+                </div>
+                <div className="sr-inventory-stat">
+                  <span>Storage Footprint</span>
+                  <strong>84.2 TB</strong>
+                </div>
+                <div className="sr-inventory-stat">
+                  <span>Risk Profile</span>
+                  <strong className="text-warning">Medium Risk</strong>
+                </div>
               </div>
             </div>
           </div>
