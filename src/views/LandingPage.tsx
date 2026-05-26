@@ -18,6 +18,9 @@ import {
   BarChart3,
   FileText,
   Shield,
+  Check,
+  Layers,
+  Search,
 } from "lucide-react";
 
 const appCopy = {
@@ -78,24 +81,6 @@ export default function LandingPage() {
       <main style={{ flexGrow: 1 }}>
         <Hero onOpenScanner={handleOpenScanner} />
 
-        <section className="section shiftreadiness-promo-section">
-          <div className="container">
-            <div className="glass-card shiftreadiness-promo">
-              <div className="shiftreadiness-promo-copy">
-                <div className="badge badge-cyan">New product</div>
-                <h2>ShiftReadiness</h2>
-                <p>
-                  A technical readiness workspace for VMware &rarr; Proxmox
-                  cost, risk and architecture decisions.
-                </p>
-              </div>
-              <a href="/shiftreadiness" className="btn btn-primary btn-glow">
-                Explore ShiftReadiness
-                <ArrowRight size={18} />
-              </a>
-            </div>
-          </div>
-        </section>
 
         <section className="credibility-strip">
           <div className="bg-mesh"></div>
@@ -154,6 +139,148 @@ export default function LandingPage() {
         <SavingsCalculator />
         <Features />
         <Process />
+
+        <section id="readiness-showcase" className="section shiftreadiness-promo-showcase-section">
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="glass-card shiftreadiness-promo-showcase">
+              <div className="sr-showcase-copy">
+                <div className="badge badge-cyan">Pre-Migration Discovery</div>
+                <h2>Before you migrate, understand your readiness first.</h2>
+                <p>
+                  ShiftReadiness productizes the first phase of a VMware migration assessment. Map your environment, calculate license delta, and spot architectural blockers in minutes at software pricing.
+                </p>
+                
+                <ul className="sr-showcase-features">
+                  <li>
+                    <div className="sr-showcase-feature-icon">
+                      <Search size={18} />
+                    </div>
+                    <div>
+                      <strong>Evidence-Based Intake</strong>
+                      <span>Upload your RVTools or vSphere exports. Zero agents, read-only configuration.</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="sr-showcase-feature-icon">
+                      <BarChart3 size={18} />
+                    </div>
+                    <div>
+                      <strong>Cost & Savings Engine</strong>
+                      <span>Compare current VMware license costs with Proxmox alternatives automatically.</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="sr-showcase-feature-icon">
+                      <Layers size={18} />
+                    </div>
+                    <div>
+                      <strong>Storage Scenario Modeling</strong>
+                      <span>Agnostic architectural validation for ZFS, Ceph, SAN, or NAS targets.</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="sr-showcase-feature-icon">
+                      <FileText size={18} />
+                    </div>
+                    <div>
+                      <strong>Executive PDF Reporting</strong>
+                      <span>Generate decision-ready, standardized reports to present internally.</span>
+                    </div>
+                  </li>
+                </ul>
+
+                <div className="sr-showcase-actions">
+                  <a href="/shiftreadiness" className="btn btn-primary btn-glow">
+                    Explore ShiftReadiness Workspace
+                    <ArrowRight size={18} />
+                  </a>
+                  <a href="/shiftreadiness#pricing" className="btn btn-secondary">
+                    View Assessment Plans
+                  </a>
+                </div>
+              </div>
+
+              {/* Right Side: Mini Dashboard Mockup Preview */}
+              <div className="sr-showcase-visual">
+                <div className="sr-promo-mockup-panel glass-card">
+                  <div className="sr-mockup-header">
+                    <span className="sr-mockup-dot red"></span>
+                    <span className="sr-mockup-dot yellow"></span>
+                    <span className="sr-mockup-dot green"></span>
+                    <span className="sr-mockup-title">ShiftReadiness Summary</span>
+                  </div>
+
+                  <div className="sr-mockup-body">
+                    <div className="sr-mockup-main-row">
+                      <div className="sr-mockup-gauge-container">
+                        <div className="sr-mockup-gauge-circle">
+                          <svg width="80" height="80" viewBox="0 0 36 36" className="sr-gauge-svg">
+                            <path
+                              className="sr-gauge-bg"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="rgba(255,255,255,0.06)"
+                              strokeWidth="3.2"
+                            />
+                            <path
+                              className="sr-gauge-fill"
+                              strokeDasharray="84, 100"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="url(#showcaseGrad)"
+                              strokeWidth="3.2"
+                              strokeLinecap="round"
+                            />
+                            <defs>
+                              <linearGradient id="showcaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#06b6d4" />
+                                <stop offset="100%" stopColor="#8b5cf6" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                          <div className="sr-gauge-text" style={{ fontSize: '0.9rem' }}>
+                            <strong style={{ fontSize: '1.1rem' }}>84%</strong>
+                            <span style={{ fontSize: '0.55rem' }}>Score</span>
+                          </div>
+                        </div>
+                        <div className="sr-mockup-badge" style={{ fontSize: '0.65rem', marginTop: '0.45rem' }}>
+                          Readiness Score
+                        </div>
+                      </div>
+
+                      <div className="sr-mockup-metrics">
+                        <div className="sr-mockup-metric-card" style={{ padding: '0.6rem 0.85rem' }}>
+                          <span className="sr-mockup-label" style={{ fontSize: '0.65rem' }}>Subscription Delta</span>
+                          <strong className="sr-mockup-val text-emerald" style={{ fontSize: '1.15rem' }}>-72%</strong>
+                        </div>
+                        <div className="sr-mockup-metric-card" style={{ padding: '0.6rem 0.85rem' }}>
+                          <span className="sr-mockup-label" style={{ fontSize: '0.65rem' }}>Annual Savings</span>
+                          <strong className="sr-mockup-val text-cyan" style={{ fontSize: '1.15rem' }}>$148k</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sr-mockup-inventory" style={{ paddingTop: '1rem', marginTop: '0.5rem' }}>
+                      <div className="sr-inventory-stat">
+                        <span>Workloads</span>
+                        <strong style={{ fontSize: '0.82rem' }}>245 VMs</strong>
+                      </div>
+                      <div className="sr-inventory-stat">
+                        <span>Storage</span>
+                        <strong style={{ fontSize: '0.82rem' }}>84 TB</strong>
+                      </div>
+                      <div className="sr-inventory-stat">
+                        <span>Risks</span>
+                        <strong className="text-warning" style={{ fontSize: '0.82rem' }}>Medium</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section id="faq" className="section faq-section">
           <div className="container">
