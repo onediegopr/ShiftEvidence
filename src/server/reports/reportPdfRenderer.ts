@@ -12,9 +12,54 @@ export type PdfReportRenderInput = {
   reportPreview: ReportPreviewData;
 };
 
+type Tone = "neutral" | "good" | "warning" | "danger" | "info";
+
+const MARGIN = 44;
+const THEME = {
+  ink: "#0f172a",
+  muted: "#475569",
+  faint: "#94a3b8",
+  line: "#dbe4ee",
+  paper: "#ffffff",
+  panel: "#f8fafc",
+  navy: "#0b1220",
+  navy2: "#111827",
+  cyan: "#0891b2",
+  blue: "#2563eb",
+  green: "#059669",
+  amber: "#d97706",
+  red: "#dc2626",
+  slate: "#334155",
+};
+
+const TONE_COLORS: Record<Tone, { fill: string; stroke: string; text: string }> = {
+  neutral: { fill: "#f1f5f9", stroke: "#cbd5e1", text: THEME.slate },
+  good: { fill: "#ecfdf5", stroke: "#a7f3d0", text: THEME.green },
+  warning: { fill: "#fffbeb", stroke: "#fde68a", text: THEME.amber },
+  danger: { fill: "#fef2f2", stroke: "#fecaca", text: THEME.red },
+  info: { fill: "#ecfeff", stroke: "#a5f3fc", text: THEME.cyan },
+};
+
+function safeText(value: string | number | null | undefined) {
+  const text = value === null || value === undefined ? "Not provided" : String(value);
+  const normalized = text
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/\u2192/g, "->")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/\u2026/g, "...");
+
+  return Array.from(normalized)
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      return code >= 32 && code <= 126 ? char : "?";
+    })
+    .join("");
+}
+
 function money(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return "—";
+    return "Not available";
   }
 
   return new Intl.NumberFormat("en-US", {
@@ -26,7 +71,7 @@ function money(value: number | null | undefined) {
 
 function percent(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return "—";
+    return "Not available";
   }
 
   return `${new Intl.NumberFormat("en-US", {
@@ -36,7 +81,7 @@ function percent(value: number | null | undefined) {
 
 function number(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return "—";
+    return "Not available";
   }
 
   return new Intl.NumberFormat("en-US", {
@@ -52,79 +97,443 @@ function dateLabel(value: Date) {
   }).format(value);
 }
 
-function addSectionHeader(doc: PDFKit.PDFDocument, title: string, subtitle?: string) {
-  doc.moveDown(0.4);
-  doc.font("Helvetica-Bold").fontSize(16).fillColor("#0f172a").text(title, { continued: false });
+function contentWidth(doc: PDFKit.PDFDocument) {
+  return doc.page.width - MARGIN * 2;
+}
+
+function bottomLimit(doc: PDFKit.PDFDocument) {
+  return doc.page.height - 76;
+}
+
+function getScoreLabel(value: number | null | undefined, kind: "readiness" | "confidence") {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return kind === "readiness" ? "Readiness not scored" : "Evidence not scored";
+  }
+
+  if (kind === "readiness") {
+    if (value >= 75) return "High readiness";
+    if (value >= 50) return "Medium readiness";
+    return "Low readiness";
+  }
+
+  if (value >= 70) return "Strong evidence";
+  if (value >= 45) return "Moderate evidence";
+  return "Limited evidence";
+}
+
+function getScoreTone(value: number | null | undefined): Tone {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return "neutral";
+  }
+
+  if (value >= 75) return "good";
+  if (value >= 50) return "warning";
+  return "danger";
+}
+
+function getSeverityTone(severity: string | null | undefined): Tone {
+  switch (severity) {
+    case "critical":
+    case "high":
+      return "danger";
+    case "medium":
+      return "warning";
+    case "low":
+      return "good";
+    default:
+      return "neutral";
+  }
+}
+
+function titleCase(value: string | null | undefined) {
+  if (!value) {
+    return "Not provided";
+  }
+
+  return value
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function addContentPage(doc: PDFKit.PDFDocument, section: string, title: string, subtitle?: string) {
+  doc.addPage();
+  doc.rect(0, 0, doc.page.width, 64).fill(THEME.navy);
+  doc
+    .fillColor("#e2e8f0")
+    .font("Helvetica-Bold")
+    .fontSize(8)
+    .text(safeText(section).toUpperCase(), MARGIN, 18, { characterSpacing: 1.1 });
+  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(15).text(safeText(title), MARGIN, 33);
   if (subtitle) {
-    doc.moveDown(0.2);
-    doc.font("Helvetica").fontSize(9.5).fillColor("#475569").text(subtitle);
+    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(8.5).text(safeText(subtitle), MARGIN + 250, 35, {
+      width: doc.page.width - MARGIN * 2 - 250,
+      align: "right",
+    });
   }
-  doc.moveDown(0.4);
+  doc.y = 92;
 }
 
-function addBodyLines(doc: PDFKit.PDFDocument, lines: string[]) {
-  lines.forEach((line) => {
-    doc.font("Helvetica").fontSize(10.5).fillColor("#0f172a").text(line, {
-      lineGap: 2,
-    });
+function ensureSpace(doc: PDFKit.PDFDocument, needed: number, title: string) {
+  if (doc.y + needed > bottomLimit(doc)) {
+    addContentPage(doc, "Continued", title);
+  }
+}
+
+function badge(doc: PDFKit.PDFDocument, text: string, tone: Tone, x = doc.x, y = doc.y) {
+  const colors = TONE_COLORS[tone];
+  const label = safeText(text).toUpperCase();
+  const width = Math.max(64, doc.widthOfString(label) + 16);
+  doc.roundedRect(x, y, width, 18, 9).fillAndStroke(colors.fill, colors.stroke);
+  doc.fillColor(colors.text).font("Helvetica-Bold").fontSize(7).text(label, x + 8, y + 5, {
+    width: width - 16,
+    align: "center",
+  });
+  return width;
+}
+
+function h2(doc: PDFKit.PDFDocument, text: string, note?: string) {
+  doc.moveDown(0.2);
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(17).text(safeText(text));
+  if (note) {
     doc.moveDown(0.15);
-  });
-}
-
-function addBulletList(doc: PDFKit.PDFDocument, items: string[]) {
-  items.forEach((item) => {
-    doc.font("Helvetica").fontSize(10.5).fillColor("#0f172a").text(`• ${item}`, {
-      indent: 0,
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(safeText(note), {
+      width: contentWidth(doc),
       lineGap: 2,
     });
-    doc.moveDown(0.1);
+  }
+  doc.moveDown(0.55);
+}
+
+function paragraph(doc: PDFKit.PDFDocument, text: string, options?: PDFKit.Mixins.TextOptions) {
+  doc.fillColor(THEME.ink).font("Helvetica").fontSize(9.5).text(safeText(text), {
+    width: contentWidth(doc),
+    lineGap: 2,
+    ...options,
   });
 }
 
-function addKeyValue(doc: PDFKit.PDFDocument, label: string, value: string) {
-  doc.font("Helvetica-Bold").fontSize(10.5).fillColor("#334155").text(label, {
-    continued: true,
+function callout(doc: PDFKit.PDFDocument, text: string, tone: Tone = "info") {
+  const colors = TONE_COLORS[tone];
+  const y = doc.y;
+  doc.roundedRect(MARGIN, y, contentWidth(doc), 54, 8).fillAndStroke(colors.fill, colors.stroke);
+  doc.fillColor(colors.text).font("Helvetica-Bold").fontSize(9).text("Evidence note", MARGIN + 16, y + 11);
+  doc.fillColor(THEME.ink).font("Helvetica").fontSize(9).text(safeText(text), MARGIN + 16, y + 27, {
+    width: contentWidth(doc) - 32,
+    lineGap: 2,
   });
-  doc.font("Helvetica").fillColor("#0f172a").text(` ${value}`);
+  doc.y = y + 68;
 }
 
-function addSectionTable(doc: PDFKit.PDFDocument, rows: Array<[string, string]>) {
-  rows.forEach(([label, value]) => addKeyValue(doc, label, value));
-}
-
-function addFinding(doc: PDFKit.PDFDocument, finding: ReportPreviewData["topFindings"][number]) {
-  doc.roundedRect(doc.x, doc.y, 500, 72, 8).strokeColor("#cbd5e1").stroke();
-  doc.moveDown(0.15);
-  doc.font("Helvetica-Bold").fontSize(11).fillColor("#0f172a").text(finding.title);
-  doc.font("Helvetica").fontSize(9.5).fillColor("#475569").text(
-    `${finding.entityName ?? "Assessment"} • ${finding.category.toUpperCase()} • ${finding.severity.toUpperCase()}`,
-  );
-  doc.font("Helvetica").fontSize(9.5).fillColor("#0f172a").text(finding.description, {
-    width: 500,
+function metricCard(params: {
+  doc: PDFKit.PDFDocument;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+  value: string;
+  note?: string;
+  tone?: Tone;
+}) {
+  const { doc, x, y, w, h, label, value, note, tone = "neutral" } = params;
+  const colors = TONE_COLORS[tone];
+  doc.roundedRect(x, y, w, h, 10).fillAndStroke(THEME.panel, colors.stroke);
+  doc.rect(x, y, 5, h).fill(colors.text);
+  doc.fillColor(THEME.muted).font("Helvetica-Bold").fontSize(7.5).text(safeText(label).toUpperCase(), x + 14, y + 12, {
+    width: w - 24,
   });
-  if (finding.recommendation) {
-    doc.font("Helvetica-Bold").fontSize(9.5).fillColor("#334155").text("Recommendation: ", {
-      continued: true,
-    });
-    doc.font("Helvetica").fillColor("#0f172a").text(finding.recommendation, {
-      width: 500,
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(18).text(safeText(value), x + 14, y + 28, {
+    width: w - 24,
+    height: 24,
+  });
+  if (note) {
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text(safeText(note), x + 14, y + 56, {
+      width: w - 24,
+      height: h - 62,
+      lineGap: 1,
     });
   }
+}
+
+function twoColumnList(params: {
+  doc: PDFKit.PDFDocument;
+  leftTitle: string;
+  leftItems: string[];
+  rightTitle: string;
+  rightItems: string[];
+}) {
+  const { doc, leftTitle, leftItems, rightTitle, rightItems } = params;
+  const gap = 18;
+  const colW = (contentWidth(doc) - gap) / 2;
+  const top = doc.y;
+  const leftH = Math.max(170, 32 + leftItems.slice(0, 8).length * 24);
+  const rightH = Math.max(170, 32 + rightItems.slice(0, 8).length * 24);
+  const boxH = Math.max(leftH, rightH);
+
+  function drawColumn(x: number, title: string, items: string[], tone: Tone) {
+    doc.roundedRect(x, top, colW, boxH, 10).fillAndStroke("#ffffff", THEME.line);
+    badge(doc, title, tone, x + 14, top + 14);
+    let y = top + 46;
+    const visible = items.length > 0 ? items.slice(0, 8) : ["Not available in current evidence"];
+    visible.forEach((item) => {
+      doc.circle(x + 18, y + 4, 2).fill(TONE_COLORS[tone].text);
+      doc.fillColor(THEME.ink).font("Helvetica").fontSize(8.8).text(safeText(item), x + 28, y, {
+        width: colW - 42,
+        lineGap: 1,
+      });
+      y += 24;
+    });
+    if (items.length > visible.length) {
+      doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text(`+ ${items.length - visible.length} more`, x + 28, y, {
+        width: colW - 42,
+      });
+    }
+  }
+
+  drawColumn(MARGIN, leftTitle, leftItems, "good");
+  drawColumn(MARGIN + colW + gap, rightTitle, rightItems, "warning");
+  doc.y = top + boxH + 20;
+}
+
+function bulletList(doc: PDFKit.PDFDocument, items: string[], maxItems = 10) {
+  const visible = items.length > 0 ? items.slice(0, maxItems) : ["Not available in current evidence"];
+  visible.forEach((item) => {
+    ensureSpace(doc, 32, "List");
+    doc.circle(MARGIN + 4, doc.y + 5, 2).fill(THEME.cyan);
+    doc.fillColor(THEME.ink).font("Helvetica").fontSize(9.2).text(safeText(item), MARGIN + 16, doc.y, {
+      width: contentWidth(doc) - 16,
+      lineGap: 2,
+    });
+    doc.moveDown(0.45);
+  });
+}
+
+function keyValueTable(doc: PDFKit.PDFDocument, rows: Array<[string, string]>) {
+  const rowH = 24;
+  rows.forEach(([key, value], index) => {
+    ensureSpace(doc, rowH + 8, "Table");
+    const y = doc.y;
+    if (index % 2 === 0) {
+      doc.rect(MARGIN, y - 3, contentWidth(doc), rowH).fill("#f8fafc");
+    }
+    doc.fillColor(THEME.slate).font("Helvetica-Bold").fontSize(8.8).text(safeText(key), MARGIN + 10, y + 3, {
+      width: 150,
+    });
+    doc.fillColor(THEME.ink).font("Helvetica").fontSize(8.8).text(safeText(value), MARGIN + 172, y + 3, {
+      width: contentWidth(doc) - 190,
+    });
+    doc.y = y + rowH;
+  });
   doc.moveDown(0.5);
 }
 
-function ensurePageSpace(doc: PDFKit.PDFDocument, minY = 120) {
-  if (doc.y > doc.page.height - minY) {
-    doc.addPage();
+function findingCard(doc: PDFKit.PDFDocument, finding: ReportPreviewData["topFindings"][number]) {
+  ensureSpace(doc, 96, "Top Findings");
+  const y = doc.y;
+  const h = 88;
+  const tone = getSeverityTone(finding.severity);
+  doc.roundedRect(MARGIN, y, contentWidth(doc), h, 9).fillAndStroke("#ffffff", TONE_COLORS[tone].stroke);
+  doc.rect(MARGIN, y, 5, h).fill(TONE_COLORS[tone].text);
+  badge(doc, titleCase(finding.severity), tone, MARGIN + 14, y + 12);
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(10.5).text(safeText(finding.title), MARGIN + 110, y + 12, {
+    width: contentWidth(doc) - 124,
+    height: 16,
+  });
+  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text(
+    safeText(`${finding.entityName ?? "Assessment"} | ${titleCase(finding.category)} | ${titleCase(finding.source)}`),
+    MARGIN + 110,
+    y + 30,
+    { width: contentWidth(doc) - 124 },
+  );
+  doc.fillColor(THEME.ink).font("Helvetica").fontSize(8.6).text(safeText(finding.description), MARGIN + 14, y + 50, {
+    width: contentWidth(doc) - 28,
+    height: 28,
+    lineGap: 1,
+  });
+  if (finding.recommendation) {
+    doc.fillColor(THEME.slate).font("Helvetica-Bold").fontSize(8).text("Recommendation: ", MARGIN + 14, y + 76, {
+      continued: true,
+      width: contentWidth(doc) - 28,
+    });
+    doc.fillColor(THEME.ink).font("Helvetica").text(safeText(finding.recommendation), {
+      width: contentWidth(doc) - 118,
+    });
+  }
+  doc.y = y + h + 12;
+}
+
+function vmRiskTable(doc: PDFKit.PDFDocument, rows: ReportPreviewData["vmMatrixPreview"]["rows"]) {
+  const headers = ["VM", "Risk", "Reason", "Action"];
+  const widths = [120, 62, 190, 150];
+  const startX = MARGIN;
+  const rowH = 34;
+  const headerY = doc.y;
+
+  doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
+  let x = startX + 8;
+  headers.forEach((header, index) => {
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+      width: widths[index],
+    });
+    x += widths[index];
+  });
+  doc.y = headerY + 28;
+
+  rows.slice(0, 12).forEach((row, index) => {
+    ensureSpace(doc, rowH + 16, "VM Risk Matrix");
+    const y = doc.y;
+    if (index % 2 === 0) {
+      doc.rect(startX, y - 3, contentWidth(doc), rowH).fill("#f8fafc");
+    }
+    x = startX + 8;
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8).text(safeText(row.vmName), x, y, {
+      width: widths[0] - 8,
+      height: 18,
+    });
+    x += widths[0];
+    badge(doc, titleCase(row.riskLevel), getSeverityTone(row.riskLevel), x, y - 1);
+    x += widths[1];
+    doc.fillColor(THEME.ink).font("Helvetica").fontSize(7.8).text(safeText(row.mainReason), x, y, {
+      width: widths[2] - 10,
+      height: 24,
+      lineGap: 1,
+    });
+    x += widths[2];
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(7.8).text(
+      safeText(row.recommendation ?? "Validate in pilot wave before production cutover."),
+      x,
+      y,
+      { width: widths[3] - 10, height: 24, lineGap: 1 },
+    );
+    doc.y = y + rowH;
+  });
+}
+
+function getWhatThisMeans(input: PdfReportRenderInput) {
+  const preview = input.reportPreview;
+  const output = [
+    `Recommended decision: ${preview.recommendedDecision}.`,
+    `Readiness and confidence are separate signals. Current readiness is ${getScoreLabel(preview.readinessScore, "readiness").toLowerCase()}, while evidence confidence is ${preview.evidenceConfidenceLabel.toLowerCase()}.`,
+    "This assessment is based on the evidence provided. Missing evidence is explicitly shown because it changes confidence and migration risk.",
+  ];
+
+  if (preview.findingCounts.critical + preview.findingCounts.high > 0) {
+    output.push("Critical and high findings should be reviewed before any production migration window is planned.");
+  }
+
+  if (preview.evidenceOverview.sourceIndicator === "limited") {
+    output.push("The current evidence set is limited; treat conclusions as preliminary and prioritize evidence collection.");
+  }
+
+  return output.slice(0, 5);
+}
+
+function getImmediateActions(input: PdfReportRenderInput) {
+  const preview = input.reportPreview;
+  const actions = new Set<string>();
+
+  preview.costRiskPreview.recommendations.slice(0, 3).forEach((item) => actions.add(item));
+  preview.upgradeRecommendations.slice(0, 2).forEach((item) => actions.add(item));
+
+  if (preview.missingEvidence.length > 0) {
+    actions.add("Collect missing evidence before treating this as a migration blueprint.");
+  }
+
+  actions.add("Run a pilot import and rollback validation before any production migration.");
+  actions.add("Confirm application owners and maintenance windows for critical workloads.");
+
+  return [...actions].slice(0, 5);
+}
+
+function waveRows(preview: ReportPreviewData) {
+  const rows = preview.vmMatrixPreview.rows;
+  const low = rows.filter((row) => row.riskLevel === "low" || row.riskLevel === "info").slice(0, 3);
+  const medium = rows.filter((row) => row.riskLevel === "medium").slice(0, 3);
+  const high = rows.filter((row) => row.riskLevel === "high" || row.riskLevel === "critical").slice(0, 3);
+
+  return [
+    ["Wave 0 - Pilot", low.length > 0 ? low.map((row) => row.vmName).join(", ") : "Select low-risk, non-critical candidates after inventory validation.", "Validate import, network mapping, backup restore and rollback mechanics."],
+    ["Wave 1 - Low-risk candidates", low.length > 0 ? low.map((row) => row.vmName).join(", ") : "Not enough VM-level evidence yet.", "Move simple workloads only after pilot success."],
+    ["Wave 2 - Standard production", medium.length > 0 ? medium.map((row) => row.vmName).join(", ") : "Requires dependency and owner validation.", "Use normal change windows and post-cutover checks."],
+    ["Wave 3 - Critical/manual review", high.length > 0 ? high.map((row) => row.vmName).join(", ") : "Hold critical workloads until business validation is complete.", "Require application owner review, rollback plan and backup restore proof."],
+    ["Hold / Remediate first", preview.findingCounts.critical > 0 ? `${preview.findingCounts.critical} critical finding(s) require remediation.` : "Use this lane for workloads with missing dependency, backup or target sizing evidence.", "Do not schedule cutover until blocking evidence is resolved."],
+  ];
+}
+
+function waveTable(doc: PDFKit.PDFDocument, rows: string[][]) {
+  const headers = ["Wave", "Candidate basis", "Required validation"];
+  const widths = [118, 206, 198];
+  const startX = MARGIN;
+  const headerY = doc.y;
+
+  doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
+  let x = startX + 8;
+  headers.forEach((header, index) => {
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+      width: widths[index],
+    });
+    x += widths[index];
+  });
+  doc.y = headerY + 30;
+
+  rows.forEach((row, index) => {
+    ensureSpace(doc, 58, "Migration Wave Preview");
+    const y = doc.y;
+    if (index % 2 === 0) {
+      doc.rect(startX, y - 4, contentWidth(doc), 52).fill("#f8fafc");
+    }
+
+    x = startX + 8;
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8.5).text(safeText(row[0]), x, y, {
+      width: widths[0] - 10,
+      height: 36,
+      lineGap: 1,
+    });
+    x += widths[0];
+    doc.fillColor(THEME.ink).font("Helvetica").fontSize(8).text(safeText(row[1]), x, y, {
+      width: widths[1] - 12,
+      height: 42,
+      lineGap: 1,
+    });
+    x += widths[1];
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text(safeText(row[2]), x, y, {
+      width: widths[2] - 12,
+      height: 42,
+      lineGap: 1,
+    });
+    doc.y = y + 54;
+  });
+}
+
+function addPageNumbers(doc: PDFKit.PDFDocument) {
+  const range = doc.bufferedPageRange();
+  for (let i = range.start; i < range.start + range.count; i += 1) {
+    doc.switchToPage(i);
+    const pageNo = i + 1;
+    doc
+      .strokeColor("#e2e8f0")
+      .lineWidth(0.5)
+      .moveTo(MARGIN, doc.page.height - 46)
+      .lineTo(doc.page.width - MARGIN, doc.page.height - 46)
+      .stroke();
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("ShiftReadiness - Evidence-based readiness assessment", MARGIN, doc.page.height - 34, {
+      width: 280,
+    });
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text(`Page ${pageNo} of ${range.count}`, doc.page.width - 150, doc.page.height - 34, {
+      width: 106,
+      align: "right",
+    });
   }
 }
 
 export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
   const doc = new PDFDocument({
     size: "A4",
-    margin: 48,
+    margin: MARGIN,
     compress: true,
     autoFirstPage: false,
+    bufferPages: true,
   });
 
   const sink = new PassThrough();
@@ -142,117 +551,254 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
 
     doc.pipe(sink);
 
-    const { reportPreview } = input;
-    const latestEvidence = reportPreview.visibleFindings.length > 0 ? "Evidence-driven preview" : "Preliminary preview";
+    const preview = input.reportPreview;
     const generatedDate = dateLabel(input.generatedAt);
+    const reportKind =
+      input.reportTypeLabel === "PDF Preview"
+        ? "Preview Report"
+        : input.reportTypeLabel === "Readiness Report"
+          ? "Readiness Report"
+          : "Executive + Technical Assessment";
 
     doc.addPage();
-    doc.rect(0, 0, doc.page.width, 120).fill("#0f172a");
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(24).text("ShiftReadiness", 48, 38);
-    doc.font("Helvetica").fontSize(15).text("Preliminary PDF Preview", 48, 70);
-    doc.font("Helvetica").fontSize(11).text(input.reportTypeLabel, 48, 94);
-
-    doc.moveDown(2);
-    doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(18).text(input.assessmentTitle);
-    doc.font("Helvetica").fontSize(10.5).fillColor("#475569").text(
-      `${input.clientLabel ?? "Current assessment"} • Workspace: ${input.workspaceName} • Generated: ${generatedDate} • ${input.generatedByLabel}`,
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill(THEME.navy);
+    doc.rect(0, 0, doc.page.width, 168).fill("#111827");
+    doc.rect(0, 168, doc.page.width, 6).fill(THEME.cyan);
+    doc.fillColor("#67e8f9").font("Helvetica-Bold").fontSize(10).text("SHIFTREADINESS", MARGIN, 54, {
+      characterSpacing: 2,
+    });
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(26).text("Readiness Assessment", MARGIN, 124);
+    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(12).text("Infrastructure readiness before you migrate.", MARGIN, 186);
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(18).text(safeText(input.assessmentTitle), MARGIN, 252, {
+      width: contentWidth(doc),
+    });
+    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(10).text(
+      safeText(`${input.clientLabel ?? "Current assessment"} | Workspace: ${input.workspaceName}`),
+      MARGIN,
+      282,
+      { width: contentWidth(doc) },
     );
-    doc.moveDown(0.6);
-    doc.font("Helvetica").fontSize(10.5).fillColor("#334155").text(
-      "Preliminary report preview generated from current assessment data. This is not final engineering validation and does not replace a migration plan, review, or approval.",
-      {
-        width: doc.page.width - 96,
-      },
+    metricCard({
+      doc,
+      x: MARGIN,
+      y: 342,
+      w: 156,
+      h: 88,
+      label: "Report type",
+      value: reportKind,
+      note: input.reportTypeLabel,
+      tone: "info",
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 176,
+      y: 342,
+      w: 156,
+      h: 88,
+      label: "Generated",
+      value: generatedDate,
+      note: input.generatedByLabel,
+      tone: "neutral",
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 352,
+      y: 342,
+      w: 156,
+      h: 88,
+      label: "Decision",
+      value: preview.recommendedDecision,
+      note: "Preliminary, evidence-based signal",
+      tone: getScoreTone(preview.readinessScore),
+    });
+    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(9.5).text(
+      "Confidential / Evidence-based assessment. This report is generated from the evidence available at assessment time.",
+      MARGIN,
+      510,
+      { width: contentWidth(doc), lineGap: 2 },
     );
 
-    addSectionHeader(doc, "Executive Summary", "A short view for stakeholders and reviewers.");
-    addBodyLines(doc, reportPreview.executiveSummary);
-    addSectionTable(doc, [
-      ["Readiness score", `${reportPreview.completionScore}/100`],
-      ["Confidence", reportPreview.evidenceConfidenceLabel],
-      ["Risk level", reportPreview.costRiskPreview.riskLevel ?? "low"],
-      ["Signal", latestEvidence],
-    ]);
+    addContentPage(doc, "Section 1", "Executive Summary", reportKind);
+    h2(doc, "Decision signal", "A clear stakeholder view of migration readiness and confidence.");
+    metricCard({
+      doc,
+      x: MARGIN,
+      y: doc.y,
+      w: 120,
+      h: 86,
+      label: "Readiness",
+      value: preview.readinessScore !== null ? `${preview.readinessScore}/100` : "Not scored",
+      note: getScoreLabel(preview.readinessScore, "readiness"),
+      tone: getScoreTone(preview.readinessScore),
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 136,
+      y: doc.y,
+      w: 120,
+      h: 86,
+      label: "Confidence",
+      value: preview.confidenceScore !== null ? `${preview.confidenceScore}/100` : preview.evidenceConfidenceLabel,
+      note: getScoreLabel(preview.confidenceScore, "confidence"),
+      tone: getScoreTone(preview.confidenceScore),
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 272,
+      y: doc.y,
+      w: 236,
+      h: 86,
+      label: "Recommendation",
+      value: preview.recommendedDecision,
+      note: "Requires validation before production migration.",
+      tone: getSeverityTone(preview.costRiskPreview.riskLevel),
+    });
+    doc.y += 110;
+    h2(doc, "What this means");
+    bulletList(doc, getWhatThisMeans(input), 5);
+    h2(doc, "Immediate actions");
+    bulletList(doc, getImmediateActions(input), 5);
 
-    addSectionHeader(doc, "Environment Summary", "Measured inventory extracted from the current evidence.");
-    addSectionTable(doc, [
-      ["VMs", number(reportPreview.environmentSummary.vmCount)],
-      ["Hosts", number(reportPreview.environmentSummary.hostCount)],
-      ["Datastores", number(reportPreview.environmentSummary.datastoreCount)],
-      ["Snapshots", number(reportPreview.environmentSummary.snapshotCount)],
-      ["Powered on", number(reportPreview.environmentSummary.poweredOnVmCount)],
-      ["Powered off", number(reportPreview.environmentSummary.poweredOffVmCount)],
-      ["Provisioned GB", number(reportPreview.environmentSummary.totalProvisionedGb)],
-      ["Used GB", number(reportPreview.environmentSummary.totalUsedGb)],
+    addContentPage(doc, "Section 2", "Evidence Overview", "Evidence received, missing evidence and confidence impact");
+    callout(doc, "This assessment is based on the evidence provided. Missing evidence is explicitly shown because it changes confidence and migration risk.", "info");
+    keyValueTable(doc, [
+      ["Source indicator", titleCase(preview.evidenceOverview.sourceIndicator)],
+      ["Evidence confidence", preview.evidenceConfidenceLabel],
+      ["Confidence implication", preview.evidenceOverview.confidenceImplication],
+      ["Cost / Risk source", preview.sourceLabel],
     ]);
+    twoColumnList({
+      doc,
+      leftTitle: "Evidence received",
+      leftItems: preview.evidenceOverview.received,
+      rightTitle: "Evidence missing",
+      rightItems: preview.evidenceOverview.missing,
+    });
 
-    addSectionHeader(doc, "Cost / Risk Summary", "Preliminary cost delta and savings signal based on current assumptions.");
-    addSectionTable(doc, [
-      ["Source", reportPreview.sourceLabel],
-      ["Annual delta", money(reportPreview.costRiskPreview.annualSubscriptionDelta)],
-      ["3-year delta", money(reportPreview.costRiskPreview.threeYearSubscriptionDelta)],
-      ["Savings", percent(reportPreview.costRiskPreview.savingsPercent)],
-      ["Readiness label", reportPreview.costRiskPreview.readinessLabel ?? "—"],
-      ["Missing evidence", reportPreview.costRiskPreview.missingEvidence.length > 0 ? "Yes" : "No"],
-    ]);
-
-    addSectionHeader(doc, "Top Findings", "The most relevant preliminary risk signals.");
-    const findings = reportPreview.topFindings.slice(0, 10);
-    if (findings.length === 0) {
-      doc.font("Helvetica").fontSize(10.5).fillColor("#475569").text("No findings have been generated yet.");
-    } else {
-      findings.forEach((finding) => {
-        ensurePageSpace(doc, 180);
-        addFinding(doc, finding);
+    addContentPage(doc, "Section 3", "Environment Summary", "Inventory basis and environment scope");
+    h2(doc, "Measured environment", "Counts use parsed evidence when available, then manual input as fallback.");
+    const cardY = doc.y;
+    const cardW = 118;
+    const cardGap = 12;
+    [
+      ["VMs", number(preview.environmentSummary.vmCount), "Virtual machines"],
+      ["Hosts", number(preview.environmentSummary.hostCount), "VMware hosts"],
+      ["Datastores", number(preview.environmentSummary.datastoreCount), "Datastores"],
+      ["Snapshots", number(preview.environmentSummary.snapshotCount), "Snapshots"],
+    ].forEach(([label, value, note], index) => {
+      metricCard({
+        doc,
+        x: MARGIN + index * (cardW + cardGap),
+        y: cardY,
+        w: cardW,
+        h: 82,
+        label,
+        value,
+        note,
+        tone: index === 3 && preview.environmentSummary.snapshotCount > 20 ? "warning" : "neutral",
       });
-    }
-
-    addSectionHeader(doc, "VM Risk Matrix Preview", "A limited sample of VM-level findings.");
-    const matrixRows = reportPreview.vmMatrixPreview.rows.slice(0, 12);
-    if (matrixRows.length === 0) {
-      doc.font("Helvetica").fontSize(10.5).fillColor("#475569").text("No parsed VMs are available for the preview.");
-    } else {
-      matrixRows.forEach((row) => {
-        ensurePageSpace(doc, 80);
-        doc.font("Helvetica-Bold").fontSize(10.5).fillColor("#0f172a").text(row.vmName);
-        doc.font("Helvetica").fontSize(9.5).fillColor("#475569").text(
-          `Power: ${row.powerState ?? "—"} • Guest OS: ${row.guestOs ?? "—"} • Risk: ${row.riskLevel.toUpperCase()} • Reason: ${row.mainReason}`,
-          {
-            width: doc.page.width - 96,
-          },
-        );
-        doc.moveDown(0.3);
-      });
-    }
-
-    addSectionHeader(doc, "Missing Evidence", "Signals still required for a fuller readiness report.");
-    if (reportPreview.missingEvidence.length === 0) {
-      doc.font("Helvetica").fontSize(10.5).fillColor("#475569").text("No key evidence is missing for the current preview.");
-    } else {
-      addBulletList(doc, reportPreview.missingEvidence);
-    }
-
-    addSectionHeader(doc, "Locked Sections", "What remains gated until the relevant plan is unlocked.");
-    if (reportPreview.lockedSections.length === 0) {
-      doc.font("Helvetica").fontSize(10.5).fillColor("#475569").text("No locked sections are currently configured.");
-    } else {
-      reportPreview.lockedSections.slice(0, 8).forEach((section) => {
-        ensurePageSpace(doc, 120);
-        doc.font("Helvetica-Bold").fontSize(10.5).fillColor("#0f172a").text(section.title);
-        doc.font("Helvetica").fontSize(9.5).fillColor("#475569").text(section.description);
-        doc.font("Helvetica").fontSize(9.5).fillColor("#0f172a").text(`Requires: ${section.access === "locked" ? "locked" : "preview"}`);
-        doc.moveDown(0.2);
-      });
-    }
-
-    addSectionHeader(doc, "Disclaimer", "Preliminary PDF only.");
-    addBodyLines(doc, [
-      "This document is a generated readiness preview, not a certified report.",
-      "It is based on the data currently available in the assessment and may change as more evidence is uploaded or parsed.",
-      "It does not authorize or execute any migration activity.",
+    });
+    doc.y = cardY + 106;
+    keyValueTable(doc, [
+      ["Powered on VMs", number(preview.environmentSummary.poweredOnVmCount)],
+      ["Powered off VMs", number(preview.environmentSummary.poweredOffVmCount)],
+      ["Provisioned storage (GB)", number(preview.environmentSummary.totalProvisionedGb)],
+      ["Used storage (GB)", number(preview.environmentSummary.totalUsedGb)],
+      ["Source", preview.sourceLabel],
+      ["Confidence note", preview.evidenceOverview.confidenceImplication],
     ]);
 
+    addContentPage(doc, "Section 4", "Readiness and Confidence Scores", "Interpret readiness separately from evidence strength");
+    h2(doc, "Score interpretation");
+    keyValueTable(doc, [
+      ["Readiness score", preview.readinessScore !== null ? `${preview.readinessScore}/100 - ${getScoreLabel(preview.readinessScore, "readiness")}` : "Not available in current evidence"],
+      ["Confidence score", preview.confidenceScore !== null ? `${preview.confidenceScore}/100 - ${getScoreLabel(preview.confidenceScore, "confidence")}` : `${preview.evidenceConfidenceLabel} - numeric score not available`],
+      ["Combined interpretation", preview.readinessScore !== null && preview.confidenceScore !== null && preview.readinessScore >= 70 && preview.confidenceScore < 50
+        ? "Promising but not proven. Collect stronger evidence before sequencing production waves."
+        : preview.readinessScore !== null && preview.confidenceScore !== null && preview.readinessScore < 50 && preview.confidenceScore >= 70
+          ? "Confirmed remediation required. Evidence is strong enough to prioritize fixes."
+          : "Pilot-first path. Use findings to define a controlled validation plan."],
+      ["Risk level", titleCase(preview.costRiskPreview.riskLevel ?? "unknown")],
+      ["Annual subscription delta", money(preview.costRiskPreview.annualSubscriptionDelta)],
+      ["3-year subscription delta", money(preview.costRiskPreview.threeYearSubscriptionDelta)],
+      ["Estimated savings", percent(preview.costRiskPreview.savingsPercent)],
+      ["Finding counts", `Critical: ${preview.findingCounts.critical}, High: ${preview.findingCounts.high}, Medium: ${preview.findingCounts.medium}, Low: ${preview.findingCounts.low}`],
+    ]);
+    callout(doc, "Readiness and confidence are separate. A workload can look technically simple while still requiring business validation.", "warning");
+
+    addContentPage(doc, "Section 5", "Top Findings", "Confirmed and probable risk signals");
+    if (preview.topFindings.length === 0) {
+      callout(doc, "No findings have been generated yet. Generate inventory-driven risk insights before treating the report as evidence-based.", "warning");
+    } else {
+      preview.topFindings.slice(0, 10).forEach((finding) => findingCard(doc, finding));
+    }
+
+    addContentPage(doc, "Section 6", "VM Risk Matrix", "Top VM-level migration risk signals");
+    if (preview.vmMatrixPreview.rows.length === 0) {
+      callout(doc, "No VM-level matrix is available yet because parsed inventory is limited.", "warning");
+    } else {
+      vmRiskTable(doc, preview.vmMatrixPreview.rows);
+      doc.moveDown(0.7);
+      paragraph(doc, "The matrix is a technical signal only. Application dependency evidence can change migration grouping and wave order.");
+    }
+
+    addContentPage(doc, "Section 7", "Migration Wave Preview", "Technical sequencing model, not a final cutover plan");
+    callout(doc, "Wave planning is technical unless application dependency evidence is provided.", "warning");
+    waveTable(doc, waveRows(preview));
+
+    addContentPage(doc, "Section 8", "Required Validations", "Checklist before production migration");
+    bulletList(doc, [
+      "Backup and restore validation for representative workloads.",
+      "Application owner review and business criticality confirmation.",
+      "Proxmox target sizing validation.",
+      "Storage architecture validation.",
+      "Network, VLAN and firewall mapping.",
+      "Pilot import test with rollback proof.",
+      "Maintenance window and communication plan.",
+      "Rollback plan and go/no-go criteria.",
+    ]);
+
+    addContentPage(doc, "Section 9", "Next Evidence and Next Steps", "What to collect and how to progress");
+    h2(doc, "Next evidence to collect");
+    bulletList(doc, [
+      "Veeam or backup platform export, including restore points and job status.",
+      "Proxmox target read-only export or sizing assumptions.",
+      "NetBox, IPAM or network map for VLAN and dependency review.",
+      "CMDB or application dependency list.",
+      "Performance history for critical workloads.",
+      "PowerCLI custom export for exceptions not visible in RVTools.",
+    ]);
+    h2(doc, "Next steps");
+    bulletList(doc, [
+      "Upload more evidence and regenerate the report.",
+      "Review missing evidence with infrastructure and application owners.",
+      "Request manual unlock for the full Readiness Report when evidence is sufficient.",
+      "Prepare a pilot wave before any production migration.",
+      "Request a Migration Blueprint only after target architecture and dependency evidence are available.",
+    ]);
+    callout(
+      doc,
+      input.reportTypeLabel === "PDF Preview"
+        ? "Preview report: commercial sections may remain locked. This is not a final certified report."
+        : "Readiness report: use this as an evidence-based planning artifact, not as authorization to migrate without validation.",
+      "info",
+    );
+
+    addContentPage(doc, "Appendix", "Limitations and Disclaimer", "Conservative by design");
+    h2(doc, "What this report does not claim");
+    bulletList(doc, [
+      "It does not guarantee zero downtime.",
+      "It does not prove restore readiness without backup evidence.",
+      "It does not provide a complete dependency map unless dependency evidence is provided.",
+      "It does not validate final Proxmox architecture without target evidence.",
+      "It does not authorize production migration activity.",
+    ]);
+    h2(doc, "Operating principle");
+    paragraph(doc, "Missing backup evidence does not mean backups are absent. It means this assessment cannot verify restore readiness.");
+    paragraph(doc, "Do not migrate critical workloads before pilot import, backup restore validation and rollback planning.");
+
+    addPageNumbers(doc);
     doc.end();
   });
 }
-

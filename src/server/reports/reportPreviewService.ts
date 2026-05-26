@@ -33,6 +33,13 @@ export type ReportPreviewCard = {
   note: string;
 };
 
+export type ReportEvidenceOverview = {
+  received: string[];
+  missing: string[];
+  sourceIndicator: "manual" | "parsed" | "mixed" | "limited";
+  confidenceImplication: string;
+};
+
 export type ReportPreviewData = {
   assessmentId: string;
   assessmentTitle: string;
@@ -51,6 +58,10 @@ export type ReportPreviewData = {
   sourceLabel: string;
   costRiskPreview: ReturnType<typeof getPreliminaryCostRiskPreview>;
   costRiskStatus: string;
+  readinessScore: number | null;
+  confidenceScore: number | null;
+  recommendedDecision: string;
+  evidenceOverview: ReportEvidenceOverview;
   environmentSummary: {
     vmCount: number;
     hostCount: number;
@@ -284,6 +295,117 @@ export function getMissingEvidenceForReport(assessment: AssessmentDetail) {
   return [...missingEvidence];
 }
 
+function getSourceIndicator(assessment: AssessmentDetail): ReportEvidenceOverview["sourceIndicator"] {
+  const context = buildInventoryDrivenCostRiskContext(assessment);
+
+  if (context.hasParsedInventory && context.hasManualInputs) {
+    return "mixed";
+  }
+
+  if (context.hasParsedInventory) {
+    return "parsed";
+  }
+
+  if (context.hasManualInputs) {
+    return "manual";
+  }
+
+  return "limited";
+}
+
+function buildEvidenceOverview(assessment: AssessmentDetail): ReportEvidenceOverview {
+  const received = new Set<string>();
+  const completion = getAssessmentCompletionStatus(assessment);
+  const sourceIndicator = getSourceIndicator(assessment);
+  const activeEvidenceFiles = (assessment.evidenceFiles ?? []).filter((file) => !file.deletedAt);
+
+  if (assessment.infrastructureInput) {
+    received.add("Manual infrastructure intake");
+  }
+
+  if (assessment.costRiskAssumptions) {
+    received.add("Cost / Risk assumptions");
+  }
+
+  if (activeEvidenceFiles.length > 0) {
+    const fileTypes = new Set(activeEvidenceFiles.map((file) => file.evidenceType));
+    fileTypes.forEach((type) => received.add(`${type} evidence upload`));
+  }
+
+  if ((assessment.parsedInventorySummaries ?? []).length > 0) {
+    received.add("Parsed inventory summary");
+  }
+
+  if ((assessment.parsedVMs ?? []).length > 0) {
+    received.add("Parsed VM inventory");
+  }
+
+  if ((assessment.riskFindings ?? []).length > 0) {
+    received.add("Inventory-driven risk findings");
+  }
+
+  if (assessment.assessmentScore) {
+    received.add("Assessment readiness and confidence score");
+  }
+
+  if (assessment.storageReadinessEnabled) {
+    received.add("Storage Destination Readiness selected");
+  }
+
+  const missing = new Set(getMissingEvidenceForReport(assessment));
+
+  [
+    "Backup platform export or restore evidence",
+    "Proxmox target cluster sizing or read-only export",
+    "Application dependency map",
+    "Performance history for critical workloads",
+    "Maintenance window and rollback requirements",
+    "Business criticality confirmation by application owner",
+  ].forEach((item) => missing.add(item));
+
+  const confidenceImplication =
+    completion.evidenceConfidence === "moderate"
+        ? "Evidence supports a directional recommendation, but missing inputs may change migration sequence and risk."
+        : completion.evidenceConfidence === "limited_with_warnings"
+          ? "Evidence has parser or completeness warnings. Validate source exports before sequencing production workloads."
+        : "Evidence is limited. Treat recommendations as preliminary until missing evidence is collected.";
+
+  return {
+    received: received.size > 0 ? [...received] : ["No structured evidence has been confirmed yet"],
+    missing: [...missing],
+    sourceIndicator,
+    confidenceImplication,
+  };
+}
+
+function getRecommendedDecision(params: {
+  readinessScore: number | null;
+  confidenceScore: number | null;
+  criticalFindings: number;
+  highFindings: number;
+}) {
+  const readiness = params.readinessScore ?? 0;
+  const confidence = params.confidenceScore ?? 0;
+
+  if (params.criticalFindings > 0 || readiness < 35) {
+    return "Remediate First";
+  }
+
+  if (params.highFindings > 2) {
+    return "Pilot First";
+  }
+
+  if (readiness >= 75 && confidence >= 70) {
+    return "Conditional Go";
+  }
+
+  if (readiness >= 60 && confidence >= 50) {
+    return "Pilot First";
+  }
+
+  return "Manual Review Required";
+}
+
 export function getReportPlanVisibility(assessment: AssessmentDetail) {
   const sections = getReportSections(assessment);
   const unlocked = sections.filter((section) => section.access !== "locked");
@@ -317,6 +439,15 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
   const missingEvidence = getMissingEvidenceForReport(assessment);
   const upgradeRecommendations = getUpgradeRecommendations(assessment);
   const findingCounts = getFindingCountsBySeverity(assessment.riskFindings ?? []);
+  const readinessScore = assessment.assessmentScore?.readinessScore ?? completion.completionScore ?? null;
+  const confidenceScore = assessment.assessmentScore?.confidenceScore ?? null;
+  const evidenceOverview = buildEvidenceOverview(assessment);
+  const recommendedDecision = getRecommendedDecision({
+    readinessScore,
+    confidenceScore,
+    criticalFindings: findingCounts.critical,
+    highFindings: findingCounts.high,
+  });
 
   const reportPreviewStatus = completion.reportPreviewStatus as ReportPreviewStatus;
   const costRiskStatus = getCostRiskStatus(assessment);
@@ -378,6 +509,10 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
     sourceLabel: preview.dataSourceLabel ?? context.sourceLabel,
     costRiskPreview: preview,
     costRiskStatus,
+    readinessScore,
+    confidenceScore,
+    recommendedDecision,
+    evidenceOverview,
     environmentSummary: {
       vmCount: summary?.vmCount ?? context.referenceCounts.vmCount ?? assessment.infrastructureInput?.vmCount ?? 0,
       hostCount: summary?.hostCount ?? context.referenceCounts.hostCount ?? assessment.infrastructureInput?.hostCount ?? 0,
