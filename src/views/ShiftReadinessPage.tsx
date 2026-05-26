@@ -401,11 +401,113 @@ export default function ShiftReadinessPage() {
         </div>
       </section>
 
+      <section id="value-framing" className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="shiftreadiness-section-heading">
+            <div className="badge badge-cyan">Strategic Discovery</div>
+            <h2>Before paying thousands for a consulting discovery, understand your migration position first.</h2>
+            <p>
+              A professional VMware migration assessment usually requires evidence collection, licensing review,
+              risk analysis, scenario modeling, and executive-ready recommendations. ShiftReadiness gives you
+              a structured first assessment at software pricing.
+            </p>
+          </div>
+
+          <div className="sr-comparison-grid">
+            <article className="glass-card sr-comparison-card">
+              <div className="sr-comparison-badge sr-comparison-badge-muted">Traditional Consulting Discovery</div>
+              <h3>High-Touch Engagement <span>/ Custom Strategy</span></h3>
+              <p className="sr-comparison-desc">
+                A manual, bespoke discovery process carried out by external advisors to map out full migration engineering and execution details.
+              </p>
+              <div className="sr-comparison-metrics">
+                <div className="sr-comparison-metric">
+                  <label>Timeframe</label>
+                  <span>2 to 6 weeks</span>
+                </div>
+                <div className="sr-comparison-metric">
+                  <label>Typical Cost</label>
+                  <span>$3,000 – $20,000+</span>
+                </div>
+              </div>
+              <ul className="sr-comparison-list sr-comparison-list-muted">
+                <li>
+                  <Minus size={16} />
+                  <span>Manual data collection with custom, fragile spreadsheets</span>
+                </li>
+                <li>
+                  <Minus size={16} />
+                  <span>Multiple discovery workshops and back-and-forth email interviews</span>
+                </li>
+                <li>
+                  <Minus size={16} />
+                  <span>Delayed results due to human analysis and custom deck writing</span>
+                </li>
+                <li>
+                  <Check size={16} />
+                  <span>Best for: Final migration design sign-off and managed execution</span>
+                </li>
+              </ul>
+            </article>
+
+            <article className="glass-card sr-comparison-card sr-comparison-card-highlighted">
+              <div className="sr-comparison-badge sr-comparison-badge-glow">ShiftReadiness Path</div>
+              <h3>Structured Assessment <span>/ Productized Discovery</span></h3>
+              <p className="sr-comparison-desc">
+                An automated, evidence-based assessment that immediately reveals license exposure, sizing anomalies, and readiness risk levels.
+              </p>
+              <div className="sr-comparison-metrics">
+                <div className="sr-comparison-metric sr-comparison-metric-cyan">
+                  <label>Timeframe</label>
+                  <span>Minutes (Instant Preview)</span>
+                </div>
+                <div className="sr-comparison-metric sr-comparison-metric-cyan">
+                  <label>Typical Cost</label>
+                  <span>Free to $690</span>
+                </div>
+              </div>
+              <ul className="sr-comparison-list sr-comparison-list-cyan">
+                <li>
+                  <Check size={16} />
+                  <span>Automated evidence intake (RVTools/vSphere exports)</span>
+                </li>
+                <li>
+                  <Check size={16} />
+                  <span>Instant calculation of licensing delta & annual savings</span>
+                </li>
+                <li>
+                  <Check size={16} />
+                  <span>Standardized, executive-ready PDF report downloaded instantly</span>
+                </li>
+                <li>
+                  <Check size={16} />
+                  <span>Identify blockers, risks, and sizing issues before paying consultants</span>
+                </li>
+              </ul>
+              <a href="/sign-up" className="btn btn-primary btn-glow">
+                Generate your readiness view
+                <ArrowRight size={16} />
+              </a>
+            </article>
+          </div>
+
+          <div className="sr-comparison-disclaimer">
+            <p>
+              <strong>Disclaimer:</strong> ShiftReadiness does not replace a full migration engineering engagement.
+              It helps teams establish a structured baseline and understand where they stand before committing to one.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section id="pricing" className="section shiftreadiness-section">
         <div className="container">
           <div className="shiftreadiness-section-heading">
             <div className="badge badge-cyan">Pricing</div>
             <h2>Modular pricing with clear includes and excludes.</h2>
+            <p style={{ marginBottom: "0.5rem" }}>
+              <strong>Get consulting-grade insights at a fraction of the cost.</strong>
+            </p>
             <p>
               Start small, unlock the full report when needed, and add storage analysis only when
               the target architecture deserves deeper validation.

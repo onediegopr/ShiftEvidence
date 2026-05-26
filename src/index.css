@@ -4351,6 +4351,168 @@ p {
     font-size: 0.95rem;
 }
 
+/* Value Comparison Section */
+.sr-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.sr-comparison-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem 2rem;
+    height: 100%;
+}
+
+.sr-comparison-card-highlighted {
+    border-color: rgba(var(--secondary-rgb), 0.28);
+    background: linear-gradient(180deg, rgba(var(--secondary-rgb), 0.04), rgba(13, 18, 36, 0.75));
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.45), 0 0 20px rgba(var(--secondary-rgb), 0.08);
+}
+
+.sr-comparison-card-highlighted::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, rgba(var(--secondary-rgb), 0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.sr-comparison-badge {
+    align-self: flex-start;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+}
+
+.sr-comparison-badge-muted {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+}
+
+.sr-comparison-badge-glow {
+    background: rgba(var(--secondary-rgb), 0.12);
+    border: 1px solid rgba(var(--secondary-rgb), 0.25);
+    color: hsl(var(--secondary));
+    box-shadow: 0 0 12px rgba(var(--secondary-rgb), 0.25);
+}
+
+.sr-comparison-card h3 {
+    font-size: 1.35rem;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+
+.sr-comparison-card h3 span {
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.sr-comparison-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+}
+
+.sr-comparison-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sr-comparison-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sr-comparison-metric label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dark);
+}
+
+.sr-comparison-metric span {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: white;
+}
+
+.sr-comparison-metric-cyan span {
+    color: hsl(var(--secondary));
+    text-shadow: 0 0 8px rgba(var(--secondary-rgb), 0.2);
+}
+
+.sr-comparison-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+}
+
+.sr-comparison-list li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.sr-comparison-list li svg {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+.sr-comparison-list-muted li svg {
+    color: var(--text-dark);
+}
+
+.sr-comparison-list-cyan li svg {
+    color: hsl(var(--secondary));
+}
+
+.sr-comparison-card .btn {
+    margin-top: auto;
+    width: 100%;
+}
+
+.sr-comparison-disclaimer {
+    margin-top: 2rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.sr-comparison-disclaimer p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+.sr-comparison-disclaimer strong {
+    color: var(--text-muted);
+}
+
 @media (max-width: 1024px) {
     .shiftreadiness-hero-grid,
     .shiftreadiness-split,
@@ -4391,8 +4553,14 @@ p {
     .sr-addon-grid,
     .sr-flow-grid,
     .sr-does-not-grid,
+    .sr-comparison-grid,
     .shiftreadiness-card-grid {
         grid-template-columns: 1fr;
+    }
+
+    .sr-comparison-metrics {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 
     .shiftreadiness-hero-copy h1 {
