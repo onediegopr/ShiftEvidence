@@ -207,3 +207,31 @@ Production remains blocked by the Hostinger static/Node runtime mismatch:
 - No `/_next/` assets are visible in production.
 
 HITO 9.2 must not be retried until the real Hostinger Node.js runtime and domain association are confirmed.
+
+## HITO 9.1.10 runtime fix attempt
+
+Date: 2026-05-26
+
+Result: partial / blocked.
+
+Public checks still show the domain is not serving the real Next.js app:
+
+- `https://shiftevidence.com/` returns `200 OK` from LiteSpeed/Hostinger static hosting.
+- `https://shiftevidence.com/shiftreadiness` returns Hostinger `404`.
+- `https://shiftevidence.com/sign-in` returns Hostinger `404`.
+- `https://shiftevidence.com/dashboard` returns Hostinger `404`.
+- No `/_next/` assets were detected.
+- Current home HTML does not contain the latest `ShiftReadiness` CTA.
+
+No hPanel, SSH, SFTP, File Manager, Application Root, build logs, runtime logs, or restart control were available from the current environment. No Hostinger changes were made.
+
+Before retrying the runtime fix, obtain:
+
+- hPanel or SSH access.
+- Application Root.
+- Node.js App status.
+- Node version selected in Hostinger.
+- start/restart method.
+- logs access.
+- env var inventory without exposing values.
+- `public_html` backup/rollback plan.
