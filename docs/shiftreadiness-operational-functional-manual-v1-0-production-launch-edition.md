@@ -1,6 +1,9 @@
 # ShiftReadiness — Operational & Functional Manual v1.0
 ## Production Launch Edition — Controlled Launch
 
+> Superseded by `ShiftReadiness Functional & Operational Manual v1.1 - Limited Public Beta Edition`.
+> This v1.0 manual is retained as historical controlled launch documentation.
+
 ## Índice
 
 1. Executive Summary

@@ -8,6 +8,11 @@ Infrastructure readiness before you migrate.
 Status:
 Controlled production launch active. Limited public beta is allowed only under controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; Hostinger logs, real QA cleanup/archive, authenticated browser QA, authenticated product-flow evidence and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke. The Antigravity post-landing UX/UI update was audited by Codex in HITO UX-AUDIT-1; local production-like serving, build, lint, typecheck and unauthenticated route smoke passed. PUBLIC-BETA-OPS-3 reconfirmed public route health and password recovery regression, but authenticated browser/product-flow replay and Hostinger logs still require credentialed/user-attested evidence.
 
+Current manual:
+`docs/shiftreadiness-functional-operational-manual-v1-1-limited-public-beta.md`
+
+The previous v1.0 Production Launch Edition manual is superseded by v1.1 and retained as historical controlled launch documentation.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -161,3 +166,5 @@ Optional for future work:
 - `docs/hostinger-foundation-notes.md`
 - `docs/hito-ux-audit-1-antigravity-post-landing-review.md`
 - `docs/public-beta-ops-3-authenticated-browser-qa-evidence.md`
+- `docs/shiftreadiness-functional-operational-manual-v1-1-limited-public-beta.md`
+- `docs/manuals-index.md`
