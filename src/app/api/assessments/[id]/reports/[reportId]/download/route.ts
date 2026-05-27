@@ -6,6 +6,7 @@ import { getReportForDownload } from "../../../../../../../server/reports/report
 import { getReportTypeLabel } from "../../../../../../../server/reports/reportHistoryService";
 import { readReportFile } from "../../../../../../../server/reports/reportStorageService";
 import { prisma } from "../../../../../../../lib/prisma";
+import { getPublicUrl } from "../../../../../../../server/url/publicAppUrl";
 
 export const runtime = "nodejs";
 
@@ -23,7 +24,7 @@ export async function GET(
   });
 
   if (!session) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    return NextResponse.redirect(getPublicUrl("/sign-in"));
   }
 
   await upsertUserProfileFromSession({

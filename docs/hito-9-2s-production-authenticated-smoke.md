@@ -268,3 +268,17 @@ Decision:
 
 - Production launched: NO.
 - Ready for controlled launch review: NO hasta corregir redirects productivos.
+
+## HITO 9.2S.1 follow-up
+
+Se implemento un hotfix local para los redirects productivos de report/PDF:
+
+- Se agrego helper `getPublicUrl`.
+- `generate`, `download` y `delete` de report dejaron de usar `request.url` como origin publico.
+- Los redirects ahora se basan en `NEXT_PUBLIC_APP_URL`, `BETTER_AUTH_URL` o fallback local.
+
+Estado:
+
+- Validacion local: OK.
+- Re-smoke produccion: pendiente hasta push/autodeploy.
+- Production launched: NO.

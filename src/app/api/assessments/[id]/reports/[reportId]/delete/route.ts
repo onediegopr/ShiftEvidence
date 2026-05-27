@@ -4,12 +4,13 @@ import { auth } from "../../../../../../../lib/auth";
 import { safeRedirectError } from "../../../../../../../server/assessments/formUtils";
 import { softDeleteReport } from "../../../../../../../server/reports/reportGenerationService";
 import { upsertUserProfileFromSession } from "../../../../../../../server/user/userProfileService";
+import { getPublicUrl } from "../../../../../../../server/url/publicAppUrl";
 
 export const runtime = "nodejs";
 
-function getReportUrl(request: Request, assessmentId: string, query?: string) {
+function getReportUrl(assessmentId: string, query?: string) {
   const suffix = query ? `?${query}` : "";
-  return new URL(`/dashboard/assessments/${assessmentId}/report${suffix}`, request.url);
+  return getPublicUrl(`/dashboard/assessments/${assessmentId}/report${suffix}`);
 }
 
 export async function POST(
@@ -22,7 +23,7 @@ export async function POST(
   });
 
   if (!session) {
-    return NextResponse.redirect(new URL("/sign-in", request.url), { status: 303 });
+    return NextResponse.redirect(getPublicUrl("/sign-in"), { status: 303 });
   }
 
   await upsertUserProfileFromSession({
@@ -40,14 +41,14 @@ export async function POST(
       reportId,
     });
 
-    return NextResponse.redirect(getReportUrl(request, assessmentId, "deleted=1"), {
+    return NextResponse.redirect(getReportUrl(assessmentId, "deleted=1"), {
       status: 303,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to delete the report preview.";
 
     return NextResponse.redirect(
-      getReportUrl(request, assessmentId, `error=${safeRedirectError(message)}`),
+      getReportUrl(assessmentId, `error=${safeRedirectError(message)}`),
       { status: 303 },
     );
   }

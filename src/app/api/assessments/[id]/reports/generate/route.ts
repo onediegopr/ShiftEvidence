@@ -7,12 +7,13 @@ import { safeRedirectError } from "../../../../../../server/assessments/formUtil
 import { generatePdfReportForAssessment } from "../../../../../../server/reports/reportGenerationService";
 import { upsertUserProfileFromSession } from "../../../../../../server/user/userProfileService";
 import { getCommercialStatusForAssessment } from "../../../../../../server/unlocks/unlockRequestService";
+import { getPublicUrl } from "../../../../../../server/url/publicAppUrl";
 
 export const runtime = "nodejs";
 
-function getReportUrl(request: Request, assessmentId: string, query?: string) {
+function getReportUrl(assessmentId: string, query?: string) {
   const suffix = query ? `?${query}` : "";
-  return new URL(`/dashboard/assessments/${assessmentId}/report${suffix}`, request.url);
+  return getPublicUrl(`/dashboard/assessments/${assessmentId}/report${suffix}`);
 }
 
 export async function POST(
@@ -25,7 +26,7 @@ export async function POST(
   });
 
   if (!session) {
-    return NextResponse.redirect(new URL("/sign-in", request.url), { status: 303 });
+    return NextResponse.redirect(getPublicUrl("/sign-in"), { status: 303 });
   }
 
   await upsertUserProfileFromSession({
@@ -57,14 +58,14 @@ export async function POST(
       reportType,
     });
 
-    return NextResponse.redirect(getReportUrl(request, assessmentId, "generated=1"), {
+    return NextResponse.redirect(getReportUrl(assessmentId, "generated=1"), {
       status: 303,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to generate the PDF preview.";
 
     return NextResponse.redirect(
-      getReportUrl(request, assessmentId, `error=${safeRedirectError(message)}`),
+      getReportUrl(assessmentId, `error=${safeRedirectError(message)}`),
       { status: 303 },
     );
   }
