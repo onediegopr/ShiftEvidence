@@ -815,3 +815,32 @@ Decision remains:
 - Controlled production launch: SI.
 - Limited public beta: SI.
 - Full public launch: NO.
+
+## Addendum - PUBLIC-BETA-OPS-4 Final Evidence Closure Attempt
+
+Date: 2026-05-27.
+
+Codex validated:
+
+- Local build/typecheck/lint after clearing only `.next` for Windows/OneDrive lock.
+- Public route smoke.
+- Password recovery neutral request and invalid-token controlled response.
+
+Not provided:
+
+- Hostinger logs.
+- User/Claude authenticated browser QA.
+- Product-flow replay.
+- QA data inventory/archive.
+
+Confidence remains:
+
+- Controlled production launch: 100%.
+- Limited public beta: 96-97%.
+- Full public launch: 88-91%.
+- Product total: 92-94%.
+
+Decision:
+
+- Limited public beta remains active.
+- Full public launch remains NO.

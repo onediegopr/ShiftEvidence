@@ -205,3 +205,17 @@ Required operator action:
 
 - Provide evidence without secrets/cookies/tokens.
 - Use `QA Public Beta Ops 3A - safe to delete` naming for any new QA data.
+
+## PUBLIC-BETA-OPS-4 Follow-up
+
+Date: 2026-05-27.
+
+Operator status:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+- No new manual evidence was imported.
+
+Rule:
+
+- Do not rerun final evidence closure until Hostinger logs and browser/product-flow checklist are available.

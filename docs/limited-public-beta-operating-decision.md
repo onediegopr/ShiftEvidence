@@ -173,3 +173,22 @@ Evidence not imported:
 - User-attested browser QA.
 - User-attested product-flow replay.
 - QA data cleanup/archive.
+
+## PUBLIC-BETA-OPS-4 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Confidence:
+
+- Limited beta remains 96-97%.
+- Full public launch remains 88-91%.
+- Total product remains 92-94%.
+
+Reason:
+
+- No new manual logs/browser/product-flow evidence was provided.

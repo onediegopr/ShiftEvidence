@@ -335,3 +335,19 @@ To close the full public launch blockers, provide a dated summary for:
 5. QA data: inventory and archive/retention decision.
 
 Do not include secrets, cookies, reset links or tokens.
+
+## PUBLIC-BETA-OPS-4 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- No new user-attested or Claude-attested evidence was provided.
+- Codex route/build/password recovery checks remained healthy.
+- Percentages were not increased.
+- Full public launch remains NO.
+
+Decision:
+
+- Limited public beta remains operational at the prior confidence level.
+- Do not rerun evidence closure again without new manual logs/browser/product-flow evidence.

@@ -175,3 +175,19 @@ Reason:
 - Codex validations remain healthy.
 - Manual/Claude evidence for Hostinger logs and authenticated browser QA was not provided in this hito.
 - Full public launch blockers remain open.
+
+## PUBLIC-BETA-OPS-4 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- No new user/Claude evidence was provided.
+- Codex route/build/password recovery validations remain healthy.
+- Full public launch blockers remain open.

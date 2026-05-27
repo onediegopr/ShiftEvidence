@@ -385,3 +385,13 @@ Decision:
 
 - Limited public beta remains operational.
 - Full public launch remains NO.
+
+## PUBLIC-BETA-OPS-4 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- No new manual Hostinger logs or authenticated browser evidence was provided.
+- Codex production route smoke and password recovery regression passed.
+- Full public launch remains NO.
