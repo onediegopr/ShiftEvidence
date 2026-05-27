@@ -25,6 +25,8 @@ AI-1 adds a safe advisory layer architecture for future context-aware migration 
 
 AI-1-MOCK-QA validated the mock advisory path locally with temporary process flags, typecheck, lint, build and guardrail smoke. Browser-authenticated visual QA with mock advisory visible remains optional/pending.
 
+AI-1-MOCK-QA-BROWSER received user-attested local authenticated evidence: AI Advisory Notes appeared in report preview and PDF, PDF downloaded/opened, no raw JSON or `[object Object]` was visible, and no visible errors were reported.
+
 ## Stack
 - Next.js App Router
 - React 19

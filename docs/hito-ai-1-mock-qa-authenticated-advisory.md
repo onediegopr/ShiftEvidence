@@ -153,3 +153,23 @@ AI-1-MOCK-QA-BROWSER si se quiere evidencia visual autenticada:
 - confirmar `AI Advisory Notes`;
 - generar PDF;
 - confirmar seccion AI Advisory en PDF.
+
+## Follow-up - AI-1-MOCK-QA-BROWSER
+
+Date: 2026-05-27.
+
+User-attested browser evidence received:
+
+- AI Advisory Notes appears in report preview: SI.
+- PDF downloads and opens: SI.
+- AI Advisory Notes appears in PDF: SI.
+- No raw JSON visible: SI.
+- No `[object Object]` visible: SI.
+- Visible errors: NO.
+- Final confidence: PASS.
+
+Result:
+
+- Main visual browser flow: PASS.
+- Old assessment browser QA: not fully user-attested in this pass.
+- Disabled fallback browser QA: pending / covered by controlled config and build validations.
