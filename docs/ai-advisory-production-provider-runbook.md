@@ -128,3 +128,15 @@ Codex status:
 - No provider key was printed or handled.
 - Public production smoke without session passed.
 - Gemini production activation remains pending until env vars are configured in Hostinger.
+
+## AI-1.2 Gemini Smoke Attempt
+
+Date: 2026-05-27.
+
+Status:
+
+- Gemini production activation remains pending.
+- Codex did not have Hostinger env var write access.
+- A credential was provided in chat; rotate it before production use.
+- The credential was not written to code, docs, logs or git.
+- OpenAI remains inactive.
