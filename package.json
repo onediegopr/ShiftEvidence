@@ -20,6 +20,7 @@
     "deploy:check": "node scripts/check-hostinger-env.mjs",
     "storage:check": "node scripts/check-storage-runtime.mjs",
     "hostinger:diagnose": "node scripts/hostinger-diagnose.mjs",
+    "ai:guardrails": "node scripts/ai-advisory-guardrails-smoke.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

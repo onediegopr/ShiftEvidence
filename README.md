@@ -21,6 +21,8 @@ CONTEXT-1 adds an Adaptive Migration Context Intake in the assessment workspace.
 
 CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence: Context Intake save/refresh, coverage, report preview and PDF were reported OK. AI-1 is unblocked as a separate next hito with guardrails.
 
+AI-1 adds a safe advisory layer architecture for future context-aware migration recommendations. It is feature-flagged, disabled by default, supports a mock provider for safe validation, sanitizes payloads, excludes raw uploaded files/secrets/cookies/tokens/storage paths, and does not call external AI providers in this hito.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -54,6 +56,7 @@ CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence: Con
 - Private evidence upload and secure download.
 - RVTools parser and inventory/risk scoring.
 - Report preview and PDF generation.
+- Optional AI Advisory Notes architecture, disabled by default and safe/mock only in AI-1.
 - Manual admin unlock/entitlement flow.
 
 ## Scripts
@@ -69,6 +72,7 @@ CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence: Con
 - `npm run prisma:studio`
 - `npm run deploy:check`
 - `npm run storage:check`
+- `npm run ai:guardrails`
 
 ## Environment variables
 Required:
@@ -85,6 +89,12 @@ Optional for future work:
 - `GOOGLE_CLIENT_SECRET`
 - `RESEND_API_KEY`
 - `EMAIL_FROM`
+- `AI_ADVISORY_ENABLED`
+- `AI_ADVISORY_PROVIDER`
+- `AI_ADVISORY_MODEL`
+- `AI_ADVISORY_TIMEOUT_MS`
+- `AI_ADVISORY_MAX_INPUT_CHARS`
+- `AI_ADVISORY_MAX_OUTPUT_CHARS`
 
 ## Prisma
 - Schema: `prisma/schema.prisma`

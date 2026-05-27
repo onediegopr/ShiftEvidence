@@ -4,24 +4,50 @@ import {
   getImportantMigrationContext,
   getMigrationContextFromAssessment,
   getMigrationContextMissingEvidence,
+  migrationContextQuestions,
 } from "../assessments/migrationContextService";
 import { getPreliminaryCostRiskPreview } from "../assessments/costRiskService";
 import { buildInventoryDrivenCostRiskContext } from "../risk/riskContext";
+import { sanitizeAiPayload, truncateLongText } from "./aiAdvisorySanitizer";
+import type { AiAdvisoryContextPayload } from "./aiAdvisoryTypes";
 
-export function buildAiAdvisoryContextPayload(assessment: AssessmentDetail) {
+function safeReference(id: string) {
+  return `assessment-${id.slice(0, 8)}`;
+}
+
+function safeEvidenceFilename(value: string) {
+  return truncateLongText(value.replace(/\.[a-z0-9]+$/i, "").replace(/[^a-zA-Z0-9._ -]/g, "_"), 80);
+}
+
+function getContextStatusCounts(answers: ReturnType<typeof getMigrationContextFromAssessment>["answers"]) {
+  return Object.values(answers).reduce(
+    (counts, answer) => ({
+      ...counts,
+      [answer.status]: counts[answer.status] + 1,
+    }),
+    {
+      answered: 0,
+      unknown: 0,
+      not_applicable: 0,
+      skipped: 0,
+    },
+  );
+}
+
+export function buildAiAdvisoryContextPayload(assessment: AssessmentDetail): AiAdvisoryContextPayload {
   const inventoryContext = buildInventoryDrivenCostRiskContext(assessment);
   const migrationContext = getMigrationContextFromAssessment(assessment);
   const contextCoverage = computeMigrationContextCoverage(migrationContext);
   const costRisk = getPreliminaryCostRiskPreview(assessment);
   const activeEvidence = (assessment.evidenceFiles ?? []).filter((file) => !file.deletedAt);
 
-  return {
+  const payload = {
     assessment: {
-      id: assessment.id,
-      title: assessment.title,
+      safeReference: safeReference(assessment.id),
       type: assessment.assessmentType,
       sourcePlatform: assessment.sourcePlatform,
       targetPlatform: assessment.targetPlatform,
+      status: assessment.status,
       storageReadinessEnabled: assessment.storageReadinessEnabled,
     },
     rvtoolsSummary: inventoryContext.parsedInventory?.summary
@@ -47,17 +73,31 @@ export function buildAiAdvisoryContextPayload(assessment: AssessmentDetail) {
       category: finding.category,
       severity: finding.severity,
       entityType: finding.entityType,
-      entityName: finding.entityName,
-      title: finding.title,
-      description: finding.description,
-      recommendation: finding.recommendation,
+      entityName: finding.entityName ? truncateLongText(finding.entityName, 120) : null,
+      title: truncateLongText(finding.title, 160),
+      description: truncateLongText(finding.description, 500),
+      recommendation: finding.recommendation ? truncateLongText(finding.recommendation, 500) : null,
       source: finding.source,
     })),
     manualMigrationContext: {
-      coverage: contextCoverage,
+      coverage: {
+        overallPercent: contextCoverage.overallPercent,
+        status: contextCoverage.status,
+        missingKeyContext: contextCoverage.missingKeyContext,
+        sections: contextCoverage.sections,
+      },
+      statusCounts: getContextStatusCounts(migrationContext.answers),
       importantContext: getImportantMigrationContext(migrationContext, 20),
       missingContext: getMigrationContextMissingEvidence(contextCoverage),
-      answers: migrationContext.answers,
+      answers: migrationContextQuestions.map((question) => {
+        const answer = migrationContext.answers[question.id];
+        return {
+          question: question.label,
+          status: answer.status,
+          source: answer.source,
+          value: answer.status === "answered" ? answer.value : null,
+        };
+      }),
     },
     assumptions: {
       costRisk: {
@@ -73,10 +113,10 @@ export function buildAiAdvisoryContextPayload(assessment: AssessmentDetail) {
     },
     evidenceReceived: activeEvidence.map((file) => ({
       evidenceType: file.evidenceType,
-      originalFilename: file.originalFilename,
+      safeFilenameLabel: safeEvidenceFilename(file.originalFilename),
       processingStatus: file.processingStatus,
       sizeBytes: file.sizeBytes,
-      uploadedAt: file.uploadedAt,
+      uploadedAt: file.uploadedAt.toISOString(),
     })),
     evidenceMissing: [
       ...costRisk.missingEvidence,
@@ -88,6 +128,10 @@ export function buildAiAdvisoryContextPayload(assessment: AssessmentDetail) {
       "session cookies",
       "password reset tokens",
       "raw uploaded file contents",
+      "absolute or relative private storage paths",
+      "full uploaded filenames if they contain sensitive customer terms",
     ],
-  };
+  } satisfies AiAdvisoryContextPayload;
+
+  return sanitizeAiPayload(payload) as AiAdvisoryContextPayload;
 }

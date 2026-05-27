@@ -385,6 +385,15 @@ function ReportHistoryCard({
   );
 }
 
+function shouldShowAiAdvisory(report: ReportPreviewData) {
+  return (
+    (report.aiAdvisory.providerStatus === "mock" || report.aiAdvisory.providerStatus === "success") &&
+    (report.aiAdvisory.executiveSummaryNotes.length > 0 ||
+      report.aiAdvisory.technicalNotes.length > 0 ||
+      report.aiAdvisory.missingContextQuestions.length > 0)
+  );
+}
+
 export default async function ReportPreviewPage({
   params,
   searchParams,
@@ -577,6 +586,63 @@ export default async function ReportPreviewPage({
           </article>
         </div>
       </section>
+
+      {shouldShowAiAdvisory(report) ? (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            icon={<Sparkles size={18} />}
+            eyebrow="Advisory notes"
+            title="AI Advisory Notes"
+            description="Optional sanitized advisory guidance. Deterministic readiness, confidence and risk findings remain the source of truth."
+          />
+          <div className="assessment-status-row">
+            {renderStatusPill(`Provider: ${statusLabel(report.aiAdvisory.providerStatus)}`, "neutral")}
+            {renderStatusPill(`Model: ${report.aiAdvisory.model ?? "not configured"}`, "neutral")}
+          </div>
+          <div className="assessment-preview-columns">
+            <article className="glass-card assessment-subcard">
+              <h3>Executive advisory</h3>
+              <ul className="assessment-bullet-list">
+                {report.aiAdvisory.executiveSummaryNotes.slice(0, 5).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Technical advisory</h3>
+              <ul className="assessment-bullet-list">
+                {report.aiAdvisory.technicalNotes.slice(0, 5).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Confidence impact</h3>
+              <p>{report.aiAdvisory.confidenceImpact}</p>
+            </article>
+          </div>
+          {report.aiAdvisory.missingContextQuestions.length > 0 ? (
+            <div className="report-findings-list">
+              {report.aiAdvisory.missingContextQuestions.slice(0, 5).map((item) => (
+                <article key={item.question} className="glass-card report-finding-card">
+                  <div className="report-finding-head">
+                    <div>
+                      <span className="assessment-preview-label">Follow-up question</span>
+                      <h3>{item.question}</h3>
+                    </div>
+                    {renderStatusPill(statusLabel(item.priority), renderStatusTone(item.priority))}
+                  </div>
+                  <p>{item.whyItMatters}</p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+          <p className="assessment-inline-note">
+            AI notes are generated only from sanitized metadata, scores, findings and context. Raw uploaded files,
+            secrets, cookies and tokens are excluded.
+          </p>
+        </section>
+      ) : null}
 
       <section className="assessment-section glass-card">
         <SectionTitle

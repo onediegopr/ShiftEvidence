@@ -309,6 +309,15 @@ function bulletList(doc: PDFKit.PDFDocument, items: string[], maxItems = 10) {
   });
 }
 
+function shouldIncludeAiAdvisory(preview: ReportPreviewData) {
+  return (
+    (preview.aiAdvisory.providerStatus === "mock" || preview.aiAdvisory.providerStatus === "success") &&
+    (preview.aiAdvisory.executiveSummaryNotes.length > 0 ||
+      preview.aiAdvisory.technicalNotes.length > 0 ||
+      preview.aiAdvisory.missingContextQuestions.length > 0)
+  );
+}
+
 function keyValueTable(doc: PDFKit.PDFDocument, rows: Array<[string, string]>) {
   const rowH = 24;
   rows.forEach(([key, value], index) => {
@@ -693,6 +702,31 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     bulletList(doc, preview.migrationContext.importantContext, 8);
     h2(doc, "Missing context");
     bulletList(doc, preview.migrationContext.missingContext, 8);
+
+    if (shouldIncludeAiAdvisory(preview)) {
+      addContentPage(doc, "Section 2B", "AI Advisory Notes", "Optional sanitized advisory guidance");
+      callout(doc, "AI advisory is optional. It does not replace deterministic readiness, confidence or internal risk findings.", "info");
+      keyValueTable(doc, [
+        ["Provider status", titleCase(preview.aiAdvisory.providerStatus)],
+        ["Provider", titleCase(preview.aiAdvisory.provider)],
+        ["Model", preview.aiAdvisory.model ?? "Not configured"],
+        ["Confidence impact", preview.aiAdvisory.confidenceImpact],
+      ]);
+      h2(doc, "Executive advisory");
+      bulletList(doc, preview.aiAdvisory.executiveSummaryNotes, 5);
+      h2(doc, "Technical advisory");
+      bulletList(doc, preview.aiAdvisory.technicalNotes, 5);
+      h2(doc, "Missing context follow-up");
+      bulletList(
+        doc,
+        preview.aiAdvisory.missingContextQuestions.map(
+          (item) => `${titleCase(item.priority)} priority: ${item.question} ${item.whyItMatters}`,
+        ),
+        7,
+      );
+      h2(doc, "Limitations");
+      bulletList(doc, preview.aiAdvisory.limitations, 5);
+    }
 
     addContentPage(doc, "Section 3", "Environment Summary", "Inventory basis and environment scope");
     h2(doc, "Measured environment", "Counts use parsed evidence when available, then manual input as fallback.");

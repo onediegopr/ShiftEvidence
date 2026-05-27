@@ -882,3 +882,41 @@ Decision:
 
 - Limited public beta remains active.
 - Full public launch remains NO.
+
+## Addendum - AI-1 Safe Advisory Layer
+
+Date: 2026-05-27.
+
+AI-1 adds a guarded advisory architecture for future context-aware migration recommendations.
+
+Current behavior:
+
+- Feature-flagged: YES.
+- Default: disabled/no-op.
+- Mock provider: available for safe validation.
+- Real external provider calls: NO.
+- DB schema change: NO.
+- Raw uploaded files sent to AI: NO.
+- Secrets/cookies/tokens/storage paths sent to AI: NO.
+
+AI Advisory can produce, when enabled safely:
+
+- Executive advisory notes.
+- Technical advisory notes.
+- Missing context follow-up questions.
+- Confidence impact explanation.
+- Recommended next actions.
+- Limitations.
+
+Boundaries:
+
+- AI does not replace readiness score.
+- AI does not replace evidence confidence score.
+- AI does not invent missing data.
+- AI does not promise zero downtime or automatic migration.
+- If AI fails or is disabled, report preview and PDF remain available.
+
+Provider status:
+
+- `mock` provider can be used for safe internal validation.
+- `gemini` and `openai` provider calls require a separate follow-up hito with explicit API-key, timeout, logging and production authorization.

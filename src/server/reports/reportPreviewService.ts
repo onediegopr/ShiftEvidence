@@ -18,6 +18,8 @@ import {
   getMigrationContextMissingEvidence,
   type MigrationContextCoverage,
 } from "../assessments/migrationContextService";
+import { generateAiAdvisory } from "../ai/aiAdvisoryClient";
+import type { AiAdvisoryOutput } from "../ai/aiAdvisoryTypes";
 import { getReportStatusLabel } from "./reportHistoryService";
 import {
   getPlanRank,
@@ -86,6 +88,7 @@ export type ReportPreviewData = {
     missingContext: string[];
     confidenceImpact: string;
   };
+  aiAdvisory: AiAdvisoryOutput;
   executiveSummary: string[];
   technicalSummary: string[];
   missingEvidence: string[];
@@ -476,6 +479,7 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
   const evidenceOverview = buildEvidenceOverview(assessment);
   const migrationContext = getMigrationContextFromAssessment(assessment);
   const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
+  const aiAdvisory = generateAiAdvisory(assessment);
   const recommendedDecision = getRecommendedDecision({
     readinessScore,
     confidenceScore,
@@ -568,6 +572,7 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
       missingContext: getMigrationContextMissingEvidence(migrationContextCoverage),
       confidenceImpact: getMigrationContextConfidenceImpact(migrationContextCoverage),
     },
+    aiAdvisory,
     executiveSummary,
     technicalSummary,
     missingEvidence,

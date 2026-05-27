@@ -196,3 +196,22 @@ Reason:
 - No new user/Claude evidence was provided.
 - Codex route/build/password recovery validations remain healthy.
 - Full public launch blockers remain open.
+
+## AI-1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- AI Advisory was implemented as a safe, feature-flagged architecture.
+- Default behavior is disabled/no-op.
+- Mock provider is available for safe validation.
+- Real external provider calls are not enabled.
+- No DB schema change, Prisma migration, Hostinger config change or deploy was performed.
+- Full public launch remains blocked by existing operational evidence requirements.

@@ -233,3 +233,22 @@ Operator status:
 Rule:
 
 - Do not rerun final evidence closure until Hostinger logs and browser/product-flow checklist are available.
+
+## AI-1 Safe Advisory Layer
+
+Date: 2026-05-27.
+
+Operational status:
+
+- AI Advisory architecture is implemented behind feature flags.
+- Default behavior is disabled/no-op.
+- Mock provider can be used for safe validation without external calls.
+- Real Gemini/OpenAI provider calls are not enabled in AI-1.
+- Report preview and PDF must continue working if AI is disabled, unavailable or errors.
+
+Operator rules:
+
+- Do not enable a real AI provider without a separate approved hito.
+- Do not send raw uploaded files, secrets, cookies, tokens, reset tokens or private storage paths to AI.
+- Treat AI notes as advisory only; deterministic readiness/confidence scores remain source of truth.
+- Full public launch remains NO.
