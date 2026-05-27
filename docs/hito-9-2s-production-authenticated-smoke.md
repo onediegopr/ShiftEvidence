@@ -285,3 +285,15 @@ Estado:
 - Download sin sesion validado: `https://shiftevidence.com/sign-in`.
 - `0.0.0.0`: ausente en report/PDF redirects revalidados.
 - Production launched: NO.
+
+## HITO 9.2S.2 follow-up
+
+Final production smoke admin/entitlement/logs quedo parcial:
+
+- Non-admin admin route fail-closed: OK (`404`).
+- Unlock request productivo: OK, queda `Pending manual review`.
+- Admin real: no disponible desde el entorno actual.
+- Fulfill/entitlement: pendiente.
+- Full readiness_report productivo: pendiente.
+- Hostinger logs: no disponibles desde el contexto actual.
+- Production launched: NO.

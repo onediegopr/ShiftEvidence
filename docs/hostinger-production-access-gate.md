@@ -266,3 +266,29 @@ Decision:
 
 - Production launched: NO.
 - Next required step: fix or configure production-safe redirects/base URL before declaring launch.
+
+## HITO 9.2S.2 final production smoke
+
+Date: 2026-05-27.
+
+Result: partial.
+
+Validated:
+
+- Production public routes remain OK.
+- Non-admin access to `/dashboard/admin/unlock-requests` fails closed with `404`.
+- A QA unlock request can be created from the report page.
+- The request is visible to the QA user as `Pending manual review`.
+- No admin data leakage was observed for the non-admin user.
+
+Blocked:
+
+- Admin real was not available from the current environment.
+- Fulfill/entitlement could not be executed.
+- Full `readiness_report` generation/download in production remains pending.
+- Hostinger runtime logs were not available from the current tool context.
+
+Decision:
+
+- Production launched: NO.
+- Launch review still requires admin access, entitlement fulfill, full report smoke and logs review.

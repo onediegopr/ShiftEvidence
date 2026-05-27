@@ -131,3 +131,14 @@ Browser/authenticated report flow:
 ## Proximo paso recomendado
 
 Ejecutar HITO 9.2S.2 o re-smoke autenticado reducido final para admin/entitlement/logs antes de cualquier decision de launch.
+
+## HITO 9.2S.2 outcome
+
+HITO 9.2S.2 confirmo que el fix de redirects se mantiene estable. No se observaron regresiones de rutas publicas.
+
+Estado final relacionado:
+
+- Non-admin admin route fail-closed: OK.
+- Unlock request productivo: OK.
+- Admin real / entitlement / full readiness_report: pendiente por falta de usuario admin disponible en este entorno.
+- Production launched: NO.
