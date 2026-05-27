@@ -757,6 +757,37 @@ Important boundary:
 
 Full public launch remains NO.
 
+## 37. Public Beta Ops 3 Authenticated Evidence Review
+
+Date: 2026-05-27.
+
+Result:
+
+- Controlled production launch remains active.
+- Limited public beta remains operational.
+- Full public launch remains NO.
+
+Validated by Codex:
+
+- Local build/typecheck/lint.
+- Public production routes.
+- Private unauthenticated redirects.
+- Password recovery neutral request.
+- Password recovery invalid-token controlled failure.
+
+Not available to Codex:
+
+- Hostinger runtime/build/deploy logs.
+- Authenticated production browser session.
+- Authenticated multi-assessment replay.
+- Authenticated upload/parser/report/PDF replay.
+- Real QA data inventory/archive.
+
+Decision:
+
+- Continue limited public beta only.
+- Require user-attested or credentialed evidence before full public launch.
+
 ## 31. Glossary
 
 - Assessment: one readiness job/work item.

@@ -378,3 +378,20 @@ Updated:
 - No payment/checkout implementation.
 - No QA data deletion.
 - No secrets printed.
+
+## PUBLIC-BETA-OPS-3 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Public route smoke remains healthy.
+- Password recovery neutral request and invalid-token handling passed with valid JSON request.
+- Hostinger logs remain unavailable to Codex.
+- Authenticated browser QA and product-flow replay remain unavailable to Codex without production session/cookies.
+- No QA data was created, archived, hard-deleted or soft-deleted.
+
+Decision:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.

@@ -172,3 +172,21 @@ Operator action still required:
 - Capture browser QA evidence for multi-assessment and product flow.
 - Inventory QA data marked `QA Public Beta Ops 2 - safe to delete`.
 - Archive/soft-delete only after item ownership and metadata are confirmed.
+
+## PUBLIC-BETA-OPS-3 Follow-up
+
+Date: 2026-05-27.
+
+Operational status:
+
+- Limited public beta remains operational under controlled, low-volume, invitation-only conditions.
+- Public production routes are healthy.
+- Password recovery regression passed.
+- Full public launch remains NO.
+
+Operator action still required:
+
+- Provide Hostinger deployment/runtime/build log summary without secrets.
+- Execute authenticated browser QA with a QA user.
+- Execute authenticated upload/parser/report/PDF replay.
+- Inventory and archive/retain QA data marked `QA Public Beta Ops 3 - safe to delete`.

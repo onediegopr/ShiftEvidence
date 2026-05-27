@@ -141,3 +141,21 @@ Reason:
 - Production route smoke remains healthy.
 - Password recovery regression passed.
 - Full public launch still needs manual Hostinger logs and authenticated browser/product-flow evidence.
+
+## PUBLIC-BETA-OPS-3 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Production route smoke remains healthy.
+- Password recovery regression passed with neutral request and invalid-token controlled response.
+- Hostinger logs are still not available to Codex.
+- Authenticated browser QA and product-flow replay are still not available to Codex.
+- No QA data was modified.

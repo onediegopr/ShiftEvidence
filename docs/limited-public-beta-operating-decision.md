@@ -128,3 +128,26 @@ Evidence still needed:
 - Authenticated browser QA.
 - Authenticated product flow.
 - QA data archive/retention execution.
+
+## PUBLIC-BETA-OPS-3 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Evidence captured:
+
+- Production route smoke.
+- Password recovery regression for non-existing email neutral response.
+- Password recovery invalid-token controlled failure.
+- Local build/typecheck/lint.
+
+Evidence still needed:
+
+- Hostinger runtime/build/deploy logs.
+- Authenticated multi-assessment browser QA.
+- Authenticated upload/parser/report/PDF replay.
+- Real QA data inventory/archive.

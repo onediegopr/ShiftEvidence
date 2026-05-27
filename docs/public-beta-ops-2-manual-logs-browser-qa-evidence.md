@@ -98,6 +98,23 @@ Decision:
 - Antigravity UX/UI update accepted for limited public beta.
 - Full public launch remains NO.
 
+## Follow-up - PUBLIC-BETA-OPS-3
+
+Date: 2026-05-27.
+
+Result:
+
+- Public production route smoke remains healthy.
+- Password recovery regression passed for neutral non-existing email and invalid-token controlled response.
+- Codex still has no authenticated production session/cookies.
+- Codex still has no Hostinger/hPanel logs access.
+- No QA data was created, archived or deleted.
+
+Decision:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+
 Result: PASS.
 
 ## Gate C - Hostinger Logs / Runtime Evidence
