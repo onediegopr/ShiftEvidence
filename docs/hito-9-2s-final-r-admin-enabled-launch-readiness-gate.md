@@ -354,11 +354,16 @@ Resultado: launch review controlado recomendado.
 El usuario ejecutó manualmente el flujo con admin real y assessment admin-owned:
 
 - Admin route carga.
+- Header visible: `Admin — Manual unlock requests`.
+- Counters: Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`.
+- Queue visible con requests, notas, estados y botones.
+- Request QA conocido visible como `Entitlement granted`.
 - Unlock request visible.
 - Fulfill ejecutado.
 - Entitlement/full report/full PDF funcionan según validación manual.
 
 Codex no inspeccionó cookies ni sesión admin.
+Codex no automatizó clicks autenticados ni reejecutó fulfill real.
 
 Decision:
 

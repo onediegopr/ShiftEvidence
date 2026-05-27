@@ -493,6 +493,10 @@ Manual user-attested validation:
 
 - Dashboard works.
 - Real admin can access `/dashboard/admin/unlock-requests`.
+- Admin page header: `Admin — Manual unlock requests`.
+- Counters: Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`.
+- Queue, request states, notes and action buttons are visible to admin.
+- Known QA request `QA Production Smoke - 2026-05-27 - safe to delete - admin entitlement` is shown as `Entitlement granted`.
 - Admin-owned assessment flow works.
 - Fulfill/entitlement/full report/full PDF works.
 
@@ -502,6 +506,7 @@ Remaining risks:
 - Password recovery is not implemented.
 - QA data cleanup/retention pending.
 - Admin queue cross-owner report link can lead to `404` due to ownership protection.
+- Codex could not replay authenticated admin clicks without production admin cookies/session.
 
 Decision:
 

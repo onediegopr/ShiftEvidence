@@ -354,6 +354,9 @@ Evidencia:
 
 - Codex revalidó local/build y rutas públicas/privadas sin sesión.
 - Usuario confirmó manualmente en navegador que el dashboard funciona, admin route carga y el flujo admin-owned de entitlement/full report funciona.
+- Admin queue manualmente observada: Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`.
+- Request `QA Production Smoke - 2026-05-27 - safe to delete - admin entitlement` visible como `Entitlement granted`.
+- Codex no reprodujo clicks autenticados por falta de sesión/cookies admin.
 
 Pendientes para launch abierto:
 
@@ -361,5 +364,6 @@ Pendientes para launch abierto:
 - Logs Hostinger.
 - QA cleanup/retention.
 - Admin UX gap para abrir reports cross-owner desde cola admin.
+- Evidencia automatizada completa del full report flow no capturada por Codex.
 
 Production launched: NO.

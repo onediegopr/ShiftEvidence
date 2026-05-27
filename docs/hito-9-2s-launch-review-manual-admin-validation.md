@@ -96,6 +96,17 @@ Validación manual reportada por el usuario:
 | Dashboard general | User confirmed: funciona perfecto |
 | Admin real | User confirmed: pudo iniciar sesión |
 | `/dashboard/admin/unlock-requests` | User confirmed: carga correctamente |
+| Header admin | `Admin — Manual unlock requests` |
+| Pending | `0` |
+| Approved | `0` |
+| Fulfilled | `8` |
+| Rejected | `1` |
+| Admin-only manual approval | Visible |
+| Queue | Visible |
+| Requests históricos fulfilled | Visibles |
+| Notas/estados/botones | Visibles |
+| QA request conocido | `QA Production Smoke - 2026-05-27 - safe to delete - admin entitlement` |
+| QA request status | `Entitlement granted` |
 | Admin-owned flow | User confirmed: ejecutado desde navegador |
 | Request viejo cross-owner | No usado para cierre; puede devolver `404` por ownership |
 
@@ -121,6 +132,8 @@ Evidence level:
 - Manual browser validation by user.
 - Codex CLI could not independently inspect authenticated admin state.
 - IDs/report IDs were not captured, so this is launch-review evidence but not a complete machine-verifiable audit trail.
+- The admin queue state was user-attested with concrete counters: Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`.
+- Full entitlement closure is supported by user-attested admin UI evidence showing the known QA request as `Entitlement granted`; Codex did not replay the click flow.
 
 Resultado:
 
@@ -169,6 +182,7 @@ Pendientes:
 
 - No-session full report download was not independently revalidated by Codex for the admin-owned report.
 - Exact report ID, entitlement ID and unlock request ID were not captured.
+- Admin queue state and `Entitlement granted` were observed manually by the user, not by Codex automation.
 
 ## Remaining Risks
 
@@ -204,6 +218,7 @@ Motivo:
 - Upload/storage/parser/PDF preview OK por hitos previos.
 - Redirect bug `0.0.0.0` corregido por hitos previos.
 - Admin/entitlement/full report fue validado manualmente por el usuario en navegador real con admin-owned assessment.
+- Admin queue muestra `Pending 0`, `Approved 0`, `Fulfilled 8`, `Rejected 1`; el request QA conocido figura como `Entitlement granted`.
 - No hay bug crítico visible reportado.
 
 Production launched: NO.
@@ -222,6 +237,7 @@ Riesgos aceptados para launch review controlado:
 - Password recovery ausente.
 - Admin UX gap cross-owner.
 - IDs exactos del smoke admin-owned no capturados.
+- Full report automated replay por Codex no ejecutado por falta de cookies/sesión admin; se acepta como evidencia manual para review controlado.
 
 Riesgos no aceptados para launch abierto:
 

@@ -1064,6 +1064,8 @@ Resultado:
 - El usuario validó manualmente en navegador real el flujo admin-owned:
   - dashboard;
   - admin route;
+  - admin queue con Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`;
+  - request QA conocido con estado `Entitlement granted`;
   - unlock request;
   - fulfill;
   - entitlement;
@@ -1081,6 +1083,7 @@ Riesgos pendientes:
 - Logs Hostinger no revisados desde herramientas.
 - QA data cleanup/retention pendiente.
 - Admin UX gap para abrir reportes de assessments cross-owner desde la cola admin.
+- Codex no tiene evidencia automatizada de clicks autenticados admin ni IDs completos del smoke admin-owned.
 
 Manual v1.0:
 

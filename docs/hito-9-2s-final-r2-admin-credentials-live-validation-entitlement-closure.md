@@ -394,6 +394,10 @@ Validación manual reportada:
 - Dashboard funciona correctamente.
 - Admin real pudo iniciar sesión.
 - `/dashboard/admin/unlock-requests` carga.
+- Header visible: `Admin — Manual unlock requests`.
+- Counters visibles: Pending `0`, Approved `0`, Fulfilled `8`, Rejected `1`.
+- Queue admin visible con estados, notas y botones.
+- Request `QA Production Smoke - 2026-05-27 - safe to delete - admin entitlement` visible como `Entitlement granted`.
 - El flujo admin-owned fue ejecutado.
 - Fulfill/entitlement/full `readiness_report`/full PDF funcionaron.
 - No se reportaron errores visibles ni redirect `0.0.0.0`.
@@ -401,6 +405,8 @@ Validación manual reportada:
 Limitación:
 
 - IDs exactos del nuevo assessment/admin-owned, unlock request, entitlement y report no fueron capturados.
+- Codex no reprodujo clicks autenticados ni fulfill por falta de sesión/cookies admin.
+- El nivel de evidencia del full entitlement flow es manual browser validation user-attested.
 
 Decision:
 
