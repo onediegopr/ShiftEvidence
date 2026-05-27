@@ -69,7 +69,7 @@ What can be done today:
 
 What must not be treated as public-launch ready yet:
 
-- Self-service password recovery in production until migration/deploy/provider smoke is completed.
+- Self-service password recovery in production until provider and valid-token smoke are completed.
 - Public onboarding at scale.
 - Automated checkout/payment.
 - Fully polished admin cross-owner report UX.
@@ -468,7 +468,7 @@ If admin cannot enter:
 
 - Confirm user exists.
 - Confirm `ADMIN_EMAILS` includes the admin conceptually, without printing values.
-- Use manual support until password recovery is migrated, deployed and smoke-tested in production.
+- Use manual support until password recovery provider and valid-token smoke are completed in production.
 
 ## 21. Admin Operating Runbook
 
@@ -514,9 +514,10 @@ Policy initial state:
 
 Current state:
 
-- Forgot password/password recovery is implemented in code.
-- Production activation requires controlled Prisma migration, app deploy and provider smoke.
-- AUTH-1-PROD did not execute migration because no safe `DATABASE_URL` or Hostinger shell path was available from Codex.
+- Forgot password/password recovery is migrated, deployed and available as manual fallback.
+- Production activation completed for the Prisma migration and app deploy.
+- AUTH-1-PROD-EXEC confirmed neutral request behavior and invalid-token handling.
+- Current delivery mode is `manual_pending` because no provider is configured.
 
 Controlled launch mitigation:
 
@@ -526,11 +527,11 @@ Controlled launch mitigation:
 
 Public launch decision:
 
-- Public launch should not proceed until password recovery is active in production and validated with a real provider or explicit support policy.
+- Public launch should not proceed until password recovery is validated with a real provider or an explicitly accepted support policy.
 
 Recommended hito:
 
-- `HITO AUTH-1-PROD - Password Recovery Production Migration + Provider Smoke`.
+- `HITO AUTH-1-PROVIDER - Password Recovery Provider + Valid Token Smoke`.
 
 ## 25. Hostinger Logs
 
@@ -568,7 +569,7 @@ Risk:
 
 Before public launch:
 
-- Deploy and smoke password recovery with production migration and email provider.
+- Configure password recovery email provider and complete valid-token smoke.
 - Review production logs/monitoring.
 - Define QA cleanup/retention.
 - Improve admin cross-owner report UX.
@@ -580,7 +581,7 @@ Before public launch:
 
 Priority:
 
-1. `AUTH-1-PROD - Password Recovery Production Migration + Provider Smoke`.
+1. `AUTH-1-PROVIDER - Password Recovery Provider + Valid Token Smoke`.
 2. `OPS-1 — QA Data Cleanup / Retention`.
 3. `ADMIN-UX-1 — Admin-safe report view`.
 4. `13.1 — Authenticated Multi-Assessment Browser QA`.

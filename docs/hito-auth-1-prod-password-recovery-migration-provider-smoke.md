@@ -1,5 +1,31 @@
 # AUTH-1-PROD - Controlled Password Recovery Migration + Deploy Decision
 
+## AUTH-1-PROD-EXEC Update - 2026-05-27
+
+Status: PARCIAL.
+
+Executed under controlled production launch rules:
+
+- `DATABASE_URL` was available from `.env.local`; the value was not printed.
+- Target DB was confirmed as PostgreSQL, non-localhost, SSL-enabled.
+- `npx prisma migrate status` found `20260527190000_auth_password_recovery` pending.
+- `npx prisma migrate deploy` applied `20260527190000_auth_password_recovery`.
+- Post-deploy `npx prisma migrate status` returned schema up to date.
+- `main` was pushed from `5b559b9` to `51dc931`.
+- Hostinger git deployment completed successfully at `2026-05-27T14:49:20Z`.
+- Production route smoke passed after deploy: `/`, `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, and `/dashboard` redirect.
+- Password recovery request smoke passed for neutral existing/non-existing email responses.
+- Invalid reset token returned controlled `400`.
+- DB recorded the QA request as `deliveryMode=manual`, `status=manual_pending`.
+- Auth regression passed for sign-up, sign-in, authenticated dashboard, private redirect, and non-admin admin route protection.
+
+Decision:
+
+- Password recovery production operational: PARCIAL.
+- Controlled launch remains active: SI.
+- Public launch ready: NO.
+- Reason: no email provider is configured, so valid-token email delivery could not be tested and recovery currently operates as manual fallback.
+
 ## Objetivo
 
 Resolver de forma segura como aplicar la migracion productiva y desplegar password recovery sin romper produccion.

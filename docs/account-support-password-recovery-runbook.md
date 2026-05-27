@@ -65,10 +65,13 @@ Before production use:
 
 Current AUTH-1-PROD status:
 
-- Production migration has not been executed.
-- Code commit `124947d` has not been pushed.
-- Password recovery is not operational in production yet.
-- Continue using manual account support during controlled launch.
+- Production migration `20260527190000_auth_password_recovery` has been applied.
+- Code through `51dc931` has been pushed.
+- Hostinger deployment completed successfully.
+- `/forgot-password` and `/reset-password` are live in production.
+- Password recovery is operational as manual fallback: `deliveryMode=manual`, `status=manual_pending`.
+- Self-service email delivery is pending provider configuration.
+- Continue using manual account support during controlled launch until provider smoke is complete.
 
 ## Smoke Checklist
 
@@ -81,8 +84,15 @@ Current AUTH-1-PROD status:
 - [ ] New password works.
 - [ ] Used token fails.
 - [ ] Expired token fails.
-- [ ] Invalid token fails.
+- [x] Invalid token fails.
 - [ ] No token is logged.
+
+AUTH-1-PROD-EXEC smoke on 2026-05-27:
+
+- Existing QA email neutral response: OK.
+- Non-existing email neutral response: OK.
+- Invalid token controlled failure: OK.
+- Valid token: not tested because no provider/token retrieval path is configured.
 
 ## Escalation
 

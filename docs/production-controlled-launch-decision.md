@@ -47,7 +47,7 @@ Validated manually by user:
 
 ## Accepted Controlled-Launch Risks
 
-- Password recovery was implemented in code during `HITO AUTH-1`, but AUTH-1-PROD blocked production activation because no safe `DATABASE_URL`/Hostinger migration path was available from Codex. Controlled migration/deploy and email provider validation are still required before it can be considered active self-service recovery.
+- Password recovery was migrated and deployed during `AUTH-1-PROD-EXEC`. Production routes and neutral request flow passed, but recovery is currently `manual_pending` because no email provider is configured. Valid-token self-service recovery still requires provider configuration and smoke.
 - Hostinger logs were not reviewed from Codex.
 - QA data cleanup/retention is pending.
 - Admin queue cross-owner report link can return `404` by ownership protection.
@@ -55,7 +55,7 @@ Validated manually by user:
 
 ## Public Launch Blockers
 
-- Password recovery production migration/deploy and real provider smoke.
+- Password recovery provider configuration and valid-token smoke.
 - QA data cleanup/retention policy.
 - Hostinger logs review.
 - Admin-safe read-only report view or adjusted admin UX.
@@ -72,7 +72,7 @@ Validated manually by user:
 ## Next Steps
 
 1. Create Manual v1.0 Production Launch Edition.
-2. Implement password recovery.
+2. Configure password recovery email provider and run valid-token smoke.
 3. Define QA data cleanup/retention.
 4. Add admin-safe report view or adjust admin queue UX.
 5. Run authenticated multi-assessment browser QA.

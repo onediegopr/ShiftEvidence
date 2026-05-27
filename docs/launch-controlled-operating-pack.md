@@ -27,7 +27,7 @@ Not allowed yet:
 - Public launch at scale.
 - Mass marketing/ads.
 - Self-service paid checkout.
-- Claims that production self-service password recovery is fully active before migration/deploy/provider smoke is completed.
+- Claims that production self-service password recovery is fully active before provider and valid-token smoke are completed.
 - Untracked deletion of QA data.
 
 ## Daily Checklist
@@ -79,7 +79,7 @@ If launch must be paused:
 
 ## Accepted Risks
 
-- Password recovery implemented in code but pending production migration/deploy/provider smoke.
+- Password recovery migrated and deployed, but currently operating as `manual_pending` until provider and valid-token smoke are complete.
 - Hostinger logs not reviewed from Codex.
 - QA cleanup pending.
 - Admin UX gap cross-owner.
@@ -96,10 +96,12 @@ The application now includes password recovery code and UI:
 - Resend email delivery can be enabled with `RESEND_API_KEY` and `EMAIL_FROM`.
 - Without provider configuration, recovery requests fall back to manual support.
 
-Production use requires controlled migration and deploy. Do not run `prisma migrate reset`.
+Production use has completed controlled migration and deploy. Do not run `prisma migrate reset`.
 
 AUTH-1-PROD status:
 
-- Production migration was not executed from Codex because no safe production DB target was available.
-- The password recovery code commit remains local until migration/deploy strategy is resolved.
-- Continue manual account support for controlled launch.
+- Production migration applied.
+- Code pushed and deployed on Hostinger.
+- `/forgot-password` and `/reset-password` live.
+- Current delivery mode is manual fallback.
+- Continue manual account support for controlled launch until email provider smoke passes.

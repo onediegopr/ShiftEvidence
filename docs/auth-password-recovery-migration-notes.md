@@ -57,6 +57,25 @@ Decision:
 - Controlled launch remains active with manual account support.
 - Public launch remains NO.
 
+## AUTH-1-PROD-EXEC Result
+
+On 2026-05-27, the production DB target became available in the local execution environment without printing secret values.
+
+Result:
+
+- `20260527190000_auth_password_recovery` was applied with `npx prisma migrate deploy`.
+- Follow-up `npx prisma migrate status` reported the database schema up to date.
+- Code was pushed to `origin/main`.
+- Hostinger completed the git-based Next.js deployment.
+- `/forgot-password` and `/reset-password` returned `200` in production.
+- Recovery requests are persisted as `PasswordResetRequest`.
+- Current delivery mode is `manual_pending` because `RESEND_API_KEY` and `EMAIL_FROM` are not configured in the verified environment.
+
+Operational decision:
+
+- Recovery is available for controlled launch as manual fallback.
+- Self-service email recovery remains pending provider configuration and valid-token smoke.
+
 ## Rollback
 
 If rollback is needed before production traffic uses the feature:
