@@ -1014,3 +1014,25 @@ Decisión:
 Condición para manual v1.0:
 
 - Validar admin real, `ADMIN_EMAILS`, admin route, pending request, entitlement, full report productivo, secure access final, logs y cleanup/retención QA.
+
+## Addendum — HITO 9.2S-FINAL-R2 Continuation
+
+Fecha: 2026-05-27.
+
+El usuario informó que existe un nuevo usuario admin productivo que sí puede iniciar sesión. Desde el entorno de herramientas no se cuenta con credenciales/cookies para ejecutar esa sesión ni con acceso seguro a `ADMIN_EMAILS`.
+
+Hallazgo adicional:
+
+- Rutas públicas estáticas siguen `200 OK`.
+- Rutas dinámicas privadas (`/dashboard`, `/dashboard/assessments`, `/dashboard/admin/unlock-requests`) devolvieron `503/504` en verificaciones `curl` sin sesión.
+- El comportamiento esperado era redirect a `/sign-in`.
+
+Riesgos agregados:
+
+- No existe password recovery.
+- Rutas dinámicas privadas productivas requieren revisión de logs/runtime si el navegador también presenta fallos.
+
+Decisión:
+
+- Ready for controlled production launch review: NO.
+- Production launched: NO.

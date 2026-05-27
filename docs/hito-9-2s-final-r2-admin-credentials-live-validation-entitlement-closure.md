@@ -284,3 +284,62 @@ Condición para pasar a launch review:
 10. Definir cleanup/retención QA data.
 
 Production launched: NO.
+
+## Continuación — usuario admin productivo informado
+
+Fecha: 2026-05-27.
+
+Contexto adicional:
+
+- El usuario informó que el email anterior no podía entrar porque no existía usuario/contraseña.
+- El usuario informó que existe otro usuario productivo que sí puede iniciar sesión.
+- Ese usuario debería estar incluido en `ADMIN_EMAILS`.
+- No se implementa password recovery en este hito; queda como riesgo pendiente.
+
+Revalidación ejecutada desde este entorno:
+
+| Gate | Resultado |
+| --- | --- |
+| Local/Git | OK, branch `main`, working tree limpio, HEAD local `a788c81` pendiente de push |
+| `hostinger:diagnose` | OK |
+| `typecheck` | OK |
+| `lint` | OK |
+| `build` | OK, con warning Turbopack/NFT conocido |
+| Producción pública estática | `/`, `/shiftreadiness`, `/sign-in`, `/sign-up` responden `200 OK` |
+| Rutas dinámicas privadas | `/dashboard`, `/dashboard/assessments`, `/dashboard/admin/unlock-requests` devolvieron `503 Service Unavailable` / `504 Gateway Time-out` en `curl` |
+
+Hallazgo nuevo:
+
+- Gate B dejó de estar completamente OK para rutas dinámicas privadas desde `curl`.
+- El comportamiento esperado era `307` a `/sign-in` sin sesión.
+- El comportamiento observado fue `503/504` desde Hostinger/hcdn para rutas dinámicas.
+- Esto bloquea la validación admin desde este entorno incluso antes de intentar fulfill.
+
+Impacto:
+
+- No se ejecutó login admin desde herramientas porque no hay credenciales/cookies disponibles para esta ejecución.
+- No se pudo confirmar `ADMIN_EMAILS`.
+- No se pudo abrir admin route como admin.
+- No se pudo ver pending request.
+- No se hizo fulfill/approve.
+- No se concedió entitlement.
+- No se generó full `readiness_report`.
+
+Riesgo pendiente agregado:
+
+- No existe password recovery; si un admin pierde acceso o no existe contraseña válida, no hay flujo self-service de recuperación.
+- Las rutas dinámicas privadas productivas deben estabilizarse o revisarse en logs Hostinger antes de launch review.
+
+Decisión actualizada:
+
+- Ready for controlled production launch review: NO.
+- Puede recomendarse production launch: NO.
+- Production launched: NO.
+
+Próximo paso recomendado:
+
+1. Revisar logs Hostinger/runtime para explicar `503/504` en rutas dinámicas privadas.
+2. Confirmar en navegador si el admin productivo realmente puede abrir `/dashboard`.
+3. Si navegador funciona pero `curl` falla, documentar diferencia proxy/session/cold-start.
+4. Si navegador también falla, resolver runtime/Hostinger antes de admin entitlement.
+5. Recién después continuar con admin route, pending request, fulfill, entitlement y full report.

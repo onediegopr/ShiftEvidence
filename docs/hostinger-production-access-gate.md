@@ -419,3 +419,30 @@ Decision:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## HITO 9.2S-FINAL-R2 continuation — dynamic route blocker
+
+Date: 2026-05-27.
+
+Additional user context:
+
+- A different production admin user reportedly can sign in.
+- Password recovery is not implemented yet and remains a product risk.
+
+Observed from the current tool context:
+
+- Static/public routes remain `200 OK`.
+- `/dashboard`, `/dashboard/assessments` and `/dashboard/admin/unlock-requests` returned `503 Service Unavailable` / `504 Gateway Time-out` from Hostinger/hcdn during unauthenticated `curl` checks.
+- Expected unauthenticated behavior was `307` to `/sign-in`.
+
+Impact:
+
+- Admin route validation could not proceed from the tool context.
+- `ADMIN_EMAILS` remains unverified.
+- Fulfill, entitlement and full report remain pending.
+
+Decision:
+
+- Ready for controlled production launch review: NO.
+- Production launched: NO.
+- Review Hostinger runtime logs or reproduce in an authenticated browser session before continuing admin entitlement closure.
