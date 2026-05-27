@@ -66,7 +66,7 @@ Not allowed yet:
 - Advanced context does not block evidence upload.
 - Context coverage should be reviewed before using the report/PDF as an advisory artifact.
 - CONTEXT-1 prepares a structured payload for future Gemini advisory, but no AI call is active yet.
-- CONTEXT-1-PROD-QA is partial until authenticated browser evidence confirms save/refresh/report/PDF behavior.
+- CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence for save/refresh/report/PDF behavior.
 
 ## Escalation
 

@@ -19,7 +19,7 @@ PUBLIC-BETA-OPS-4 repeated final evidence closure without new manual evidence. C
 
 CONTEXT-1 adds an Adaptive Migration Context Intake in the assessment workspace. It captures human migration context that RVTools cannot infer, stores it without a schema change in `CostRiskAssumptions.assumptionsJson`, calculates context coverage, feeds missing evidence/confidence, appears in report preview/PDF, and prepares the structured payload for future AI advisory. It does not block evidence upload and does not call Gemini yet.
 
-CONTEXT-1-PROD-QA was partial from Codex: build/lint/typecheck, production unauthenticated routes and AI payload code safety passed, but authenticated browser save/refresh/report/PDF evidence is still pending because Codex had no production session/cookies.
+CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence: Context Intake save/refresh, coverage, report preview and PDF were reported OK. AI-1 is unblocked as a separate next hito with guardrails.
 
 ## Stack
 - Next.js App Router

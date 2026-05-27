@@ -322,7 +322,7 @@ Estado de validacion:
 - Implementacion: SI.
 - Build/lint/typecheck: OK.
 - Produccion sin sesion: OK.
-- Browser QA autenticado save/refresh/report/PDF: pendiente por falta de sesion/cookies en Codex.
+- Browser QA autenticado save/refresh/report/PDF: OK por evidencia user-attested.
 
 ## 10. Cost / risk assumptions
 

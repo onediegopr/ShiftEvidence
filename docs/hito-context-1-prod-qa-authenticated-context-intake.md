@@ -8,16 +8,16 @@ Validate Adaptive Migration Context Intake in production with authenticated brow
 
 ## Result
 
-Status: PARCIAL.
+Status: PASS, user-attested.
 
-Reason: Codex validated Git/local/build, public production routes, private unauthenticated redirects and AI payload code safety. Codex does not have production authenticated browser session/cookies, so creation, context save/refresh, report preview with real context and PDF with real context were not executed by Codex.
+Reason: Codex validated Git/local/build, public production routes, private unauthenticated redirects and AI payload code safety. The authenticated browser flow was executed by the user in production and reported as fully OK, including Context Intake save/persist, report preview and PDF.
 
 ## Evidence Separation
 
 Validated by Codex:
 
-- Git branch `main` clean at `55e3ef8`.
-- `origin/main` synchronized at `55e3ef8`.
+- Git branch `main` clean at `55e3ef8` before documentation commit.
+- `origin/main` synchronized at `55e3ef8` before documentation commit.
 - `npm run hostinger:diagnose`: OK.
 - `npm run typecheck`: OK.
 - `npm run lint`: OK.
@@ -26,17 +26,25 @@ Validated by Codex:
 - Production private routes without session: `307` to auth.
 - AI advisory payload helper reviewed for secrets/cookies/tokens/raw upload exclusion.
 
-Not validated by Codex:
+Validated by user in authenticated production browser:
 
-- Login with QA user.
-- Create assessment `QA Context Intake PROD QA — safe to delete`.
-- Quick Context save/refresh persistence.
-- Advanced Context partial save/refresh persistence.
-- Explicit `unknown`, `not_applicable`, `skipped` browser behavior.
-- Context coverage change in authenticated UI.
-- Report preview with real saved context.
-- PDF generated with real saved context.
-- Old production assessment report/PDF compatibility in authenticated UI.
+- Login with QA user: OK.
+- Dashboard and assessments list: OK.
+- Assessment `QA Context Intake PROD QA — safe to delete` created: OK.
+- Assessment visible and opens without error: OK.
+- Migration Context visible: OK.
+- Quick Context save/refresh persistence: OK.
+- Advanced Context partial save/refresh persistence: OK.
+- Context coverage changes: OK.
+- Missing context visible: OK.
+- Advanced context does not block upload: OK.
+- Report preview shows migration context: OK.
+- Report preview has no raw JSON or `[object Object]`: OK.
+- PDF generates/downloads/opens and is not empty: OK.
+- PDF includes context and missing context: OK.
+- PDF has no raw JSON or `[object Object]`: OK.
+- Old assessment compatibility: OK by user-attested result.
+- Visible errors: none reported.
 
 ## Production Routes
 
@@ -54,42 +62,27 @@ Unauthenticated smoke:
 
 No `500`, `503/504`, Hostinger 404 or `0.0.0.0` redirect was observed in this smoke.
 
-## Authenticated Browser QA Checklist Required
+## Authenticated Browser QA Closure
 
-Use QA/controlado user only.
+Execution mode: user-attested production browser QA.
 
 Assessment name:
 
 `QA Context Intake PROD QA — safe to delete`
 
-Checklist:
+Closure checklist:
 
-- Login works.
-- Dashboard loads.
-- Assessment is created.
-- Assessment appears in list.
-- Assessment detail opens.
-- Migration Context tab is visible.
-- Quick Context values save.
-- Refresh/reopen persists Quick Context.
-- Advanced Context partial values save.
-- `Unknown` persists.
-- `Not applicable` persists.
-- `Skip for now` persists.
-- Overall coverage changes.
-- Section coverage changes.
-- Missing key context is visible.
-- Advanced context does not block upload.
-- Report preview shows Migration Context Summary.
-- Report preview shows Context Coverage.
-- Report preview shows Missing Context.
-- Report preview shows Important User-Provided Context.
-- Report preview does not show raw JSON or `[object Object]`.
-- PDF generates.
-- PDF downloads.
-- PDF opens and is not empty.
-- PDF includes context section.
-- Existing old assessment without context does not crash.
+- Login/dashboard/assessments: PASS.
+- Assessment create/open/list visibility: PASS.
+- Migration Context visibility: PASS.
+- Quick Context save/persist: PASS.
+- Advanced Context save/persist: PASS.
+- Coverage/missing context: PASS.
+- Upload gate relationship: PASS.
+- Report preview context rendering: PASS.
+- PDF generation/download/open/context rendering: PASS.
+- Old assessment compatibility: PASS.
+- Visible errors: none reported.
 
 ## Upload Gate Decision
 
@@ -127,19 +120,19 @@ Gemini call: NO.
 
 ## Percentages
 
-Because authenticated browser/PDF evidence was not available to Codex:
+Because authenticated browser/PDF evidence was completed by user-attested production QA:
 
 - Controlled production launch: remains 100%.
-- Limited public beta: remains 96–97%.
-- Full public launch: remains 88–91%.
-- Product total: remains 92–94%.
+- Limited public beta: improves to 98%.
+- Full public launch: improves to 90–92%.
+- Product total: improves to 94–95%.
 
 ## Decision
 
-CONTEXT-1 production QA complete: NO, partial only.
+CONTEXT-1 production QA complete: SI, by user-attested browser evidence.
 
-Ready for AI-1: NO. AI-1 should wait for authenticated browser QA or user-attested evidence confirming save/persist/report/PDF behavior.
+Ready for AI-1: SI, with guardrails. AI-1 may proceed only as the next separate hito and must not expose secrets, cookies, reset tokens or raw uploaded file contents.
 
 Next hito:
 
-`CONTEXT-1-PROD-QA-CLOSURE — User-attested browser save/report/PDF evidence`.
+`AI-1 — Gemini Advisory Layer Enabled in Report Preview/PDF`.
