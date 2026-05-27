@@ -1,4 +1,4 @@
-export type AiAdvisoryProvider = "none" | "mock" | "gemini" | "openai";
+export type AiAdvisoryProvider = "none" | "disabled" | "mock" | "gemini" | "openai";
 
 export type AiAdvisoryProviderStatus = "success" | "unavailable" | "error" | "disabled" | "mock";
 

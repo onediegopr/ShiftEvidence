@@ -18,11 +18,23 @@ function parsePositiveInteger(value: string | undefined, fallback: number, max: 
 }
 
 function parseProvider(value: string | undefined): AiAdvisoryProvider {
-  if (value === "mock" || value === "gemini" || value === "openai" || value === "none") {
+  if (value === "mock" || value === "gemini" || value === "openai" || value === "none" || value === "disabled") {
     return value;
   }
 
   return "none";
+}
+
+export function getAiAdvisoryProviderKey(provider: AiAdvisoryProvider) {
+  if (provider === "gemini") {
+    return process.env.GEMINI_API_KEY?.trim() || null;
+  }
+
+  if (provider === "openai") {
+    return process.env.OPENAI_API_KEY?.trim() || null;
+  }
+
+  return null;
 }
 
 export function getAiAdvisoryConfig(): AiAdvisoryConfig {
@@ -32,7 +44,7 @@ export function getAiAdvisoryConfig(): AiAdvisoryConfig {
   return {
     enabled,
     provider,
-    model: process.env.AI_ADVISORY_MODEL?.trim() || null,
+    model: process.env.AI_ADVISORY_MODEL?.trim() || (provider === "gemini" ? "gemini-2.5-flash" : provider === "openai" ? "gpt-5.1-mini" : null),
     timeoutMs: parsePositiveInteger(process.env.AI_ADVISORY_TIMEOUT_MS, 8000, 30000),
     maxInputChars: parsePositiveInteger(process.env.AI_ADVISORY_MAX_INPUT_CHARS, 24000, 80000),
     maxOutputChars: parsePositiveInteger(process.env.AI_ADVISORY_MAX_OUTPUT_CHARS, 6000, 20000),

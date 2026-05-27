@@ -215,3 +215,21 @@ Reason:
 - Real external provider calls are not enabled.
 - No DB schema change, Prisma migration, Hostinger config change or deploy was performed.
 - Full public launch remains blocked by existing operational evidence requirements.
+
+## AI-1.1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Real Gemini/OpenAI provider support is implemented in code with guardrails.
+- Production activation requires secure Hostinger env vars.
+- Codex did not change Hostinger config or print provider keys.
+- Real provider production smoke is pending until env vars are configured.
+- AI remains advisory and does not replace deterministic scores.

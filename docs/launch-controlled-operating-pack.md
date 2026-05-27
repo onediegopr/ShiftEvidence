@@ -252,3 +252,23 @@ Operator rules:
 - Do not send raw uploaded files, secrets, cookies, tokens, reset tokens or private storage paths to AI.
 - Treat AI notes as advisory only; deterministic readiness/confidence scores remain source of truth.
 - Full public launch remains NO.
+
+## AI-1.1 Real Provider Guardrails
+
+Date: 2026-05-27.
+
+Implementation status:
+
+- Gemini/OpenAI real-provider code path is implemented.
+- Provider calls are server-side only.
+- No production keys were printed.
+- No Hostinger config was changed by Codex.
+- Real production activation requires Hostinger env vars and smoke evidence.
+
+Required rollback:
+
+- Set `AI_ADVISORY_ENABLED=false`.
+- Or switch `AI_ADVISORY_PROVIDER=mock`.
+- Or switch `AI_ADVISORY_PROVIDER=disabled`.
+
+Full public launch remains NO.

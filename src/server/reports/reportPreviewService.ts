@@ -454,7 +454,7 @@ export function getReportPlanVisibility(assessment: AssessmentDetail) {
   };
 }
 
-export function getReportPreviewData(assessment: AssessmentDetail): ReportPreviewData {
+export async function getReportPreviewData(assessment: AssessmentDetail): Promise<ReportPreviewData> {
   const completion = getAssessmentCompletionStatus(assessment);
   const preview = getPreliminaryCostRiskPreview(assessment);
   const context = buildInventoryDrivenCostRiskContext(assessment);
@@ -479,7 +479,7 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
   const evidenceOverview = buildEvidenceOverview(assessment);
   const migrationContext = getMigrationContextFromAssessment(assessment);
   const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
-  const aiAdvisory = generateAiAdvisory(assessment);
+  const aiAdvisory = await generateAiAdvisory(assessment);
   const recommendedDecision = getRecommendedDecision({
     readinessScore,
     confidenceScore,

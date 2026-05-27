@@ -920,3 +920,30 @@ Provider status:
 
 - `mock` provider can be used for safe internal validation.
 - `gemini` and `openai` provider calls require a separate follow-up hito with explicit API-key, timeout, logging and production authorization.
+
+## Addendum - AI-1.1 Real Provider Readiness
+
+Date: 2026-05-27.
+
+AI-1.1 adds guarded real-provider code paths:
+
+- Gemini via server-side `GEMINI_API_KEY`.
+- OpenAI via server-side `OPENAI_API_KEY`.
+- Timeout handling.
+- input/output limits.
+- fallback on provider failure.
+- no prompt/response persistence.
+- no raw uploaded file contents.
+
+Production activation status:
+
+- Code support: implemented.
+- Hostinger env vars: must be configured securely outside documentation.
+- Real provider smoke: pending.
+- Full public launch: NO.
+
+Rollback:
+
+- `AI_ADVISORY_ENABLED=false`.
+- or `AI_ADVISORY_PROVIDER=mock`.
+- or `AI_ADVISORY_PROVIDER=disabled`.

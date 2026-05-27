@@ -21,6 +21,17 @@ const keyFiles = [
   "src/app/shiftreadiness/page.tsx",
 ];
 
+const optionalAiEnvVars = [
+  "AI_ADVISORY_ENABLED",
+  "AI_ADVISORY_PROVIDER",
+  "AI_ADVISORY_MODEL",
+  "AI_ADVISORY_TIMEOUT_MS",
+  "AI_ADVISORY_MAX_INPUT_CHARS",
+  "AI_ADVISORY_MAX_OUTPUT_CHARS",
+  "GEMINI_API_KEY",
+  "OPENAI_API_KEY",
+];
+
 function hasValue(name) {
   return Boolean(process.env[name]?.trim());
 }
@@ -55,6 +66,12 @@ for (const name of requiredEnvVars) {
 }
 console.log("");
 
+console.log("Optional AI advisory variables");
+for (const name of optionalAiEnvVars) {
+  console.log(`- ${name}: ${formatStatus(hasValue(name))}`);
+}
+console.log("");
+
 console.log("Storage root");
 console.log(`- configured: ${formatStatus(Boolean(storageRoot))}`);
 console.log(`- absolute: ${storageRoot ? path.isAbsolute(storageRoot) : "not configured"}`);
@@ -67,4 +84,3 @@ console.log("- This script does not connect to the database.");
 console.log("- This script does not run Prisma.");
 console.log("- This script does not run build or start.");
 console.log("- Exit code is always 0 so missing values can be inspected safely.");
-

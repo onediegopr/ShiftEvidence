@@ -82,7 +82,16 @@ If AI is disabled, unavailable or fails:
 
 ## Provider Policy
 
-AI-1 includes provider stubs and a mock provider only. Real `gemini` or `openai` provider calls require a follow-up hito with explicit API-key handling, timeout validation, logging policy and production authorization.
+AI-1 included provider stubs and a mock provider only. AI-1.1 adds guarded server-side REST providers for `gemini` and `openai`.
+
+Provider requirements:
+
+- API keys must be server-side environment variables.
+- values must never be printed.
+- missing/failed provider calls must fall back without breaking report/PDF.
+- raw uploaded files must never be sent.
+
+Production activation still requires secure environment configuration and smoke evidence.
 
 ## Validation
 

@@ -27,6 +27,8 @@ AI-1-MOCK-QA validated the mock advisory path locally with temporary process fla
 
 AI-1-MOCK-QA-BROWSER received user-attested local authenticated evidence: AI Advisory Notes appeared in report preview and PDF, PDF downloaded/opened, no raw JSON or `[object Object]` was visible, and no visible errors were reported.
 
+AI-1.1-PROD adds guarded real-provider support for Gemini/OpenAI through server-side environment variables. Code-level provider integration is implemented, but production activation requires secure Hostinger env var configuration and authenticated smoke evidence. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -99,6 +101,8 @@ Optional for future work:
 - `AI_ADVISORY_TIMEOUT_MS`
 - `AI_ADVISORY_MAX_INPUT_CHARS`
 - `AI_ADVISORY_MAX_OUTPUT_CHARS`
+- `GEMINI_API_KEY`
+- `OPENAI_API_KEY`
 
 ## Prisma
 - Schema: `prisma/schema.prisma`

@@ -19,3 +19,32 @@ Prioritize business criticality, downtime, backup/restore, application dependenc
 network segmentation, Proxmox target readiness and compliance constraints.
 Each question must include why it matters and a high/medium/low priority.
 `;
+
+export const AI_ADVISORY_JSON_CONTRACT = `
+Return only valid JSON matching this semantic shape:
+{
+  "executiveSummaryNotes": ["string"],
+  "technicalNotes": ["string"],
+  "missingContextQuestions": [
+    { "question": "string", "whyItMatters": "string", "priority": "high|medium|low" }
+  ],
+  "confidenceImpact": "string",
+  "recommendedNextActions": ["string"],
+  "limitations": ["string"]
+}
+
+Do not include markdown fences.
+Do not include raw JSON from the input payload.
+Do not include secrets, tokens, cookies, storage paths or uploaded file contents.
+`;
+
+export function buildAiAdvisoryPrompt(sanitizedPayloadJson: string) {
+  return [
+    EXECUTIVE_ADVISORY_PROMPT_CONTRACT,
+    TECHNICAL_ADVISORY_PROMPT_CONTRACT,
+    MISSING_CONTEXT_QUESTIONS_PROMPT_CONTRACT,
+    AI_ADVISORY_JSON_CONTRACT,
+    "Sanitized assessment payload:",
+    sanitizedPayloadJson,
+  ].join("\n\n");
+}

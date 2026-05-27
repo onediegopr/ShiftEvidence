@@ -400,7 +400,7 @@ export default async function ReportPreviewPage({
 }: ReportPageProps) {
   const assessment = await getAssessment(params);
   const completion = getAssessmentCompletionStatus(assessment);
-  const report = getReportPreviewData(assessment);
+  const report = await getReportPreviewData(assessment);
   const query = await Promise.resolve(searchParams);
   const upgrade = query?.upgrade === "1";
   const error = query?.error ? decodeURIComponent(query.error) : null;
