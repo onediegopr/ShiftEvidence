@@ -6,6 +6,7 @@ import { upsertUserProfileFromSession } from "../../../server/user/userProfileSe
 import { ensureDefaultWorkspace } from "../../../server/workspace/workspaceService";
 import { listAssessmentsForCurrentWorkspace } from "../../../server/assessments/assessmentService";
 import { getEvidenceUploadStatus } from "../../../server/evidence/evidenceFileService";
+import type { AssessmentListItem } from "../../../server/assessments/assessmentService";
 
 type AssessmentsPageProps = {
   searchParams: Promise<{
@@ -31,6 +32,55 @@ function formatDate(value: Date | string) {
     day: "2-digit",
     year: "numeric",
   }).format(new Date(value));
+}
+
+function getLifecycleStatus(assessment: AssessmentListItem) {
+  const activeEvidenceFiles = assessment.evidenceFiles.filter((file) => file.deletedAt === null);
+  const hasIntake = Boolean(assessment.infrastructureInput);
+  const hasCostRiskSignals = Boolean(
+    assessment.costRiskAssumptions?.vmwareLicenseModel ||
+      assessment.costRiskAssumptions?.vmCount ||
+      assessment.costRiskAssumptions?.annualVmwareCost ||
+      assessment.costRiskAssumptions?.estimatedProxmoxCost ||
+      assessment.costRiskAssumptions?.migrationComplexity ||
+      assessment.costRiskAssumptions?.businessCriticality ||
+      assessment.costRiskAssumptions?.riskTolerance,
+  );
+  const hasGeneratedReport = assessment.reports.some(
+    (report) => report.deletedAt === null && report.status === "generated",
+  );
+  const hasFullReportUnlocked = assessment.entitlements.some(
+    (entitlement) =>
+      entitlement.entitlementKey === "full_report_unlocked" &&
+      ["available", "purchased", "granted"].includes(entitlement.status),
+  );
+  const hasParsedEvidence = activeEvidenceFiles.some((file) => file.processingStatus === "parsed");
+
+  if (assessment.archivedAt || assessment.status === "archived") {
+    return { label: "Archived", tone: "neutral" as const };
+  }
+
+  if (hasFullReportUnlocked || hasGeneratedReport) {
+    return { label: "Report ready", tone: "good" as const };
+  }
+
+  if (hasParsedEvidence) {
+    return { label: "Inventory ready", tone: "good" as const };
+  }
+
+  if (activeEvidenceFiles.length > 0) {
+    return { label: "Evidence uploaded", tone: "good" as const };
+  }
+
+  if (hasIntake && hasCostRiskSignals) {
+    return { label: "Basics complete", tone: "good" as const };
+  }
+
+  if (hasIntake || hasCostRiskSignals || assessment.preliminaryResult) {
+    return { label: "In progress", tone: "warning" as const };
+  }
+
+  return { label: "Draft", tone: "neutral" as const };
 }
 
 export default async function AssessmentsPage({ searchParams }: AssessmentsPageProps) {
@@ -66,7 +116,10 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
         <div>
           <div className="badge badge-cyan">Assessments</div>
           <h1>Assessment workspace</h1>
-          <p>Create and manage VMware to Proxmox readiness assessments.</p>
+          <p>
+            Your assessments are saved in this workspace. Return anytime to continue in-progress
+            work, upload more evidence, or generate reports when ready.
+          </p>
         </div>
         <Link href="/dashboard/assessments/new" className="btn btn-primary btn-glow">
           <Plus size={16} />
@@ -85,8 +138,8 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
           <ShieldCheck size={22} />
           <h2>No assessments yet</h2>
           <p>
-            Start with a draft assessment, add manual infrastructure intake, then fill in Cost /
-            Risk assumptions for a preliminary signal.
+            Start with a draft assessment. Your progress is saved, so you can come back later,
+            continue intake, upload evidence, and generate reports when ready.
           </p>
           <Link href="/dashboard/assessments/new" className="btn btn-secondary">
             Create first assessment
@@ -98,6 +151,7 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
             const preview = assessment.preliminaryResult;
             const riskLevel = preview?.riskLevel ?? "unknown";
             const rvtoolsStatus = getEvidenceUploadStatus(assessment);
+            const lifecycleStatus = getLifecycleStatus(assessment);
             const storageLabel = assessment.storageReadinessEnabled
               ? assessment.storageReadinessStatus === "selected"
                 ? "Selected"
@@ -116,7 +170,10 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
                 </div>
 
                 <div className="assessment-meta">
-                  <span className="assessment-chip">Status: {assessment.status}</span>
+                  <span className={`assessment-chip assessment-chip-${lifecycleStatus.tone}`}>
+                    {lifecycleStatus.label}
+                  </span>
+                  <span className="assessment-chip">DB status: {assessment.status}</span>
                   <span className="assessment-chip">Storage: {storageLabel}</span>
                   <span className="assessment-chip">Plan: {assessment.planLevel}</span>
                   <span className="assessment-chip">RVTools: {rvtoolsStatus === "uploaded" ? "Uploaded" : rvtoolsStatus === "parsed" ? "Parsed" : rvtoolsStatus === "deleted" ? "Deleted" : rvtoolsStatus === "failed" ? "Failed" : "Not uploaded yet"}</span>
@@ -143,7 +200,7 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
                     {preview?.readinessLabel ?? "Manual intake and assumptions required"}
                   </span>
                   <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">
-                    Open assessment <ArrowRight size={16} />
+                    Continue assessment <ArrowRight size={16} />
                   </Link>
                 </div>
 

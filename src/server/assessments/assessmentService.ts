@@ -106,7 +106,19 @@ export type AssessmentListItem = Prisma.AssessmentGetPayload<{
     preliminaryResult: true;
     storageReadinessInput: true;
     infrastructureInput: true;
+    costRiskAssumptions: true;
     assessmentScore: true;
+    entitlements: true;
+    reports: {
+      orderBy: [
+        {
+          deletedAt: "asc";
+        },
+        {
+          createdAt: "desc";
+        },
+      ];
+    };
     evidenceFiles: {
       orderBy: [
         {
@@ -152,6 +164,19 @@ export async function listAssessmentsForCurrentWorkspace(params: {
         preliminaryResult: true,
         storageReadinessInput: true,
         infrastructureInput: true,
+        costRiskAssumptions: true,
+        assessmentScore: true,
+        entitlements: true,
+        reports: {
+          orderBy: [
+            {
+              deletedAt: "asc",
+            },
+            {
+              createdAt: "desc",
+            },
+          ],
+        },
         evidenceFiles: {
           orderBy: [
             {

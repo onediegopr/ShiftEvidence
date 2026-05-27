@@ -251,3 +251,25 @@ Próximo hito recomendado:
 2. `HITO AUTH-1 — Password Recovery`.
 3. `HITO ADMIN-UX-1 — Admin-safe report view for unlock requests`.
 4. `HITO OPS-1 — QA Data Cleanup / Retention Policy`.
+
+## HITO 13 follow-up
+
+Fecha: 2026-05-27.
+
+Se auditó y endureció el lifecycle multi-assessment/workspace:
+
+- Dashboard/lista comunican persistencia y continuidad.
+- Assessment cards muestran lifecycle derivado desde señales existentes.
+- CTA de card ahora orienta a continuar el trabajo.
+- Archive, evidence isolation, report isolation y ownership fueron auditados por código.
+
+Limitación:
+
+- Browser QA autenticado multi-assessment queda recomendado como `HITO 13.1`.
+
+Decision:
+
+- Multi-assessment lifecycle listo para controlled launch: SÍ.
+- Ready for controlled production launch review: SÍ.
+- Ready for public launch: NO.
+- Production launched: NO.

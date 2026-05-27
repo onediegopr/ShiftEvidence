@@ -1088,3 +1088,31 @@ Riesgos pendientes:
 Manual v1.0:
 
 - Debe hacerse después de la decisión formal de production launch.
+
+## Addendum — HITO 13 Multi-Assessment Workspace Lifecycle
+
+Fecha: 2026-05-27.
+
+Resultado:
+
+- Se auditó el modelo multi-assessment/workspace.
+- `Assessment` ya funciona como trabajo persistente por workspace.
+- La lista principal filtra archived y ordena por `updatedAt`.
+- Intake, assumptions, evidence, parsed inventory, scores, reports, unlocks y audit events están aislados por `assessmentId`/`workspaceId`.
+- Archive existe como soft archive (`status=archived`, `archivedAt`).
+- Report y evidence tienen soft-delete/retention parcial.
+
+Hardening aplicado:
+
+- Copy de dashboard/lista para explicar que se puede volver y continuar luego.
+- CTA `Continue assessment`.
+- Badges lifecycle derivados desde señales existentes.
+
+Pendientes:
+
+- Browser QA autenticado multi-assessment con usuario real.
+- Vista/restauración de archived assessments.
+- Estado `completed` formal.
+- Política de cleanup/retention.
+
+Production launched: NO.

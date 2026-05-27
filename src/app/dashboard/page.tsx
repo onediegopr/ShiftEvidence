@@ -49,7 +49,7 @@ export default async function DashboardPage() {
         <article className="glass-card dashboard-card">
           <BarChart3 size={22} />
           <h2>Assessments</h2>
-          <p>Create and manage VMware to Proxmox readiness assessments.</p>
+          <p>Create multiple assessments, return later, and continue each workspace independently.</p>
           <Link href="/dashboard/assessments" className="dashboard-card-link">
             Open assessments <ArrowRight size={16} />
           </Link>
