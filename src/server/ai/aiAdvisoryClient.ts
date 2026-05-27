@@ -309,7 +309,10 @@ async function callOpenAiProvider(params: {
   return normalizeProviderJson(parseJsonText(text), params.fallback);
 }
 
-export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<AiAdvisoryOutput> {
+export async function generateAiAdvisoryFromPayload(
+  payload: AiAdvisoryContextPayload,
+  safeAssessmentId = "synthetic-ai-advisory",
+): Promise<AiAdvisoryOutput> {
   const config = getAiAdvisoryConfig();
   const startedAt = Date.now();
 
@@ -317,7 +320,7 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
     eventType: "ai_advisory_requested",
     provider: config.provider,
     model: config.model,
-    assessmentId: assessment.id,
+    assessmentId: safeAssessmentId,
     status: "unknown",
     errorCategory: "none",
   });
@@ -327,7 +330,7 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
       eventType: "ai_advisory_fallback_used",
       provider: config.provider,
       model: config.model,
-      assessmentId: assessment.id,
+      assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
       status: "disabled",
       errorCategory: "none",
@@ -336,14 +339,12 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
   }
 
   try {
-    const payload = buildAiAdvisoryContextPayload(assessment);
-
     if (config.provider === "mock") {
       recordAiRuntimeEvent({
         eventType: "ai_advisory_success",
         provider: config.provider,
         model: config.model,
-        assessmentId: assessment.id,
+        assessmentId: safeAssessmentId,
         durationMs: Date.now() - startedAt,
         status: "mock",
         errorCategory: "none",
@@ -357,7 +358,7 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
         eventType: "ai_advisory_fallback_used",
         provider: config.provider,
         model: config.model,
-        assessmentId: assessment.id,
+        assessmentId: safeAssessmentId,
         durationMs: Date.now() - startedAt,
         status: "unavailable",
         errorCategory: "config_missing",
@@ -384,7 +385,7 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
       eventType: "ai_advisory_success",
       provider: config.provider,
       model: config.model,
-      assessmentId: assessment.id,
+      assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
       status: "success",
       errorCategory: "none",
@@ -407,7 +408,7 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
       eventType: errorCategory === "timeout" ? "ai_advisory_timeout" : "ai_advisory_failed",
       provider: config.provider,
       model: config.model,
-      assessmentId: assessment.id,
+      assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
       status: errorCategory === "timeout" ? "timeout" : "error",
       errorCategory,
@@ -416,11 +417,15 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
       eventType: "ai_advisory_fallback_used",
       provider: config.provider,
       model: config.model,
-      assessmentId: assessment.id,
+      assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
       status: errorCategory === "timeout" ? "timeout" : "error",
       errorCategory,
     });
     return emptyOutput(config, "error");
   }
+}
+
+export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<AiAdvisoryOutput> {
+  return generateAiAdvisoryFromPayload(buildAiAdvisoryContextPayload(assessment), assessment.id);
 }

@@ -22,6 +22,7 @@
     "hostinger:diagnose": "node scripts/hostinger-diagnose.mjs",
     "ai:guardrails": "node scripts/ai-advisory-guardrails-smoke.mjs",
     "ai:fallback-drill": "node scripts/ai-advisory-fallback-drill.mjs",
+    "ai:report-synthetic": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/generate-full-synthetic-gemini-report.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

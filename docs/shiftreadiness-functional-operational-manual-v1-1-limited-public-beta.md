@@ -24,6 +24,21 @@ ShiftReadiness incluye una capa minima de operacion para AI Advisory:
 
 La IA sigue siendo advisory. No reemplaza readiness score, evidence confidence score ni risk findings deterministas. OpenAI no esta activo.
 
+## AI-REPORT-1 Synthetic Report Addendum
+
+Fecha: 2026-05-27.
+
+Se agrego un generador local de reporte sintetico:
+
+- comando: `npm run ai:report-synthetic`;
+- empresa demo: ACME Manufacturing Group;
+- dataset: 100% sintetico;
+- renderer: PDF real del producto;
+- artefactos: `qa-artifacts/ai-report-1/`;
+- binarios: no versionados.
+
+El primer run local genero un PDF de 13 paginas, pero Gemini quedo `providerStatus=unavailable` porque la credencial Gemini no esta configurada en el entorno local. Por lo tanto, AI-REPORT-1 queda parcial hasta regenerar con `GEMINI_API_KEY` disponible y `providerStatus=success`.
+
 ## Indice
 
 1. Resumen ejecutivo

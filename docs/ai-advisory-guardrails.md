@@ -167,3 +167,19 @@ The fallback drill verifies:
 - admin status route requires admin auth.
 
 If the real provider fails, report preview and PDF must continue using deterministic sections.
+
+## Synthetic Report Guardrail
+
+AI-REPORT-1 adds:
+
+```bash
+npm run ai:report-synthetic
+```
+
+Rules:
+
+- dataset must be synthetic/demo only.
+- generated artifacts stay under ignored `qa-artifacts/`.
+- Gemini success must be represented only by `providerStatus=success`.
+- if `GEMINI_API_KEY` is missing, the result must be marked partial/unavailable.
+- no real customer files, raw uploads, API keys or storage paths may be printed or committed.

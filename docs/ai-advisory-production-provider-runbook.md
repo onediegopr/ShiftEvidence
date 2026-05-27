@@ -240,3 +240,26 @@ AI_ADVISORY_PROVIDER=disabled
 ```
 
 ADMIN-1 can now build a Spanish admin console using the protected status endpoint without adding DB schema.
+
+## AI-REPORT-1 Synthetic Report Generator
+
+Date: 2026-05-27.
+
+Command:
+
+```bash
+npm run ai:report-synthetic
+```
+
+Purpose:
+
+- Generate a 100% synthetic ACME Manufacturing Group readiness report.
+- Use the real PDF renderer.
+- Attempt Gemini with env-driven config.
+- Write ignored local QA artifacts under `qa-artifacts/ai-report-1/`.
+
+Closure rule:
+
+- `providerStatus=success` is required before calling the Gemini portion complete.
+- If local `GEMINI_API_KEY` is missing, the script still generates a renderer artifact but the hito remains partial.
+- Do not commit PDFs or generated QA artifacts unless explicitly approved.
