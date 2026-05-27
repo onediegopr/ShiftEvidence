@@ -233,3 +233,23 @@ Reason:
 - Codex did not change Hostinger config or print provider keys.
 - Real provider production smoke is pending until env vars are configured.
 - AI remains advisory and does not replace deterministic scores.
+
+## AI-1.2 Gemini Env MCP Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Local Git/build/guardrails/typecheck/lint passed.
+- Public unauthenticated production routes remain healthy.
+- Gemini production activation through MCP is blocked because Google AI Studio / Gemini access and Hostinger runtime-env write access were not available to Codex.
+- `GEMINI_API_KEY` was not available through a secure secret path in this session.
+- Hostinger config was not changed and no redeploy/restart was performed.
+- OpenAI was not activated.
+- Real Gemini preview/PDF smoke remains pending.

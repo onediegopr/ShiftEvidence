@@ -93,6 +93,29 @@ Provider requirements:
 
 Production activation still requires secure environment configuration and smoke evidence.
 
+## AI-1.2 Production Activation Guardrail Result
+
+Date: 2026-05-27.
+
+Gemini production activation was attempted through available Codex/MCP paths and remained blocked:
+
+- No Google AI Studio / Gemini MCP was available.
+- No Gemini API key was available through a secure local secret path.
+- No Hostinger runtime-env write access was available.
+- No Hostinger config was changed.
+- No redeploy/restart was executed.
+- No raw files, storage paths, cookies, tokens or secrets were sent to AI.
+- OpenAI was not activated.
+
+Required secure path before enabling:
+
+- Configure `GEMINI_API_KEY` only as a server-side Hostinger secret/env var.
+- Configure `AI_ADVISORY_PROVIDER=gemini`.
+- Keep `OPENAI_API_KEY` unused for this hito.
+- Verify public routes, authenticated preview and PDF output.
+- Confirm no raw JSON, `[object Object]`, secrets or raw evidence appears in UI/PDF/logs.
+- Keep rollback ready with `AI_ADVISORY_ENABLED=false` or `AI_ADVISORY_PROVIDER=disabled`.
+
 ## Validation
 
 Run:

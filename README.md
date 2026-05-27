@@ -31,7 +31,7 @@ AI-1.1-PROD adds guarded real-provider support for Gemini/OpenAI through server-
 
 AI-1.2 attempted Gemini production activation, but Codex did not have a Hostinger runtime-env configuration tool. Production activation remains pending until `AI_ADVISORY_*` vars and `GEMINI_API_KEY` are set securely in Hostinger and smoke-tested.
 
-AI-1.2-PROD-GEMINI-SMOKE remained blocked because Hostinger runtime env vars could not be written from Codex. Any Gemini key exposed in chat should be rotated before production use.
+AI-1.2-PROD-GEMINI-SMOKE and the follow-up MCP activation attempt remained blocked because Google AI Studio / Gemini access, a secure Gemini API key path and Hostinger runtime env write access were not available to Codex. Hostinger config was not changed, OpenAI was not activated, and Gemini real preview/PDF smoke remains pending.
 
 ## Stack
 - Next.js App Router

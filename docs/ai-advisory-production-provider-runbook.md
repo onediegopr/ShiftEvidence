@@ -27,7 +27,7 @@ Do not print or share values.
 ```bash
 AI_ADVISORY_ENABLED=true
 AI_ADVISORY_PROVIDER=gemini
-AI_ADVISORY_MODEL=gemini-2.5-flash
+AI_ADVISORY_MODEL=gemini-1.5-flash
 AI_ADVISORY_TIMEOUT_MS=15000
 AI_ADVISORY_MAX_INPUT_CHARS=24000
 AI_ADVISORY_MAX_OUTPUT_CHARS=6000
@@ -140,3 +140,39 @@ Status:
 - A credential was provided in chat; rotate it before production use.
 - The credential was not written to code, docs, logs or git.
 - OpenAI remains inactive.
+
+## AI-1.2 MCP Activation Attempt
+
+Date: 2026-05-27.
+
+Status: BLOQUEADO.
+
+Codex validated:
+
+- Local Git was clean and synchronized with `origin/main`.
+- Guardrails, typecheck, lint and build passed.
+- Public unauthenticated production routes were healthy.
+
+Codex could not proceed because:
+
+- Google AI Studio / Gemini MCP access was not available.
+- No Gemini API key was available through a secure local environment or secret store.
+- Hostinger runtime env write access was not available.
+
+Production state after the attempt:
+
+- `AI_ADVISORY_ENABLED`: not configured by Codex.
+- `AI_ADVISORY_PROVIDER=gemini`: not configured by Codex.
+- `GEMINI_API_KEY`: missing for Codex.
+- `OPENAI_API_KEY`: not used.
+- Redeploy/restart: not performed.
+- Gemini real smoke: not executed.
+
+Manual secure activation remains:
+
+1. Configure the Gemini key as a Hostinger secret/runtime env var.
+2. Configure `AI_ADVISORY_PROVIDER=gemini` and the target `AI_ADVISORY_*` limits.
+3. Restart/redeploy if Hostinger requires it.
+4. Run public route smoke.
+5. Run authenticated preview and PDF smoke with synthetic QA data.
+6. Roll back with `AI_ADVISORY_ENABLED=false` if preview/PDF breaks.

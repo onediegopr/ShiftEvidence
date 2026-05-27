@@ -144,6 +144,7 @@ Limites:
 | Report preview / PDF | OK |
 | Admin / entitlement | OK por evidencia manual previa |
 | Resend email | OK |
+| AI Advisory real Gemini | Bloqueado por env/secret access |
 | Limited public beta | OK |
 | Full public launch | NO |
 | Checkout / pagos | NO |
@@ -947,3 +948,24 @@ Rollback:
 - `AI_ADVISORY_ENABLED=false`.
 - or `AI_ADVISORY_PROVIDER=mock`.
 - or `AI_ADVISORY_PROVIDER=disabled`.
+
+## Addendum - AI-1.2 Gemini Production Activation Attempt
+
+Date: 2026-05-27.
+
+Status: BLOQUEADO.
+
+Codex validated local readiness and public production route health, but did not activate Gemini in production because Google AI Studio / Gemini MCP access, a secure Gemini API key path and Hostinger runtime-env write access were not available in this session.
+
+No Hostinger config was changed, no redeploy/restart was executed, no OpenAI provider was activated and no secrets were printed or committed.
+
+Required before marking AI Advisory real Gemini operational:
+
+- Configure `GEMINI_API_KEY` as a server-side Hostinger secret/env var.
+- Configure the `AI_ADVISORY_*` env vars for Gemini.
+- Restart/redeploy if Hostinger requires it.
+- Validate public routes.
+- Validate authenticated report preview with real Gemini advisory output.
+- Validate PDF output with real Gemini advisory output.
+- Confirm no raw JSON, `[object Object]`, secrets, raw evidence or private paths are exposed.
+- Keep rollback ready with `AI_ADVISORY_ENABLED=false` or `AI_ADVISORY_PROVIDER=disabled`.

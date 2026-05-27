@@ -119,3 +119,51 @@ Pendiente:
 - Ready for admin console: NO.
 - Ready for full public launch: NO.
 - Proximo hito recomendado: `AI-1.2-REMOTE-CLOSE` para sincronizar docs pendientes, luego carga manual de env vars y `AI-1.2-PROD-GEMINI-SMOKE-USER-ATTESTED`.
+
+## AI-1.2-PROD-GEMINI-ENV-MCP Attempt
+
+Date: 2026-05-27.
+
+Status: BLOQUEADO.
+
+What was validated:
+
+- Branch `main` was clean and synchronized with `origin/main` at `38af55f`.
+- `npm run hostinger:diagnose`: OK.
+- `npm run ai:guardrails`: OK.
+- `npm run typecheck`: OK.
+- `npm run lint`: OK.
+- `npm run build`: OK with the known NFT/Turbopack warning in `reportStorageService`.
+- Public production smoke without session passed:
+  - `/`: 200.
+  - `/shiftreadiness`: 200.
+  - `/sign-in`: 200.
+  - `/sign-up`: 200.
+  - `/forgot-password`: 200.
+  - `/reset-password`: 200.
+  - `/dashboard`: 307 to `/sign-in`.
+  - `/dashboard/assessments`: 307 to `/sign-in`.
+  - `/dashboard/admin/unlock-requests`: 307 to `/sign-in`.
+
+Blocking reason:
+
+- No Google AI Studio / Gemini MCP was available in Codex.
+- No Gemini API key was available through process environment, `.env.local`, CLI or secret store.
+- No Hostinger runtime-env MCP/write tool was available in Codex.
+- Hostinger config was not changed.
+- Gemini production env vars were not configured.
+- No redeploy/restart was executed.
+- No real Gemini smoke or authenticated preview/PDF smoke was executed.
+
+Security outcome:
+
+- `GEMINI_API_KEY`: missing for Codex.
+- Key printed: NO.
+- Secrets committed: NO.
+- OpenAI activated: NO.
+- Raw files sent to AI: NO.
+- Full public launch declared: NO.
+
+Next required action:
+
+- Provide a secure Gemini API key through an approved secret path and a Hostinger runtime-env write path, or configure the target env vars manually in Hostinger and then run authenticated user-attested Gemini preview/PDF smoke.

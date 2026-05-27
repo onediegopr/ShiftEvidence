@@ -272,3 +272,43 @@ Required rollback:
 - Or switch `AI_ADVISORY_PROVIDER=disabled`.
 
 Full public launch remains NO.
+
+## AI-1.2 Gemini Production Activation Attempt
+
+Date: 2026-05-27.
+
+Operational status:
+
+- Gemini provider code is present.
+- Gemini production activation remains blocked.
+- Codex did not have Google AI Studio / Gemini MCP access.
+- Codex did not have Hostinger runtime-env write access.
+- No Gemini key was printed, stored in docs or committed.
+- OpenAI remains inactive.
+- Public production routes remain healthy without session.
+
+Target env vars when a secure Hostinger path is available:
+
+```bash
+AI_ADVISORY_ENABLED=true
+AI_ADVISORY_PROVIDER=gemini
+AI_ADVISORY_MODEL=gemini-1.5-flash
+AI_ADVISORY_TIMEOUT_MS=15000
+AI_ADVISORY_MAX_INPUT_CHARS=24000
+AI_ADVISORY_MAX_OUTPUT_CHARS=6000
+GEMINI_API_KEY=<secret>
+```
+
+Rollback remains:
+
+```bash
+AI_ADVISORY_ENABLED=false
+```
+
+or:
+
+```bash
+AI_ADVISORY_PROVIDER=disabled
+```
+
+Do not approve full public launch until authenticated Gemini preview/PDF smoke passes with no leaks and no raw JSON / `[object Object]`.
