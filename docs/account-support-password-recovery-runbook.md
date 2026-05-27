@@ -63,6 +63,13 @@ Before production use:
 6. Smoke `/forgot-password` with a controlled test account.
 7. Smoke `/reset-password` with a controlled test token.
 
+Current AUTH-1-PROD status:
+
+- Production migration has not been executed.
+- Code commit `124947d` has not been pushed.
+- Password recovery is not operational in production yet.
+- Continue using manual account support during controlled launch.
+
 ## Smoke Checklist
 
 - [ ] `/sign-in` shows `Forgot password?`.

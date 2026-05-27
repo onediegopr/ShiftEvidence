@@ -47,7 +47,7 @@ Validated manually by user:
 
 ## Accepted Controlled-Launch Risks
 
-- Password recovery was implemented in code during `HITO AUTH-1`, but production still requires controlled migration/deploy and email provider validation before it can be considered active self-service recovery.
+- Password recovery was implemented in code during `HITO AUTH-1`, but AUTH-1-PROD blocked production activation because no safe `DATABASE_URL`/Hostinger migration path was available from Codex. Controlled migration/deploy and email provider validation are still required before it can be considered active self-service recovery.
 - Hostinger logs were not reviewed from Codex.
 - QA data cleanup/retention is pending.
 - Admin queue cross-owner report link can return `404` by ownership protection.

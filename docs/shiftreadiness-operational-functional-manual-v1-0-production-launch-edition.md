@@ -134,7 +134,7 @@ It is:
 | PDF preview/full | OK |
 | Admin/entitlement | OK by manual browser validation |
 | Redirect `0.0.0.0` bug | Fixed |
-| Password recovery | Implemented in code; production migration/deploy/provider smoke pending |
+| Password recovery | Implemented in code; AUTH-1-PROD blocked pending safe production migration/deploy path |
 | Hostinger logs | Pending / not reviewed from Codex |
 | QA cleanup/retention | Pending |
 | Controlled production launch | SÍ |
@@ -516,6 +516,7 @@ Current state:
 
 - Forgot password/password recovery is implemented in code.
 - Production activation requires controlled Prisma migration, app deploy and provider smoke.
+- AUTH-1-PROD did not execute migration because no safe `DATABASE_URL` or Hostinger shell path was available from Codex.
 
 Controlled launch mitigation:
 

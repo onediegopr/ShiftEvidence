@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active; public launch pending production password recovery activation, logs review and QA cleanup.
+Controlled production launch active; public launch pending production password recovery activation, logs review and QA cleanup. AUTH-1 password recovery code is local until the production migration/deploy path is confirmed.
 
 ## Stack
 - Next.js App Router

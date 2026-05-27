@@ -41,6 +41,22 @@ Required controlled steps:
 4. Deploy application only with explicit authorization.
 5. Smoke password recovery with QA account.
 
+## AUTH-1-PROD Decision Update
+
+On 2026-05-27, Codex re-audited the migration and confirmed it remains non-destructive.
+
+Production migration was not executed because:
+
+- `DATABASE_URL` was not available in the local Codex environment.
+- Hostinger shell/app console was not available from Codex.
+- The production DB target could not be confirmed safely.
+
+Decision:
+
+- Do not push/deploy code depending on `PasswordResetRequest` until migration is applied in a confirmed production target.
+- Controlled launch remains active with manual account support.
+- Public launch remains NO.
+
 ## Rollback
 
 If rollback is needed before production traffic uses the feature:

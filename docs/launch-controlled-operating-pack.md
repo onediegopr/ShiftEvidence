@@ -97,3 +97,9 @@ The application now includes password recovery code and UI:
 - Without provider configuration, recovery requests fall back to manual support.
 
 Production use requires controlled migration and deploy. Do not run `prisma migrate reset`.
+
+AUTH-1-PROD status:
+
+- Production migration was not executed from Codex because no safe production DB target was available.
+- The password recovery code commit remains local until migration/deploy strategy is resolved.
+- Continue manual account support for controlled launch.
