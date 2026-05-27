@@ -108,3 +108,20 @@ Reason:
 - Password recovery remains operational.
 - Logs, QA cleanup and fresh authenticated browser QA remain incomplete from Codex.
 - Public support/SLA and admin UX gap need finalization before broad public launch.
+
+## PUBLIC-BETA-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Production routes and local build remain healthy.
+- Password recovery regression passed.
+- Hostinger logs and authenticated QA still require access outside Codex.
+- No QA data was deleted or modified.

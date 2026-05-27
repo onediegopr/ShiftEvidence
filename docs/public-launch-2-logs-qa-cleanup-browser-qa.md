@@ -355,3 +355,25 @@ Updated:
 - No payment/checkout implementation.
 - No QA data deletion.
 - No secrets printed.
+
+## PUBLIC-BETA-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Controlled production launch remains active.
+- Limited public beta remains YES under controlled / low-volume / invitation-only conditions.
+- Full public launch remains NO.
+
+What changed:
+
+- Production routes were rechecked and remain healthy.
+- Password recovery regression passed.
+- Logs remain unavailable from Codex.
+- QA data was not modified.
+- Authenticated browser QA and product-flow replay still require a real QA session.
+
+Next hito:
+
+- `PUBLIC-BETA-OPS-2 - Manual Hostinger Logs + Browser QA Evidence Capture`.

@@ -81,3 +81,28 @@ Public paid self-service requires a separate payment/checkout hito.
 ## Next Hito
 
 `PUBLIC-BETA-OPS-1 - Hostinger Logs Review + QA Data Inventory/Archive + Authenticated Browser QA`.
+
+## PUBLIC-BETA-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational conditions remain:
+
+- Invitation-only or controlled low-volume access.
+- Manual support.
+- Manual entitlement.
+- No paid self-service claims.
+- No automated migration claims.
+- QA data retained only with `safe to delete` marking.
+
+Pending:
+
+- Hostinger logs review.
+- Real QA data inventory/archive.
+- Authenticated browser QA with QA user.
+- Product flow replay with upload/parser/report/PDF.

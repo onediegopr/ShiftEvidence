@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active. Limited public beta is allowed only under controlled, low-volume operating conditions. Full public launch is not approved yet; Hostinger logs, QA cleanup, authenticated browser QA and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation.
+Controlled production launch active. Limited public beta is allowed only under controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; Hostinger logs, real QA cleanup/archive, authenticated browser QA and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke.
 
 ## Stack
 - Next.js App Router

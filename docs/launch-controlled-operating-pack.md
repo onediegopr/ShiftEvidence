@@ -143,3 +143,21 @@ Limited public beta remains approved under these conditions:
 - Issues captured with screenshots and assessment/report IDs.
 
 Full public launch remains NO until logs, QA cleanup, authenticated browser QA, admin UX and support/SLA are closed.
+
+## PUBLIC-BETA-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Operational status:
+
+- Limited beta may continue under controlled / low-volume / invitation-only usage.
+- Password recovery regression passed.
+- Public/private routes remain healthy.
+- No production data cleanup was executed.
+
+Operator reminders:
+
+- Review Hostinger logs manually when available.
+- Capture browser QA evidence with screenshots and assessment IDs.
+- Keep QA data named `QA Public Beta Ops - safe to delete`.
+- Do not hard-delete DB/storage data during beta without inventory and approval.

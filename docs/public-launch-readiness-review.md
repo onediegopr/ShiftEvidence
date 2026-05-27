@@ -356,3 +356,15 @@ Remaining full public launch blockers:
 - Admin cross-owner UX gap.
 - Formal public support/SLA.
 - Payment/checkout only if paid self-service is required.
+
+## PUBLIC-BETA-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Public launch remains NO.
+- Limited public beta remains YES.
+- No critical public route/auth regression was detected.
+- Password recovery regression passed.
+- Logs, QA cleanup and authenticated browser QA still require manual/credentialed execution.
