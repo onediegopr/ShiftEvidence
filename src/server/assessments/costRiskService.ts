@@ -9,6 +9,11 @@ import {
   type InventoryDrivenCostRiskContext,
   type InventoryDrivenCostRiskSource,
 } from "../risk/riskContext";
+import {
+  computeMigrationContextCoverage,
+  getMigrationContextFromAssessment,
+  getMigrationContextMissingEvidence,
+} from "./migrationContextService";
 
 function toNumber(value: Prisma.Decimal | number | null | undefined) {
   if (value === null || value === undefined) {
@@ -158,6 +163,8 @@ export function calculatePreliminaryCostRisk(params: {
   let riskScore = 0;
   const recommendations: string[] = [];
   const missingEvidence: string[] = [];
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
 
   const vmCount = context.referenceCounts.vmCount;
   const hostCount = context.referenceCounts.hostCount;
@@ -215,6 +222,13 @@ export function calculatePreliminaryCostRisk(params: {
     missingEvidence.push("Estimated Proxmox subscription is missing.");
   }
 
+  if (migrationContextCoverage.status !== "strong") {
+    getMigrationContextMissingEvidence(migrationContextCoverage)
+      .filter((item) => item !== "No key migration context gaps are currently open.")
+      .slice(0, 5)
+      .forEach((item) => missingEvidence.push(item));
+  }
+
   if (annualVmwareCost === null || estimatedProxmoxCost === null) {
     recommendations.push("Add cost assumptions to estimate subscription delta.");
   }
@@ -237,6 +251,12 @@ export function calculatePreliminaryCostRisk(params: {
 
   if (context.mismatchWarnings.length > 0) {
     recommendations.push("Reconcile manual assumptions with parsed RVTools inventory.");
+  }
+
+  if (migrationContextCoverage.status === "missing" || migrationContextCoverage.status === "limited") {
+    recommendations.push("Add migration context to improve advisory quality and evidence confidence.");
+  } else if (migrationContextCoverage.status === "partial") {
+    recommendations.push("Complete the missing key migration context before final wave planning.");
   }
 
   let riskLevel: "low" | "medium" | "high" = "low";
@@ -274,6 +294,7 @@ export function calculatePreliminaryCostRisk(params: {
     referenceCounts: context.referenceCounts,
     parsedCounts: context.parsedCounts,
     manualCounts: context.manualCounts,
+    migrationContextCoverage,
   };
 }
 
@@ -361,6 +382,7 @@ export function getPreliminaryCostRiskPreview(assessment: AssessmentDetail) {
     referenceCounts: result.referenceCounts,
     parsedCounts: result.parsedCounts,
     manualCounts: result.manualCounts,
+    migrationContextCoverage: result.migrationContextCoverage,
   };
 }
 

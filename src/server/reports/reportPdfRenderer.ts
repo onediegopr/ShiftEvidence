@@ -671,6 +671,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       ["Evidence confidence", preview.evidenceConfidenceLabel],
       ["Confidence implication", preview.evidenceOverview.confidenceImplication],
       ["Cost / Risk source", preview.sourceLabel],
+      ["Migration context coverage", `${preview.migrationContext.coverage.overallPercent}% - ${titleCase(preview.migrationContext.coverage.status)}`],
     ]);
     twoColumnList({
       doc,
@@ -679,6 +680,19 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       rightTitle: "Evidence missing",
       rightItems: preview.evidenceOverview.missing,
     });
+
+    addContentPage(doc, "Section 2A", "Migration Context Summary", "Human project context and confidence impact");
+    h2(doc, "Context coverage", "Missing context is treated as evidence gap, not a hard error.");
+    keyValueTable(doc, [
+      ["Overall coverage", `${preview.migrationContext.coverage.overallPercent}%`],
+      ["Context status", titleCase(preview.migrationContext.coverage.status)],
+      ["Missing key context", `${preview.migrationContext.coverage.missingKeyContext.length}`],
+      ["Confidence impact", preview.migrationContext.confidenceImpact],
+    ]);
+    h2(doc, "Important user-provided context");
+    bulletList(doc, preview.migrationContext.importantContext, 8);
+    h2(doc, "Missing context");
+    bulletList(doc, preview.migrationContext.missingContext, 8);
 
     addContentPage(doc, "Section 3", "Environment Summary", "Inventory basis and environment scope");
     h2(doc, "Measured environment", "Counts use parsed evidence when available, then manual input as fallback.");

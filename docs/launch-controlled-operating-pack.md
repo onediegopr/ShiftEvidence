@@ -10,6 +10,8 @@ Launch type: controlled production launch.
 
 Public launch: NO.
 
+Adaptive Migration Context Intake: implemented locally in CONTEXT-1, pending authorized push/deploy validation.
+
 ## What Controlled Launch Means
 
 Controlled launch means limited, supervised production usage.
@@ -47,12 +49,23 @@ Not allowed yet:
 1. Pilot user creates account.
 2. Pilot user creates assessment.
 3. Pilot user completes intake and assumptions.
-4. Pilot user uploads evidence.
-5. Pilot user reviews preview.
-6. Pilot user requests full report.
-7. Admin reviews and fulfills.
-8. Pilot user generates/downloads full report.
-9. Issues are documented with assessment ID and screenshots.
+4. Pilot user completes Quick Context and any known Advanced Context.
+5. Pilot user uploads evidence.
+6. Pilot user reviews preview.
+7. Pilot user requests full report.
+8. Admin reviews and fulfills.
+9. Pilot user generates/downloads full report.
+10. Issues are documented with assessment ID and screenshots.
+
+## Adaptive Migration Context Operating Rule
+
+- Quick Context should be encouraged early because it improves report confidence.
+- Advanced Context can be completed progressively.
+- `Unknown`, `Not applicable` and `Skip for now` are valid user states.
+- Missing context is treated as evidence gap, not as a blocking form error.
+- Advanced context does not block evidence upload.
+- Context coverage should be reviewed before using the report/PDF as an advisory artifact.
+- CONTEXT-1 prepares a structured payload for future Gemini advisory, but no AI call is active yet.
 
 ## Escalation
 

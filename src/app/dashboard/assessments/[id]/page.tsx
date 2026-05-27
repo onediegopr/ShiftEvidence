@@ -38,6 +38,17 @@ import {
   getPreliminaryCostRiskPreview,
 } from "../../../../server/assessments/costRiskService";
 import {
+  computeMigrationContextCoverage,
+  getImportantMigrationContext,
+  getMigrationContextConfidenceImpact,
+  getMigrationContextFromAssessment,
+  getMigrationContextMissingEvidence,
+  getUnknownOptionHint,
+  migrationContextSections,
+  type MigrationContextAnswer,
+  type MigrationContextQuestion,
+} from "../../../../server/assessments/migrationContextService";
+import {
   getAssessmentCompletionStatus,
   getMissingEvidenceSummary,
   getNextStepsSummary,
@@ -59,6 +70,7 @@ import {
 } from "./risk/actions";
 import {
   archiveAssessmentAction,
+  saveMigrationContextAction,
   saveCostRiskAssumptionsAction,
   saveInfrastructureInputAction,
   toggleStorageReadinessAction,
@@ -380,6 +392,95 @@ function SectionTitle({
   );
 }
 
+function getContextStatusTone(value: string) {
+  switch (value) {
+    case "strong":
+    case "answered":
+      return "good" as const;
+    case "partial":
+    case "unknown":
+    case "not_applicable":
+      return "warning" as const;
+    case "limited":
+    case "missing":
+    case "skipped":
+      return "neutral" as const;
+    default:
+      return "neutral" as const;
+  }
+}
+
+function MigrationContextField({
+  question,
+  answer,
+}: {
+  question: MigrationContextQuestion;
+  answer: MigrationContextAnswer;
+}) {
+  return (
+    <div className="glass-card assessment-subcard">
+      <label className="form-label">
+        {question.label}
+        <select
+          name={`context.${question.id}.status`}
+          className="form-input"
+          defaultValue={answer.status}
+          aria-label={`${question.label} status`}
+        >
+          <option value="answered">Answered</option>
+          <option value="unknown">I don't know yet</option>
+          <option value="not_applicable">Not applicable</option>
+          <option value="skipped">Skip for now</option>
+        </select>
+      </label>
+
+      {question.type === "text" ? (
+        <textarea
+          name={`context.${question.id}.value`}
+          className="form-input assessment-textarea"
+          defaultValue={typeof answer.value === "string" ? answer.value : ""}
+          placeholder={question.placeholder ?? "Optional context"}
+        />
+      ) : question.type === "single" ? (
+        <select
+          name={`context.${question.id}.value`}
+          className="form-input"
+          defaultValue={typeof answer.value === "string" ? answer.value : ""}
+        >
+          <option value="">Select what you know</option>
+          {(question.options ?? []).map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div className="assessment-checkbox-grid">
+          {(question.options ?? []).map((option) => {
+            const values = Array.isArray(answer.value) ? answer.value : [];
+            return (
+              <label key={option} className="assessment-checkbox-row">
+                <input
+                  type="checkbox"
+                  name={`context.${question.id}.value`}
+                  value={option}
+                  defaultChecked={values.includes(option)}
+                />
+                <span>{option}</span>
+              </label>
+            );
+          })}
+        </div>
+      )}
+
+      <p className="assessment-inline-note">
+        {question.keyQuestion ? "Key context. " : ""}
+        {getUnknownOptionHint(question)}
+      </p>
+    </div>
+  );
+}
+
 async function getAssessment(params: AssessmentDetailPageProps["params"]) {
   const { id } = await params;
   const session = await auth.api.getSession({
@@ -450,6 +551,10 @@ export default async function AssessmentDetailPage({
   const assessment = await getAssessment(params);
   const completion = getAssessmentCompletionStatus(assessment);
   const preview = getPreliminaryCostRiskPreview(assessment);
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
+  const migrationContextImportant = getImportantMigrationContext(migrationContext, 8);
+  const migrationContextMissing = getMigrationContextMissingEvidence(migrationContextCoverage);
   const infraSummary = getInfrastructureInputSummary(assessment);
   const missingEvidence = getMissingEvidenceSummary(assessment);
   const nextSteps = getNextStepsSummary(assessment);
@@ -529,6 +634,16 @@ export default async function AssessmentDetailPage({
           Intake & Basics
         </Link>
         <Link
+          href={`/dashboard/assessments/${assessment.id}?tab=context`}
+          className={`tab-btn ${activeTab === "context" ? "active" : ""}`}
+        >
+          <span
+            className="tab-progress-dot"
+            style={{ background: migrationContextCoverage.overallPercent >= 45 ? "#10b981" : migrationContextCoverage.overallPercent > 0 ? "#f59e0b" : "#475569" }}
+          ></span>
+          Migration Context
+        </Link>
+        <Link
           href={`/dashboard/assessments/${assessment.id}?tab=evidence`}
           className={`tab-btn ${activeTab === "evidence" ? "active" : ""}`}
         >
@@ -592,6 +707,12 @@ export default async function AssessmentDetailPage({
           <span className="assessment-summary-label">Commercial</span>
           <strong>{commercialStatus.primaryLabel}</strong>
           <p>{commercialStatus.primaryDetail}</p>
+        </article>
+        <article className="glass-card assessment-summary-card">
+          <CircleAlert size={22} />
+          <span className="assessment-summary-label">Context</span>
+          <strong>{migrationContextCoverage.overallPercent}%</strong>
+          <p>{statusLabel(migrationContextCoverage.status)}</p>
         </article>
       </section>
 
@@ -922,6 +1043,150 @@ export default async function AssessmentDetailPage({
                 <p>Entitlement: {assessment.storageReadinessEnabled ? "available" : "locked"}</p>
               </article>
             </div>
+          </section>
+        </>
+      )}
+
+      {activeTab === "context" && (
+        <>
+          <section className="assessment-section glass-card">
+            <SectionTitle
+              icon={<CircleAlert size={18} />}
+              eyebrow="Adaptive Context"
+              title="Migration context intake"
+              description="Answer what you know now. Missing context will be reflected as evidence gaps, not treated as an error."
+            />
+
+            <div className="assessment-status-row">
+              {renderStatusPill(`Coverage: ${migrationContextCoverage.overallPercent}%`, getContextStatusTone(migrationContextCoverage.status))}
+              {renderStatusPill(`Status: ${statusLabel(migrationContextCoverage.status)}`, getContextStatusTone(migrationContextCoverage.status))}
+              {renderStatusPill("Incomplete context accepted", "neutral")}
+            </div>
+
+            <div className="assessment-preview-columns">
+              <article className="glass-card assessment-subcard">
+                <h3>Coverage by section</h3>
+                <ul className="assessment-bullet-list">
+                  {migrationContextCoverage.sections.map((section) => (
+                    <li key={section.id}>
+                      {section.title}: {section.percent}% ({statusLabel(section.status)})
+                    </li>
+                  ))}
+                </ul>
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Missing key context</h3>
+                <ul className="assessment-bullet-list">
+                  {migrationContextMissing.slice(0, 8).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Confidence impact</h3>
+                <p>{getMigrationContextConfidenceImpact(migrationContextCoverage)}</p>
+                <p className="assessment-inline-note">
+                  Context coverage improves the advisory quality of your report. Not sure? Mark it as Unknown and continue.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <form action={saveMigrationContextAction.bind(null, assessment.id)} className="assessment-context-form">
+            <section className="assessment-section glass-card">
+              <SectionTitle
+                icon={<ShieldCheck size={18} />}
+                eyebrow="Quick Context"
+                title="Fast inputs with high report value"
+                description="These answers help the report understand objective, timeline, expected outcome and main concern."
+              />
+              <div className="assessment-form-grid assessment-form-grid-wide">
+                {migrationContextSections
+                  .filter((section) => section.group === "quick")
+                  .flatMap((section) => section.questions)
+                  .map((question) => (
+                    <MigrationContextField
+                      key={question.id}
+                      question={question}
+                      answer={migrationContext.answers[question.id]}
+                    />
+                  ))}
+              </div>
+              <div className="assessment-inline-actions">
+                <button type="submit" className="btn btn-primary btn-glow">
+                  Save quick context
+                  <RefreshCcw size={16} />
+                </button>
+                <span className="assessment-inline-note">You can complete this later.</span>
+              </div>
+            </section>
+
+            <section className="assessment-section glass-card">
+              <SectionTitle
+                icon={<Layers3 size={18} />}
+                eyebrow="Advanced Context"
+                title="Migration constraints and human evidence"
+                description="Advanced context is optional. It improves confidence, missing evidence and future AI advisory quality."
+              />
+              <div className="assessment-accordion-list">
+                {migrationContextSections
+                  .filter((section) => section.group === "advanced")
+                  .map((section) => {
+                    const sectionCoverage = migrationContextCoverage.sections.find((item) => item.id === section.id);
+                    return (
+                      <details key={section.id} className="glass-card assessment-subcard">
+                        <summary className="assessment-context-summary">
+                          <span>
+                            <strong>{section.title}</strong>
+                            <small>{section.description}</small>
+                          </span>
+                          {renderStatusPill(
+                            `${sectionCoverage?.percent ?? 0}%`,
+                            getContextStatusTone(sectionCoverage?.status ?? "missing"),
+                          )}
+                        </summary>
+                        <div className="assessment-form-grid assessment-form-grid-wide">
+                          {section.questions.map((question) => (
+                            <MigrationContextField
+                              key={question.id}
+                              question={question}
+                              answer={migrationContext.answers[question.id]}
+                            />
+                          ))}
+                        </div>
+                      </details>
+                    );
+                  })}
+              </div>
+
+              <div className="assessment-inline-actions">
+                <button type="submit" className="btn btn-primary btn-glow">
+                  Save all context
+                  <RefreshCcw size={16} />
+                </button>
+                <span className="assessment-inline-note">
+                  Advanced context does not block evidence upload.
+                </span>
+              </div>
+            </section>
+          </form>
+
+          <section className="assessment-section glass-card">
+            <SectionTitle
+              icon={<FileText size={18} />}
+              eyebrow="Report impact"
+              title="Context already captured"
+              description="These items will feed report preview, PDF and the future AI advisory payload."
+            />
+            {migrationContextImportant.length === 0 ? (
+              <p className="assessment-empty-note">No answered context yet. Use Quick Context to start.</p>
+            ) : (
+              <ul className="assessment-bullet-list">
+                {migrationContextImportant.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}

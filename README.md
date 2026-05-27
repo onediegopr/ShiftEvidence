@@ -17,6 +17,8 @@ PUBLIC-BETA-OPS-3A attempted to import manual Hostinger logs and authenticated b
 
 PUBLIC-BETA-OPS-4 repeated final evidence closure without new manual evidence. Codex validations remained healthy, but confidence percentages did not increase and full public launch remains NO.
 
+CONTEXT-1 adds an Adaptive Migration Context Intake in the assessment workspace. It captures human migration context that RVTools cannot infer, stores it without a schema change in `CostRiskAssumptions.assumptionsJson`, calculates context coverage, feeds missing evidence/confidence, appears in report preview/PDF, and prepares the structured payload for future AI advisory. It does not block evidence upload and does not call Gemini yet.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -41,6 +43,16 @@ PUBLIC-BETA-OPS-4 repeated final evidence closure without new manual evidence. C
 - `/dashboard/assessments`
 - `/dashboard/assessments/new`
 - `/dashboard/assessments/[id]`
+
+## Current assessment capabilities
+- Persistent multi-assessment workspace.
+- Manual infrastructure intake.
+- Cost / Risk assumptions.
+- Adaptive Migration Context Intake with partial save, unknown/not applicable/skip states and coverage scoring.
+- Private evidence upload and secure download.
+- RVTools parser and inventory/risk scoring.
+- Report preview and PDF generation.
+- Manual admin unlock/entitlement flow.
 
 ## Scripts
 - `npm run dev`

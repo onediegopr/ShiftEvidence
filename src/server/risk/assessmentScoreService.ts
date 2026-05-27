@@ -6,6 +6,10 @@ import {
   buildInventoryDrivenCostRiskContext,
   type InventoryDrivenCostRiskContext,
 } from "./riskContext";
+import {
+  computeMigrationContextCoverage,
+  getMigrationContextFromAssessment,
+} from "../assessments/migrationContextService";
 
 type ScoreFindingLike = {
   severity: RiskSeverity;
@@ -63,25 +67,28 @@ export function getEvidenceConfidenceScore(params: {
   const costRiskStatus = getCostRiskStatus(params.assessment);
   const warningsCount = getWarningsCount(context);
   const parsed = context.parsedInventory;
+  const migrationContextCoverage = computeMigrationContextCoverage(
+    getMigrationContextFromAssessment(params.assessment),
+  );
 
   if (evidenceStatus === "not_uploaded_yet" || evidenceStatus === "deleted") {
-    return 30;
+    return clamp(30 + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
   }
 
   if (evidenceStatus === "failed") {
-    return 35;
+    return clamp(35 + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
   }
 
   if (evidenceStatus === "uploaded" || evidenceStatus === "queued" || evidenceStatus === "processing") {
-    return 40;
+    return clamp(40 + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
   }
 
   if (!parsed?.summary) {
-    return 45;
+    return clamp(45 + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
   }
 
   if (parsed.inventoryStatus === "partial") {
-    return 55;
+    return clamp(55 + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
   }
 
   const hasVmOnly = parsed.vms.length > 0 && parsed.hosts.length === 0 && parsed.datastores.length === 0;
@@ -109,7 +116,14 @@ export function getEvidenceConfidenceScore(params: {
     score = 85;
   }
 
-  return clamp(score, 0, 85);
+  return clamp(score + getMigrationContextConfidenceBoost(migrationContextCoverage.overallPercent), 0, 90);
+}
+
+function getMigrationContextConfidenceBoost(contextCoveragePercent: number) {
+  if (contextCoveragePercent >= 75) return 5;
+  if (contextCoveragePercent >= 45) return 3;
+  if (contextCoveragePercent > 0) return 1;
+  return 0;
 }
 
 export function getInventoryScore(params: {
@@ -198,6 +212,9 @@ export function calculateAssessmentScore(params: {
   const inventoryScore = getInventoryScore({ assessment: params.assessment, context });
   const costRiskScore = getCostRiskScore({ assessment: params.assessment, context });
   const confidenceScore = getEvidenceConfidenceScore({ assessment: params.assessment, context });
+  const migrationContextCoverage = computeMigrationContextCoverage(
+    getMigrationContextFromAssessment(params.assessment),
+  );
   const storageScore = params.assessment.storageReadinessEnabled ? 50 : null;
 
   let readinessScore = 100;
@@ -253,6 +270,8 @@ export function calculateAssessmentScore(params: {
       inventoryStatus: context.parsedInventory?.inventoryStatus ?? "not_available",
       warningsCount: context.parsedInventory?.parseWarnings?.length ?? 0,
       costRiskStatus: getCostRiskStatus(params.assessment),
+      migrationContextCoverage: migrationContextCoverage.overallPercent,
+      migrationContextStatus: migrationContextCoverage.status,
     },
     inventoryCounts: context.referenceCounts,
     mismatchWarnings: context.mismatchWarnings,

@@ -10,6 +10,14 @@ import {
 } from "../risk/riskFindingService";
 import { getCommercialStatusForAssessment } from "../unlocks/unlockRequestService";
 import { getEvidenceConfidenceLabel } from "../rvtools/rvtoolsInventoryService";
+import {
+  computeMigrationContextCoverage,
+  getImportantMigrationContext,
+  getMigrationContextConfidenceImpact,
+  getMigrationContextFromAssessment,
+  getMigrationContextMissingEvidence,
+  type MigrationContextCoverage,
+} from "../assessments/migrationContextService";
 import { getReportStatusLabel } from "./reportHistoryService";
 import {
   getPlanRank,
@@ -71,6 +79,12 @@ export type ReportPreviewData = {
     poweredOffVmCount: number;
     totalProvisionedGb: number | null;
     totalUsedGb: number | null;
+  };
+  migrationContext: {
+    coverage: MigrationContextCoverage;
+    importantContext: string[];
+    missingContext: string[];
+    confidenceImpact: string;
   };
   executiveSummary: string[];
   technicalSummary: string[];
@@ -149,6 +163,8 @@ export function buildExecutiveSummaryPreview(assessment: AssessmentDetail) {
   const parsed = buildInventoryDrivenCostRiskContext(assessment).parsedInventory;
   const inventorySummary = parsed?.summary ?? null;
   const topFindings = getTopFindings(assessment, 3);
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
 
   const sentences = [
     `This assessment currently shows a ${completion.completionStatus} preliminary migration signal.`,
@@ -167,6 +183,7 @@ export function buildExecutiveSummaryPreview(assessment: AssessmentDetail) {
     preview.readinessLabel
       ? `The current Cost / Risk preview indicates that ${preview.readinessLabel.toLowerCase()}.`
       : "The Cost / Risk preview still needs more evidence before it can be interpreted.",
+    `Migration context coverage is ${migrationContextCoverage.overallPercent}% (${migrationContextCoverage.status}).`,
   ];
 
   return sentences;
@@ -178,6 +195,8 @@ export function buildTechnicalSummaryPreview(assessment: AssessmentDetail) {
   const preview = getPreliminaryCostRiskPreview(assessment);
   const completion = getAssessmentCompletionStatus(assessment);
   const findings = getTopFindings(assessment, 5);
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
 
   const bullets = [
     `Source: ${context.sourceLabel}.`,
@@ -193,6 +212,7 @@ export function buildTechnicalSummaryPreview(assessment: AssessmentDetail) {
     completion.evidenceConfidence
       ? `Evidence confidence is ${completion.evidenceConfidence}.`
       : "Evidence confidence is not available yet.",
+    `Migration context status is ${migrationContextCoverage.status}; missing context is treated as evidence gap, not as an error.`,
   ];
 
   return bullets;
@@ -318,6 +338,8 @@ function buildEvidenceOverview(assessment: AssessmentDetail): ReportEvidenceOver
   const completion = getAssessmentCompletionStatus(assessment);
   const sourceIndicator = getSourceIndicator(assessment);
   const activeEvidenceFiles = (assessment.evidenceFiles ?? []).filter((file) => !file.deletedAt);
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
 
   if (assessment.infrastructureInput) {
     received.add("Manual infrastructure intake");
@@ -352,6 +374,10 @@ function buildEvidenceOverview(assessment: AssessmentDetail): ReportEvidenceOver
     received.add("Storage Destination Readiness selected");
   }
 
+  if (migrationContextCoverage.overallPercent > 0) {
+    received.add(`Migration context intake (${migrationContextCoverage.overallPercent}% coverage)`);
+  }
+
   const missing = new Set(getMissingEvidenceForReport(assessment));
 
   [
@@ -363,8 +389,14 @@ function buildEvidenceOverview(assessment: AssessmentDetail): ReportEvidenceOver
     "Business criticality confirmation by application owner",
   ].forEach((item) => missing.add(item));
 
+  getMigrationContextMissingEvidence(migrationContextCoverage)
+    .filter((item) => item !== "No key migration context gaps are currently open.")
+    .forEach((item) => missing.add(item));
+
   const confidenceImplication =
-    completion.evidenceConfidence === "moderate"
+    migrationContextCoverage.status === "missing"
+      ? "Evidence is technically limited by missing project context. Treat business criticality, downtime and target assumptions as review-required."
+      : completion.evidenceConfidence === "moderate"
         ? "Evidence supports a directional recommendation, but missing inputs may change migration sequence and risk."
         : completion.evidenceConfidence === "limited_with_warnings"
           ? "Evidence has parser or completeness warnings. Validate source exports before sequencing production workloads."
@@ -442,6 +474,8 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
   const readinessScore = assessment.assessmentScore?.readinessScore ?? completion.completionScore ?? null;
   const confidenceScore = assessment.assessmentScore?.confidenceScore ?? null;
   const evidenceOverview = buildEvidenceOverview(assessment);
+  const migrationContext = getMigrationContextFromAssessment(assessment);
+  const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
   const recommendedDecision = getRecommendedDecision({
     readinessScore,
     confidenceScore,
@@ -527,6 +561,12 @@ export function getReportPreviewData(assessment: AssessmentDetail): ReportPrevie
       poweredOffVmCount: summary?.poweredOffVmCount ?? 0,
       totalProvisionedGb: summary?.totalProvisionedGb ?? null,
       totalUsedGb: summary?.totalUsedGb ?? null,
+    },
+    migrationContext: {
+      coverage: migrationContextCoverage,
+      importantContext: getImportantMigrationContext(migrationContext, 10),
+      missingContext: getMigrationContextMissingEvidence(migrationContextCoverage),
+      confidenceImpact: getMigrationContextConfidenceImpact(migrationContextCoverage),
     },
     executiveSummary,
     technicalSummary,

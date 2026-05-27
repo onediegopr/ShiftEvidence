@@ -150,6 +150,7 @@ function renderStatusTone(value: string) {
     case "moderate":
     case "generated":
     case "fulfilled":
+    case "strong":
       return "good" as const;
     case "partial":
     case "pending":
@@ -160,6 +161,7 @@ function renderStatusTone(value: string) {
     case "generating":
     case "limited":
     case "limited_with_warnings":
+    case "missing":
       return "warning" as const;
     case "rejected":
       return "danger" as const;
@@ -533,6 +535,46 @@ export default async function ReportPreviewPage({
           {renderStatusPill(`Source: ${report.sourceLabel}`, "neutral")}
           {renderStatusPill(`Confidence: ${report.evidenceConfidenceLabel}`, renderStatusTone(completion.evidenceConfidence))}
           {renderStatusPill(`Readiness: ${statusLabel(completion.completionStatus)}`, renderStatusTone(completion.completionStatus))}
+        </div>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          icon={<BookOpen size={18} />}
+          eyebrow="Migration context"
+          title="Migration Context Summary"
+          description="Human project context improves advisory quality. Missing context is shown as an evidence gap, not treated as a form error."
+        />
+        <div className="assessment-status-row">
+          {renderStatusPill(`Coverage: ${report.migrationContext.coverage.overallPercent}%`, renderStatusTone(report.migrationContext.coverage.status))}
+          {renderStatusPill(`Status: ${statusLabel(report.migrationContext.coverage.status)}`, renderStatusTone(report.migrationContext.coverage.status))}
+          {renderStatusPill(`Missing key items: ${report.migrationContext.coverage.missingKeyContext.length}`, "neutral")}
+        </div>
+        <div className="assessment-preview-columns">
+          <article className="glass-card assessment-subcard">
+            <h3>Important user-provided context</h3>
+            {report.migrationContext.importantContext.length === 0 ? (
+              <p>No migration context has been provided yet.</p>
+            ) : (
+              <ul className="assessment-bullet-list">
+                {report.migrationContext.importantContext.slice(0, 8).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+          <article className="glass-card assessment-subcard">
+            <h3>Missing context</h3>
+            <ul className="assessment-bullet-list">
+              {report.migrationContext.missingContext.slice(0, 8).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+          <article className="glass-card assessment-subcard">
+            <h3>Impact on confidence</h3>
+            <p>{report.migrationContext.confidenceImpact}</p>
+          </article>
         </div>
       </section>
 

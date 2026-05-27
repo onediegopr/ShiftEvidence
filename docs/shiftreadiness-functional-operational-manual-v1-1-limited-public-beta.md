@@ -288,6 +288,35 @@ Manual Intake captura contexto que RVTools no siempre expresa:
 
 RVTools da inventory tecnico; intake agrega contexto de negocio/operacion. La combinacion mejora readiness/confidence y reduce conclusiones falsas.
 
+### Adaptive Migration Context Intake
+
+CONTEXT-1 agrega un intake adaptativo dentro del assessment para capturar contexto humano de migracion que RVTools no puede saber:
+
+- objetivo principal del proyecto;
+- etapa y timeline;
+- ambiente VMware;
+- storage;
+- red;
+- backup/DR;
+- criticidad de negocio;
+- downtime y ventanas;
+- destino Proxmox;
+- compliance/restricciones;
+- notas libres.
+
+El formulario esta dividido en Quick Context y Advanced Context. El usuario puede responder parcialmente, guardar, volver despues y marcar preguntas como `Unknown`, `Not applicable` o `Skip for now`.
+
+El contexto se guarda sin cambio de schema en `CostRiskAssumptions.assumptionsJson.migrationContext`.
+
+Efecto operativo:
+
+- calcula context coverage general y por seccion;
+- agrega missing context al reporte como evidence gap;
+- impacta Evidence Confidence de forma acotada;
+- aparece en report preview y PDF;
+- prepara payload estructurado para futuro AI Advisory;
+- no bloquea evidence upload.
+
 ## 10. Cost / risk assumptions
 
 Guarda:
@@ -329,6 +358,7 @@ Capas:
 Comportamiento:
 
 - Assessment incompleto: upload bloqueado.
+- Contexto avanzado incompleto: warning/evidence gap, no bloqueo duro.
 - Assessment con prerequisitos: upload habilitado.
 
 ## 12. Evidence upload
@@ -723,6 +753,7 @@ Bloqueadores:
 - Product flow replay real.
 - QA cleanup/archive.
 - Admin-safe report view.
+- QA post-deploy de Adaptive Migration Context Intake.
 - Soporte/SLA formal.
 - Checkout/pagos si se quiere self-service.
 - Public onboarding final.

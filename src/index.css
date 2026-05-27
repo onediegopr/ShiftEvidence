@@ -3636,6 +3636,50 @@ p {
     padding-left: 1rem;
 }
 
+.assessment-context-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.assessment-accordion-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.assessment-context-summary {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.assessment-context-summary span {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.assessment-context-summary small {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.assessment-checkbox-grid {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+}
+
+.assessment-checkbox-row {
+    align-items: center;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+}
+
 .report-preview-page {
     gap: 1.25rem;
 }

@@ -37,6 +37,7 @@ Validated by previous milestones:
 - PDF preview/full flow.
 - Redirect `0.0.0.0` bug fixed.
 - Multi-assessment lifecycle hardening.
+- Adaptive Migration Context Intake implemented locally in CONTEXT-1 without schema change; pending authorized push/deploy and authenticated browser QA.
 
 Validated manually by user:
 
@@ -52,6 +53,7 @@ Validated manually by user:
 - QA data cleanup/retention is pending.
 - Admin queue cross-owner report link can return `404` by ownership protection.
 - Browser QA multi-assessment was not replayed by Codex with authenticated cookies.
+- Adaptive context needs post-deploy browser validation for save/refresh/report/PDF with a real assessment.
 
 ## Public Launch Blockers
 
@@ -59,6 +61,7 @@ Validated manually by user:
 - Hostinger logs review.
 - Admin-safe read-only report view or adjusted admin UX.
 - Full authenticated browser QA pass for multi-assessment lifecycle.
+- Full authenticated browser QA pass for Adaptive Migration Context and report/PDF integration.
 
 ## Operating Conditions
 
@@ -74,6 +77,7 @@ Validated manually by user:
 2. Execute QA data cleanup/retention or explicitly retain QA data with owner/date.
 3. Add admin-safe report view or adjust admin queue UX.
 4. Run authenticated multi-assessment/upload/report browser QA.
+5. Run authenticated Adaptive Migration Context browser QA after deploy.
 
 ## Public Launch Readiness Review Follow-up
 

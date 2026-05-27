@@ -17,6 +17,10 @@ import {
   upsertPreliminaryResult,
 } from "../../../../server/assessments/costRiskService";
 import {
+  parseMigrationContextFormData,
+  saveMigrationContext,
+} from "../../../../server/assessments/migrationContextService";
+import {
   parseBooleanField,
   parseOptionalNumber,
   parseOptionalString,
@@ -223,6 +227,34 @@ export async function saveCostRiskAssumptionsAction(
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save Cost / Risk assumptions.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function saveMigrationContextAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "context");
+
+  try {
+    const context = parseMigrationContextFormData(formData);
+
+    await saveMigrationContext({
+      userId: session.user.id,
+      assessmentId,
+      context,
+    });
+
+    await upsertPreliminaryResult({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to save migration context.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "context");
   }
 
   redirect(redirectTarget);
