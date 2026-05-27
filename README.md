@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active. Limited public beta is allowed only under controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; Hostinger logs, real QA cleanup/archive, authenticated browser QA, authenticated product-flow evidence and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke.
+Controlled production launch active. Limited public beta is allowed only under controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; Hostinger logs, real QA cleanup/archive, authenticated browser QA, authenticated product-flow evidence and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke. The Antigravity post-landing UX/UI update was audited by Codex in HITO UX-AUDIT-1; local production-like serving, build, lint, typecheck and unauthenticated route smoke passed.
 
 ## Stack
 - Next.js App Router
@@ -79,6 +79,7 @@ Optional for future work:
 - Manual unlock requests, protected admin review and entitlement grants are implemented without checkout.
 - Admin unlock hardening validates `ADMIN_EMAILS`, fail-closed behavior, non-admin blocking and entitlement idempotency.
 - Password recovery/account support is implemented in code with hashed reset tokens and one-time use; production recovery is operational by user-attested mailbox/token validation.
+- Antigravity post-landing UX/UI changes are accepted for limited public beta after Codex audit; admin read access to assessment/report pages is now explicit for admin users, while write actions remain ownership-scoped.
 - Hostinger deployment hardening adds runtime env checks, storage permission checks, `prisma:deploy`, Node engine guidance and production smoke runbooks.
 - Hostinger production smoke is prepared but still requires real Hostinger access, production domain, runtime logs and storage validation before it can be marked OK.
 - Hito 9.2 remains gated until the Hostinger Production Access Gate is completed with real access details.
@@ -157,3 +158,4 @@ Optional for future work:
 - `docs/preserved-public-pages-hito-1.md`
 - `docs/public-pages-smoke-test-hito-1-1.md`
 - `docs/hostinger-foundation-notes.md`
+- `docs/hito-ux-audit-1-antigravity-post-landing-review.md`

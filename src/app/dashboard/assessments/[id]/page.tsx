@@ -80,12 +80,15 @@ type AssessmentDetailPageProps = {
   params: Promise<{
     id: string;
   }>;
-  searchParams?: {
-    error?: string;
-    saved?: string;
-    risk?: string;
-    power?: string;
-  };
+  searchParams?: AssessmentDetailSearchParams | Promise<AssessmentDetailSearchParams>;
+};
+
+type AssessmentDetailSearchParams = {
+  error?: string;
+  saved?: string;
+  risk?: string;
+  power?: string;
+  tab?: string;
 };
 
 function formatMoney(value: number | null | undefined) {
@@ -440,9 +443,9 @@ export default async function AssessmentDetailPage({
   searchParams,
 }: AssessmentDetailPageProps) {
   const resolvedSearchParams = searchParams ? (searchParams instanceof Promise ? await searchParams : searchParams) : {};
-  const activeTab = (resolvedSearchParams as any)?.tab ?? "basics";
-  const filterRisk = (resolvedSearchParams as any)?.risk ?? "all";
-  const filterPower = (resolvedSearchParams as any)?.power ?? "all";
+  const activeTab = resolvedSearchParams.tab ?? "basics";
+  const filterRisk = resolvedSearchParams.risk ?? "all";
+  const filterPower = resolvedSearchParams.power ?? "all";
 
   const assessment = await getAssessment(params);
   const completion = getAssessmentCompletionStatus(assessment);
@@ -451,8 +454,8 @@ export default async function AssessmentDetailPage({
   const missingEvidence = getMissingEvidenceSummary(assessment);
   const nextSteps = getNextStepsSummary(assessment);
   const costRiskStatus = getCostRiskStatus(assessment);
-  const error = (resolvedSearchParams as any)?.error ? decodeURIComponent((resolvedSearchParams as any).error) : null;
-  const saved = (resolvedSearchParams as any)?.saved === "1";
+  const error = resolvedSearchParams.error ? decodeURIComponent(resolvedSearchParams.error) : null;
+  const saved = resolvedSearchParams.saved === "1";
   const storageStatus = assessment.storageReadinessEnabled
     ? assessment.storageReadinessStatus === "selected"
       ? "Selected"

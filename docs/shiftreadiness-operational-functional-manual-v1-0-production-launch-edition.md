@@ -728,6 +728,35 @@ Still required for full public launch:
 - QA data inventory/archive.
 - Admin cross-owner UX resolution or explicit acceptance.
 
+## 36. Antigravity Post-Landing UX/UI Audit
+
+Date: 2026-05-27.
+
+Result:
+
+- Antigravity post-landing UX/UI changes accepted for limited public beta.
+- Local production-like server recovered and validated.
+- Typecheck/lint/build passed.
+- Local unauthenticated route smoke passed.
+- Production unauthenticated route smoke passed.
+- No critical regression found.
+
+Observed changes:
+
+- Dashboard workspace UX improved.
+- Assessment list lifecycle cards improved.
+- Assessment detail/report UI reorganized with clearer tabs and actions.
+- Sign-up page keeps real Better Auth account creation and adds a simulated diagnostic demo after registration.
+- Admin users now have explicit read access to assessment/report pages by assessment id.
+
+Important boundary:
+
+- Admin read access is an admin-only behavior.
+- Assessment write actions, evidence upload/delete and risk generation still use ownership-scoped services.
+- The signup diagnostic demo must not be represented as the full real authenticated assessment flow.
+
+Full public launch remains NO.
+
 ## 31. Glossary
 
 - Assessment: one readiness job/work item.

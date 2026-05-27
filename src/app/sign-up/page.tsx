@@ -20,7 +20,6 @@ import {
   Building,
   User,
   Lock,
-  ChevronRight,
   Download
 } from "lucide-react";
 
