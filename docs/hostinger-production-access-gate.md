@@ -292,3 +292,30 @@ Decision:
 
 - Production launched: NO.
 - Launch review still requires admin access, entitlement fulfill, full report smoke and logs review.
+
+## HITO 9.2S.3 production admin entitlement smoke
+
+Date: 2026-05-27.
+
+Result: partial / blocked.
+
+Validated:
+
+- Public production routes continue serving the real Next.js app.
+- Private routes without session redirect to `/sign-in`.
+- Admin route without session redirects to `/sign-in`.
+- Local diagnostics, typecheck, lint and build pass.
+
+Blocked:
+
+- No production admin credentials were available in the current tool context.
+- `ADMIN_EMAILS` could not be verified without reading production env values.
+- Admin route as real admin was not validated.
+- Fulfill/entitlement was not executed.
+- Full `readiness_report` generation/download remains pending.
+- Hostinger logs remain unavailable from the current tool context.
+
+Decision:
+
+- Production launched: NO.
+- Launch review still requires real admin access, entitlement fulfill, full report smoke, secure access validation, logs review and QA data cleanup/retention decision.

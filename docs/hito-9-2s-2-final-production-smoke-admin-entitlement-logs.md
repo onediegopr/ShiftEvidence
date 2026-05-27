@@ -205,3 +205,28 @@ Bloqueo operativo:
 - Puede recomendarse production launch: NO todavia.
 - Condicion para launch review: ejecutar admin real, fulfill/entitlement, full readiness_report, full PDF download, secure access y logs.
 
+## HITO 9.2S.3 follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL / bloqueado por acceso operativo.
+
+Validado nuevamente:
+
+- Produccion publica sigue OK.
+- Rutas privadas sin sesion redirigen a `/sign-in`.
+- `/dashboard/admin/unlock-requests` sin sesion redirige a `/sign-in`.
+- Validaciones locales `hostinger:diagnose`, `typecheck`, `lint` y `build`: OK.
+
+No validado:
+
+- Admin real productivo.
+- Fulfill/entitlement.
+- Full `readiness_report` productivo.
+- Secure access final del full report.
+- Logs Hostinger.
+
+Decision:
+
+- Production launched: NO.
+- Launch review sigue bloqueado por admin real, entitlement, full report y logs/cleanup.
