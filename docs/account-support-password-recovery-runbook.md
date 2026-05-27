@@ -71,8 +71,8 @@ Current AUTH-1-PROD status:
 - `/forgot-password` and `/reset-password` are live in production.
 - Resend provider is configured by user report.
 - Invalid token handling returns controlled error.
-- Full valid-token mailbox smoke remains pending.
-- Continue using manual account support during controlled launch until provider valid-token smoke is complete.
+- Full valid-token mailbox smoke passed by user-attested validation.
+- Password recovery is operational in production.
 
 ## Smoke Checklist
 
@@ -93,7 +93,7 @@ AUTH-1-PROD-EXEC smoke on 2026-05-27:
 - Existing QA email neutral response: OK.
 - Non-existing email neutral response: OK.
 - Invalid token controlled failure: OK.
-- Valid token: not tested because no provider/token retrieval path is configured.
+- Valid token: OK by user-attested mailbox validation.
 
 ## Escalation
 

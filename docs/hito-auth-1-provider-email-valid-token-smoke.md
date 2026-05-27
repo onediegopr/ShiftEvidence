@@ -96,23 +96,28 @@ Produccion actual:
 
 Valid token:
 
-- Pendiente de ejecutar con una cuenta QA que pueda recibir email real.
+- Ejecutado por el usuario con mailbox QA controlado.
+- Email real recibido: SI.
+- Link valido abierto: SI.
+- Nueva contrasena funciona: SI.
+- Contrasena vieja falla: SI.
+- Token usado falla controladamente: SI.
 - Codex no recibio ni uso token real.
 - No se imprimio token.
 
 ## Decision
 
-Password recovery production operational: PARCIAL.
+Password recovery production operational: SI.
 
 Motivo:
 
 - Rutas y request neutral funcionan.
 - Token invalido falla controladamente.
 - Provider esta configurado segun reporte del usuario.
-- Falta smoke de email recibido + link valido + cambio de password + token usado.
+- Email recibido + link valido + cambio de password + token usado fueron validados por el usuario.
 
-Public launch ready: NO.
+Public launch ready: pending final public launch review.
 
 Next hito recomendado:
 
-- `AUTH-1-VALID-TOKEN-SMOKE - QA mailbox recovery link end-to-end`.
+- `PUBLIC-LAUNCH-READINESS-REVIEW - Final public launch blockers and go/no-go`.

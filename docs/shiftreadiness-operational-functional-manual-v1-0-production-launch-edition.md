@@ -69,7 +69,7 @@ What can be done today:
 
 What must not be treated as public-launch ready yet:
 
-- Self-service password recovery in production until provider and valid-token smoke are completed.
+- Public launch decision without final public launch review.
 - Public onboarding at scale.
 - Automated checkout/payment.
 - Fully polished admin cross-owner report UX.
@@ -134,7 +134,7 @@ It is:
 | PDF preview/full | OK |
 | Admin/entitlement | OK by manual browser validation |
 | Redirect `0.0.0.0` bug | Fixed |
-| Password recovery | Migrated/deployed; Resend configured by user report; valid-token mailbox smoke pending |
+| Password recovery | Operational in production by user-attested valid-token mailbox smoke |
 | Hostinger logs | Pending / not reviewed from Codex |
 | QA cleanup/retention | Pending |
 | Controlled production launch | SÍ |
@@ -468,7 +468,7 @@ If admin cannot enter:
 
 - Confirm user exists.
 - Confirm `ADMIN_EMAILS` includes the admin conceptually, without printing values.
-- Use manual support until password recovery provider and valid-token smoke are completed in production.
+- Use password recovery for account support; keep manual support available as fallback.
 
 ## 21. Admin Operating Runbook
 
@@ -518,7 +518,7 @@ Current state:
 - Production activation completed for the Prisma migration and app deploy.
 - AUTH-1-PROD-EXEC confirmed neutral request behavior and invalid-token handling.
 - Resend provider is configured by user report.
-- Valid-token mailbox smoke remains pending.
+- Valid-token mailbox smoke passed by user-attested validation.
 
 Controlled launch mitigation:
 
@@ -528,11 +528,11 @@ Controlled launch mitigation:
 
 Public launch decision:
 
-- Public launch should not proceed until password recovery is validated with a real provider or an explicitly accepted support policy.
+- Password recovery no longer blocks public launch readiness; final public launch decision remains separate.
 
 Recommended hito:
 
-- `HITO AUTH-1-PROVIDER - Password Recovery Provider + Valid Token Smoke`.
+- `PUBLIC-LAUNCH-READINESS-REVIEW - Final public launch blockers and go/no-go`.
 
 ## 25. Hostinger Logs
 
@@ -559,7 +559,7 @@ Risk:
 
 | Risk | Controlled launch | Public launch |
 | --- | --- | --- |
-| Password recovery migrated/deployed, valid-token mailbox smoke pending | Accepted with manual support | Blocking until full E2E smoke |
+| Password recovery operational | Accepted | Not blocking |
 | Hostinger logs pending | Accepted with manual monitoring | Blocking until reviewed |
 | QA cleanup pending | Accepted short-term | Blocking before scale |
 | Admin UX gap cross-owner | Accepted for trained admins | Must improve |
@@ -570,7 +570,6 @@ Risk:
 
 Before public launch:
 
-- Complete password recovery valid-token mailbox smoke.
 - Review production logs/monitoring.
 - Define QA cleanup/retention.
 - Improve admin cross-owner report UX.
@@ -582,7 +581,7 @@ Before public launch:
 
 Priority:
 
-1. `AUTH-1-VALID-TOKEN-SMOKE - Password Recovery Mailbox Link E2E`.
+1. `PUBLIC-LAUNCH-READINESS-REVIEW - Final public launch blockers and go/no-go`.
 2. `OPS-1 — QA Data Cleanup / Retention`.
 3. `ADMIN-UX-1 — Admin-safe report view`.
 4. `13.1 — Authenticated Multi-Assessment Browser QA`.
@@ -615,7 +614,7 @@ Rollback principles:
 - [x] Admin manual validation.
 - [x] Controlled launch decision.
 - [ ] Public launch.
-- [ ] Password recovery active in production.
+- [x] Password recovery active in production.
 - [ ] QA cleanup.
 - [ ] Logs reviewed.
 
