@@ -1,63 +1,66 @@
-# HITO 9.2S-FINAL — Production Launch Readiness Gate
+# HITO 9.2S-FINAL-R — Admin-Enabled Launch Readiness Gate
 
 ## Objetivo
 
-Cerrar el gate final de readiness para launch con evidencia de:
+Cerrar el launch readiness gate admin/comercial cuando exista acceso admin productivo real:
 
-- estado local/Git/build;
-- producción pública;
-- auth base y protección de rutas;
-- admin real productivo;
-- non-admin fail-closed;
-- admin route;
-- pending unlock request;
-- fulfill/entitlement;
-- full `readiness_report`;
-- secure access final;
-- logs Hostinger;
-- QA data cleanup/retention.
+- validar admin real;
+- validar `ADMIN_EMAILS` sin exponer secretos;
+- abrir `/dashboard/admin/unlock-requests`;
+- validar non-admin fail-closed;
+- ver pending request;
+- fulfill/approve;
+- confirmar entitlement y commercial status;
+- generar full `readiness_report`;
+- validar secure access final;
+- documentar logs y QA data.
 
 Este hito no declara `Production launched` automáticamente.
 
 ## Contexto
 
-Estado oficial al iniciar:
+Estado al iniciar:
 
 - Branch: `main`.
-- HEAD esperado: `ccca276 docs: record production admin access gate`.
+- HEAD esperado: `e422425 docs: record final production launch readiness gate`.
 - origin/main sincronizado.
 - Working tree limpio.
-- Avance general estimado: 99.4%.
 - Producción pública Hostinger: OK.
 - Producción autenticada base: OK por hitos previos.
 - PDF preview/download productivo: OK por hitos previos.
-- Redirect `0.0.0.0:3000`: corregido.
-- Upload prerequisite gate: UI + server-side + browser multipart validado.
-- Parser RVTools P0: corregido.
-- Manual Word v0.9: creado y pusheado.
+- Redirect `0.0.0.0`: corregido.
+- Parser P0: OK.
+- Upload gate: OK.
+- Manual v0.9: OK.
 - Production launched: NO.
 
-Bloqueo conocido:
+Bloqueo de arrastre:
 
 - Admin real productivo no validado.
 - `ADMIN_EMAILS` productivo no verificable desde este entorno.
-- Fulfill/entitlement productivo pendiente.
-- Full `readiness_report` productivo pendiente.
+- Fulfill/entitlement/full report pendiente.
 
 ## Gate A — Local/Git/Build
 
 | Item | Resultado |
 | --- | --- |
 | Branch | `main` |
-| HEAD inicial | `ccca276d9acbd2b21cc500d87324f0991c63f42b` |
-| origin/main | `ccca276d9acbd2b21cc500d87324f0991c63f42b` |
+| HEAD inicial | `e422425b8f6356c43e9025f1f0e57921f68ad17f` |
+| origin/main | `e422425b8f6356c43e9025f1f0e57921f68ad17f` |
 | Working tree inicial | Limpio |
 | Node | `v22.22.0` |
 | npm | `10.9.4` |
 | `npm run hostinger:diagnose` | OK |
 | `npm run typecheck` | OK |
 | `npm run lint` | OK |
-| `npm run build` | OK |
+| `npm run build` | OK tras limpiar `.next` |
+
+Nota local:
+
+- Primer `build` falló por lock local `EPERM unlink` en `.next/static`.
+- No había servidor escuchando en puerto `3000`.
+- Se eliminó sólo `.next` y se repitió build/typecheck/lint/diagnose correctamente.
+- No fue un cambio de código.
 
 Warning conocido:
 
@@ -100,8 +103,10 @@ Resultado:
 | `ADMIN_EMAILS` present | No verificable sin acceso seguro a env productivas |
 | `ADMIN_EMAILS` includes admin | No verificable |
 | Env change needed | No determinado |
+| Env change authorized | NO |
 | Env change performed | NO |
 | Restart/redeploy needed | NO determinado |
+| Restart/redeploy authorized | NO |
 | Restart/redeploy performed | NO |
 
 Resultado:
@@ -109,7 +114,7 @@ Resultado:
 - Gate C: BLOQUEADO.
 - Sin admin real validado no corresponde avanzar a fulfill, entitlement ni full report.
 - No se tocó Hostinger config.
-- No se leyeron ni imprimieron secretos.
+- No se imprimieron secretos.
 
 ## Gate D — Non-admin Fail-closed
 
@@ -243,6 +248,12 @@ Resultado:
 
 No se detectó bug nuevo de código.
 
+Incidente local no funcional:
+
+- Build inicial falló por lock `.next` (`EPERM unlink`) en Windows/OneDrive.
+- Se resolvió eliminando sólo `.next`.
+- Validaciones posteriores OK.
+
 Bloqueo operativo:
 
 - Falta acceso admin real productivo.
@@ -262,14 +273,14 @@ Bloqueo operativo:
 
 Resultado general:
 
-- HITO 9.2S-FINAL: PARCIAL.
+- HITO 9.2S-FINAL-R: PARCIAL.
 - Ready for controlled production launch review: NO.
 - Puede recomendarse production launch: NO.
 
 Motivo:
 
 - Gate A y Gate B pasaron.
-- Gate C quedó bloqueado.
+- Gate C sigue bloqueado.
 - Los gates E, F, G y parte de H dependen de admin real productivo.
 
 Condición para pasar a launch review:
@@ -286,34 +297,3 @@ Condición para pasar a launch review:
 10. Definir cleanup/retención QA data.
 
 Production launched: NO.
-
-## HITO 9.2S-FINAL-R follow-up
-
-Fecha: 2026-05-27.
-
-Resultado: PARCIAL.
-
-Validado:
-
-- Gate A local/Git/build: OK.
-- Gate B producción pública/auth base: OK.
-- Rutas privadas sin sesión redirigen a `/sign-in`.
-
-Bloqueado:
-
-- Gate C admin access enablement: no hay admin real/credenciales productivas disponibles desde este entorno.
-- Gate E admin route + pending request.
-- Gate F fulfill/entitlement.
-- Gate G full `readiness_report`.
-- Gate H secure access final del full report.
-- Gate I logs Hostinger.
-
-Nota local:
-
-- Build inicial falló por lock `.next` local (`EPERM unlink`) y se recuperó eliminando sólo `.next`.
-- Validaciones posteriores OK.
-
-Decision:
-
-- Ready for controlled production launch review: NO.
-- Production launched: NO.

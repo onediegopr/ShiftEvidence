@@ -314,3 +314,22 @@ Decision:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## HITO 9.2S-FINAL-R follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL.
+
+Se revalidó local/Git/build y producción pública/auth base. Todo sigue OK salvo el bloqueo operativo de admin:
+
+- Admin real productivo: no disponible desde este entorno.
+- `ADMIN_EMAILS`: no verificable sin acceso seguro a env productivas.
+- Admin route como admin: no validado.
+- Fulfill/entitlement/full report: no ejecutado.
+- Logs Hostinger: no disponibles.
+
+Decision:
+
+- Puede recomendarse production launch: NO.
+- Production launched: NO.
