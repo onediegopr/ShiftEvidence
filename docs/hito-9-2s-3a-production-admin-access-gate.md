@@ -183,3 +183,29 @@ Ejecutar un hito corto con acceso admin real disponible:
 5. Si pasa, recién después ejecutar HITO 9.2S.3B — Fulfill / Entitlement / Full Report Smoke.
 
 Production launched: NO.
+
+## HITO 9.2S-FINAL follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL / bloqueado en Gate C.
+
+Se revalidó:
+
+- Local/Git/build OK.
+- Producción pública OK.
+- Rutas privadas sin sesión protegidas.
+- Admin route sin sesión redirige a `/sign-in`.
+
+Sigue pendiente:
+
+- Admin real productivo.
+- `ADMIN_EMAILS` productivo.
+- Admin route autenticado como admin.
+- Pending unlock request visible como admin.
+- Fulfill/entitlement/full report.
+
+Decision:
+
+- No avanzar a fulfill/entitlement hasta validar admin real.
+- Production launched: NO.
