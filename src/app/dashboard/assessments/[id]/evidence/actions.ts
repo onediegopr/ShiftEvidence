@@ -35,13 +35,17 @@ async function requireSession() {
   return session;
 }
 
-function getAssessmentRedirectPath(assessmentId: string, query?: string) {
-  return query ? `/dashboard/assessments/${assessmentId}?${query}` : `/dashboard/assessments/${assessmentId}`;
+function getAssessmentRedirectPath(assessmentId: string, query?: string, tab?: string) {
+  const params = [];
+  if (query) params.push(query);
+  if (tab) params.push(`tab=${tab}`);
+  const queryString = params.length > 0 ? `?${params.join("&")}` : "";
+  return `/dashboard/assessments/${assessmentId}${queryString}`;
 }
 
 export async function uploadEvidenceAction(assessmentId: string, formData: FormData) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "evidence");
 
   try {
     const evidenceType = inferEvidenceTypeFromForm(formData.get("evidenceType"));
@@ -92,7 +96,7 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to upload evidence.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "evidence");
   }
 
   redirect(redirectTarget);
@@ -100,7 +104,7 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
 
 export async function deleteEvidenceAction(assessmentId: string, evidenceFileId: string) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "evidence");
 
   try {
     const deleted = await softDeleteEvidenceFile({
@@ -116,7 +120,7 @@ export async function deleteEvidenceAction(assessmentId: string, evidenceFileId:
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to delete evidence.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "evidence");
   }
 
   redirect(redirectTarget);
@@ -124,7 +128,7 @@ export async function deleteEvidenceAction(assessmentId: string, evidenceFileId:
 
 export async function parseRvtoolsEvidenceAction(assessmentId: string, evidenceFileId: string) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "inventory");
 
   try {
     await importRvtoolsEvidence({
@@ -134,7 +138,7 @@ export async function parseRvtoolsEvidenceAction(assessmentId: string, evidenceF
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to parse RVTools evidence.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "inventory");
   }
 
   redirect(redirectTarget);

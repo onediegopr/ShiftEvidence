@@ -27,13 +27,17 @@ async function requireSession() {
   return session;
 }
 
-function getAssessmentRedirectPath(assessmentId: string, query?: string) {
-  return query ? `/dashboard/assessments/${assessmentId}?${query}` : `/dashboard/assessments/${assessmentId}`;
+function getAssessmentRedirectPath(assessmentId: string, query?: string, tab?: string) {
+  const params = [];
+  if (query) params.push(query);
+  if (tab) params.push(`tab=${tab}`);
+  const queryString = params.length > 0 ? `?${params.join("&")}` : "";
+  return `/dashboard/assessments/${assessmentId}${queryString}`;
 }
 
 export async function generateInventoryRiskAction(assessmentId: string) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "report");
 
   try {
     await generateInventoryRiskInsights({
@@ -42,7 +46,7 @@ export async function generateInventoryRiskAction(assessmentId: string) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to generate risk insights.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "report");
   }
 
   redirect(redirectTarget);

@@ -44,10 +44,12 @@ async function requireSession() {
   return session;
 }
 
-function getAssessmentRedirectPath(assessmentId: string, query?: string) {
-  return query
-    ? `/dashboard/assessments/${assessmentId}?${query}`
-    : `/dashboard/assessments/${assessmentId}`;
+function getAssessmentRedirectPath(assessmentId: string, query?: string, tab?: string) {
+  const params = [];
+  if (query) params.push(query);
+  if (tab) params.push(`tab=${tab}`);
+  const queryString = params.length > 0 ? `?${params.join("&")}` : "";
+  return `/dashboard/assessments/${assessmentId}${queryString}`;
 }
 
 export async function updateAssessmentBasicsAction(
@@ -55,7 +57,8 @@ export async function updateAssessmentBasicsAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
     const title = parseRequiredString(formData.get("title"), "Assessment title");
@@ -70,7 +73,7 @@ export async function updateAssessmentBasicsAction(
 
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update assessment.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
   }
 
   redirect(redirectTarget);
@@ -81,7 +84,8 @@ export async function saveInfrastructureInputAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
     await upsertInfrastructureInput({
@@ -155,7 +159,7 @@ export async function saveInfrastructureInputAction(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save infrastructure intake.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
   }
 
   redirect(redirectTarget);
@@ -166,7 +170,8 @@ export async function saveCostRiskAssumptionsAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
     await upsertCostRiskAssumptions({
@@ -217,7 +222,7 @@ export async function saveCostRiskAssumptionsAction(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save Cost / Risk assumptions.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
   }
 
   redirect(redirectTarget);
@@ -228,7 +233,8 @@ export async function toggleStorageReadinessAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "evidence";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
     const enabled = parseBooleanField(formData.get("storageReadinessEnabled"));
@@ -245,7 +251,7 @@ export async function toggleStorageReadinessAction(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update Storage Destination Readiness.";
-    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
   }
 
   redirect(redirectTarget);

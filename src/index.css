@@ -5741,3 +5741,153 @@ p {
     }
 }
 
+/* Dashboard Reengineering Layout & Navigation */
+.dashboard-nav-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 15, 30, 0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    width: min(var(--max-width), calc(100% - 4rem));
+    margin: 0 auto;
+}
+
+.dashboard-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dashboard-nav-link {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.dashboard-nav-link:hover,
+.dashboard-nav-link.active {
+    color: white;
+}
+
+.dashboard-nav-link.active {
+    font-weight: 600;
+    border-bottom: 2px solid #06b6d4;
+    padding-bottom: 0.25rem;
+}
+
+.dashboard-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dashboard-user-badge {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dashboard-nav-signout {
+    font-size: 0.85rem !important;
+    padding: 0.4rem 1rem !important;
+}
+
+/* Tabs System for Assessment Detail */
+.tabs-container {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-btn:hover {
+    color: white;
+}
+
+.tab-btn.active {
+    color: #38bdf8; /* cyan-400 */
+    border-bottom-color: #06b6d4; /* cyan-500 */
+}
+
+/* Visual Progress Indicator */
+.tab-progress-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #475569;
+    display: inline-block;
+}
+
+.tab-progress-dot.completed {
+    background: #10b981; /* emerald-500 */
+}
+
+.tab-progress-dot.in-progress {
+    background: #f59e0b; /* amber-500 */
+}
+
+/* Visual Lock Overlays for Upload Gate */
+.locked-overlay-card {
+    position: relative;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.02);
+}
+
+.locked-overlay-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+}
+
+.locked-overlay-badge {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}

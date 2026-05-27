@@ -62,6 +62,35 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     );
   }
 
+  if (message) {
+    return (
+      <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
+        <div style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "50%",
+          background: "rgba(16, 185, 129, 0.1)",
+          border: "1px solid rgba(16, 185, 129, 0.2)",
+          color: "#10b981",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto 1.5rem auto"
+        }}>
+          <ShieldCheck size={24} />
+        </div>
+        <h3 style={{ color: "white", marginBottom: "0.5rem" }}>Password updated successfully!</h3>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "2rem" }}>
+          {message}
+        </p>
+        <Link href="/sign-in" className="btn btn-primary btn-glow" style={{ justifyContent: "center" }}>
+          Sign In Now
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <>
       <form onSubmit={onSubmit} className="auth-form">
@@ -93,7 +122,6 @@ export default function ResetPasswordForm({ token }: { token: string }) {
             autoComplete="new-password"
           />
         </label>
-        {message ? <p className="auth-success">{message}</p> : null}
         {error ? <p className="auth-error">{error}</p> : null}
         <button type="submit" className="btn btn-primary btn-glow" disabled={isSubmitting}>
           {isSubmitting ? "Updating..." : "Update password"}

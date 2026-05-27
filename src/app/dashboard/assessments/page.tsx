@@ -34,7 +34,7 @@ function formatDate(value: Date | string) {
   }).format(new Date(value));
 }
 
-function getLifecycleStatus(assessment: AssessmentListItem) {
+export function getLifecycleStatus(assessment: AssessmentListItem) {
   const activeEvidenceFiles = assessment.evidenceFiles.filter((file) => file.deletedAt === null);
   const hasIntake = Boolean(assessment.infrastructureInput);
   const hasCostRiskSignals = Boolean(

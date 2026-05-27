@@ -1,10 +1,12 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, Layers3, ShieldCheck, BarChart3, BookOpen, LogIn } from "lucide-react";
+import { ArrowRight, Plus, Layers3, ShieldCheck, BarChart3, FileText, ClipboardList, Database } from "lucide-react";
 import { auth } from "../../lib/auth";
-import SignOutButton from "../../components/auth/SignOutButton";
 import { upsertUserProfileFromSession } from "../../server/user/userProfileService";
 import { ensureDefaultWorkspace } from "../../server/workspace/workspaceService";
+import { listAssessmentsForCurrentWorkspace } from "../../server/assessments/assessmentService";
+import { isAdminEmail } from "../../server/admin/adminAuth";
+import { getLifecycleStatus } from "./assessments/page";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -26,49 +28,140 @@ export default async function DashboardPage() {
     });
   }
 
+  const assessments = session
+    ? await listAssessmentsForCurrentWorkspace({
+        userId: session.user.id,
+      })
+    : [];
+
   const name = session?.user?.name ?? "Readiness user";
   const email = session?.user?.email ?? "Connected account";
+  const isAdmin = isAdminEmail(email);
+
+  // Calculate statistics
+  const totalAssessments = assessments.length;
+  let activeEvidenceFilesCount = 0;
+  let totalReportsCount = 0;
+
+  assessments.forEach((assessment) => {
+    activeEvidenceFilesCount += assessment.evidenceFiles.filter((file) => file.deletedAt === null).length;
+    totalReportsCount += assessment.reports.filter((r) => r.deletedAt === null).length;
+  });
+
+  // Sort assessments by updatedAt desc and take the top 3
+  const recentAssessments = [...assessments]
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 3);
 
   return (
     <main className="dashboard-page">
       <section className="dashboard-hero glass-card">
         <div>
-          <div className="badge badge-cyan">Dashboard</div>
+          <div className="badge badge-cyan">Workspace center</div>
           <h1>Welcome back, {name}.</h1>
-          <p>{email}</p>
+          <p className="text-muted">Manage your infrastructure assessments, upload evidence and review readiness reports.</p>
         </div>
-        <SignOutButton className="btn btn-secondary dashboard-signout" />
+        <Link href="/dashboard/assessments/new" className="btn btn-primary btn-glow">
+          <Plus size={16} />
+          New assessment
+        </Link>
       </section>
 
-      <section className="dashboard-grid">
-        <article className="glass-card dashboard-card">
-          <Layers3 size={22} />
-          <h2>Readiness workspace</h2>
-          <p>Your private workspace for infrastructure readiness assessments.</p>
-        </article>
-        <article className="glass-card dashboard-card">
-          <BarChart3 size={22} />
-          <h2>Assessments</h2>
-          <p>Create multiple assessments, return later, and continue each workspace independently.</p>
-          <Link href="/dashboard/assessments" className="dashboard-card-link">
-            Open assessments <ArrowRight size={16} />
+      {isAdmin && (
+        <section className="dashboard-banner dashboard-banner-success" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <ClipboardList size={20} style={{ color: "#38bdf8" }} />
+            <div>
+              <strong style={{ color: "white" }}>Admin Control Panel Active</strong>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                You have administrative access to approve, reject or fulfill manual report unlock requests.
+              </p>
+            </div>
+          </div>
+          <Link href="/dashboard/admin/unlock-requests" className="btn btn-secondary btn-sm" style={{ border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "6px" }}>
+            Open Admin Queue
           </Link>
+        </section>
+      )}
+
+      {/* Workspace Statistics Grid */}
+      <section className="assessment-summary-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+        <article className="glass-card assessment-summary-card">
+          <BarChart3 size={24} className="text-cyan" />
+          <span className="assessment-summary-label">Assessments</span>
+          <strong>{totalAssessments}</strong>
+          <p>Total assessments in workspace</p>
         </article>
-        <article className="glass-card dashboard-card">
-          <ShieldCheck size={22} />
-          <h2>Cost / Risk Engine</h2>
-          <p>Included in every assessment to estimate subscription delta, risk and complexity.</p>
+        <article className="glass-card assessment-summary-card">
+          <ShieldCheck size={24} className="text-emerald" />
+          <span className="assessment-summary-label">Evidence Files</span>
+          <strong>{activeEvidenceFilesCount}</strong>
+          <p>Active RVTools/CSV files uploaded</p>
         </article>
-        <article className="glass-card dashboard-card">
-          <BookOpen size={22} />
-          <h2>Optional modules</h2>
-          <p>Add Storage Destination Readiness only when target architecture needs deeper validation.</p>
+        <article className="glass-card assessment-summary-card">
+          <FileText size={24} style={{ color: "#8b5cf6" }} />
+          <span className="assessment-summary-label">Generated Reports</span>
+          <strong>{totalReportsCount}</strong>
+          <p>Readiness reports compiled</p>
         </article>
-        <article className="glass-card dashboard-card">
-          <LogIn size={22} />
-          <h2>Reports</h2>
-          <p>Free previews first. Paid reports later.</p>
-        </article>
+      </section>
+
+      {/* Recent Activity or Empty State */}
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <Layers3 size={18} />
+            <span>Recent Activity</span>
+          </div>
+          <h2>Recent assessments</h2>
+          <p>Resume your migration assessments or upload evidence to proceed.</p>
+        </div>
+
+        {totalAssessments === 0 ? (
+          <div className="dashboard-empty" style={{ maxWidth: "100%", padding: "2rem 0", display: "flex", flexDirection: "column", alignItems: "center", justifyItems: "center", width: "100%" }}>
+            <p className="text-muted" style={{ margin: "0 0 1rem 0" }}>No assessments found in this workspace.</p>
+            <Link href="/dashboard/assessments/new" className="btn btn-secondary">
+              Create your first assessment
+            </Link>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+            {recentAssessments.map((assessment) => {
+              const lifecycle = getLifecycleStatus(assessment);
+              return (
+                <div key={assessment.id} className="glass-card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem 1.5rem", border: "1px solid var(--border-color)", borderRadius: "12px", background: "rgba(255, 255, 255, 0.01)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                    <div style={{ background: "rgba(6, 182, 212, 0.08)", padding: "0.75rem", borderRadius: "10px", border: "1px solid rgba(6, 182, 212, 0.15)", color: "#06b6d4" }}>
+                      <Database size={20} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, color: "white", fontSize: "1.05rem", fontWeight: 600 }}>{assessment.title}</h3>
+                      <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                        {assessment.clientLabel ? assessment.clientLabel : "No client label"} &bull; Last updated {new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(assessment.updatedAt))}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                    <span className={`assessment-chip assessment-chip-${lifecycle.tone}`}>
+                      {lifecycle.label}
+                    </span>
+                    <Link href={`/dashboard/assessments/${assessment.id}`} className="btn btn-secondary btn-sm" style={{ border: "1px solid var(--border-color)" }}>
+                      Resume
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.5rem" }}>
+              <Link href="/dashboard/assessments" className="dashboard-card-link">
+                View all assessments <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );

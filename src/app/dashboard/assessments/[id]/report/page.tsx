@@ -19,7 +19,9 @@ import {
 import { auth } from "../../../../../lib/auth";
 import { upsertUserProfileFromSession } from "../../../../../server/user/userProfileService";
 import { ensureDefaultWorkspace } from "../../../../../server/workspace/workspaceService";
-import { findAssessmentForUser, type AssessmentDetail } from "../../../../../server/assessments/assessmentService";
+import { isAdminEmail } from "../../../../../server/admin/adminAuth";
+import { prisma } from "../../../../../lib/prisma";
+import { findAssessmentForUser, assessmentDetailInclude, type AssessmentDetail } from "../../../../../server/assessments/assessmentService";
 import { getAssessmentCompletionStatus } from "../../../../../server/assessments/assessmentCompletionService";
 import { getReportPreviewData, type ReportPreviewData } from "../../../../../server/reports/reportPreviewService";
 import { getReportStatusLabel, getReportStatusTone, getReportTypeLabel } from "../../../../../server/reports/reportHistoryService";
@@ -247,10 +249,26 @@ async function getAssessment(params: ReportPageProps["params"]) {
     userDisplayName: session.user.name,
   });
 
-  const assessment = await findAssessmentForUser({
-    userId: session.user.id,
-    assessmentId: id,
-  });
+  const parsedId = id.trim();
+  if (!parsedId) {
+    throw new Error("Assessment ID is required.");
+  }
+
+  let assessment;
+  if (isAdminEmail(session.user.email)) {
+    assessment = await prisma.assessment.findFirst({
+      where: {
+        id: parsedId,
+        archivedAt: null,
+      },
+      include: assessmentDetailInclude,
+    });
+  } else {
+    assessment = await findAssessmentForUser({
+      userId: session.user.id,
+      assessmentId: parsedId,
+    });
+  }
 
   if (!assessment) {
     notFound();

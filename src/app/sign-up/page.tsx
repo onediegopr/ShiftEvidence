@@ -514,17 +514,33 @@ export default function SignUpPage() {
                   Ready to Run Assessment
                 </h3>
               </div>
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  color: "var(--text-muted)",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  padding: "0.25rem 0.75rem",
-                  borderRadius: "20px",
-                  border: "1px solid var(--border-color)",
-                }}
-              >
-                Logged in as <strong style={{ color: "white" }}>{email}</strong>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "var(--text-muted)",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "20px",
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  Logged in as <strong style={{ color: "white" }}>{email}</strong>
+                </div>
+                <Link
+                  href="/dashboard"
+                  className="btn btn-secondary btn-sm"
+                  style={{
+                    fontSize: "0.8rem",
+                    padding: "0.3rem 0.8rem",
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem"
+                  }}
+                >
+                  Go to Workspace <ArrowRight size={12} />
+                </Link>
               </div>
             </div>
 
@@ -950,13 +966,13 @@ export default function SignUpPage() {
                   </button>
                 </div>
 
-                <div className="shiftreadiness-actions" style={{ marginTop: "2rem" }}>
-                  <Link href="/shiftreadiness" className="btn btn-primary">
-                    Compare Professional Support Plans
-                    <ChevronRight size={16} />
+                <div className="shiftreadiness-actions" style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+                  <Link href="/dashboard" className="btn btn-primary btn-glow" style={{ background: "linear-gradient(135deg, #06b6d4 30%, #0891b2 100%)", boxShadow: "0 4px 20px rgba(6, 182, 212, 0.3)" }}>
+                    Enter Active Workspace
+                    <ArrowRight size={16} />
                   </Link>
-                  <Link href="/" className="btn btn-secondary">
-                    Back to Homepage
+                  <Link href="/shiftreadiness" className="btn btn-secondary">
+                    Compare Professional Plans
                   </Link>
                 </div>
               </div>
