@@ -377,3 +377,14 @@ What changed:
 Next hito:
 
 - `PUBLIC-BETA-OPS-2 - Manual Hostinger Logs + Browser QA Evidence Capture`.
+
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Limited public beta remains YES.
+- Full public launch remains NO.
+- Codex captured route/API/build evidence only.
+- Logs and authenticated browser QA still need manual evidence capture.

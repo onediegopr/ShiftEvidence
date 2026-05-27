@@ -161,3 +161,14 @@ Operator reminders:
 - Capture browser QA evidence with screenshots and assessment IDs.
 - Keep QA data named `QA Public Beta Ops - safe to delete`.
 - Do not hard-delete DB/storage data during beta without inventory and approval.
+
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Operator action still required:
+
+- Export or summarize Hostinger runtime/build/deploy logs without secrets.
+- Capture browser QA evidence for multi-assessment and product flow.
+- Inventory QA data marked `QA Public Beta Ops 2 - safe to delete`.
+- Archive/soft-delete only after item ownership and metadata are confirmed.

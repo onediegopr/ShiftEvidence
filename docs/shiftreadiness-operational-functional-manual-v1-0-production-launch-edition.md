@@ -703,6 +703,31 @@ Still pending for full public launch:
 - Admin cross-owner UX improvement.
 - Formal support/SLA.
 
+## 35. Public Beta Ops 2 Evidence Capture
+
+Date: 2026-05-27.
+
+Result:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+
+Validated by Codex:
+
+- Local build/typecheck/lint.
+- Public production routes.
+- Private unauthenticated redirects.
+- Password recovery neutral response.
+- Invalid reset token controlled failure.
+
+Still required for full public launch:
+
+- Hostinger logs evidence.
+- Authenticated browser QA evidence.
+- Authenticated upload/parser/report/PDF evidence.
+- QA data inventory/archive.
+- Admin cross-owner UX resolution or explicit acceptance.
+
 ## 31. Glossary
 
 - Assessment: one readiness job/work item.

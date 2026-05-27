@@ -125,3 +125,19 @@ Reason:
 - Password recovery regression passed.
 - Hostinger logs and authenticated QA still require access outside Codex.
 - No QA data was deleted or modified.
+
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Production route smoke remains healthy.
+- Password recovery regression passed.
+- Full public launch still needs manual Hostinger logs and authenticated browser/product-flow evidence.

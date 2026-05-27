@@ -368,3 +368,14 @@ Result:
 - No critical public route/auth regression was detected.
 - Password recovery regression passed.
 - Logs, QA cleanup and authenticated browser QA still require manual/credentialed execution.
+
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Full public launch remains NO.
+- Limited public beta remains operational.
+- Password recovery regression and production routes passed.
+- Manual Hostinger logs and browser QA evidence were not provided in this hito.

@@ -106,3 +106,25 @@ Pending:
 - Real QA data inventory/archive.
 - Authenticated browser QA with QA user.
 - Product flow replay with upload/parser/report/PDF.
+
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Evidence captured:
+
+- Public/private route health.
+- Password recovery regression.
+- Local build/typecheck/lint.
+
+Evidence still needed:
+
+- Manual Hostinger logs.
+- Authenticated browser QA.
+- Authenticated product flow.
+- QA data archive/retention execution.

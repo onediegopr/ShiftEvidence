@@ -332,6 +332,23 @@ Next hito:
 
 - `PUBLIC-BETA-OPS-2 - Manual Hostinger Logs + Browser QA Evidence Capture`.
 
+## PUBLIC-BETA-OPS-2 Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+- Production route smoke and password recovery regression passed.
+- No Hostinger logs or authenticated browser evidence were available to Codex in this hito.
+
+Next evidence needed:
+
+- User-attested Hostinger logs summary.
+- User-attested browser QA screenshots/results.
+- QA data inventory/archive report.
+
 Result: COMPLETE for limited beta operations review; PARTIAL for full public launch.
 
 ## Documentation Updates
