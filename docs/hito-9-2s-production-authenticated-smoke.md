@@ -280,5 +280,8 @@ Se implemento un hotfix local para los redirects productivos de report/PDF:
 Estado:
 
 - Validacion local: OK.
-- Re-smoke produccion: pendiente hasta push/autodeploy.
+- Re-smoke produccion: OK.
+- Redirect post-generate validado: `https://shiftevidence.com/dashboard/assessments/cmpnw843p000u497zmb27voab/report?generated=1`.
+- Download sin sesion validado: `https://shiftevidence.com/sign-in`.
+- `0.0.0.0`: ausente en report/PDF redirects revalidados.
 - Production launched: NO.

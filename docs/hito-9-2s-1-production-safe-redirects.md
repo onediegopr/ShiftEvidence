@@ -98,23 +98,36 @@ Redirects locales sin sesion:
 
 ## Validacion produccion
 
-Pendiente hasta push/autodeploy.
+Re-smoke productivo reducido ejecutado despues de push/autodeploy.
 
-Validar despues del push:
+Rutas publicas:
 
-- public routes siguen OK.
-- generate PDF preview no redirige a `0.0.0.0`.
-- report history sigue visible.
-- download PDF autenticado sigue `200 OK`.
-- download sin sesion redirige a `https://shiftevidence.com/sign-in` o URL publica equivalente.
+- `/`: `200 OK`.
+- `/shiftreadiness`: `200 OK`.
+- `/sign-in`: `200 OK`.
+- `/sign-up`: `200 OK`.
+- `/dashboard`: `307` a `/sign-in` sin sesion.
+
+Browser/authenticated report flow:
+
+- Usuario QA: `qa-production-smoke-1779875983103@example.com`.
+- Assessment incompleto: `cmpnw7n72000b497z7oax65ro`.
+- Assessment completo: `cmpnw843p000u497zmb27voab`.
+- Evidence upload/download autenticado: OK.
+- Parser/risk/report preview: OK.
+- PDF generation post-submit: OK.
+- Redirect post-generate: `https://shiftevidence.com/dashboard/assessments/cmpnw843p000u497zmb27voab/report?generated=1`.
+- `wrongInternalRedirect`: `null`.
+- Report id: `cmpnwa2um001249b5ynb0wdqe`.
+- Download PDF autenticado: `200 OK`, `application/pdf`, signature `%PDF-`.
+- Download PDF sin sesion: `307` a `https://shiftevidence.com/sign-in`.
+- `0.0.0.0`: ausente en report/PDF redirects revalidados.
 
 ## Riesgos pendientes
 
-- Confirmar que Hostinger tiene `NEXT_PUBLIC_APP_URL=https://shiftevidence.com` o `BETTER_AUTH_URL=https://shiftevidence.com`.
-- Re-smoke productivo reducido despues de push.
 - Admin/entitlement productivo sigue pendiente de validacion completa.
+- QA data productiva del re-smoke queda marcada como safe to delete.
 
 ## Proximo paso recomendado
 
-Pushear el hotfix y ejecutar re-smoke productivo reducido de report/PDF redirects.
-
+Ejecutar HITO 9.2S.2 o re-smoke autenticado reducido final para admin/entitlement/logs antes de cualquier decision de launch.
