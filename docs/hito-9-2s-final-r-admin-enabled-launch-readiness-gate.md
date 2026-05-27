@@ -323,3 +323,24 @@ Decision:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## HITO 9.2S-RUNTIME follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL.
+
+Se revalidó el bloqueo `503/504`:
+
+- Rutas dinámicas privadas volvieron a responder `307` a `/sign-in`.
+- No se reprodujo `503/504`.
+- No se ejecutó restart/redeploy ni cambio Hostinger.
+
+Sigue pendiente:
+
+- Admin route autenticada con admin real.
+- Pending request visible.
+- Fulfill/entitlement/full report.
+- Logs Hostinger si hay acceso.
+
+Production launched: NO.

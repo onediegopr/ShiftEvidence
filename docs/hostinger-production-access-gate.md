@@ -446,3 +446,34 @@ Decision:
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
 - Review Hostinger runtime logs or reproduce in an authenticated browser session before continuing admin entitlement closure.
+
+## HITO 9.2S-RUNTIME dynamic routes recovery
+
+Date: 2026-05-27.
+
+Result: partial / recovered during recheck.
+
+Observed:
+
+- Public routes remained `200 OK`.
+- `/dashboard`, `/dashboard/assessments` and `/dashboard/admin/unlock-requests` returned `307` to `/sign-in` across initial check and two retries.
+- The previous `503/504` pattern was not reproduced.
+
+Actions:
+
+- No Hostinger config changes.
+- No restart.
+- No redeploy.
+- No env changes.
+- No DB changes.
+
+Limitations:
+
+- Hostinger runtime logs were not available from the current tool context.
+- Admin authenticated route could not be validated without an admin session/cookies.
+
+Decision:
+
+- Dynamic route blocker resolved in current recheck: YES.
+- Admin entitlement closure remains pending.
+- Production launched: NO.

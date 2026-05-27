@@ -1036,3 +1036,20 @@ Decisión:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## Addendum — HITO 9.2S-RUNTIME Dynamic Routes Recovery
+
+Fecha: 2026-05-27.
+
+Resultado:
+
+- El bloqueo `503/504` de rutas dinámicas privadas no se reprodujo en la revalidación.
+- `/dashboard`, `/dashboard/assessments` y `/dashboard/admin/unlock-requests` devolvieron `307` a `/sign-in`.
+- No se realizó restart, redeploy, cambio de env ni cambio de DB.
+
+Limitación:
+
+- No hay logs Hostinger disponibles desde este contexto, por lo que no se confirmó causa raíz.
+- El gate admin autenticado sigue pendiente por falta de sesión/cookies admin en herramientas.
+
+Production launched: NO.

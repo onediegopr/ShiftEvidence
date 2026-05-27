@@ -343,3 +343,37 @@ Próximo paso recomendado:
 3. Si navegador funciona pero `curl` falla, documentar diferencia proxy/session/cold-start.
 4. Si navegador también falla, resolver runtime/Hostinger antes de admin entitlement.
 5. Recién después continuar con admin route, pending request, fulfill, entitlement y full report.
+
+## HITO 9.2S-RUNTIME follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL / recuperación dinámica observada.
+
+Revalidación:
+
+- Rutas públicas: OK `200`.
+- `/dashboard`: `307` a `/sign-in`.
+- `/dashboard/assessments`: `307` a `/sign-in`.
+- `/dashboard/admin/unlock-requests`: `307` a `/sign-in`.
+- Retries dinámicos: OK.
+- `503/504`: ausente en esta ejecución.
+
+No se tocó Hostinger:
+
+- No restart.
+- No redeploy.
+- No env changes.
+- No DB changes.
+
+Pendiente:
+
+- Logs Hostinger para causa raíz si el incidente reaparece.
+- Sesión admin real para validar admin route.
+- Fulfill/entitlement/full report.
+
+Decision:
+
+- Dynamic route blocker resolved: SÍ en revalidación actual.
+- Admin gate can continue desde herramientas: NO, falta sesión/cookies admin.
+- Production launched: NO.
