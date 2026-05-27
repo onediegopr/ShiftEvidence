@@ -129,3 +129,14 @@ Nuevo comportamiento:
 
 ## Decision
 CONTEXT-1 queda implementado sin schema change y listo para validacion final local. Prepara AI-1 sin introducir IA en runtime.
+
+## Production QA Follow-up
+
+CONTEXT-1-PROD-QA result: PARCIAL.
+
+Codex validated build/lint/typecheck, production unauthenticated routes and AI payload code safety. Authenticated browser QA remains pending because Codex had no production session/cookies.
+
+AI-1 should not start until one of the following is available:
+
+- Codex authenticated browser session; or
+- user-attested evidence for context save/refresh/report preview/PDF.

@@ -317,6 +317,13 @@ Efecto operativo:
 - prepara payload estructurado para futuro AI Advisory;
 - no bloquea evidence upload.
 
+Estado de validacion:
+
+- Implementacion: SI.
+- Build/lint/typecheck: OK.
+- Produccion sin sesion: OK.
+- Browser QA autenticado save/refresh/report/PDF: pendiente por falta de sesion/cookies en Codex.
+
 ## 10. Cost / risk assumptions
 
 Guarda:

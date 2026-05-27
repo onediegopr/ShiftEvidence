@@ -54,6 +54,7 @@ Validated manually by user:
 - Admin queue cross-owner report link can return `404` by ownership protection.
 - Browser QA multi-assessment was not replayed by Codex with authenticated cookies.
 - Adaptive context needs post-deploy browser validation for save/refresh/report/PDF with a real assessment.
+- CONTEXT-1-PROD-QA was partial from Codex because no authenticated production session/cookies were available.
 
 ## Public Launch Blockers
 
