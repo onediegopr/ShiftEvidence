@@ -75,3 +75,21 @@ Public launch ready: pending final public launch review.
 ## Proximo hito recomendado
 
 `PUBLIC-LAUNCH-READINESS-REVIEW - Final public launch blockers and go/no-go`.
+
+## Public Launch Readiness Review Follow-up
+
+Date: 2026-05-27.
+
+Password recovery result in public launch review:
+
+- Password recovery production operational: SI.
+- Forgot password route: OK.
+- Reset password route: OK.
+- Non-existing email response: neutral.
+- Invalid token with valid JSON: controlled `400`.
+- Valid token: accepted by previous user-attested mailbox validation.
+
+Public launch impact:
+
+- Password recovery no longer blocks public launch readiness.
+- Public launch still remains NO because other operational blockers remain.

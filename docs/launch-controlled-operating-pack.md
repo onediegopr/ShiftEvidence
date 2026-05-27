@@ -105,3 +105,25 @@ AUTH-1-PROD status:
 - `/forgot-password` and `/reset-password` live.
 - Invalid token handling is controlled.
 - Password recovery is operational in production.
+
+## Public Launch Readiness Review Update
+
+Date: 2026-05-27.
+
+Decision:
+
+- Public launch: NO.
+- Controlled production launch remains active: YES.
+- Limited public beta / limited public access may proceed only with controlled operating conditions.
+
+Reasons full public launch is not yet approved:
+
+- Hostinger runtime/build/error logs were not reviewed from Codex.
+- QA cleanup/retention is documented but not executed.
+- Authenticated browser QA for multi-assessment, upload, report and PDF was not replayed in this review.
+- Admin cross-owner report UX gap remains.
+- Public support/SLA and entitlement/commercial operating model need final definition.
+
+Operational rule:
+
+- Treat any public users as limited beta users until `PUBLIC-LAUNCH-2` closes the remaining blockers.

@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active; public launch pending final public launch review, logs review and QA cleanup. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation.
+Controlled production launch active. Public launch is not approved yet after final readiness review; limited public beta can proceed only under controlled operating conditions. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation.
 
 ## Stack
 - Next.js App Router

@@ -618,6 +618,36 @@ Rollback principles:
 - [ ] QA cleanup.
 - [ ] Logs reviewed.
 
+## 32. Public Launch Readiness Review
+
+Date: 2026-05-27.
+
+Decision:
+
+- Public launch: NO.
+- Controlled production launch remains active: YES.
+- Limited public beta / limited public access: allowed only under controlled operating conditions.
+
+Evidence:
+
+- Public routes are healthy.
+- Private routes redirect to `/sign-in` without session.
+- Password recovery is operational in production by user-attested valid-token smoke and Codex route/API regression.
+- Product flows remain supported by prior milestone evidence.
+
+Remaining blockers for full public launch:
+
+- Hostinger logs/runtime health review.
+- QA data cleanup/retention execution.
+- Fresh authenticated browser QA for multi-assessment, upload, report and PDF.
+- Admin cross-owner report UX gap.
+- Public support/SLA and entitlement/commercial operating model.
+- Payment/checkout only if the intended public launch is paid self-service.
+
+Next hito:
+
+- `PUBLIC-LAUNCH-2 - Logs, QA Cleanup, Authenticated Browser QA + Public Beta Operating Decision`.
+
 ## 31. Glossary
 
 - Assessment: one readiness job/work item.
