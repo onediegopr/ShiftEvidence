@@ -7,6 +7,7 @@ import { prisma } from "../../../../../lib/prisma";
 const INVALID_TOKEN_MESSAGE = "This reset link is invalid or has expired.";
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
+const RESET_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     const token = String(body.token ?? "");
     const password = String(body.password ?? "");
 
-    if (!token) {
+    if (!token || !RESET_TOKEN_PATTERN.test(token)) {
       return NextResponse.json({ ok: false, message: INVALID_TOKEN_MESSAGE }, { status: 400 });
     }
 

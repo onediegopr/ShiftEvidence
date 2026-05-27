@@ -192,3 +192,22 @@ Elegir una ruta:
 - Public launch sigue bloqueado.
 - Email provider real no esta configurado/verificable.
 - Fallback manual sigue siendo el modo operativo para cuentas durante controlled launch.
+
+## AUTH-1-HOTFIX Update
+
+Revalidacion posterior:
+
+- Resend domain `mail.shiftevidence.com`: VERIFIED por reporte del usuario.
+- `RESEND_API_KEY`: presente por reporte del usuario.
+- `EMAIL_FROM`: presente por reporte del usuario.
+- `/forgot-password`: `200` en produccion.
+- `/reset-password`: `200` en produccion.
+- `/dashboard`: `307` a `/sign-in` sin sesion.
+- Request con email inexistente: respuesta neutral.
+- Token invalido con JSON correcto: `400` controlado.
+
+Estado:
+
+- Password recovery production operational: PARCIAL.
+- Falta valid token smoke con mailbox QA real.
+- Public launch: NO.

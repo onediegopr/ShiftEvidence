@@ -134,7 +134,7 @@ It is:
 | PDF preview/full | OK |
 | Admin/entitlement | OK by manual browser validation |
 | Redirect `0.0.0.0` bug | Fixed |
-| Password recovery | Implemented in code; AUTH-1-PROD blocked pending safe production migration/deploy path |
+| Password recovery | Migrated/deployed; Resend configured by user report; valid-token mailbox smoke pending |
 | Hostinger logs | Pending / not reviewed from Codex |
 | QA cleanup/retention | Pending |
 | Controlled production launch | SÍ |
@@ -514,10 +514,11 @@ Policy initial state:
 
 Current state:
 
-- Forgot password/password recovery is migrated, deployed and available as manual fallback.
+- Forgot password/password recovery is migrated and deployed.
 - Production activation completed for the Prisma migration and app deploy.
 - AUTH-1-PROD-EXEC confirmed neutral request behavior and invalid-token handling.
-- Current delivery mode is `manual_pending` because no provider is configured.
+- Resend provider is configured by user report.
+- Valid-token mailbox smoke remains pending.
 
 Controlled launch mitigation:
 
@@ -558,7 +559,7 @@ Risk:
 
 | Risk | Controlled launch | Public launch |
 | --- | --- | --- |
-| Password recovery implemented in code, pending production activation | Accepted with manual support | Blocking until active |
+| Password recovery migrated/deployed, valid-token mailbox smoke pending | Accepted with manual support | Blocking until full E2E smoke |
 | Hostinger logs pending | Accepted with manual monitoring | Blocking until reviewed |
 | QA cleanup pending | Accepted short-term | Blocking before scale |
 | Admin UX gap cross-owner | Accepted for trained admins | Must improve |
@@ -569,7 +570,7 @@ Risk:
 
 Before public launch:
 
-- Configure password recovery email provider and complete valid-token smoke.
+- Complete password recovery valid-token mailbox smoke.
 - Review production logs/monitoring.
 - Define QA cleanup/retention.
 - Improve admin cross-owner report UX.
@@ -581,7 +582,7 @@ Before public launch:
 
 Priority:
 
-1. `AUTH-1-PROVIDER - Password Recovery Provider + Valid Token Smoke`.
+1. `AUTH-1-VALID-TOKEN-SMOKE - Password Recovery Mailbox Link E2E`.
 2. `OPS-1 — QA Data Cleanup / Retention`.
 3. `ADMIN-UX-1 — Admin-safe report view`.
 4. `13.1 — Authenticated Multi-Assessment Browser QA`.

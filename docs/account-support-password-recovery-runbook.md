@@ -69,9 +69,10 @@ Current AUTH-1-PROD status:
 - Code through `51dc931` has been pushed.
 - Hostinger deployment completed successfully.
 - `/forgot-password` and `/reset-password` are live in production.
-- Password recovery is operational as manual fallback: `deliveryMode=manual`, `status=manual_pending`.
-- Self-service email delivery is pending provider configuration.
-- Continue using manual account support during controlled launch until provider smoke is complete.
+- Resend provider is configured by user report.
+- Invalid token handling returns controlled error.
+- Full valid-token mailbox smoke remains pending.
+- Continue using manual account support during controlled launch until provider valid-token smoke is complete.
 
 ## Smoke Checklist
 

@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active; public launch pending password recovery provider smoke, logs review and QA cleanup. AUTH-1 password recovery migration is applied and deployed, with manual fallback active.
+Controlled production launch active; public launch pending password recovery valid-token smoke, logs review and QA cleanup. AUTH-1 password recovery migration is applied and deployed; Resend is configured by user report.
 
 ## Stack
 - Next.js App Router
@@ -78,7 +78,7 @@ Optional for future work:
 - PDF Preview v1 is implemented with private storage and secure download.
 - Manual unlock requests, protected admin review and entitlement grants are implemented without checkout.
 - Admin unlock hardening validates `ADMIN_EMAILS`, fail-closed behavior, non-admin blocking and entitlement idempotency.
-- Password recovery/account support is implemented in code with hashed reset tokens, one-time use and manual fallback; production use requires controlled migration/deploy and provider smoke.
+- Password recovery/account support is implemented in code with hashed reset tokens and one-time use; production routes are live and valid-token mailbox smoke remains pending.
 - Hostinger deployment hardening adds runtime env checks, storage permission checks, `prisma:deploy`, Node engine guidance and production smoke runbooks.
 - Hostinger production smoke is prepared but still requires real Hostinger access, production domain, runtime logs and storage validation before it can be marked OK.
 - Hito 9.2 remains gated until the Hostinger Production Access Gate is completed with real access details.

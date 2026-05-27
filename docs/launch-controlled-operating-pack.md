@@ -79,7 +79,7 @@ If launch must be paused:
 
 ## Accepted Risks
 
-- Password recovery migrated and deployed, but currently operating as `manual_pending` until provider and valid-token smoke are complete.
+- Password recovery migrated and deployed; Resend provider is configured by user report, with valid-token mailbox smoke still pending.
 - Hostinger logs not reviewed from Codex.
 - QA cleanup pending.
 - Admin UX gap cross-owner.
@@ -93,8 +93,8 @@ The application now includes password recovery code and UI:
 - `/forgot-password` accepts recovery requests with a neutral response.
 - `/reset-password?token=...` accepts single-use reset tokens.
 - Reset requests are stored with hashed tokens.
-- Resend email delivery can be enabled with `RESEND_API_KEY` and `EMAIL_FROM`.
-- Without provider configuration, recovery requests fall back to manual support.
+- Resend email delivery is configured by user report with `RESEND_API_KEY` and `EMAIL_FROM`.
+- Without successful provider delivery, recovery requests fall back to manual support.
 
 Production use has completed controlled migration and deploy. Do not run `prisma migrate reset`.
 
@@ -103,5 +103,5 @@ AUTH-1-PROD status:
 - Production migration applied.
 - Code pushed and deployed on Hostinger.
 - `/forgot-password` and `/reset-password` live.
-- Current delivery mode is manual fallback.
-- Continue manual account support for controlled launch until email provider smoke passes.
+- Invalid token handling is controlled.
+- Continue manual account support for controlled launch until valid-token mailbox smoke passes.
