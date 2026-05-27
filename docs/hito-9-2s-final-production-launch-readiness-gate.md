@@ -317,3 +317,29 @@ Decision:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## HITO 9.2S-FINAL-R2 follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL.
+
+Se revalidó:
+
+- Local/Git/build OK.
+- Producción pública OK.
+- Rutas privadas sin sesión protegidas.
+
+Sigue pendiente:
+
+- Admin real productivo.
+- `ADMIN_EMAILS` productivo.
+- Admin route autenticado como admin.
+- Pending unlock request visible como admin.
+- Fulfill/entitlement/full report.
+- Logs Hostinger.
+
+Decision:
+
+- Ready for controlled production launch review: NO.
+- Production launched: NO.

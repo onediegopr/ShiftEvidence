@@ -1,19 +1,19 @@
-# HITO 9.2S-FINAL-R — Admin-Enabled Launch Readiness Gate
+# HITO 9.2S-FINAL-R2 — Admin Credentials Live Validation + Entitlement Closure
 
 ## Objetivo
 
-Cerrar el launch readiness gate admin/comercial cuando exista acceso admin productivo real:
+Cerrar el tramo admin/comercial final de producción:
 
-- validar admin real;
-- validar `ADMIN_EMAILS` sin exponer secretos;
-- abrir `/dashboard/admin/unlock-requests`;
-- validar non-admin fail-closed;
-- ver pending request;
+- validar admin real productivo;
+- confirmar `ADMIN_EMAILS` sin exponer secretos;
+- validar admin route;
+- confirmar pending request;
 - fulfill/approve;
 - confirmar entitlement y commercial status;
 - generar full `readiness_report`;
-- validar secure access final;
-- documentar logs y QA data.
+- validar full PDF y secure access;
+- revisar logs;
+- documentar QA data.
 
 Este hito no declara `Production launched` automáticamente.
 
@@ -22,7 +22,7 @@ Este hito no declara `Production launched` automáticamente.
 Estado al iniciar:
 
 - Branch: `main`.
-- HEAD esperado: `e422425 docs: record final production launch readiness gate`.
+- HEAD esperado: `5cd5ded docs: record admin-enabled launch readiness gate`.
 - origin/main sincronizado.
 - Working tree limpio.
 - Producción pública Hostinger: OK.
@@ -45,22 +45,15 @@ Bloqueo de arrastre:
 | Item | Resultado |
 | --- | --- |
 | Branch | `main` |
-| HEAD inicial | `e422425b8f6356c43e9025f1f0e57921f68ad17f` |
-| origin/main | `e422425b8f6356c43e9025f1f0e57921f68ad17f` |
+| HEAD inicial | `5cd5ded0ce052ee3437eac011e03324918d5c5ae` |
+| origin/main | `5cd5ded0ce052ee3437eac011e03324918d5c5ae` |
 | Working tree inicial | Limpio |
 | Node | `v22.22.0` |
 | npm | `10.9.4` |
 | `npm run hostinger:diagnose` | OK |
 | `npm run typecheck` | OK |
 | `npm run lint` | OK |
-| `npm run build` | OK tras limpiar `.next` |
-
-Nota local:
-
-- Primer `build` falló por lock local `EPERM unlink` en `.next/static`.
-- No había servidor escuchando en puerto `3000`.
-- Se eliminó sólo `.next` y se repitió build/typecheck/lint/diagnose correctamente.
-- No fue un cambio de código.
+| `npm run build` | OK |
 
 Warning conocido:
 
@@ -114,7 +107,7 @@ Resultado:
 - Gate C: BLOQUEADO.
 - Sin admin real validado no corresponde avanzar a fulfill, entitlement ni full report.
 - No se tocó Hostinger config.
-- No se imprimieron secretos.
+- No se imprimieron secretos, tokens ni cookies.
 
 ## Gate D — Non-admin Fail-closed
 
@@ -248,12 +241,6 @@ Resultado:
 
 No se detectó bug nuevo de código.
 
-Incidente local no funcional:
-
-- Build inicial falló por lock `.next` (`EPERM unlink`) en Windows/OneDrive.
-- Se resolvió eliminando sólo `.next`.
-- Validaciones posteriores OK.
-
 Bloqueo operativo:
 
 - Falta acceso admin real productivo.
@@ -273,7 +260,7 @@ Bloqueo operativo:
 
 Resultado general:
 
-- HITO 9.2S-FINAL-R: PARCIAL.
+- HITO 9.2S-FINAL-R2: PARCIAL.
 - Ready for controlled production launch review: NO.
 - Puede recomendarse production launch: NO.
 
@@ -297,29 +284,3 @@ Condición para pasar a launch review:
 10. Definir cleanup/retención QA data.
 
 Production launched: NO.
-
-## HITO 9.2S-FINAL-R2 follow-up
-
-Fecha: 2026-05-27.
-
-Resultado: PARCIAL.
-
-Validado:
-
-- Gate A local/Git/build: OK.
-- Gate B producción pública/auth base: OK.
-- Rutas privadas sin sesión redirigen a `/sign-in`.
-
-Bloqueado:
-
-- Gate C admin access enablement: no hay admin real/credenciales productivas disponibles desde este entorno.
-- Gate E admin route + pending request.
-- Gate F fulfill/entitlement.
-- Gate G full `readiness_report`.
-- Gate H secure access final del full report.
-- Gate I logs Hostinger.
-
-Decision:
-
-- Ready for controlled production launch review: NO.
-- Production launched: NO.

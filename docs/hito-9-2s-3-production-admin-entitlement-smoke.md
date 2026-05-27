@@ -333,3 +333,22 @@ Decision:
 
 - Puede recomendarse production launch: NO.
 - Production launched: NO.
+
+## HITO 9.2S-FINAL-R2 follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL.
+
+Admin credentials live validation y entitlement closure no pudieron avanzar más allá de Gate C:
+
+- Admin real productivo: no disponible desde este entorno.
+- `ADMIN_EMAILS`: no verificable sin acceso seguro a env productivas.
+- Admin route como admin: no validado.
+- Fulfill/entitlement/full report: no ejecutado.
+- Logs Hostinger: no disponibles.
+
+Decision:
+
+- Puede recomendarse production launch: NO.
+- Production launched: NO.

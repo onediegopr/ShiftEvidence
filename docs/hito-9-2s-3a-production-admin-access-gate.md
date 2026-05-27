@@ -232,3 +232,26 @@ Sigue pendiente:
 - Fulfill/entitlement/full report.
 
 Production launched: NO.
+
+## HITO 9.2S-FINAL-R2 follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL / bloqueado en Gate C.
+
+Se confirmó nuevamente:
+
+- Producción pública OK.
+- Rutas privadas sin sesión protegidas.
+- Admin route sin sesión redirige a `/sign-in`.
+- Validaciones locales OK.
+
+Sigue pendiente:
+
+- Admin real productivo.
+- `ADMIN_EMAILS` productivo.
+- Admin route autenticado como admin.
+- Pending unlock request visible como admin.
+- Fulfill/entitlement/full report.
+
+Production launched: NO.
