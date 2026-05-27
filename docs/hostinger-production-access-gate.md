@@ -235,3 +235,34 @@ Before retrying the runtime fix, obtain:
 - logs access.
 - env var inventory without exposing values.
 - `public_html` backup/rollback plan.
+
+## HITO 9.2S production authenticated smoke
+
+Date: 2026-05-26 America/Buenos_Aires / 2026-05-27 UTC.
+
+Result: partial.
+
+Validated successfully in production:
+
+- Public routes serve the real Next.js app.
+- Better Auth sign-up/session works with `__Secure-better-auth.session_token`.
+- Authenticated dashboard works.
+- Assessment create/open/update works.
+- Manual intake and cost/risk assumptions save correctly.
+- Upload gate blocks incomplete assessments and enables completed assessments.
+- Browser multipart evidence upload works with synthetic CSV data.
+- Evidence download is private and requires session.
+- Parser runs against the uploaded CSV and produces 2 ParsedVM.
+- Risk generation and report preview work.
+- PDF preview generation creates a report record and authenticated PDF download works.
+
+Blocking launch issue:
+
+- Report/PDF POST redirects use the internal production host `https://0.0.0.0:3000/...` instead of `https://shiftevidence.com/...`.
+- The generated PDF is valid and downloadable after manually navigating back to the public report URL, but the user-facing post-submit redirect is broken.
+- Report download without session also redirects to `https://0.0.0.0:3000/sign-in`.
+
+Decision:
+
+- Production launched: NO.
+- Next required step: fix or configure production-safe redirects/base URL before declaring launch.

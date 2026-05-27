@@ -120,3 +120,17 @@ Push realizado en este hito: NO.
 - DB tocada: NO
 - Código modificado: NO
 - Push realizado: NO
+
+## HITO 9.2S follow-up
+
+The public baseline remained valid during HITO 9.2S:
+
+- Public routes still served the real Next.js app.
+- Authenticated production smoke validated dashboard, assessment CRUD, intake, upload gate, evidence upload, parser, risk/report preview and authenticated PDF download.
+- A production redirect issue remains: report/PDF POST flows redirect to `https://0.0.0.0:3000/...` behind Hostinger instead of `https://shiftevidence.com/...`.
+
+Decision after HITO 9.2S:
+
+- Production launched: NO.
+- Public app baseline: OK.
+- Authenticated smoke: partial because redirect/base URL must be fixed before launch.
