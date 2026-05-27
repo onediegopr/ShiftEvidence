@@ -319,3 +319,28 @@ Decision:
 
 - Production launched: NO.
 - Launch review still requires real admin access, entitlement fulfill, full report smoke, secure access validation, logs review and QA data cleanup/retention decision.
+
+## HITO 9.2S.3A production admin access gate
+
+Date: 2026-05-27.
+
+Result: partial / blocked.
+
+Validated:
+
+- Public production routes continue serving the real Next.js app.
+- Private routes without session redirect to `/sign-in`.
+- `/dashboard/admin/unlock-requests` without session redirects to `/sign-in`.
+- Local diagnostics, typecheck, lint and build pass.
+
+Blocked:
+
+- No real production admin credentials were available in the current tool context.
+- Production `ADMIN_EMAILS` could not be verified without secure env access.
+- Admin route as real admin was not validated.
+- Pending unlock request visibility as admin remains pending.
+
+Decision:
+
+- Do not proceed to fulfill/entitlement until real admin access is validated.
+- Production launched: NO.

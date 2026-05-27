@@ -260,3 +260,31 @@ Condición mínima para recomendar launch:
 8. Definir cleanup/retención de QA data productiva.
 
 Production launched: NO.
+
+## HITO 9.2S.3A follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: PARCIAL / bloqueado por acceso admin productivo.
+
+Validado:
+
+- Producción pública sigue OK.
+- `/dashboard/admin/unlock-requests` sin sesión redirige a `/sign-in`.
+- Local `hostinger:diagnose`, `typecheck`, `lint` y `build`: OK.
+
+No validado:
+
+- Admin real productivo.
+- `ADMIN_EMAILS` productivo.
+- Admin route autenticado como admin.
+- Pending unlock request visible como admin.
+
+Fuera de alcance respetado:
+
+- No fulfill.
+- No approve/reject.
+- No entitlement.
+- No full report.
+- No Hostinger config changes.
+- Production launched: NO.
