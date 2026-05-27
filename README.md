@@ -5,6 +5,9 @@ Shift Evidence is the public brand. ShiftReadiness is the first product module.
 Tagline:
 Infrastructure readiness before you migrate.
 
+Status:
+Controlled production launch active; public launch pending password recovery/account support.
+
 ## Stack
 - Next.js App Router
 - React 19

@@ -1,5 +1,7 @@
 # ShiftReadiness — Operational & Functional Manual v0.9
 
+Superseded by `ShiftReadiness — Operational & Functional Manual v1.0 — Production Launch Edition` for controlled launch operations.
+
 **Pre-launch state / public production validated**
 
 **Estado:** pre-launch avanzado  

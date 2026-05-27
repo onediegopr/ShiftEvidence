@@ -236,6 +236,10 @@ Production launched: SÍ, controlled launch.
 
 Public launch: NO.
 
+Follow-up:
+
+- HITO DOC-2 created the Manual v1.0 Production Launch Edition and operating pack for controlled launch operations.
+
 Próximo hito recomendado:
 
 1. `HITO DOC-2 — Manual v1.0 Production Launch Edition`.

@@ -296,6 +296,12 @@ Remaining before public launch:
 - QA data cleanup/retention.
 - Admin UX gap for cross-owner report access.
 - Authenticated browser QA multi-assessment replay.
+
+Current launch state:
+
+- Controlled launch active.
+- Public launch not active.
+- No Hostinger config changes were made for DOC-2.
 - Next required step: fix or configure production-safe redirects/base URL before declaring launch.
 
 ## HITO 9.2S.2 final production smoke
