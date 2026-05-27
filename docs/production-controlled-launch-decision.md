@@ -159,3 +159,19 @@ Reason:
 - Hostinger logs are still not available to Codex.
 - Authenticated browser QA and product-flow replay are still not available to Codex.
 - No QA data was modified.
+
+## PUBLIC-BETA-OPS-3A Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Reason:
+
+- Codex validations remain healthy.
+- Manual/Claude evidence for Hostinger logs and authenticated browser QA was not provided in this hito.
+- Full public launch blockers remain open.

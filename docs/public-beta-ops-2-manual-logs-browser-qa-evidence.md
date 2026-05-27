@@ -115,6 +115,22 @@ Decision:
 - Limited public beta remains operational.
 - Full public launch remains NO.
 
+## Follow-up - PUBLIC-BETA-OPS-3A
+
+Date: 2026-05-27.
+
+Result:
+
+- No manual Hostinger logs evidence was imported.
+- No authenticated browser QA evidence was imported.
+- No product-flow replay evidence was imported.
+- Codex route/API regression remained healthy.
+
+Decision:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+
 Result: PASS.
 
 ## Gate C - Hostinger Logs / Runtime Evidence

@@ -151,3 +151,25 @@ Evidence still needed:
 - Authenticated multi-assessment browser QA.
 - Authenticated upload/parser/report/PDF replay.
 - Real QA data inventory/archive.
+
+## PUBLIC-BETA-OPS-3A Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Evidence imported:
+
+- Codex production route smoke.
+- Codex password recovery regression.
+- Codex local build/typecheck/lint.
+
+Evidence not imported:
+
+- Hostinger logs.
+- User-attested browser QA.
+- User-attested product-flow replay.
+- QA data cleanup/archive.

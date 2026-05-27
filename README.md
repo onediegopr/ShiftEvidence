@@ -13,6 +13,8 @@ Current manual:
 
 The previous v1.0 Production Launch Edition manual is superseded by v1.1 and retained as historical controlled launch documentation.
 
+PUBLIC-BETA-OPS-3A attempted to import manual Hostinger logs and authenticated browser QA evidence. No user/Claude evidence was provided in that hito, so full public launch remains blocked by logs, browser QA, product-flow replay and QA cleanup/archive.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -168,3 +170,4 @@ Optional for future work:
 - `docs/public-beta-ops-3-authenticated-browser-qa-evidence.md`
 - `docs/shiftreadiness-functional-operational-manual-v1-1-limited-public-beta.md`
 - `docs/manuals-index.md`
+- `docs/public-beta-ops-3a-user-attested-browser-logs-evidence.md`

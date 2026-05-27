@@ -792,3 +792,26 @@ Decision:
 Conclusion:
 
 ShiftReadiness esta operativo para beta publica limitada y controlada. El producto puede ser usado por usuarios seleccionados con soporte manual y expectativas claras. No debe abrirse todavia como full public launch hasta cerrar logs Hostinger, browser QA autenticado completo, replay real de product flow, QA cleanup/archive, admin-safe report UX, soporte/SLA formal y pagos/checkout si se requiere self-service.
+
+## Addendum - PUBLIC-BETA-OPS-3A Evidence Import
+
+Date: 2026-05-27.
+
+Codex validated:
+
+- Public production route smoke.
+- Password recovery regression.
+- Local build/typecheck/lint.
+
+Not imported:
+
+- Hostinger logs evidence.
+- User-attested browser QA.
+- User-attested product-flow replay.
+- QA data cleanup/archive.
+
+Decision remains:
+
+- Controlled production launch: SI.
+- Limited public beta: SI.
+- Full public launch: NO.

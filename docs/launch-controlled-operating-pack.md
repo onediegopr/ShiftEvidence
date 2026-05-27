@@ -190,3 +190,18 @@ Operator action still required:
 - Execute authenticated browser QA with a QA user.
 - Execute authenticated upload/parser/report/PDF replay.
 - Inventory and archive/retain QA data marked `QA Public Beta Ops 3 - safe to delete`.
+
+## PUBLIC-BETA-OPS-3A Follow-up
+
+Date: 2026-05-27.
+
+Operator status:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
+- Manual evidence import did not include Hostinger logs, browser QA, product-flow replay or QA cleanup/archive.
+
+Required operator action:
+
+- Provide evidence without secrets/cookies/tokens.
+- Use `QA Public Beta Ops 3A - safe to delete` naming for any new QA data.

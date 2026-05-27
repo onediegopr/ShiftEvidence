@@ -366,3 +366,22 @@ Updated:
 - No payment/checkout implementation.
 - No secrets printed.
 - No full public launch declaration.
+
+## PUBLIC-BETA-OPS-3A Follow-up
+
+Date: 2026-05-27.
+
+Result:
+
+- Production route smoke remains healthy.
+- Password recovery regression remains healthy.
+- Build passed after clearing only `.next` due Windows/OneDrive EPERM lock.
+- No user/Claude Hostinger logs evidence was provided.
+- No user/Claude authenticated browser QA evidence was provided.
+- No user/Claude product-flow replay evidence was provided.
+- No QA cleanup/archive was executed.
+
+Decision:
+
+- Limited public beta remains operational.
+- Full public launch remains NO.
