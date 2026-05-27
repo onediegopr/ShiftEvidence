@@ -23,6 +23,8 @@ CONTEXT-1-PROD-QA is closed by user-attested authenticated browser evidence: Con
 
 AI-1 adds a safe advisory layer architecture for future context-aware migration recommendations. It is feature-flagged, disabled by default, supports a mock provider for safe validation, sanitizes payloads, excludes raw uploaded files/secrets/cookies/tokens/storage paths, and does not call external AI providers in this hito.
 
+AI-1-MOCK-QA validated the mock advisory path locally with temporary process flags, typecheck, lint, build and guardrail smoke. Browser-authenticated visual QA with mock advisory visible remains optional/pending.
+
 ## Stack
 - Next.js App Router
 - React 19

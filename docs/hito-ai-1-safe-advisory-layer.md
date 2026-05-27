@@ -188,3 +188,21 @@ AI-1 implementa una capa advisory segura, opcional y conservadora.
 - Ready for mock advisory validation: SI.
 - Ready for real provider calls: NO, requiere hito separado.
 - Full public launch: NO.
+
+## Follow-up - AI-1-MOCK-QA
+
+Date: 2026-05-27.
+
+Mock QA local/controlado:
+
+- `npm run ai:guardrails`: OK.
+- `npm run typecheck`: OK.
+- `npm run typecheck` con `AI_ADVISORY_ENABLED=true` y provider `mock`: OK.
+- `npm run lint`: OK.
+- `npm run build` con provider `mock`: OK despues de limpiar solo `.next` por lock local EPERM.
+
+Resultado:
+
+- AI mock layer valida a nivel build/typecheck/guardrails.
+- No se llamo a provider externo.
+- Browser QA autenticado visual con flags mock sigue pendiente si se requiere evidencia UI/PDF real.
