@@ -265,6 +265,37 @@ Blocking launch issue:
 Decision:
 
 - Production launched: NO.
+
+## HITO LAUNCH-1 controlled production launch review
+
+Date: 2026-05-27.
+
+Decision:
+
+- Production launched: YES, controlled launch.
+- Public launch: NO.
+
+Production access state:
+
+- Public routes: OK.
+- Private unauthenticated redirects: OK.
+- `/_next`: detected.
+- Hostinger 404: absent.
+- `503/504`: absent during current review.
+
+Conditions:
+
+- No Hostinger config changes were made.
+- No manual deploy was executed.
+- No Prisma migrate was executed.
+- Logs were not available from Codex and should be reviewed manually if Hostinger access is available.
+
+Remaining before public launch:
+
+- Password recovery.
+- QA data cleanup/retention.
+- Admin UX gap for cross-owner report access.
+- Authenticated browser QA multi-assessment replay.
 - Next required step: fix or configure production-safe redirects/base URL before declaring launch.
 
 ## HITO 9.2S.2 final production smoke

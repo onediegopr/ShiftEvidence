@@ -25,6 +25,22 @@ Estado previo:
 - PDF preview/download productivo: OK por hitos previos.
 - Production launched: NO.
 
+## HITO LAUNCH-1 follow-up
+
+Fecha: 2026-05-27.
+
+Decisión posterior:
+
+- Production launched: SÍ, controlled launch.
+- Public launch: NO.
+
+La validación manual admin/entitlement/full report quedó como evidencia aceptada para controlled production launch, con limitaciones documentadas:
+
+- Codex no reprodujo clicks autenticados admin.
+- Hostinger logs no fueron revisados desde herramientas.
+- Password recovery sigue pendiente.
+- Admin UX gap cross-owner sigue pendiente.
+
 El usuario informó:
 
 - “todo funciona perfecto en el dashboard”.

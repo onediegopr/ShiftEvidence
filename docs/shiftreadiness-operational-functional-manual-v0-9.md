@@ -71,6 +71,43 @@ Estado validado:
 
 Production launched: NO.
 
+## Addendum — HITO LAUNCH-1 Controlled Production Launch Review
+
+Fecha: 2026-05-27.
+
+Decisión:
+
+- Production launched: SÍ, controlled launch.
+- Public launch: NO.
+
+Evidencia:
+
+- Local/Git/build OK.
+- Producción pública OK.
+- Rutas privadas sin sesión redirigen a `/sign-in`.
+- No se observaron `503/504` en la revisión.
+- Dashboard/admin/entitlement/full report fueron validados manualmente por el usuario en navegador real.
+- Multi-assessment lifecycle fue endurecido en HITO 13.
+
+Condiciones del launch controlado:
+
+- Uso limitado/piloto.
+- Soporte manual de cuentas hasta implementar password recovery.
+- QA data marcada como safe to delete.
+- Revisión manual de logs si hay acceso.
+
+Bloqueadores de public launch:
+
+- Password recovery.
+- Logs Hostinger.
+- QA cleanup/retention.
+- Admin UX gap cross-owner.
+- Browser QA autenticado multi-assessment completo.
+
+Manual v1.0:
+
+- Debe crearse como `ShiftReadiness — Operational & Functional Manual v1.0 — Production Launch Edition`.
+
 Este manual documenta el estado v0.9. No es el manual final de lanzamiento. La versión v1.0 deberá emitirse después de validar admin real, entitlement, full report productivo, logs y decisión formal de launch.
 
 ## 2. Product Definition

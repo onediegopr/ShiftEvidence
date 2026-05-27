@@ -322,3 +322,18 @@ Fix/hardening mínimo aplicado:
 - Ready for controlled production launch review: SÍ.
 - Ready for public launch: NO.
 - Production launched: NO.
+
+## HITO LAUNCH-1 follow-up
+
+Fecha: 2026-05-27.
+
+Resultado:
+
+- El lifecycle multi-assessment fue aceptado para controlled production launch.
+- Browser QA autenticado multi-assessment completo queda pendiente para public launch.
+- El hardening de HITO 13 se mantiene como suficiente para uso controlado/piloto.
+
+Decisión:
+
+- Production launched: SÍ, controlled launch.
+- Ready for public launch: NO.
