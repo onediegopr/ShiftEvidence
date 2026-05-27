@@ -343,3 +343,23 @@ Decision:
 
 - Ready for controlled production launch review: NO.
 - Production launched: NO.
+
+## HITO 9.2S-LAUNCH-REVIEW follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: READY FOR CONTROLLED PRODUCTION LAUNCH REVIEW.
+
+Evidencia:
+
+- Codex revalidó local/build y rutas públicas/privadas sin sesión.
+- Usuario confirmó manualmente en navegador que el dashboard funciona, admin route carga y el flujo admin-owned de entitlement/full report funciona.
+
+Pendientes para launch abierto:
+
+- Password recovery.
+- Logs Hostinger.
+- QA cleanup/retention.
+- Admin UX gap para abrir reports cross-owner desde cola admin.
+
+Production launched: NO.

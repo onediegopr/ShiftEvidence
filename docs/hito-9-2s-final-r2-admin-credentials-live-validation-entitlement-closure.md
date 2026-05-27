@@ -377,3 +377,32 @@ Decision:
 - Dynamic route blocker resolved: SÍ en revalidación actual.
 - Admin gate can continue desde herramientas: NO, falta sesión/cookies admin.
 - Production launched: NO.
+
+## HITO 9.2S-LAUNCH-REVIEW follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: COMPLETO para launch review controlado, basado en validación manual del usuario.
+
+Separación de evidencia:
+
+- Codex validó local/build y rutas públicas/privadas sin sesión.
+- Usuario validó manualmente en navegador real el flujo admin-owned.
+
+Validación manual reportada:
+
+- Dashboard funciona correctamente.
+- Admin real pudo iniciar sesión.
+- `/dashboard/admin/unlock-requests` carga.
+- El flujo admin-owned fue ejecutado.
+- Fulfill/entitlement/full `readiness_report`/full PDF funcionaron.
+- No se reportaron errores visibles ni redirect `0.0.0.0`.
+
+Limitación:
+
+- IDs exactos del nuevo assessment/admin-owned, unlock request, entitlement y report no fueron capturados.
+
+Decision:
+
+- Ready for controlled production launch review: SÍ.
+- Production launched: NO.

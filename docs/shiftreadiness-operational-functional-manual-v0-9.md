@@ -1053,3 +1053,35 @@ Limitación:
 - El gate admin autenticado sigue pendiente por falta de sesión/cookies admin en herramientas.
 
 Production launched: NO.
+
+## Addendum — HITO 9.2S-LAUNCH-REVIEW Manual Admin Validation
+
+Fecha: 2026-05-27.
+
+Resultado:
+
+- Codex revalidó Git/local/build y rutas públicas/privadas sin sesión.
+- El usuario validó manualmente en navegador real el flujo admin-owned:
+  - dashboard;
+  - admin route;
+  - unlock request;
+  - fulfill;
+  - entitlement;
+  - full `readiness_report`;
+  - full PDF.
+
+Decisión:
+
+- Ready for controlled production launch review: SÍ.
+- Production launched: NO.
+
+Riesgos pendientes:
+
+- Password recovery no implementado.
+- Logs Hostinger no revisados desde herramientas.
+- QA data cleanup/retention pendiente.
+- Admin UX gap para abrir reportes de assessments cross-owner desde la cola admin.
+
+Manual v1.0:
+
+- Debe hacerse después de la decisión formal de production launch.

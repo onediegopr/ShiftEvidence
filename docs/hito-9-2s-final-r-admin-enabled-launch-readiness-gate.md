@@ -344,3 +344,23 @@ Sigue pendiente:
 - Logs Hostinger si hay acceso.
 
 Production launched: NO.
+
+## HITO 9.2S-LAUNCH-REVIEW follow-up
+
+Fecha: 2026-05-27.
+
+Resultado: launch review controlado recomendado.
+
+El usuario ejecutó manualmente el flujo con admin real y assessment admin-owned:
+
+- Admin route carga.
+- Unlock request visible.
+- Fulfill ejecutado.
+- Entitlement/full report/full PDF funcionan según validación manual.
+
+Codex no inspeccionó cookies ni sesión admin.
+
+Decision:
+
+- Ready for controlled production launch review: SÍ.
+- Production launched: NO.
