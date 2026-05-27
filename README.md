@@ -29,6 +29,8 @@ AI-1-MOCK-QA-BROWSER received user-attested local authenticated evidence: AI Adv
 
 AI-1.1-PROD adds guarded real-provider support for Gemini/OpenAI through server-side environment variables. Code-level provider integration is implemented, but production activation requires secure Hostinger env var configuration and authenticated smoke evidence. Full public launch remains NO.
 
+AI-1.2 attempted Gemini production activation, but Codex did not have a Hostinger runtime-env configuration tool. Production activation remains pending until `AI_ADVISORY_*` vars and `GEMINI_API_KEY` are set securely in Hostinger and smoke-tested.
+
 ## Stack
 - Next.js App Router
 - React 19

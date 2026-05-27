@@ -116,3 +116,15 @@ After setting production env vars:
 ## Current Limitation
 
 AI-1.1 code supports real providers, but production activation requires Hostinger environment variable configuration outside Codex unless a secure Hostinger configuration path is provided.
+
+## AI-1.2 Activation Attempt
+
+Date: 2026-05-27.
+
+Codex status:
+
+- Hostinger env var configuration tool was not available.
+- Hostinger config was not changed.
+- No provider key was printed or handled.
+- Public production smoke without session passed.
+- Gemini production activation remains pending until env vars are configured in Hostinger.
