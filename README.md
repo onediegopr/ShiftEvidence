@@ -33,6 +33,8 @@ AI-1.2 attempted Gemini production activation, but Codex did not have a Hostinge
 
 AI-1.2-PROD-GEMINI-SMOKE and the follow-up MCP activation attempt remained blocked because Google AI Studio / Gemini access, a secure Gemini API key path and Hostinger runtime env write access were not available to Codex. Hostinger config was not changed, OpenAI was not activated, and Gemini real preview/PDF smoke remains pending.
 
+AI-1.3 production Gemini user-attested QA reported PASS for the main visual flow: AI Advisory appears in preview and PDF, scores remain visible, PDF downloads/opens, and no raw JSON, `[object Object]`, secrets or raw file content were visible. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

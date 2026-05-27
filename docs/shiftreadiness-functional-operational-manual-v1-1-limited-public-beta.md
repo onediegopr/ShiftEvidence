@@ -949,6 +949,26 @@ Rollback:
 - or `AI_ADVISORY_PROVIDER=mock`.
 - or `AI_ADVISORY_PROVIDER=disabled`.
 
+## Addendum - AI-1.3 Production Gemini QA
+
+Date: 2026-05-27.
+
+User-attested production QA reported that Gemini AI Advisory appears in:
+
+- report preview.
+- generated/downloaded PDF.
+
+The user reported:
+
+- readiness/confidence scores remain visible.
+- no raw JSON.
+- no `[object Object]`.
+- no visible secrets/tokens/cookies/env vars.
+- no visible raw file content.
+- no visible errors.
+
+Full public launch remains NO.
+
 ## Addendum - AI-1.2 Gemini Production Activation Attempt
 
 Date: 2026-05-27.

@@ -273,6 +273,20 @@ Required rollback:
 
 Full public launch remains NO.
 
+## AI-1.3 Production Gemini QA
+
+Date: 2026-05-27.
+
+Operational status:
+
+- Gemini AI Advisory main production visual flow passed by user-attested QA.
+- Report preview and PDF both showed AI Advisory.
+- Deterministic scores remained visible.
+- No raw JSON, `[object Object]`, secrets or raw file content were reported visible.
+- OpenAI remains inactive.
+
+Full public launch remains NO.
+
 ## AI-1.2 Gemini Production Activation Attempt
 
 Date: 2026-05-27.

@@ -141,6 +141,25 @@ Status:
 - The credential was not written to code, docs, logs or git.
 - OpenAI remains inactive.
 
+## AI-1.3 Production Gemini User-Attested QA
+
+Date: 2026-05-27.
+
+User-attested production QA result:
+
+- AI Advisory appears in report preview: SI.
+- Readiness/confidence scores remain visible: SI.
+- PDF generates, downloads and opens: SI.
+- AI Advisory appears in PDF: SI.
+- No raw JSON or `[object Object]`: SI.
+- No visible secrets/tokens/cookies/env vars/raw file content: SI.
+- Visible errors: NO.
+- Final confidence: PASS.
+
+Limitation:
+
+- The user did not conclusively select whether the response looked real vs mock. Treat provider-real visual distinction as not fully attested, while production configuration state indicates Gemini is active.
+
 ## AI-1.2 MCP Activation Attempt
 
 Date: 2026-05-27.

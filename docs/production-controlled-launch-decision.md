@@ -234,6 +234,27 @@ Reason:
 - Real provider production smoke is pending until env vars are configured.
 - AI remains advisory and does not replace deterministic scores.
 
+## AI-1.3 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Gemini QA:
+
+- Production user-attested AI Advisory preview: PASS.
+- Production user-attested AI Advisory PDF: PASS.
+- No visible JSON/object serialization issues: PASS.
+- No visible leaks: PASS.
+
+Remaining caveat:
+
+- Real-vs-mock visual distinction was not explicitly confirmed by the user.
+
 ## AI-1.2 Gemini Env MCP Follow-up
 
 Date: 2026-05-27.

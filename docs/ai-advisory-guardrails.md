@@ -93,6 +93,20 @@ Provider requirements:
 
 Production activation still requires secure environment configuration and smoke evidence.
 
+## Production Gemini QA Result
+
+AI-1.3 user-attested production QA reported:
+
+- preview AI Advisory visible.
+- PDF AI Advisory visible.
+- deterministic scores still visible.
+- no raw JSON.
+- no `[object Object]`.
+- no visible secrets/tokens/cookies/env vars/raw file content.
+- no visible errors.
+
+Full public launch remains outside this validation.
+
 ## AI-1.2 Production Activation Guardrail Result
 
 Date: 2026-05-27.
