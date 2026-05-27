@@ -139,3 +139,31 @@ npm run ai:guardrails
 ```
 
 The smoke test checks representative redaction expectations for database URLs, passwords, tokens, cookies, bearer strings, email addresses, storage paths and raw file content.
+
+## Runtime Monitoring Guardrails
+
+AI-OPS-1 adds safe runtime monitoring:
+
+- `getAiRuntimeStatus` returns provider status without secret values.
+- `/api/admin/ai/status` is admin-protected and `no-store`.
+- runtime events are in-memory and only include safe metadata.
+- fallback events are recorded without prompts or raw responses.
+- no DB schema was added.
+
+Run:
+
+```bash
+npm run ai:fallback-drill
+```
+
+The fallback drill verifies:
+
+- missing-key provider fallback.
+- provider-error fallback.
+- timeout classification.
+- fallback event recording.
+- input truncation before provider calls.
+- PDF does not dump raw AI JSON.
+- admin status route requires admin auth.
+
+If the real provider fails, report preview and PDF must continue using deterministic sections.

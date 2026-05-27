@@ -8,6 +8,7 @@ import type {
   AiAdvisoryOutput,
   AiAdvisoryProviderStatus,
 } from "./aiAdvisoryTypes";
+import { recordAiRuntimeEvent, type AiRuntimeErrorCategory } from "./aiRuntimeStatus";
 
 type AiProviderJson = Omit<AiAdvisoryOutput, "providerStatus" | "generatedAt" | "provider" | "model">;
 
@@ -107,6 +108,18 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: numbe
   } finally {
     clearTimeout(timer);
   }
+}
+
+function getErrorCategory(error: unknown): AiRuntimeErrorCategory {
+  if (error instanceof Error && error.name === "AbortError") {
+    return "timeout";
+  }
+
+  if (error instanceof Error && /empty|json|parse|invalid/i.test(error.message)) {
+    return "invalid_response";
+  }
+
+  return "provider_error";
 }
 
 function priorityFromIndex(index: number): "high" | "medium" | "low" {
@@ -298,8 +311,27 @@ async function callOpenAiProvider(params: {
 
 export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<AiAdvisoryOutput> {
   const config = getAiAdvisoryConfig();
+  const startedAt = Date.now();
+
+  recordAiRuntimeEvent({
+    eventType: "ai_advisory_requested",
+    provider: config.provider,
+    model: config.model,
+    assessmentId: assessment.id,
+    status: "unknown",
+    errorCategory: "none",
+  });
 
   if (!config.enabled || config.provider === "none" || config.provider === "disabled") {
+    recordAiRuntimeEvent({
+      eventType: "ai_advisory_fallback_used",
+      provider: config.provider,
+      model: config.model,
+      assessmentId: assessment.id,
+      durationMs: Date.now() - startedAt,
+      status: "disabled",
+      errorCategory: "none",
+    });
     return emptyOutput(config, "disabled");
   }
 
@@ -307,11 +339,29 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
     const payload = buildAiAdvisoryContextPayload(assessment);
 
     if (config.provider === "mock") {
+      recordAiRuntimeEvent({
+        eventType: "ai_advisory_success",
+        provider: config.provider,
+        model: config.model,
+        assessmentId: assessment.id,
+        durationMs: Date.now() - startedAt,
+        status: "mock",
+        errorCategory: "none",
+      });
       return buildMockAdvisory(payload, config);
     }
 
     const apiKey = getAiAdvisoryProviderKey(config.provider);
     if (!apiKey) {
+      recordAiRuntimeEvent({
+        eventType: "ai_advisory_fallback_used",
+        provider: config.provider,
+        model: config.model,
+        assessmentId: assessment.id,
+        durationMs: Date.now() - startedAt,
+        status: "unavailable",
+        errorCategory: "config_missing",
+      });
       return {
         ...emptyOutput(config, "unavailable"),
         limitations: [
@@ -330,6 +380,16 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
       ? await callGeminiProvider({ config, apiKey, prompt, fallback })
       : await callOpenAiProvider({ config, apiKey, prompt, fallback });
 
+    recordAiRuntimeEvent({
+      eventType: "ai_advisory_success",
+      provider: config.provider,
+      model: config.model,
+      assessmentId: assessment.id,
+      durationMs: Date.now() - startedAt,
+      status: "success",
+      errorCategory: "none",
+    });
+
     return {
       ...output,
       providerStatus: "success",
@@ -341,7 +401,26 @@ export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<
         "AI advisory is generated from sanitized metadata and is not a deterministic readiness score.",
       ].slice(0, 8),
     };
-  } catch {
+  } catch (error) {
+    const errorCategory = getErrorCategory(error);
+    recordAiRuntimeEvent({
+      eventType: errorCategory === "timeout" ? "ai_advisory_timeout" : "ai_advisory_failed",
+      provider: config.provider,
+      model: config.model,
+      assessmentId: assessment.id,
+      durationMs: Date.now() - startedAt,
+      status: errorCategory === "timeout" ? "timeout" : "error",
+      errorCategory,
+    });
+    recordAiRuntimeEvent({
+      eventType: "ai_advisory_fallback_used",
+      provider: config.provider,
+      model: config.model,
+      assessmentId: assessment.id,
+      durationMs: Date.now() - startedAt,
+      status: errorCategory === "timeout" ? "timeout" : "error",
+      errorCategory,
+    });
     return emptyOutput(config, "error");
   }
 }

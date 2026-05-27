@@ -274,3 +274,23 @@ Reason:
 - Hostinger config was not changed and no redeploy/restart was performed.
 - OpenAI was not activated.
 - Real Gemini preview/PDF smoke remains pending.
+
+## AI-OPS-1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational status:
+
+- Safe Gemini runtime monitoring was added.
+- Admin-protected AI status endpoint was added for future ADMIN-1 console.
+- Fallback drill passed locally.
+- Preview/PDF fallback behavior remains non-blocking by design.
+- No Hostinger config was changed.
+- OpenAI was not activated.
+- No DB schema or Prisma migration was introduced.

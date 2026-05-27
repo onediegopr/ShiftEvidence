@@ -195,3 +195,48 @@ Manual secure activation remains:
 4. Run public route smoke.
 5. Run authenticated preview and PDF smoke with synthetic QA data.
 6. Roll back with `AI_ADVISORY_ENABLED=false` if preview/PDF breaks.
+
+## AI-OPS-1 Runtime Monitoring and Fallback
+
+Date: 2026-05-27.
+
+Operational additions:
+
+- Safe server-side runtime status helper: `getAiRuntimeStatus`.
+- Admin-protected status endpoint: `GET /api/admin/ai/status`.
+- In-memory per-process counters for requests, successes, errors, timeouts and fallback usage.
+- Controlled fallback drill script: `npm run ai:fallback-drill`.
+
+The status helper and endpoint expose only safe metadata:
+
+- enabled/disabled state.
+- provider and model labels.
+- provider key presence as booleans.
+- timeout and input/output limits.
+- last status and last error category.
+- fallback availability.
+- explicit `secretosExpuestos=false` and `archivosCrudosEnviados=false`.
+
+They do not expose:
+
+- API keys.
+- env var values.
+- prompts.
+- raw AI responses.
+- cookies/tokens.
+- raw uploaded file contents.
+- private storage paths.
+
+Operational rollback remains:
+
+```text
+AI_ADVISORY_ENABLED=false
+```
+
+or:
+
+```text
+AI_ADVISORY_PROVIDER=disabled
+```
+
+ADMIN-1 can now build a Spanish admin console using the protected status endpoint without adding DB schema.

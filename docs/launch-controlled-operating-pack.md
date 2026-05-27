@@ -12,6 +12,26 @@ Public launch: NO.
 
 Adaptive Migration Context Intake: implemented locally in CONTEXT-1, pending authorized push/deploy validation.
 
+## AI-OPS-1 — Gemini Runtime Monitoring
+
+Date: 2026-05-27.
+
+AI Advisory now has a minimum operational layer for controlled launch:
+
+- Safe runtime status helper.
+- Admin-protected status endpoint for future Spanish admin console.
+- In-memory success/error/timeout/fallback counters.
+- Local fallback drill via `npm run ai:fallback-drill`.
+- Rollback path remains `AI_ADVISORY_ENABLED=false` or `AI_ADVISORY_PROVIDER=disabled`.
+
+Operational rules:
+
+- Do not print or store provider secrets.
+- Do not log prompts or raw AI responses.
+- Do not send raw uploaded files to AI.
+- Keep deterministic readiness/confidence scores as source of truth.
+- Do not activate OpenAI unless explicitly approved in a later hito.
+
 ## What Controlled Launch Means
 
 Controlled launch means limited, supervised production usage.

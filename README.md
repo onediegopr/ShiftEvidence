@@ -134,6 +134,7 @@ Optional for future work:
 - Pricing checkout is not implemented yet.
 
 ## Documentation
+- `docs/hito-ai-ops-1-gemini-runtime-monitoring-fallback.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

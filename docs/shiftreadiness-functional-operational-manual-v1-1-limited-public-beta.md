@@ -1,4 +1,4 @@
-# ShiftReadiness - Functional & Operational Manual v1.1
+# ShiftReadiness — Functional & Operational Manual v1.1
 ## Limited Public Beta / Controlled Launch Edition
 
 **Tagline:** Infrastructure readiness before you migrate.
@@ -9,6 +9,20 @@
 **Controlled production launch:** SÍ  
 **Limited public beta:** SÍ  
 **Full public launch:** NO
+
+## AI-OPS-1 Runtime Monitoring Addendum
+
+Fecha: 2026-05-27.
+
+ShiftReadiness incluye una capa minima de operacion para AI Advisory:
+
+- estado runtime seguro sin secrets;
+- endpoint admin protegido `/api/admin/ai/status`;
+- metricas en memoria por proceso para requests, success, error, timeout y fallback;
+- fallback drill local con `npm run ai:fallback-drill`;
+- rollback con `AI_ADVISORY_ENABLED=false` o `AI_ADVISORY_PROVIDER=disabled`.
+
+La IA sigue siendo advisory. No reemplaza readiness score, evidence confidence score ni risk findings deterministas. OpenAI no esta activo.
 
 ## Indice
 
