@@ -69,7 +69,7 @@ What can be done today:
 
 What must not be treated as public-launch ready yet:
 
-- Self-service password recovery.
+- Self-service password recovery in production until migration/deploy/provider smoke is completed.
 - Public onboarding at scale.
 - Automated checkout/payment.
 - Fully polished admin cross-owner report UX.
@@ -134,7 +134,7 @@ It is:
 | PDF preview/full | OK |
 | Admin/entitlement | OK by manual browser validation |
 | Redirect `0.0.0.0` bug | Fixed |
-| Password recovery | Pending |
+| Password recovery | Implemented in code; production migration/deploy/provider smoke pending |
 | Hostinger logs | Pending / not reviewed from Codex |
 | QA cleanup/retention | Pending |
 | Controlled production launch | SÍ |
@@ -468,7 +468,7 @@ If admin cannot enter:
 
 - Confirm user exists.
 - Confirm `ADMIN_EMAILS` includes the admin conceptually, without printing values.
-- Use manual support until password recovery exists.
+- Use manual support until password recovery is migrated, deployed and smoke-tested in production.
 
 ## 21. Admin Operating Runbook
 
@@ -514,21 +514,22 @@ Policy initial state:
 
 Current state:
 
-- Forgot password/password recovery is not implemented.
+- Forgot password/password recovery is implemented in code.
+- Production activation requires controlled Prisma migration, app deploy and provider smoke.
 
 Controlled launch mitigation:
 
-- Manual account support.
+- Manual account support remains the fallback.
 - Limited users.
 - Admin-supervised access.
 
 Public launch decision:
 
-- Public launch should not proceed without password recovery.
+- Public launch should not proceed until password recovery is active in production and validated with a real provider or explicit support policy.
 
 Recommended hito:
 
-- `HITO AUTH-1 — Password Recovery + Account Support`.
+- `HITO AUTH-1-PROD - Password Recovery Production Migration + Provider Smoke`.
 
 ## 25. Hostinger Logs
 
@@ -555,7 +556,7 @@ Risk:
 
 | Risk | Controlled launch | Public launch |
 | --- | --- | --- |
-| Password recovery pending | Accepted with manual support | Blocking |
+| Password recovery implemented in code, pending production activation | Accepted with manual support | Blocking until active |
 | Hostinger logs pending | Accepted with manual monitoring | Blocking until reviewed |
 | QA cleanup pending | Accepted short-term | Blocking before scale |
 | Admin UX gap cross-owner | Accepted for trained admins | Must improve |
@@ -566,7 +567,7 @@ Risk:
 
 Before public launch:
 
-- Implement password recovery.
+- Deploy and smoke password recovery with production migration and email provider.
 - Review production logs/monitoring.
 - Define QA cleanup/retention.
 - Improve admin cross-owner report UX.
@@ -578,7 +579,7 @@ Before public launch:
 
 Priority:
 
-1. `AUTH-1 — Password Recovery + Account Support`.
+1. `AUTH-1-PROD - Password Recovery Production Migration + Provider Smoke`.
 2. `OPS-1 — QA Data Cleanup / Retention`.
 3. `ADMIN-UX-1 — Admin-safe report view`.
 4. `13.1 — Authenticated Multi-Assessment Browser QA`.
@@ -611,7 +612,7 @@ Rollback principles:
 - [x] Admin manual validation.
 - [x] Controlled launch decision.
 - [ ] Public launch.
-- [ ] Password recovery.
+- [ ] Password recovery active in production.
 - [ ] QA cleanup.
 - [ ] Logs reviewed.
 

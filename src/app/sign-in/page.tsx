@@ -93,7 +93,10 @@ export default function SignInPage() {
             />
           </label>
           <label>
-            Password
+            <span className="auth-label-row">
+              Password
+              <Link href="/forgot-password">Forgot password?</Link>
+            </span>
             <input
               type="password"
               value={password}

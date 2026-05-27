@@ -6,7 +6,7 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active; public launch pending password recovery/account support.
+Controlled production launch active; public launch pending production password recovery activation, logs review and QA cleanup.
 
 ## Stack
 - Next.js App Router
@@ -24,6 +24,8 @@ Controlled production launch active; public launch pending password recovery/acc
 ## Auth routes
 - `/sign-in`
 - `/sign-up`
+- `/forgot-password`
+- `/reset-password`
 
 ## Private routes
 - `/dashboard`
@@ -58,6 +60,8 @@ Required:
 Optional for future work:
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
 
 ## Prisma
 - Schema: `prisma/schema.prisma`
@@ -74,6 +78,7 @@ Optional for future work:
 - PDF Preview v1 is implemented with private storage and secure download.
 - Manual unlock requests, protected admin review and entitlement grants are implemented without checkout.
 - Admin unlock hardening validates `ADMIN_EMAILS`, fail-closed behavior, non-admin blocking and entitlement idempotency.
+- Password recovery/account support is implemented in code with hashed reset tokens, one-time use and manual fallback; production use requires controlled migration/deploy and provider smoke.
 - Hostinger deployment hardening adds runtime env checks, storage permission checks, `prisma:deploy`, Node engine guidance and production smoke runbooks.
 - Hostinger production smoke is prepared but still requires real Hostinger access, production domain, runtime logs and storage validation before it can be marked OK.
 - Hito 9.2 remains gated until the Hostinger Production Access Gate is completed with real access details.

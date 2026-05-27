@@ -38,3 +38,23 @@ Required for public launch:
 If a pilot user loses access during controlled launch, support must be manual.
 
 Do not claim self-service account recovery exists until implemented and validated.
+
+## AUTH-1 Update
+
+`HITO AUTH-1` implemented the application-side password recovery flow:
+
+- `/sign-in` includes `Forgot password?`.
+- `/forgot-password` returns a neutral response.
+- `/reset-password?token=...` supports setting a new password.
+- Reset tokens are stored as hashes in `PasswordResetRequest`.
+- Tokens expire and are single-use.
+- Resend email delivery is supported when `RESEND_API_KEY` and `EMAIL_FROM` are configured.
+- Manual fallback remains available for controlled launch when no email provider is configured.
+
+Production activation still requires:
+
+- controlled Prisma deploy for migration `20260527190000_auth_password_recovery`;
+- controlled app deploy;
+- provider configuration for real self-service recovery.
+
+Public launch remains NO until production recovery is migrated, deployed and smoke-tested with real email delivery or an explicitly accepted support policy.

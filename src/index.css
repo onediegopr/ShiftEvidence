@@ -5226,11 +5226,37 @@ p {
     background: rgba(5, 7, 18, 0.95);
 }
 
+.auth-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.auth-label-row a {
+    color: hsl(var(--secondary));
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
 .auth-error {
     font-size: 0.88rem;
     color: #fca5a5;
     background: rgba(185, 28, 28, 0.15);
     border: 1px solid rgba(185, 28, 28, 0.25);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    line-height: 1.4;
+    text-align: left;
+    margin: 0;
+}
+
+.auth-success {
+    font-size: 0.88rem;
+    color: #a7f3d0;
+    background: rgba(5, 150, 105, 0.14);
+    border: 1px solid rgba(5, 150, 105, 0.28);
     padding: 0.75rem 1rem;
     border-radius: var(--radius-sm);
     line-height: 1.4;

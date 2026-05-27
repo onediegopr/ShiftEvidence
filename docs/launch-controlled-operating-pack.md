@@ -27,7 +27,7 @@ Not allowed yet:
 - Public launch at scale.
 - Mass marketing/ads.
 - Self-service paid checkout.
-- Claims that password recovery exists.
+- Claims that production self-service password recovery is fully active before migration/deploy/provider smoke is completed.
 - Untracked deletion of QA data.
 
 ## Daily Checklist
@@ -79,8 +79,21 @@ If launch must be paused:
 
 ## Accepted Risks
 
-- Password recovery pending.
+- Password recovery implemented in code but pending production migration/deploy/provider smoke.
 - Hostinger logs not reviewed from Codex.
 - QA cleanup pending.
 - Admin UX gap cross-owner.
 - Browser multi-assessment replay not automated by Codex.
+
+## AUTH-1 Account Support Update
+
+The application now includes password recovery code and UI:
+
+- `/sign-in` includes `Forgot password?`.
+- `/forgot-password` accepts recovery requests with a neutral response.
+- `/reset-password?token=...` accepts single-use reset tokens.
+- Reset requests are stored with hashed tokens.
+- Resend email delivery can be enabled with `RESEND_API_KEY` and `EMAIL_FROM`.
+- Without provider configuration, recovery requests fall back to manual support.
+
+Production use requires controlled migration and deploy. Do not run `prisma migrate reset`.
