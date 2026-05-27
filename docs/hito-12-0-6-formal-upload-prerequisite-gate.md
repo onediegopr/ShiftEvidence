@@ -97,5 +97,14 @@ Se ejecutó QA autenticado local posterior:
 - Bypass directo por `curl` contra Server Actions no alcanzó la action por protocolo de Next (`Failed to find Server Action`), por lo que queda pendiente una prueba browser-driven real del submit multipart.
 - Regresión parser P0: OK con `node scripts/qa-rvtools-parser-p0.mjs`.
 
+## HITO 12.0.8 Browser Multipart Outcome
+Se completó QA E2E con Google Chrome real vía DevTools Protocol:
+
+- Assessment incompleto: upload bloqueado, controles efectivamente disabled, `EvidenceFile` permaneció en `0`, no se guardó archivo y no corrió parser.
+- Assessment completo: submit multipart real creó `EvidenceFile`, guardó archivo en storage y dejó status `uploaded`.
+- Server-side guard se mantiene antes de storage, antes de `EvidenceFile` y antes de cualquier parser.
+- Regresión parser P0: OK.
+- Resultado: gate formal validado end-to-end localmente.
+
 ## Next Step
 Ejecutar QA autenticado manual y, si pasa, cerrar remoto con autorización explícita de push.

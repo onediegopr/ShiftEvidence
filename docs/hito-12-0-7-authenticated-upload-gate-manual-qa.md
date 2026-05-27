@@ -107,3 +107,13 @@ Conclusión server-side:
 - Gate server-side: implementado y auditado, con prueba directa de bypass limitada por protocolo Server Actions.
 - Recomendación: seguro para push si se acepta que la prueba de upload real completo queda como QA manual browser follow-up.
 - Production launched: NO.
+
+## HITO 12.0.8 Outcome
+El follow-up browser-driven quedó completado:
+
+- Browser real: Google Chrome vía DevTools Protocol.
+- Assessment incompleto: bloqueo efectivo, sin `EvidenceFile`, sin archivo guardado, sin parser.
+- Assessment completo: submit multipart real exitoso, `EvidenceFile` creado, archivo guardado en storage, status `uploaded`.
+- Parser P0 regression: OK.
+
+La limitación documentada en HITO 12.0.7 queda cerrada.
