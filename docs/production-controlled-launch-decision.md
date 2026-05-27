@@ -91,3 +91,20 @@ Date: 2026-05-27.
   - Fresh authenticated browser QA was not replayed with production cookies.
   - Admin UX gap cross-owner remains.
   - Public support/SLA and entitlement/commercial operating model need final definition.
+
+## PUBLIC-LAUNCH-2 Follow-up
+
+Date: 2026-05-27.
+
+Decision:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, controlled and low-volume.
+- Full public launch: NO.
+
+Reason:
+
+- Production routes and local build remain healthy.
+- Password recovery remains operational.
+- Logs, QA cleanup and fresh authenticated browser QA remain incomplete from Codex.
+- Public support/SLA and admin UX gap need finalization before broad public launch.

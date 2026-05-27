@@ -127,3 +127,19 @@ Reasons full public launch is not yet approved:
 Operational rule:
 
 - Treat any public users as limited beta users until `PUBLIC-LAUNCH-2` closes the remaining blockers.
+
+## PUBLIC-LAUNCH-2 Operating Update
+
+Date: 2026-05-27.
+
+Limited public beta remains approved under these conditions:
+
+- Low-volume selected users only.
+- Manual support.
+- Manual entitlement.
+- No paid self-service checkout.
+- No broad public launch language.
+- QA data retained only with `safe to delete` marking.
+- Issues captured with screenshots and assessment/report IDs.
+
+Full public launch remains NO until logs, QA cleanup, authenticated browser QA, admin UX and support/SLA are closed.

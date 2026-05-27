@@ -1,0 +1,83 @@
+# Limited Public Beta Operating Decision
+
+Date: 2026-05-27.
+
+## Decision
+
+ShiftReadiness remains in controlled production launch and may operate as a limited public beta.
+
+Full public launch remains NO.
+
+## Launch Type
+
+Controlled production launch with limited public beta access.
+
+## Who Can Use It
+
+Allowed:
+
+- Selected pilot users.
+- Invited public beta users.
+- Supervised demos.
+- Low-volume manual onboarding.
+
+Not allowed yet:
+
+- Broad public launch.
+- Mass paid self-service.
+- Automated checkout/payment claims.
+- High-volume marketing campaigns without monitoring/log review.
+
+## Operating Conditions
+
+- Keep user volume low.
+- Use manual support and manual entitlement.
+- Keep QA data marked `safe to delete`.
+- Do not delete QA data without inventory.
+- Monitor routes manually.
+- Review Hostinger logs when access is available.
+- Capture screenshots/IDs for support incidents.
+
+## Support Model
+
+Minimum support model for limited beta:
+
+- Support channel: manual operator/admin channel.
+- Response expectation: best-effort same business day for pilot/beta users.
+- Password recovery: self-service is operational; manual support remains fallback.
+- Upload support: collect assessment ID, file type and screenshot.
+- PDF/report support: collect assessment ID, report ID and exact action.
+- Entitlement support: handled manually by admin.
+
+Formal SLA is required before full public launch.
+
+## Commercial Model
+
+Current model:
+
+- Manual entitlement.
+- No automated checkout.
+- No paid self-service.
+
+Public paid self-service requires a separate payment/checkout hito.
+
+## Accepted Risks
+
+- Hostinger logs not reviewed from Codex.
+- QA cleanup not executed.
+- Authenticated multi-assessment/product-flow browser QA not replayed in this hito.
+- Admin cross-owner UX gap remains.
+- Support/SLA is manual and minimal.
+
+## Full Public Launch Blockers
+
+- Hostinger logs/runtime health review.
+- QA data inventory and cleanup/archive.
+- Authenticated browser QA for multi-assessment, upload, parser, report and PDF.
+- Admin-safe cross-owner report UX.
+- Formal support/SLA.
+- Payment/checkout only if the public model requires paid self-service.
+
+## Next Hito
+
+`PUBLIC-BETA-OPS-1 - Hostinger Logs Review + QA Data Inventory/Archive + Authenticated Browser QA`.

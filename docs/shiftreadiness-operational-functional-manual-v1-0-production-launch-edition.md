@@ -648,6 +648,35 @@ Next hito:
 
 - `PUBLIC-LAUNCH-2 - Logs, QA Cleanup, Authenticated Browser QA + Public Beta Operating Decision`.
 
+## 33. Limited Public Beta Operating Decision
+
+Date: 2026-05-27.
+
+Decision:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Limited public beta conditions:
+
+- Selected users only.
+- Low-volume supervised usage.
+- Manual support.
+- Manual entitlement.
+- No automated checkout/payment claims.
+- No automatic migration claims.
+- QA data must remain marked `safe to delete`.
+
+Full public launch remains blocked by:
+
+- Hostinger logs/runtime health review.
+- QA data cleanup/archive.
+- Authenticated browser QA replay.
+- Admin cross-owner UX gap.
+- Formal public support/SLA.
+- Payment/checkout if paid self-service is required.
+
 ## 31. Glossary
 
 - Assessment: one readiness job/work item.
