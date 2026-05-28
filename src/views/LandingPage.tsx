@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
@@ -26,6 +26,11 @@ import {
   FileSpreadsheet,
   DollarSign,
   AlertTriangle,
+  Building2,
+  Factory,
+  HeartPulse,
+  Network,
+  X,
 } from "lucide-react";
 
 const appCopy = {
@@ -66,10 +71,94 @@ const appCopy = {
     "Shift Evidence is an independent assessment service. It is not affiliated with, endorsed by or certified by VMware, Broadcom or Proxmox. VMware, Broadcom and Proxmox names may be trademarks of their respective owners and are used only to describe migration context and compatibility targets.",
 } as const;
 
+const industryEvaluations = [
+  {
+    id: "metalurgica-industrial",
+    label: "METALÚRGICA INDUSTRIAL",
+    Icon: Factory,
+    quote: "Necesitábamos entender si renovar VMware era una decisión financiera o un riesgo técnico mal medido.",
+    tags: ["Renovación", "Costos", "Riesgo"],
+    title: "Empresa metalúrgica con renovación VMware próxima",
+    industry: "Manufactura / metalúrgica",
+    context: "Entorno VMware mediano, operación crítica y presión creciente sobre costos de renovación.",
+    decision: "Renovar, negociar o iniciar una salida progresiva hacia Proxmox.",
+    helped: [
+      "Exposición estimada de licenciamiento en USD",
+      "Impacto de hosts, sockets, VMs y supuestos financieros",
+      "Workloads candidatos para una primera etapa de evaluación",
+      "Brechas de evidencia antes de tomar una decisión técnica",
+    ],
+    result:
+      "La conversación dejó de estar centrada sólo en cuánto cuesta VMware y pasó a mostrar riesgo, evidencia, ahorro potencial y próximos pasos. La dirección pudo separar decisión financiera, riesgo técnico y estrategia de negociación.",
+  },
+  {
+    id: "msp-regional",
+    label: "MSP REGIONAL",
+    Icon: Network,
+    quote: "Había muchos entornos VMware, pero no todos justificaban el mismo esfuerzo comercial ni técnico.",
+    tags: ["Clientes", "Pipeline", "Priorización"],
+    title: "Proveedor de servicios administrados con múltiples clientes VMware",
+    industry: "MSP / servicios de infraestructura",
+    context: "Múltiples clientes con entornos VMware heterogéneos, distintos tamaños y diferentes niveles de urgencia comercial.",
+    decision: "Priorizar oportunidades reales sin vender migraciones a ciegas.",
+    helped: [
+      "Comparación de exposición económica por entorno",
+      "Estimación de ahorro potencial en USD",
+      "Nivel de confianza del assessment según calidad de evidencia",
+      "Faltantes técnicos antes de presentar una propuesta comercial",
+    ],
+    result:
+      "El MSP pudo transformar una preocupación general del mercado en una conversación concreta con clientes: qué entorno revisar primero, dónde hay mayor impacto económico y qué información falta antes de prometer una migración.",
+  },
+  {
+    id: "grupo-multisede",
+    label: "GRUPO MULTISEDE",
+    Icon: Building2,
+    quote: "Antes de decidir una salida, necesitábamos saber qué información faltaba y qué cargas eran realmente críticas.",
+    tags: ["Inventario", "Sedes", "Evidencia"],
+    title: "Grupo empresarial multisede con inventario incompleto",
+    industry: "Corporativo multisede / servicios internos",
+    context: "Varias sedes, documentación parcial, ownership poco claro y dudas sobre criticidad real de cada workload.",
+    decision: "Evaluar Proxmox sin asumir riesgos innecesarios por falta de evidencia.",
+    helped: [
+      "Calidad del inventario disponible",
+      "VMs con evidencia incompleta o riesgo operativo",
+      "Dependencias y supuestos que requieren validación manual",
+      "Próximos pasos para mejorar la confianza del diagnóstico",
+    ],
+    result:
+      "La empresa pudo pasar de una conversación desordenada sobre salir de VMware a una evaluación estructurada, con brechas visibles, riesgos priorizados y una hoja de ruta inicial.",
+  },
+  {
+    id: "servicios-criticos-salud",
+    label: "SERVICIOS CRÍTICOS DE SALUD",
+    Icon: HeartPulse,
+    quote: "No se trataba sólo de ahorrar: necesitábamos entender el riesgo operativo antes de mover cargas sensibles.",
+    tags: ["Continuidad", "Criticidad", "Validación"],
+    title: "Organización de salud con workloads sensibles",
+    industry: "Salud / servicios críticos",
+    context: "Entorno virtualizado con sistemas sensibles, dependencia operativa alta y baja tolerancia a interrupciones.",
+    decision: "Entender si una alternativa a VMware podía evaluarse sin comprometer continuidad, seguridad ni trazabilidad.",
+    helped: [
+      "Workloads que requieren validación manual antes de cualquier movimiento",
+      "Riesgos por criticidad operativa y continuidad",
+      "Supuestos financieros separados del riesgo técnico",
+      "Próximos pasos para una evaluación controlada",
+    ],
+    result:
+      "El análisis permitió separar ahorro potencial de riesgo operativo. En lugar de presentar Proxmox como una migración inmediata, la evaluación ayudó a definir qué debía validarse primero y qué cargas no podían tratarse como candidatas tempranas.",
+  },
+] as const;
+
+const privacyNote =
+  "Por confidencialidad y seguridad operativa, no publicamos nombres de empresas, marcas, ubicaciones ni detalles identificables de infraestructura. Esta evaluación se presenta como ejemplo representativo por industria y tipo de decisión.";
+
 export default function LandingPage() {
   const [ctaEmail, setCtaEmail] = useState("");
+  const [selectedEvaluationId, setSelectedEvaluationId] = useState<string | null>(null);
   const vmwareLogoSrc = assetSrc(vmwareLogo);
   const proxmoxLogoSrc = assetSrc(proxmoxLogo);
+  const selectedEvaluation = industryEvaluations.find((evaluation) => evaluation.id === selectedEvaluationId);
 
   const handleOpenScanner = () => {
     window.location.href = "/sign-up";
@@ -79,6 +168,27 @@ export default function LandingPage() {
     e.preventDefault();
     window.location.href = `/sign-up?email=${encodeURIComponent(ctaEmail)}`;
   };
+
+  useEffect(() => {
+    if (!selectedEvaluationId) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedEvaluationId(null);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedEvaluationId]);
 
   return (
     <>
@@ -449,6 +559,61 @@ export default function LandingPage() {
 
         <Process />
 
+        <section
+          id="industry-evaluations"
+          className="section industry-evaluations-section"
+          aria-labelledby="industry-evaluations-title"
+        >
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="industry-evaluations-header">
+              <div className="badge badge-cyan">Ejemplos privados</div>
+              <h2 id="industry-evaluations-title">Evaluaciones privadas por industria</h2>
+              <p>
+                Organizaciones de distintas industrias enfrentan la misma pregunta: cuánto cuesta seguir con VMware,
+                qué tan realista es migrar a Proxmox y qué riesgos deben entender antes de decidir.
+              </p>
+            </div>
+
+            <div className="industry-evaluation-grid">
+              {industryEvaluations.map((evaluation) => {
+                const Icon = evaluation.Icon;
+
+                return (
+                  <button
+                    key={evaluation.id}
+                    type="button"
+                    className="glass-card industry-evaluation-card"
+                    onClick={() => setSelectedEvaluationId(evaluation.id)}
+                    aria-haspopup="dialog"
+                  >
+                    <span className="industry-evaluation-mark" aria-hidden="true">
+                      <Icon size={24} />
+                    </span>
+                    <span className="industry-evaluation-label">{evaluation.label}</span>
+                    <span className="industry-evaluation-quote">“{evaluation.quote}”</span>
+                    <span className="industry-evaluation-tags" aria-label={`Temas: ${evaluation.tags.join(", ")}`}>
+                      {evaluation.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </span>
+                    <span className="industry-evaluation-link">
+                      Ver evaluación
+                      <ArrowRight size={15} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <p className="industry-evaluations-disclaimer">
+              Por confidencialidad y seguridad operativa, no publicamos nombres de empresas, marcas ni detalles
+              identificables de infraestructura. Las evaluaciones se presentan como ejemplos representativos por
+              industria y tipo de decisión.
+            </p>
+          </div>
+        </section>
+
         <section id="faq" className="section faq-section">
           <div className="container">
             <div className="text-center mb-8">
@@ -556,6 +721,71 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+
+      {selectedEvaluation ? (
+        <div
+          className="industry-evaluation-modal-overlay"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedEvaluationId(null);
+            }
+          }}
+        >
+          <div
+            className="glass-card industry-evaluation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`industry-evaluation-modal-title-${selectedEvaluation.id}`}
+          >
+            <button
+              type="button"
+              className="industry-evaluation-modal-close"
+              onClick={() => setSelectedEvaluationId(null)}
+              aria-label="Cerrar evaluación"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="industry-evaluation-modal-kicker">
+              <span>Ejemplo privado</span>
+              <strong>{selectedEvaluation.industry}</strong>
+            </div>
+
+            <h2 id={`industry-evaluation-modal-title-${selectedEvaluation.id}`}>{selectedEvaluation.title}</h2>
+
+            <div className="industry-evaluation-modal-grid">
+              <div>
+                <h3>Contexto</h3>
+                <p>{selectedEvaluation.context}</p>
+              </div>
+              <div>
+                <h3>Decisión en juego</h3>
+                <p>{selectedEvaluation.decision}</p>
+              </div>
+            </div>
+
+            <div className="industry-evaluation-modal-block">
+              <h3>Lo que ShiftReadiness permite ordenar</h3>
+              <ul>
+                {selectedEvaluation.helped.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="industry-evaluation-modal-block industry-evaluation-result">
+              <h3>Resultado del análisis</h3>
+              <p>{selectedEvaluation.result}</p>
+            </div>
+
+            <div className="industry-evaluation-privacy">
+              <strong>Nota de privacidad</strong>
+              <p>{privacyNote}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <Footer />
     </>
