@@ -532,3 +532,28 @@ Security:
 - No impersonation.
 
 ADMIN-4 improves controlled-launch hardening. It does not approve full public launch.
+
+## ADMIN-4 Production Ops Smoke
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, controlled/low-volume/invitation-only.
+- Full public launch: NO.
+
+User-attested authenticated production result:
+
+- `/dashboard/admin` loaded for admin.
+- `Configuracion Operativa`, `IA y Consumo` and `Auditoria` loaded.
+- No secrets were visible.
+- AI runtime `disabled` worked without preview/test crash.
+- AI runtime `mock` worked without crash.
+- AI runtime was restored to `env/gemini`.
+- Gemini returned to operational state.
+- Audit recorded actions.
+- PDF/download and assessment creation ended enabled.
+- Visible errors: none reported.
+
+ADMIN-4 runtime controls are production-ready for controlled launch operations. This does not approve full public launch.

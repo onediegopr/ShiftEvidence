@@ -88,6 +88,26 @@ Limitaciones:
 - no se declara full public launch;
 - `uploads`, `registro publico` y `modo mantenimiento` quedan como settings operativos base para hardening futuro.
 
+## ADMIN-4 production ops smoke
+
+Fecha: 2026-05-28.
+
+La validacion autenticada user-attested confirmo:
+
+- consola admin carga;
+- `Configuracion Operativa` carga;
+- `IA y Consumo` carga;
+- `Auditoria` carga;
+- no secrets visibles;
+- IA puede apagarse por runtime setting sin crashear preview/test;
+- IA puede volver a mock;
+- IA puede restaurarse a `env/gemini`;
+- auditoria registra acciones;
+- estado final queda operativo: IA `env/gemini`, PDF/download enabled, assessment creation enabled;
+- errores visibles: no reportados.
+
+Full public launch sigue NO.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

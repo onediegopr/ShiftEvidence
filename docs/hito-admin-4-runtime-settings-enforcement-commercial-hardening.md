@@ -196,3 +196,29 @@ Requeridas para cierre:
 - Ready for production migration smoke if schema changed: no aplica, no hubo schema.
 - Ready for pre-launch hardening: SI.
 - Ready for full public launch: NO.
+
+## Production ops smoke
+
+Fecha: 2026-05-28.
+
+`ADMIN-4-PROD-OPS-SMOKE` recibio evidencia user-attested PASS:
+
+- admin autenticado carga `/dashboard/admin`;
+- `Configuracion Operativa`, `IA y Consumo` y `Auditoria` cargan;
+- no secrets visibles;
+- IA pudo cambiar a `disabled` sin crashear preview/test;
+- auditoria registro acciones;
+- IA pudo cambiar a `mock` sin crashear;
+- IA fue restaurada a `env/gemini`;
+- Gemini volvio operativo;
+- PDF/download quedaron enabled;
+- assessment creation quedo enabled;
+- errores visibles: ninguno reportado.
+
+Estado final operativo:
+
+- IA: `env/gemini`.
+- PDF/download: enabled.
+- Assessment creation: enabled.
+- OpenAI: no activo.
+- Full public launch: NO.

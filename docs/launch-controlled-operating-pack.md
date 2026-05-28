@@ -141,6 +141,15 @@ Operating rules:
 - Do not use runtime settings as billing automation yet.
 - Keep full public launch as NO until public-launch criteria close.
 
+Production ops smoke:
+
+- Authenticated admin user-attested QA passed.
+- AI runtime was changed to `disabled`, then `mock`, then restored to `env/gemini`.
+- Preview/test did not crash during disabled/mock states.
+- Audit recorded actions.
+- No secrets were visible.
+- Final state: AI `env/gemini`, PDF/download enabled, assessment creation enabled.
+
 ## Rollback / Pause
 
 If launch must be paused:

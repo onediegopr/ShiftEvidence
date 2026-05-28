@@ -51,6 +51,8 @@ ADMIN-3-PROD-MIGRATION-SMOKE applied the ADMIN-3 migration in the production Neo
 
 ADMIN-4 adds runtime operational settings and enforcement without a new schema migration. Admin can control AI runtime mode (`env`, `disabled`, `mock`, `gemini`), budget blocking, PDF generation/downloads and assessment creation through non-secret `SystemSetting` overrides. AI/PDF/assessment enforcement returns safe fallbacks or Spanish block messages, records audit/usage events, and does not edit Hostinger env vars or secrets. Full public launch remains NO.
 
+ADMIN-4-PROD-OPS-SMOKE received user-attested authenticated production evidence: admin console and operational settings load, AI runtime toggles `disabled`, `mock` and `env/gemini` work without crashes, audit records actions, no secrets are visible, and final production state is operational with AI `env/gemini`, PDF/download enabled and assessment creation enabled. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -165,6 +167,7 @@ Optional for future work:
 - `docs/hito-admin-3-budgets-entitlements-opportunities.md`
 - `docs/hito-admin-3-prod-migration-smoke.md`
 - `docs/hito-admin-4-runtime-settings-enforcement-commercial-hardening.md`
+- `docs/hito-admin-4-prod-ops-smoke.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`
