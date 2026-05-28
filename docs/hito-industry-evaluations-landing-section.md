@@ -1,29 +1,35 @@
 # HITO Industry Evaluations Landing Section
 
-Fecha: 2026-05-28.
+Date: 2026-05-28.
 
-## Objetivo
+## Objective
 
-Agregar a la landing publica una seccion de credibilidad comercial llamada:
+Add and maintain a public landing credibility section for ShiftReadiness:
 
-- `Evaluaciones privadas por industria`
+- `Private Industry Readiness Examples`
 
-La seccion muestra ejemplos representativos de evaluaciones privadas por tipo de industria y decision, sin publicar nombres de empresas, marcas, ubicaciones ni detalles identificables de infraestructura.
+The section presents representative, synthetic/anonymized-style private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details.
 
-## Ubicacion
+## Public Copy Correction
 
-Archivo principal:
+COPY-FIX-1 corrected the public section from Spanish to English because the public marketing site is in English.
+
+Admin and internal console copy remain out of scope and may continue to use Spanish where appropriate.
+
+## Location
+
+Main file:
 
 - `src/views/LandingPage.tsx`
 
-Ubicacion en la landing:
+Landing placement:
 
-- Despues del bloque publico de demo/sample report.
-- Despues de `Process`.
-- Antes del FAQ y del CTA final.
-- Anchor publico: `#industry-evaluations`.
+- After the public value/process sections.
+- After `Process`.
+- Before FAQ and the final CTA.
+- Public anchor: `#industry-evaluations`.
 
-No se modificaron:
+Not modified by this section:
 
 - `/demo`.
 - `/sample-report`.
@@ -32,71 +38,78 @@ No se modificaron:
 - parser.
 - PDF/report generation.
 - assessment flow.
-- logica de negocio.
+- business logic.
 
-## Evaluaciones incluidas
+## Evaluations Included
 
-Se agregaron 4 cards compactas:
+The section includes 4 compact cards:
 
-- Metalurgica industrial: renovacion, costos, riesgo.
-- MSP regional: clientes, pipeline, priorizacion.
-- Grupo multisede: inventario, sedes, evidencia.
-- Servicios criticos de salud: continuidad, criticidad, validacion.
+- Manufacturing: renewal pressure, cost risk, pilot planning.
+- Financial Services: evidence confidence, governance and production wave approval.
+- Healthcare / Regulated Operations: continuity, criticality and validation.
+- MSP / IT Services: client pipeline qualification and repeatable readiness workflow.
 
-Cada card abre un modal con:
+Each card opens a modal with:
 
-- titulo;
-- industria;
-- contexto;
-- decision en juego;
-- lo que ShiftReadiness permite ordenar;
-- resultado del analisis;
-- nota de privacidad.
+- title;
+- industry;
+- scenario;
+- key signals;
+- readiness interpretation;
+- evidence gaps;
+- suggested next step;
+- disclaimer.
 
-## Decisiones de privacidad y copy
+## Privacy And Claim Safety
 
-- No se usan logos reales.
-- No se usan nombres reales de empresas.
-- No se usan fotos de personas.
-- No se afirma que sean testimonios publicos, casos reales verificables o clientes verificados.
-- Se presentan como ejemplos representativos y anonimizados por industria y tipo de decision.
-- No se prometen ahorros especificos.
-- Las menciones a ahorro potencial, exposicion estimada y supuestos financieros se mantienen como evaluacion/modelado.
-- La seccion esta escrita en espanol con tono enterprise y sobrio.
+- No real logos are used.
+- No real company names are used.
+- No photos of people are used.
+- The copy does not claim public testimonials.
+- The copy does not claim verified public case studies.
+- The copy does not claim real customers.
+- The examples are representative, synthetic/anonymized-style scenarios.
+- No specific savings are promised.
+- No zero-downtime or 100% success claims are made.
+- No migration automation claim is made.
+- No customer data or sensitive infrastructure data is included.
 
 ## UX/UI
 
-- Cards compactas en grid responsive.
-- 4 columnas en desktop cuando el ancho lo permite.
-- 2x2 en anchos intermedios.
-- Cards apiladas en mobile.
-- CTA `Ver evaluacion` en cada card.
-- Modal responsive con overlay oscuro.
-- Cierre por boton, ESC y click fuera.
-- Botones reales para abrir modal.
-- Modal con `role="dialog"` y `aria-modal="true"`.
+- Compact cards in a responsive grid.
+- 4 columns on desktop when width allows.
+- 2x2 layout on intermediate widths.
+- Vertical stack on mobile.
+- CTA: `View evaluation`.
+- Responsive modal with dark overlay.
+- Modal closes by button, ESC and outside click.
+- Cards are real buttons.
+- Modal uses `role="dialog"` and `aria-modal="true"`.
 
-## Archivos modificados
+## Files Modified
 
 - `src/views/LandingPage.tsx`
 - `src/index.css`
-
-## Archivos creados
-
 - `docs/hito-industry-evaluations-landing-section.md`
 
-## Validaciones
+## Validation History
 
-Ejecutadas:
+Initial implementation:
 
 - `npm run lint`: OK.
 - `npm run typecheck`: OK.
-- `npm run build`: OK, con warning NFT conocido no bloqueante.
-- Smoke local: `/`, `/demo`, `/sample-report`, `/shiftreadiness` OK; `/dashboard` y `/dashboard/admin` redirigen a `/sign-in`.
-- QA interactivo: 4 cards detectadas; cada card abre su modal; cierre por boton, ESC y click fuera validado.
+- `npm run build`: OK, with known non-blocking NFT warning.
+- Local smoke: `/`, `/demo`, `/sample-report`, `/shiftreadiness` OK; `/dashboard` and `/dashboard/admin` redirect to `/sign-in`.
+- Interactive QA: 4 cards detected; each card opens its modal; close by button, ESC and outside click validated.
 
-## Riesgos pendientes
+COPY-FIX-1:
 
-- Visual QA en navegador real puede ajustar spacing fino si se desea.
-- No hay tracking de clicks en `Ver evaluacion`.
-- La seccion no debe presentarse como testimonio publico verificable ni como cliente real identificable.
+- Public section copy corrected to English.
+- Modal copy corrected to English.
+- Disclaimer corrected to English.
+- Documentation corrected to English.
+
+## Pending Risks
+
+- HCDN may temporarily serve older cached HTML for `/` until cache is purged or expires.
+- The section must not be presented as a verified customer testimonial or public case study.

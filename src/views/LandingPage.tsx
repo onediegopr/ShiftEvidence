@@ -73,85 +73,93 @@ const appCopy = {
 
 const industryEvaluations = [
   {
-    id: "metalurgica-industrial",
-    label: "METALÚRGICA INDUSTRIAL",
+    id: "manufacturing-readiness",
+    label: "MANUFACTURING",
     Icon: Factory,
-    quote: "Necesitábamos entender si renovar VMware era una decisión financiera o un riesgo técnico mal medido.",
-    tags: ["Renovación", "Costos", "Riesgo"],
-    title: "Empresa metalúrgica con renovación VMware próxima",
-    industry: "Manufactura / metalúrgica",
-    context: "Entorno VMware mediano, operación crítica y presión creciente sobre costos de renovación.",
-    decision: "Renovar, negociar o iniciar una salida progresiva hacia Proxmox.",
-    helped: [
-      "Exposición estimada de licenciamiento en USD",
-      "Impacto de hosts, sockets, VMs y supuestos financieros",
-      "Workloads candidatos para una primera etapa de evaluación",
-      "Brechas de evidencia antes de tomar una decisión técnica",
+    quote: "A mixed VMware estate with ERP, SQL and file services required wave planning before any Proxmox pilot.",
+    tags: ["Renewal", "Cost risk", "Pilot"],
+    title: "Manufacturing environment preparing for VMware renewal",
+    industry: "Manufacturing / industrial operations",
+    scenario:
+      "A medium VMware estate included production file services, database workloads and operational systems under renewal cost pressure.",
+    keySignals: [
+      "ERP, SQL and file services needed separate risk treatment",
+      "Early pilot candidates existed, but not among critical workloads",
+      "Backup and dependency evidence would materially change confidence",
+      "Financial exposure needed to be separated from technical migration risk",
     ],
-    result:
-      "La conversación dejó de estar centrada sólo en cuánto cuesta VMware y pasó a mostrar riesgo, evidencia, ahorro potencial y próximos pasos. La dirección pudo separar decisión financiera, riesgo técnico y estrategia de negociación.",
+    readinessInterpretation:
+      "The environment was suitable for an initial readiness assessment, but critical workloads should not enter early waves without backup and dependency validation.",
+    evidenceGaps: ["Backup validation", "Application dependency map", "Pilot rollback assumptions"],
+    suggestedNextStep: "Run a controlled pilot with low-risk workloads first.",
   },
   {
-    id: "msp-regional",
-    label: "MSP REGIONAL",
-    Icon: Network,
-    quote: "Había muchos entornos VMware, pero no todos justificaban el mismo esfuerzo comercial ni técnico.",
-    tags: ["Clientes", "Pipeline", "Priorización"],
-    title: "Proveedor de servicios administrados con múltiples clientes VMware",
-    industry: "MSP / servicios de infraestructura",
-    context: "Múltiples clientes con entornos VMware heterogéneos, distintos tamaños y diferentes niveles de urgencia comercial.",
-    decision: "Priorizar oportunidades reales sin vender migraciones a ciegas.",
-    helped: [
-      "Comparación de exposición económica por entorno",
-      "Estimación de ahorro potencial en USD",
-      "Nivel de confianza del assessment según calidad de evidencia",
-      "Faltantes técnicos antes de presentar una propuesta comercial",
-    ],
-    result:
-      "El MSP pudo transformar una preocupación general del mercado en una conversación concreta con clientes: qué entorno revisar primero, dónde hay mayor impacto económico y qué información falta antes de prometer una migración.",
-  },
-  {
-    id: "grupo-multisede",
-    label: "GRUPO MULTISEDE",
+    id: "financial-services",
+    label: "FINANCIAL SERVICES",
     Icon: Building2,
-    quote: "Antes de decidir una salida, necesitábamos saber qué información faltaba y qué cargas eran realmente críticas.",
-    tags: ["Inventario", "Sedes", "Evidencia"],
-    title: "Grupo empresarial multisede con inventario incompleto",
-    industry: "Corporativo multisede / servicios internos",
-    context: "Varias sedes, documentación parcial, ownership poco claro y dudas sobre criticidad real de cada workload.",
-    decision: "Evaluar Proxmox sin asumir riesgos innecesarios por falta de evidencia.",
-    helped: [
-      "Calidad del inventario disponible",
-      "VMs con evidencia incompleta o riesgo operativo",
-      "Dependencias y supuestos que requieren validación manual",
-      "Próximos pasos para mejorar la confianza del diagnóstico",
+    quote: "The inventory looked manageable, but evidence confidence was limited by backup and dependency gaps.",
+    tags: ["Evidence", "Risk", "Governance"],
+    title: "Financial services environment with limited evidence confidence",
+    industry: "Financial services / governed operations",
+    scenario:
+      "A VMware inventory appeared technically manageable, but approval for production waves depended on stronger operational evidence.",
+    keySignals: [
+      "VM size alone did not explain migration risk",
+      "Missing backup proof lowered confidence",
+      "Application dependency mapping was incomplete",
+      "Production sequencing required documented validation gates",
     ],
-    result:
-      "La empresa pudo pasar de una conversación desordenada sobre salir de VMware a una evaluación estructurada, con brechas visibles, riesgos priorizados y una hoja de ruta inicial.",
+    readinessInterpretation:
+      "The assessment could identify candidate groups, but risk was not only VM size - it was missing proof around recovery, dependencies and ownership.",
+    evidenceGaps: ["Backup restore evidence", "Application dependency data", "Business owner validation"],
+    suggestedNextStep: "Add backup evidence and dependency mapping before approving production waves.",
   },
   {
-    id: "servicios-criticos-salud",
-    label: "SERVICIOS CRÍTICOS DE SALUD",
+    id: "healthcare-regulated-operations",
+    label: "HEALTHCARE / REGULATED OPERATIONS",
     Icon: HeartPulse,
-    quote: "No se trataba sólo de ahorrar: necesitábamos entender el riesgo operativo antes de mover cargas sensibles.",
-    tags: ["Continuidad", "Criticidad", "Validación"],
-    title: "Organización de salud con workloads sensibles",
-    industry: "Salud / servicios críticos",
-    context: "Entorno virtualizado con sistemas sensibles, dependencia operativa alta y baja tolerancia a interrupciones.",
-    decision: "Entender si una alternativa a VMware podía evaluarse sin comprometer continuidad, seguridad ni trazabilidad.",
-    helped: [
-      "Workloads que requieren validación manual antes de cualquier movimiento",
-      "Riesgos por criticidad operativa y continuidad",
-      "Supuestos financieros separados del riesgo técnico",
-      "Próximos pasos para una evaluación controlada",
+    quote: "Migration sequencing depended on business criticality, not only VM metrics.",
+    tags: ["Continuity", "Criticality", "Validation"],
+    title: "Healthcare-style operation with sensitive workloads",
+    industry: "Healthcare / regulated operations",
+    scenario:
+      "Several workloads required manual review because downtime tolerance, compliance requirements and recovery expectations were not fully documented.",
+    keySignals: [
+      "Sensitive workloads could not be treated as early candidates",
+      "Downtime tolerance was not consistently documented",
+      "Recovery expectations needed owner confirmation",
+      "Risk interpretation required business context, not just infrastructure metrics",
     ],
-    result:
-      "El análisis permitió separar ahorro potencial de riesgo operativo. En lugar de presentar Proxmox como una migración inmediata, la evaluación ayudó a definir qué debía validarse primero y qué cargas no podían tratarse como candidatas tempranas.",
+    readinessInterpretation:
+      "The readiness view separated potential cost pressure from operational risk. Proxmox could be evaluated, but sensitive systems needed explicit validation before any migration wave.",
+    evidenceGaps: ["RPO/RTO expectations", "Maintenance windows", "Application owner confirmation"],
+    suggestedNextStep: "Validate owners, RPO/RTO expectations and maintenance windows before wave planning.",
+  },
+  {
+    id: "msp-it-services",
+    label: "MSP / IT SERVICES",
+    Icon: Network,
+    quote: "A repeatable assessment workflow turned raw RVTools exports into client-ready reports and next steps.",
+    tags: ["Clients", "Pipeline", "Qualification"],
+    title: "MSP workflow for qualifying VMware to Proxmox opportunities",
+    industry: "MSP / IT services",
+    scenario:
+      "Multiple client environments had different sizes, urgency levels and evidence quality, making pre-sales prioritization difficult.",
+    keySignals: [
+      "Not every VMware environment justified the same technical effort",
+      "Evidence quality helped prioritize follow-up work",
+      "Client conversations needed a consistent report structure",
+      "Commercial next steps depended on readiness and confidence, not only VM count",
+    ],
+    readinessInterpretation:
+      "Standardized evidence review helped identify which environments were ready for a professional assessment, which needed more data and which required a deeper blueprint.",
+    evidenceGaps: ["Client context", "Backup evidence", "Target Proxmox assumptions"],
+    suggestedNextStep: "Use readiness reports to qualify blueprint or professional assessment opportunities.",
   },
 ] as const;
 
 const privacyNote =
-  "Por confidencialidad y seguridad operativa, no publicamos nombres de empresas, marcas, ubicaciones ni detalles identificables de infraestructura. Esta evaluación se presenta como ejemplo representativo por industria y tipo de decisión.";
+  "This is a representative, synthetic/anonymized-style evaluation example. It does not contain customer data and is not a public case study.";
 
 export default function LandingPage() {
   const [ctaEmail, setCtaEmail] = useState("");
@@ -567,11 +575,11 @@ export default function LandingPage() {
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="industry-evaluations-header">
-              <div className="badge badge-cyan">Ejemplos privados</div>
-              <h2 id="industry-evaluations-title">Evaluaciones privadas por industria</h2>
+              <div className="badge badge-cyan">Private examples</div>
+              <h2 id="industry-evaluations-title">Private Industry Readiness Examples</h2>
               <p>
-                Organizaciones de distintas industrias enfrentan la misma pregunta: cuánto cuesta seguir con VMware,
-                qué tan realista es migrar a Proxmox y qué riesgos deben entender antes de decidir.
+                Representative, anonymized-style examples showing how a readiness assessment can surface migration
+                risk, missing evidence and next actions across different environments.
               </p>
             </div>
 
@@ -591,14 +599,14 @@ export default function LandingPage() {
                       <Icon size={24} />
                     </span>
                     <span className="industry-evaluation-label">{evaluation.label}</span>
-                    <span className="industry-evaluation-quote">“{evaluation.quote}”</span>
-                    <span className="industry-evaluation-tags" aria-label={`Temas: ${evaluation.tags.join(", ")}`}>
+                    <span className="industry-evaluation-quote">&ldquo;{evaluation.quote}&rdquo;</span>
+                    <span className="industry-evaluation-tags" aria-label={`Topics: ${evaluation.tags.join(", ")}`}>
                       {evaluation.tags.map((tag) => (
                         <span key={tag}>{tag}</span>
                       ))}
                     </span>
                     <span className="industry-evaluation-link">
-                      Ver evaluación
+                      View evaluation
                       <ArrowRight size={15} />
                     </span>
                   </button>
@@ -607,9 +615,8 @@ export default function LandingPage() {
             </div>
 
             <p className="industry-evaluations-disclaimer">
-              Por confidencialidad y seguridad operativa, no publicamos nombres de empresas, marcas ni detalles
-              identificables de infraestructura. Las evaluaciones se presentan como ejemplos representativos por
-              industria y tipo de decisión.
+              These examples are representative scenarios. They do not disclose customer data and should not be
+              interpreted as verified public case studies.
             </p>
           </div>
         </section>
@@ -742,13 +749,13 @@ export default function LandingPage() {
               type="button"
               className="industry-evaluation-modal-close"
               onClick={() => setSelectedEvaluationId(null)}
-              aria-label="Cerrar evaluación"
+              aria-label="Close evaluation"
             >
               <X size={18} />
             </button>
 
             <div className="industry-evaluation-modal-kicker">
-              <span>Ejemplo privado</span>
+              <span>Private evaluation example</span>
               <strong>{selectedEvaluation.industry}</strong>
             </div>
 
@@ -756,31 +763,40 @@ export default function LandingPage() {
 
             <div className="industry-evaluation-modal-grid">
               <div>
-                <h3>Contexto</h3>
-                <p>{selectedEvaluation.context}</p>
+                <h3>Scenario</h3>
+                <p>{selectedEvaluation.scenario}</p>
               </div>
               <div>
-                <h3>Decisión en juego</h3>
-                <p>{selectedEvaluation.decision}</p>
+                <h3>Suggested next step</h3>
+                <p>{selectedEvaluation.suggestedNextStep}</p>
               </div>
             </div>
 
             <div className="industry-evaluation-modal-block">
-              <h3>Lo que ShiftReadiness permite ordenar</h3>
+              <h3>Key signals</h3>
               <ul>
-                {selectedEvaluation.helped.map((item) => (
+                {selectedEvaluation.keySignals.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
 
             <div className="industry-evaluation-modal-block industry-evaluation-result">
-              <h3>Resultado del análisis</h3>
-              <p>{selectedEvaluation.result}</p>
+              <h3>Readiness interpretation</h3>
+              <p>{selectedEvaluation.readinessInterpretation}</p>
+            </div>
+
+            <div className="industry-evaluation-modal-block">
+              <h3>Evidence gaps</h3>
+              <ul>
+                {selectedEvaluation.evidenceGaps.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
             </div>
 
             <div className="industry-evaluation-privacy">
-              <strong>Nota de privacidad</strong>
+              <strong>Disclaimer</strong>
               <p>{privacyNote}</p>
             </div>
           </div>
