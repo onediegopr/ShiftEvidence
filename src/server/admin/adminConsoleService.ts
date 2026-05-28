@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { getAdminAiUsage } from "../ai/aiUsageService";
 import { getAiRuntimeStatus } from "../ai/aiRuntimeStatus";
@@ -89,8 +90,46 @@ function getAiOperationalAlerts(aiStatus: AdminAiRuntimeStatus) {
   return alerts;
 }
 
-export async function getAdminConsoleData() {
+export async function getAdminConsoleData(params?: {
+  usersSearch?: string;
+  usersPage?: number;
+  assessmentsSearch?: string;
+  assessmentsPage?: number;
+}) {
   const since = sevenDaysAgo();
+
+  const usersPage = params?.usersPage && params.usersPage > 0 ? params.usersPage : 1;
+  const usersTake = 12;
+  const usersSkip = (usersPage - 1) * usersTake;
+
+  const assessmentsPage = params?.assessmentsPage && params.assessmentsPage > 0 ? params.assessmentsPage : 1;
+  const assessmentsTake = 15;
+  const assessmentsSkip = (assessmentsPage - 1) * assessmentsTake;
+
+  const usersSearch = params?.usersSearch?.trim() ?? "";
+  const usersWhere: Prisma.UserWhereInput = usersSearch
+    ? {
+        OR: [
+          { email: { contains: usersSearch, mode: "insensitive" } },
+          { name: { contains: usersSearch, mode: "insensitive" } },
+        ],
+      }
+    : {};
+
+  const assessmentsSearch = params?.assessmentsSearch?.trim() ?? "";
+  const assessmentsWhere: Prisma.AssessmentWhereInput = {
+    archivedAt: null,
+    ...(assessmentsSearch
+      ? {
+          OR: [
+            { title: { contains: assessmentsSearch, mode: "insensitive" } },
+            { clientLabel: { contains: assessmentsSearch, mode: "insensitive" } },
+            { workspace: { ownerUser: { email: { contains: assessmentsSearch, mode: "insensitive" } } } },
+          ],
+        }
+      : {}),
+  };
+
   const [
     totalUsers,
     totalAssessments,
@@ -107,6 +146,8 @@ export async function getAdminConsoleData() {
     aiBudget,
     advancedAuditEvents,
     runtimeSettings,
+    filteredUsersCount,
+    filteredAssessmentsCount,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.assessment.count({ where: { archivedAt: null } }),
@@ -116,8 +157,10 @@ export async function getAdminConsoleData() {
     prisma.evidenceFile.count({ where: { processingStatus: "failed", deletedAt: null } }),
     prisma.report.count({ where: { status: "failed", deletedAt: null } }),
     prisma.user.findMany({
+      where: usersWhere,
       orderBy: { createdAt: "desc" },
-      take: 12,
+      take: usersTake,
+      skip: usersSkip,
       select: {
         id: true,
         name: true,
@@ -140,8 +183,10 @@ export async function getAdminConsoleData() {
       },
     }),
     prisma.assessment.findMany({
+      where: assessmentsWhere,
       orderBy: { updatedAt: "desc" },
-      take: 15,
+      take: assessmentsTake,
+      skip: assessmentsSkip,
       select: {
         id: true,
         title: true,
@@ -206,6 +251,8 @@ export async function getAdminConsoleData() {
     getAdminAiBudgetSummary(),
     getAdvancedAuditEvents(),
     getOperationalRuntimeSettings(),
+    prisma.user.count({ where: usersWhere }),
+    prisma.assessment.count({ where: assessmentsWhere }),
   ]);
 
   const aiStatus = await getAiRuntimeStatus();
@@ -405,5 +452,19 @@ export async function getAdminConsoleData() {
     advancedAuditEvents,
     userEntitlements,
     commercialOpportunities,
+    pagination: {
+      users: {
+        totalCount: filteredUsersCount,
+        page: usersPage,
+        pageSize: usersTake,
+        totalPages: Math.ceil(filteredUsersCount / usersTake),
+      },
+      assessments: {
+        totalCount: filteredAssessmentsCount,
+        page: assessmentsPage,
+        pageSize: assessmentsTake,
+        totalPages: Math.ceil(filteredAssessmentsCount / assessmentsTake),
+      },
+    },
   };
 }

@@ -65,16 +65,6 @@ function getTypeLabelEs(type: UnlockRequestType) {
   return labels[type];
 }
 
-function redactEmail(email: string | null | undefined) {
-  if (!email || !email.includes("@")) {
-    return "-";
-  }
-
-  const [name, domain] = email.split("@");
-  const visibleName = name.length <= 2 ? `${name[0] ?? ""}*` : `${name.slice(0, 2)}***`;
-  return `${visibleName}@${domain}`;
-}
-
 function getStatusCount(
   requests: Awaited<ReturnType<typeof listRecentUnlockRequestsForAdmin>>,
   status: UnlockRequestStatus,
@@ -101,12 +91,12 @@ function RequestCard({
 
       <div className="report-history-meta">
         <span>Workspace: {request.workspace.name}</span>
-        <span>Usuario: {redactEmail(request.user.email)}</span>
+        <span>Usuario: {request.user.email ?? "-"}</span>
         <span>Creada: {formatDate(request.createdAt)}</span>
       </div>
       <div className="report-history-meta">
         <span>Monto: {formatMoneyCents(request.amountCents, request.currency)}</span>
-        <span>Contacto: {redactEmail(request.contactEmail)}</span>
+        <span>Contacto: {request.contactEmail ?? "-"}</span>
       </div>
       {request.notes ? <p className="report-history-error">{request.notes}</p> : null}
       {request.adminNotes ? <p className="assessment-inline-note">Notas internas: {request.adminNotes}</p> : null}

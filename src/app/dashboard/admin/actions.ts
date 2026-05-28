@@ -29,10 +29,10 @@ export async function updateAiBudgetAction(formData: FormData) {
       actorEmail: session.user.email,
       settings: parseAiBudgetForm(formData),
     });
-    adminRedirect("saved=budget#ia-consumo");
+    adminRedirect("saved=budget&tab=ia-consumo");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar el presupuesto IA.";
-    adminRedirect(`error=${safeRedirectError(message)}#ia-consumo`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=ia-consumo`);
   }
 }
 
@@ -45,26 +45,29 @@ export async function createUserEntitlementAction(formData: FormData) {
       actorEmail: session.user.email,
       formData,
     });
-    adminRedirect("saved=entitlement#accesos-planes");
+    adminRedirect("saved=entitlement&tab=accesos-planes");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo crear el acceso manual.";
-    adminRedirect(`error=${safeRedirectError(message)}#accesos-planes`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=accesos-planes`);
   }
 }
 
-export async function revokeUserEntitlementAction(entitlementId: string) {
+export async function revokeUserEntitlementAction(entitlementId: string, formData: FormData) {
   const session = await requireAdminSession();
 
   try {
+    if (formData.get("confirmRevocation") !== "on") {
+      throw new Error("Confirmación requerida para revocar el acceso.");
+    }
     await revokeUserEntitlement({
       actorUserId: session.user.id,
       actorEmail: session.user.email,
       entitlementId,
     });
-    adminRedirect("saved=revoked#accesos-planes");
+    adminRedirect("saved=revoked&tab=accesos-planes");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo revocar el acceso.";
-    adminRedirect(`error=${safeRedirectError(message)}#accesos-planes`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=accesos-planes`);
   }
 }
 
@@ -77,10 +80,10 @@ export async function updateCommercialOpportunityAction(formData: FormData) {
       actorEmail: session.user.email,
       formData,
     });
-    adminRedirect("saved=opportunity#oportunidades");
+    adminRedirect("saved=opportunity&tab=oportunidades");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar la oportunidad.";
-    adminRedirect(`error=${safeRedirectError(message)}#oportunidades`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=oportunidades`);
   }
 }
 
@@ -96,10 +99,10 @@ export async function updateOperationalRuntimeSettingsAction(formData: FormData)
       actorEmail: session.user.email,
       settings: parseOperationalRuntimeSettingsForm(formData),
     });
-    adminRedirect("saved=runtime#configuracion-operativa");
+    adminRedirect("saved=runtime&tab=configuracion-operativa");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar la configuracion operativa.";
-    adminRedirect(`error=${safeRedirectError(message)}#configuracion-operativa`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=configuracion-operativa`);
   }
 }
 
@@ -119,9 +122,9 @@ export async function setAiRuntimeModeFormAction(formData: FormData) {
       actorEmail: session.user.email,
       mode,
     });
-    adminRedirect("saved=runtime#configuracion-operativa");
+    adminRedirect("saved=runtime&tab=configuracion-operativa");
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo cambiar el modo runtime IA.";
-    adminRedirect(`error=${safeRedirectError(message)}#configuracion-operativa`);
+    adminRedirect(`error=${safeRedirectError(message)}&tab=configuracion-operativa`);
   }
 }
