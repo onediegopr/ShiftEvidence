@@ -47,6 +47,8 @@ DB-ACCESS-ADMIN-2B confirms `AiUsageEvent` exists in production, safe count incr
 
 ADMIN-3 adds internal Spanish admin controls for estimated AI budget, informative operating limits, manual entitlements, commercial opportunities, next-best-action tracking and advanced admin audit events. It adds only safe non-secret operational data and does not implement automatic billing, impersonation, hard delete, OpenAI activation or full public launch.
 
+ADMIN-3-PROD-MIGRATION-SMOKE applied the ADMIN-3 migration in the production Neon database via `npm run prisma:deploy`, validated `SystemSetting`, `UserEntitlement`, `CommercialOpportunity`, `AuditEvent` and `AiUsageEvent` with safe counts, confirmed production public/private smoke, and completed authenticated admin smoke for budget, QA entitlement, QA commercial opportunity and audit visibility without exposing secrets. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -158,6 +160,7 @@ Optional for future work:
 - `docs/hito-admin-2b-prod-migration-smoke.md`
 - `docs/hito-admin-2b-prod-migration-user-attested.md`
 - `docs/hito-admin-3-budgets-entitlements-opportunities.md`
+- `docs/hito-admin-3-prod-migration-smoke.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

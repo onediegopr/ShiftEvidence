@@ -1200,3 +1200,54 @@ Security posture:
 - no raw files, prompts, raw AI responses or private storage paths persisted in the synthetic usage event;
 - OpenAI remains inactive;
 - full public launch remains NO.
+
+## Addendum - ADMIN-3 Production Migration Smoke
+
+Date: 2026-05-28.
+
+Status: COMPLETO for controlled production / limited beta.
+
+Production migration:
+
+- command: `npm run prisma:deploy`;
+- migration: `20260528150000_admin_3_budgets_entitlements_opportunities`;
+- result: applied successfully;
+- Prisma reset: NO;
+- migrate reset: NO;
+- db push: NO;
+- existing data deleted: NO.
+
+Validated tables:
+
+- `SystemSetting`;
+- `UserEntitlement`;
+- `CommercialOpportunity`;
+- `AuditEvent`;
+- `AiUsageEvent`.
+
+Authenticated admin validation:
+
+- `/dashboard/admin` loaded with admin session;
+- `IA y Consumo` loaded;
+- `Accesos y Planes` loaded;
+- `Oportunidades` loaded;
+- `Auditoria` loaded;
+- `Configuracion` loaded.
+
+QA actions:
+
+- AI budget set to safe informational test values;
+- QA `internal_qa` entitlement created for a controlled QA/test user;
+- QA commercial opportunity created/updated;
+- audit events recorded for budget, entitlement and opportunity actions.
+
+Boundaries:
+
+- no secrets printed or displayed;
+- no API keys edited;
+- no Hostinger config changed;
+- OpenAI remains inactive;
+- no hard delete;
+- no impersonation;
+- no automatic billing;
+- full public launch remains NO.

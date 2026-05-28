@@ -100,6 +100,28 @@ Escalate immediately if:
 - PDF generation repeatedly fails.
 - Hostinger returns persistent `503/504`.
 
+## ADMIN-3 Commercial/Ops Console Update
+
+Date: 2026-05-28.
+
+ADMIN-3 is migrated in production and available inside `/dashboard/admin` for admin users only.
+
+Operational capabilities:
+
+- Estimated AI budget and informational limits.
+- Manual user entitlements and access plans.
+- Commercial opportunities with deterministic score and next-best-action.
+- Admin audit events for budget, entitlement and opportunity changes.
+- Users and assessments enriched with plan/opportunity/AI consumption signals.
+
+Operating rules:
+
+- Do not edit provider secrets from admin.
+- Do not expose API keys or DB URLs.
+- Do not use hard delete or impersonation.
+- Treat AI budget limits as informational until ADMIN-4.
+- Keep QA actions clearly marked, for example `QA ADMIN-3 smoke`.
+
 ## Rollback / Pause
 
 If launch must be paused:

@@ -168,3 +168,23 @@ Todo texto visible esta en espanol.
 - Ready for production migration smoke if schema changed: SI.
 - Ready for ADMIN-4: SI.
 - Ready for full public launch: NO.
+
+## Production migration smoke
+
+Fecha: 2026-05-28.
+
+`ADMIN-3-PROD-MIGRATION-SMOKE` aplico la migracion en la DB Neon de produccion usando `npm run prisma:deploy` sin imprimir `DATABASE_URL`.
+
+Resultado:
+
+- `SystemSetting`: creado y validado.
+- `UserEntitlement`: creado y validado.
+- `CommercialOpportunity`: creado y validado.
+- `AuditEvent`: reusado y validado.
+- `AiUsageEvent`: sigue accesible.
+- Produccion sin sesion: publica `200`, privadas/admin `307` a `/sign-in`.
+- Admin autenticado: consola carga y muestra presupuesto IA, accesos, oportunidades, auditoria y configuracion segura.
+- Accion QA: presupuesto IA USD 50, entitlement `internal_qa`, oportunidad QA y auditorias asociadas.
+- Secrets: no impresos ni visibles.
+
+ADMIN-3 queda listo para controlled launch / limited beta. Full public launch sigue NO.

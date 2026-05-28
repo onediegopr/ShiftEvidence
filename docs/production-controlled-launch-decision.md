@@ -218,6 +218,35 @@ Reason:
 
 ## AI-1.1 Follow-up
 
+## ADMIN-3 Production Migration Smoke
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+ADMIN-3 production migration was applied with `npm run prisma:deploy`.
+
+Validated:
+
+- `SystemSetting`, `UserEntitlement` and `CommercialOpportunity` exist in production.
+- `AuditEvent` and `AiUsageEvent` remain accessible.
+- Public routes return `200`.
+- Private/admin unauthenticated routes redirect to `/sign-in`.
+- Authenticated admin console loads budget, entitlements, opportunities, audit and safe configuration.
+- QA budget, QA entitlement and QA opportunity actions were recorded with audit events.
+- No secrets, API keys, tokens, raw files or private storage paths were exposed.
+
+Accepted remaining risks:
+
+- AI limits are informational until ADMIN-4.
+- Billing automation is not implemented.
+- Hard delete and impersonation remain out of scope.
+- Full public launch remains blocked until the remaining operating/commercial readiness items are explicitly closed.
+
 Date: 2026-05-27.
 
 Decision remains:
