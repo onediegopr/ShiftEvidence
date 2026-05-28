@@ -6,8 +6,10 @@ import {
   ArrowLeft,
   BadgePercent,
   BookOpen,
+  Building2,
   CircleAlert,
   FileText,
+  Image as ImageIcon,
   Lock,
   PanelTop,
   RefreshCcw,
@@ -459,6 +461,69 @@ export default async function ReportPreviewPage({
       {deletedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{deletedMessage}</div> : null}
       {unlockMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{unlockMessage}</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+
+      <section className="assessment-section glass-card report-branding-section">
+        <SectionTitle
+          icon={<ImageIcon size={18} />}
+          eyebrow="Report branding"
+          title="Optional logos for this PDF"
+          description="Generate a branded deliverable for your own company, or a white-label report for an end client. Branding is embedded in the generated PDF and does not change assessment data."
+        />
+        <form
+          action={`/api/assessments/${assessment.id}/reports/generate`}
+          method="post"
+          encType="multipart/form-data"
+          className="report-branding-form"
+        >
+          <div className="report-branding-mode-grid" role="radiogroup" aria-label="Report recipient">
+            <label className="report-branding-mode">
+              <input type="radio" name="reportAudience" value="own_company" defaultChecked />
+              <span>
+                <Building2 size={16} />
+                For my company
+              </span>
+              <small>Use one logo and keep Shift Evidence attribution in the PDF footer.</small>
+            </label>
+            <label className="report-branding-mode">
+              <input type="radio" name="reportAudience" value="client" />
+              <span>
+                <Building2 size={16} />
+                For my client
+              </span>
+              <small>Use partner + client logos for consultants, MSPs and integrators.</small>
+            </label>
+          </div>
+
+          <div className="report-branding-fields">
+            <label>
+              <span>Your company / partner name</span>
+              <input type="text" name="companyName" maxLength={90} placeholder="Example: Partner Infrastructure Group" />
+            </label>
+            <label>
+              <span>Your company / partner logo</span>
+              <input type="file" name="companyLogo" accept="image/png,image/jpeg" />
+            </label>
+            <label>
+              <span>End client name</span>
+              <input type="text" name="clientName" maxLength={90} defaultValue={assessment.clientLabel ?? ""} placeholder="Optional for client-facing reports" />
+            </label>
+            <label>
+              <span>End client logo</span>
+              <input type="file" name="clientLogo" accept="image/png,image/jpeg" />
+            </label>
+          </div>
+
+          <div className="assessment-inline-actions report-branding-actions">
+            <button type="submit" className="btn btn-primary btn-glow">
+              <FileText size={16} />
+              Generate branded PDF
+            </button>
+            <span className="assessment-inline-note">
+              PNG or JPG only, up to 1 MB each. White-label reports include “Powered by Shift Evidence”.
+            </span>
+          </div>
+        </form>
+      </section>
 
       <section className="assessment-summary-grid report-summary-grid">
         {report.reportCards.map((card) => (

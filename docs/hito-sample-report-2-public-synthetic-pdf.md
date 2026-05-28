@@ -32,7 +32,7 @@ Caracteristicas:
 
 - 15 paginas.
 - PDF estatico servido desde `public/`.
-- Dataset sintetico: `ACME Manufacturing Group`.
+- Dataset sintetico: `Northbridge Industrial Group`.
 - No usa backend.
 - No usa DB.
 - No llama Gemini real.
@@ -53,7 +53,7 @@ El script genera el PDF desde datos sinteticos locales y escribe el resultado en
 
 ## Dataset sintetico
 
-Contexto ACME:
+Contexto Northbridge:
 
 - 126 VMs.
 - 6 ESXi hosts.

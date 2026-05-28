@@ -154,7 +154,7 @@ export default function SampleReportPage() {
             </div>
             <div className="sample-report-cover-body">
               <span className="sample-report-kicker">Synthetic sample report</span>
-              <h2>ACME Manufacturing Group</h2>
+              <h2>Northbridge Industrial Group</h2>
               <p>VMware -&gt; Proxmox Migration Readiness Assessment</p>
               <div className="sample-report-score-strip">
                 <div>
@@ -215,7 +215,7 @@ export default function SampleReportPage() {
               <h2>Executive summary preview</h2>
             </div>
             <p className="sample-report-summary">
-              ACME Manufacturing has a medium migration readiness posture based on the evidence provided. The VMware
+              Northbridge Industrial has a medium migration readiness posture based on the evidence provided. The VMware
               inventory is usable for an initial assessment, but backup evidence, application dependency mapping and
               Proxmox target validation are missing or incomplete. Low-risk workloads may be candidates for a pilot,
               while SQL, ERP, domain controller and storage-heavy workloads require manual validation before entering a

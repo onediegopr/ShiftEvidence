@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, FileSpreadsheet, Lock, Minus, ShieldCheck } from "lucide-react";
 import {
-  acmeDataset,
+  demoDataset,
   advisoryItems,
   demoDoesNotDo,
   evidenceItems,
@@ -66,8 +66,8 @@ function UploadScene() {
       <div className="demo-file-card">
         <FileSpreadsheet size={34} />
         <div>
-          <strong>{acmeDataset.fileName}</strong>
-          <span>ACME Manufacturing Group / synthetic RVTools-style export</span>
+          <strong>{demoDataset.fileName}</strong>
+          <span>Northbridge Industrial Group / synthetic RVTools-style export</span>
         </div>
       </div>
       <div className="demo-progress-card">
@@ -122,7 +122,7 @@ function CoverageScene() {
     <div className="demo-coverage-grid">
       <div className="demo-confidence-card">
         <span>Evidence Confidence</span>
-        <strong>{acmeDataset.evidenceConfidence}%</strong>
+        <strong>{demoDataset.evidenceConfidence}%</strong>
         <p>The assessment shows what is known, what is probable and what still needs validation.</p>
       </div>
       <div className="demo-table-wrap">
@@ -258,16 +258,16 @@ function ReportScene() {
       <div className="demo-report-preview">
         <div className="demo-report-topline">
           <span>Executive-ready PDF preview</span>
-          <strong>{acmeDataset.client}</strong>
+          <strong>{demoDataset.client}</strong>
         </div>
         <div className="demo-report-score-row">
           <div>
             <span>Readiness Score</span>
-            <strong>{acmeDataset.readinessScore}%</strong>
+            <strong>{demoDataset.readinessScore}%</strong>
           </div>
           <div>
             <span>Confidence Score</span>
-            <strong>{acmeDataset.evidenceConfidence}%</strong>
+            <strong>{demoDataset.evidenceConfidence}%</strong>
           </div>
         </div>
         <div className="demo-report-section-grid">

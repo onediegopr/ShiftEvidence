@@ -187,7 +187,7 @@ The public route `/demo` is available as a simulated Migration Readiness Replay 
 
 Operating rules:
 
-- Demo uses synthetic ACME data only.
+- Demo uses synthetic Northbridge data only.
 - Demo does not require login.
 - Demo does not use backend, DB, Gemini, uploads or customer data.
 - Demo must be described as simulated.
@@ -213,7 +213,7 @@ The public route `/sample-report` is available as a synthetic sample readiness r
 
 Operating rules:
 
-- Sample uses synthetic ACME data only.
+- Sample uses synthetic Northbridge data only.
 - Sample does not require login.
 - Sample does not use backend, DB, Gemini, uploads, lead capture or customer data.
 - Downloadable PDF is not published yet and must be described as coming soon.
@@ -228,7 +228,7 @@ The public sample report now includes a downloadable synthetic PDF:
 
 - Public URL: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - 15 pages.
-- Generated from local synthetic ACME data with `npm run sample-report:generate`.
+- Generated from local synthetic Northbridge data with `npm run sample-report:generate`.
 - No backend, DB, Gemini call, upload, lead capture or customer data.
 - `/sample-report` is the preferred entry point before PDF download.
 

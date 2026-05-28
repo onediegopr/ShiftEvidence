@@ -45,8 +45,8 @@ Actualizacion SALES-PAGE-1:
 
 Dataset ficticio:
 
-- Cliente: `ACME Manufacturing Group`.
-- Archivo: `rvtools_export_acme_corp.xlsx`.
+- Cliente: `Northbridge Industrial Group`.
+- Archivo: `rvtools_export_northbridge_corp.xlsx`.
 - 126 VMs.
 - 6 ESXi hosts.
 - 3 clusters.
@@ -270,7 +270,7 @@ DEMO-1.1 completo la revision visual y de conversion:
 
 SAMPLE-REPORT-1 agrega `/sample-report` como foundation publica para mostrar el entregable esperado:
 
-- Usa el mismo dataset sintetico ACME.
+- Usa el mismo dataset sintetico Northbridge.
 - No usa backend, DB, Gemini, upload real ni datos reales.
 - No publica PDF real todavia; muestra `Sample PDF coming soon`.
 - `/demo` incluye un bloque `Want to see the final deliverable?` con CTA a `/sample-report`.
@@ -281,6 +281,6 @@ SAMPLE-REPORT-2 agrega el PDF publico sintetico descargable:
 
 - Ruta: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - 15 paginas.
-- Dataset sintetico ACME.
+- Dataset sintetico Northbridge.
 - Sin backend, DB, Gemini real, upload o datos reales.
 - `/demo` mantiene el CTA hacia `/sample-report` para que el usuario vea contexto antes de descargar.

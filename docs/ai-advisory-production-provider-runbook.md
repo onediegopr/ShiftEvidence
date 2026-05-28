@@ -322,7 +322,7 @@ npm run ai:report-synthetic
 
 Purpose:
 
-- Generate a 100% synthetic ACME Manufacturing Group readiness report.
+- Generate a 100% synthetic Northbridge Industrial Group readiness report.
 - Use the real PDF renderer.
 - Attempt Gemini with env-driven config.
 - Write ignored local QA artifacts under `qa-artifacts/ai-report-1/`.

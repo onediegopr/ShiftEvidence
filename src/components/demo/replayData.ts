@@ -73,9 +73,9 @@ export type ReplayStep = {
   icon: LucideIcon;
 };
 
-export const acmeDataset = {
-  client: "ACME Manufacturing Group",
-  fileName: "rvtools_export_acme_corp.xlsx",
+export const demoDataset = {
+  client: "Northbridge Industrial Group",
+  fileName: "rvtools_export_northbridge_industrial.xlsx",
   vmCount: 126,
   hosts: 6,
   clusters: 3,
@@ -232,7 +232,7 @@ export const migrationWaves: MigrationWave[] = [
 export const advisoryItems: AdvisoryItem[] = [
   {
     title: "Executive advisory",
-    body: "ACME has a viable first assessment path, but critical workloads should wait until backup and dependency evidence are validated.",
+    body: "Northbridge has a viable first assessment path, but critical workloads should wait until backup and dependency evidence are validated.",
   },
   {
     title: "Technical advisory",

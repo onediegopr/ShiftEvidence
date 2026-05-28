@@ -1,25 +1,80 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Home, Play, ShieldCheck } from "lucide-react";
+import Footer from "../Footer";
+import Navbar from "../Navbar";
 import ReplayControls from "./ReplayControls";
 import ReplayScene from "./ReplayScene";
 import {
-  acmeDataset,
+  demoDataset,
   demoBadges,
   demoDoesNotDo,
   replaySteps,
+  type ReplayStepId,
   whatYouGet,
 } from "./replayData";
 
 const AUTO_ADVANCE_MS = 4200;
+type AudioCue = "tap" | "step" | "warning" | "complete";
+type WindowWithWebAudio = Window & typeof globalThis & { webkitAudioContext?: typeof AudioContext };
+
+const warningStepIds = new Set<ReplayStepId>(["coverage", "risk", "sizing"]);
+
+function getStepStateClass(index: number, activeIndex: number, stepId: ReplayStepId) {
+  if (index < activeIndex) return "completed";
+  if (index === activeIndex) return stepId === "risk" ? "critical" : warningStepIds.has(stepId) ? "warning" : "active";
+  return warningStepIds.has(stepId) ? "queued-warning" : "queued";
+}
 
 export default function MigrationReadinessReplay() {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const activeStep = replaySteps[activeStepIndex];
+
+  const playCue = useCallback(
+    (cue: AudioCue) => {
+      if (!soundEnabled || typeof window === "undefined") {
+        return;
+      }
+
+      const AudioContextClass = window.AudioContext ?? (window as WindowWithWebAudio).webkitAudioContext;
+      if (!AudioContextClass) {
+        return;
+      }
+
+      const context = audioContextRef.current ?? new AudioContextClass();
+      audioContextRef.current = context;
+
+      if (context.state === "suspended") {
+        void context.resume();
+      }
+
+      const now = context.currentTime;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const cueConfig = {
+        tap: { frequency: 440, duration: 0.07, peak: 0.018 },
+        step: { frequency: 620, duration: 0.08, peak: 0.016 },
+        warning: { frequency: 260, duration: 0.12, peak: 0.018 },
+        complete: { frequency: 780, duration: 0.13, peak: 0.018 },
+      }[cue];
+
+      oscillator.type = cue === "warning" ? "triangle" : "sine";
+      oscillator.frequency.setValueAtTime(cueConfig.frequency, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(cueConfig.peak, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + cueConfig.duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(now);
+      oscillator.stop(now + cueConfig.duration + 0.02);
+    },
+    [soundEnabled],
+  );
 
   useEffect(() => {
     if (!isPlaying) {
@@ -40,7 +95,22 @@ export default function MigrationReadinessReplay() {
     return () => window.clearTimeout(timer);
   }, [activeStepIndex, isPlaying]);
 
+  useEffect(() => {
+    if (!soundEnabled) {
+      return;
+    }
+
+    if (activeStep.id === "report") {
+      playCue("complete");
+      return;
+    }
+
+    playCue(warningStepIds.has(activeStep.id) ? "warning" : "step");
+  }, [activeStep.id, playCue, soundEnabled]);
+
   const progress = useMemo(() => ((activeStepIndex + 1) / replaySteps.length) * 100, [activeStepIndex]);
+  const canGoBack = activeStepIndex > 0;
+  const canGoNext = activeStepIndex < replaySteps.length - 1;
 
   const goToStep = (index: number) => {
     setActiveStepIndex(Math.min(Math.max(index, 0), replaySteps.length - 1));
@@ -52,6 +122,8 @@ export default function MigrationReadinessReplay() {
   };
 
   return (
+    <>
+    <Navbar />
     <main className="shiftreadiness-page demo-page">
       <section className="section demo-hero">
         <div className="bg-mesh" />
@@ -91,9 +163,9 @@ export default function MigrationReadinessReplay() {
               <strong>Replay dataset</strong>
             </div>
             <div className="demo-terminal-body">
-              <span>client: {acmeDataset.client}</span>
-              <span>source: {acmeDataset.fileName}</span>
-              <span>scope: {acmeDataset.vmCount} VMs / {acmeDataset.hosts} ESXi hosts / {acmeDataset.clusters} clusters</span>
+              <span>client: {demoDataset.client}</span>
+              <span>source: {demoDataset.fileName}</span>
+              <span>scope: {demoDataset.vmCount} VMs / {demoDataset.hosts} ESXi hosts / {demoDataset.clusters} clusters</span>
               <span>mode: synthetic demo, no backend, no production access</span>
             </div>
           </div>
@@ -107,9 +179,44 @@ export default function MigrationReadinessReplay() {
               <div>
                 <span className="badge badge-cyan">Interactive replay</span>
                 <h2>From RVTools export to decision pack.</h2>
+                <div className="demo-replay-status-row" aria-label="Replay status legend">
+                  <span className="demo-status-light demo-status-light-active">Active</span>
+                  <span className="demo-status-light demo-status-light-completed">Completed</span>
+                  <span className="demo-status-light demo-status-light-warning">Warning signals</span>
+                </div>
               </div>
-              <div className="demo-progress-meter" aria-label={`Replay progress ${Math.round(progress)} percent`}>
-                <span style={{ width: `${progress}%` }} />
+              <div className="demo-replay-topbar-actions">
+                <ReplayControls
+                  isPlaying={isPlaying}
+                  soundEnabled={soundEnabled}
+                  canGoBack={canGoBack}
+                  canGoNext={canGoNext}
+                  playLabel={activeStepIndex > 0 ? "Resume" : "Play"}
+                  onPlayPause={() => {
+                    playCue("tap");
+                    setIsPlaying((value) => !value);
+                  }}
+                  onPrevious={() => {
+                    playCue("tap");
+                    setIsPlaying(false);
+                    goToStep(activeStepIndex - 1);
+                  }}
+                  onNext={() => {
+                    playCue("tap");
+                    setIsPlaying(false);
+                    goToStep(activeStepIndex + 1);
+                  }}
+                  onRestart={() => {
+                    playCue("tap");
+                    setIsPlaying(false);
+                    setActiveStepIndex(0);
+                  }}
+                  onSkipToReport={skipToReport}
+                  onToggleSound={() => setSoundEnabled((value) => !value)}
+                />
+                <div className="demo-progress-meter" aria-label={`Replay progress ${Math.round(progress)} percent`}>
+                  <span style={{ width: `${progress}%` }} />
+                </div>
               </div>
             </div>
 
@@ -118,6 +225,7 @@ export default function MigrationReadinessReplay() {
                 {replaySteps.map((step, index) => {
                   const StepIcon = step.icon;
                   const active = index === activeStepIndex;
+                  const stepState = getStepStateClass(index, activeStepIndex, step.id);
                   return (
                     <button
                       key={step.id}
@@ -129,6 +237,7 @@ export default function MigrationReadinessReplay() {
                       }}
                     >
                       <StepIcon size={16} />
+                      <span className={`demo-step-state-dot demo-step-state-${stepState}`} aria-hidden="true" />
                       <span>{step.title}</span>
                     </button>
                   );
@@ -137,30 +246,6 @@ export default function MigrationReadinessReplay() {
 
               <div className="demo-stage-column">
                 <ReplayScene step={activeStep} />
-                <ReplayControls
-                  isPlaying={isPlaying}
-                  soundEnabled={soundEnabled}
-                  canGoBack={activeStepIndex > 0}
-                  canGoNext={activeStepIndex < replaySteps.length - 1}
-                  onPlayPause={() => setIsPlaying((value) => !value)}
-                  onPrevious={() => {
-                    setIsPlaying(false);
-                    goToStep(activeStepIndex - 1);
-                  }}
-                  onNext={() => {
-                    setIsPlaying(false);
-                    goToStep(activeStepIndex + 1);
-                  }}
-                  onRestart={() => {
-                    setIsPlaying(false);
-                    setActiveStepIndex(0);
-                  }}
-                  onSkipToReport={skipToReport}
-                  onToggleSound={() => setSoundEnabled((value) => !value)}
-                />
-                <p className="demo-sound-note">
-                  Sound toggle is visual only in DEMO-1. No audio is played, so the replay remains quiet and safe for work.
-                </p>
               </div>
             </div>
           </div>
@@ -183,11 +268,11 @@ export default function MigrationReadinessReplay() {
               <span>After</span>
               <h3>Migration decision pack</h3>
               <div className="demo-after-metrics">
-                <strong>{acmeDataset.vmCount} VMs analyzed</strong>
+                <strong>{demoDataset.vmCount} VMs analyzed</strong>
                 <strong>21 migration risks identified</strong>
-                <strong>{acmeDataset.waveOneCandidates} wave-1 candidates</strong>
-                <strong>{acmeDataset.highRiskWorkloads} high-risk workloads</strong>
-                <strong>{acmeDataset.missingEvidenceItems} missing evidence items</strong>
+                <strong>{demoDataset.waveOneCandidates} wave-1 candidates</strong>
+                <strong>{demoDataset.highRiskWorkloads} high-risk workloads</strong>
+                <strong>{demoDataset.missingEvidenceItems} missing evidence items</strong>
                 <strong>Migration plan generated</strong>
               </div>
             </article>
@@ -299,5 +384,7 @@ export default function MigrationReadinessReplay() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }

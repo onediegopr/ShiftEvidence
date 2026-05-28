@@ -26,10 +26,10 @@ const generatedAt = new Date();
 const pdfPath = path.join(
   artifactDir,
   requireRealGemini
-    ? "acme-full-synthetic-gemini-success-readiness-report.pdf"
-    : "acme-full-synthetic-gemini-readiness-report.pdf",
+    ? "northbridge-full-synthetic-gemini-success-readiness-report.pdf"
+    : "northbridge-full-synthetic-gemini-readiness-report.pdf",
 );
-const summaryPath = path.join(artifactDir, "acme-synthetic-assessment-evidence-summary.json");
+const summaryPath = path.join(artifactDir, "northbridge-synthetic-assessment-evidence-summary.json");
 const readmePath = path.join(artifactDir, "README.md");
 
 function emptyAiAdvisory(providerStatus, confidenceImpact) {
@@ -156,33 +156,33 @@ async function generateSyntheticGeminiAdvisory(payload) {
 }
 
 const vmNames = [
-  ["ACME-DC01", "Windows Server 2019", 4, 16, 180, "ds-prod-01", "PG-MGMT", "none", "current", "critical", "partial", "known", "high", "Hold", "Validate AD FSMO roles, backup restore and migration runbook."],
-  ["ACME-DC02", "Windows Server 2019", 4, 16, 180, "ds-prod-02", "PG-MGMT", "none", "current", "critical", "partial", "known", "high", "Hold", "Keep as later wave with rollback and replication checks."],
-  ["ACME-ERP01", "Windows Server 2016", 8, 64, 1600, "ds-prod-03", "PG-APP", "none", "current", "critical", "partial", "unknown", "critical", "Hold", "Do not migrate first wave; dependency map and restore test required."],
-  ["ACME-SQL01", "Windows Server 2019", 12, 96, 2400, "ds-prod-04", "PG-DB", "none", "current", "critical", "partial", "unknown", "critical", "Hold", "Validate SQL performance, backup consistency and maintenance window."],
-  ["ACME-SQL02", "Windows Server 2019", 8, 64, 1900, "ds-prod-04", "PG-DB", "old", "outdated", "critical", "missing", "unknown", "critical", "Hold", "Remove stale snapshots and collect backup evidence before migration."],
-  ["ACME-FS01", "Windows Server 2016", 8, 48, 3600, "ds-file-01", "PG-FILE", "none", "current", "high", "partial", "partial", "high", "Manual Review", "Large file server requires storage sizing and cutover plan."],
-  ["ACME-FS02", "Windows Server 2016", 8, 48, 2800, "ds-file-02", "PG-FILE", "none", "current", "high", "partial", "partial", "high", "Manual Review", "Validate incremental copy and rollback window."],
-  ["ACME-WMS01", "Windows Server 2019", 6, 32, 600, "ds-prod-05", "PG-WAREHOUSE", "none", "current", "critical", "partial", "unknown", "high", "Manual Review", "Warehouse dependencies and downtime tolerance need owner sign-off."],
-  ["ACME-WEB01", "Ubuntu 22.04", 4, 16, 120, "ds-web-01", "PG-WEB", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Good candidate after pilot network validation."],
-  ["ACME-WEB02", "Ubuntu 22.04", 4, 16, 120, "ds-web-01", "PG-WEB", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Migrate with web tier group after pilot."],
-  ["ACME-APP01", "Windows Server 2019", 4, 24, 300, "ds-app-01", "PG-APP", "none", "current", "medium", "partial", "partial", "medium", "Wave 2", "Validate application owner and firewall dependencies."],
-  ["ACME-APP02", "Windows Server 2019", 4, 24, 300, "ds-app-01", "PG-APP", "none", "current", "medium", "partial", "partial", "medium", "Wave 2", "Migrate with paired app service."],
-  ["ACME-MON01", "Ubuntu 20.04", 2, 8, 80, "ds-tools-01", "PG-MGMT", "none", "current", "low", "available", "known", "low", "Pilot", "Low-risk utility workload for pilot."],
-  ["ACME-BKPROXY01", "Windows Server 2019", 4, 16, 200, "ds-tools-01", "PG-BACKUP", "none", "current", "high", "partial", "known", "medium", "Wave 2", "Coordinate with backup cutover and PBS design."],
-  ["ACME-LEGACY01", "Windows Server 2008 R2", 2, 8, 160, "ds-legacy-01", "PG-LEGACY", "old", "outdated", "medium", "missing", "unknown", "high", "Manual Review", "Legacy OS requires compatibility and remediation decision."],
-  ["ACME-PRINT01", "Windows Server 2016", 2, 8, 120, "ds-util-01", "PG-USER", "none", "current", "low", "available", "known", "low", "Pilot", "Simple utility VM candidate."],
-  ["ACME-DHCP01", "Windows Server 2019", 2, 8, 90, "ds-util-01", "PG-MGMT", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Coordinate with network team."],
-  ["ACME-INTRANET01", "Ubuntu 20.04", 2, 8, 100, "ds-web-01", "PG-WEB", "none", "current", "low", "available", "known", "low", "Pilot", "Good validation workload."],
-  ["ACME-DEVSQL01", "Windows Server 2019", 4, 24, 700, "ds-dev-01", "PG-DEV", "old", "outdated", "low", "available", "partial", "medium", "Wave 1", "Remove snapshot before migration."],
-  ["ACME-DEVAPP01", "Ubuntu 22.04", 2, 8, 80, "ds-dev-01", "PG-DEV", "none", "current", "low", "available", "known", "low", "Pilot", "Low-risk dev workload."],
+  ["NBI-DC01", "Windows Server 2019", 4, 16, 180, "ds-prod-01", "PG-MGMT", "none", "current", "critical", "partial", "known", "high", "Hold", "Validate AD FSMO roles, backup restore and migration runbook."],
+  ["NBI-DC02", "Windows Server 2019", 4, 16, 180, "ds-prod-02", "PG-MGMT", "none", "current", "critical", "partial", "known", "high", "Hold", "Keep as later wave with rollback and replication checks."],
+  ["NBI-ERP01", "Windows Server 2016", 8, 64, 1600, "ds-prod-03", "PG-APP", "none", "current", "critical", "partial", "unknown", "critical", "Hold", "Do not migrate first wave; dependency map and restore test required."],
+  ["NBI-SQL01", "Windows Server 2019", 12, 96, 2400, "ds-prod-04", "PG-DB", "none", "current", "critical", "partial", "unknown", "critical", "Hold", "Validate SQL performance, backup consistency and maintenance window."],
+  ["NBI-SQL02", "Windows Server 2019", 8, 64, 1900, "ds-prod-04", "PG-DB", "old", "outdated", "critical", "missing", "unknown", "critical", "Hold", "Remove stale snapshots and collect backup evidence before migration."],
+  ["NBI-FS01", "Windows Server 2016", 8, 48, 3600, "ds-file-01", "PG-FILE", "none", "current", "high", "partial", "partial", "high", "Manual Review", "Large file server requires storage sizing and cutover plan."],
+  ["NBI-FS02", "Windows Server 2016", 8, 48, 2800, "ds-file-02", "PG-FILE", "none", "current", "high", "partial", "partial", "high", "Manual Review", "Validate incremental copy and rollback window."],
+  ["NBI-WMS01", "Windows Server 2019", 6, 32, 600, "ds-prod-05", "PG-WAREHOUSE", "none", "current", "critical", "partial", "unknown", "high", "Manual Review", "Warehouse dependencies and downtime tolerance need owner sign-off."],
+  ["NBI-WEB01", "Ubuntu 22.04", 4, 16, 120, "ds-web-01", "PG-WEB", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Good candidate after pilot network validation."],
+  ["NBI-WEB02", "Ubuntu 22.04", 4, 16, 120, "ds-web-01", "PG-WEB", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Migrate with web tier group after pilot."],
+  ["NBI-APP01", "Windows Server 2019", 4, 24, 300, "ds-app-01", "PG-APP", "none", "current", "medium", "partial", "partial", "medium", "Wave 2", "Validate application owner and firewall dependencies."],
+  ["NBI-APP02", "Windows Server 2019", 4, 24, 300, "ds-app-01", "PG-APP", "none", "current", "medium", "partial", "partial", "medium", "Wave 2", "Migrate with paired app service."],
+  ["NBI-MON01", "Ubuntu 20.04", 2, 8, 80, "ds-tools-01", "PG-MGMT", "none", "current", "low", "available", "known", "low", "Pilot", "Low-risk utility workload for pilot."],
+  ["NBI-BKPROXY01", "Windows Server 2019", 4, 16, 200, "ds-tools-01", "PG-BACKUP", "none", "current", "high", "partial", "known", "medium", "Wave 2", "Coordinate with backup cutover and PBS design."],
+  ["NBI-LEGACY01", "Windows Server 2008 R2", 2, 8, 160, "ds-legacy-01", "PG-LEGACY", "old", "outdated", "medium", "missing", "unknown", "high", "Manual Review", "Legacy OS requires compatibility and remediation decision."],
+  ["NBI-PRINT01", "Windows Server 2016", 2, 8, 120, "ds-util-01", "PG-USER", "none", "current", "low", "available", "known", "low", "Pilot", "Simple utility VM candidate."],
+  ["NBI-DHCP01", "Windows Server 2019", 2, 8, 90, "ds-util-01", "PG-MGMT", "none", "current", "medium", "available", "known", "medium", "Wave 1", "Coordinate with network team."],
+  ["NBI-INTRANET01", "Ubuntu 20.04", 2, 8, 100, "ds-web-01", "PG-WEB", "none", "current", "low", "available", "known", "low", "Pilot", "Good validation workload."],
+  ["NBI-DEVSQL01", "Windows Server 2019", 4, 24, 700, "ds-dev-01", "PG-DEV", "old", "outdated", "low", "available", "partial", "medium", "Wave 1", "Remove snapshot before migration."],
+  ["NBI-DEVAPP01", "Ubuntu 22.04", 2, 8, 80, "ds-dev-01", "PG-DEV", "none", "current", "low", "available", "known", "low", "Pilot", "Low-risk dev workload."],
 ];
 
 while (vmNames.length < 50) {
   const index = vmNames.length + 1;
   const risk = index % 11 === 0 ? "high" : index % 5 === 0 ? "medium" : "low";
   vmNames.push([
-    `ACME-UTILITY${String(index).padStart(2, "0")}`,
+    `NBI-UTILITY${String(index).padStart(2, "0")}`,
     index % 2 === 0 ? "Ubuntu 22.04" : "Windows Server 2019",
     risk === "high" ? 6 : 2,
     risk === "high" ? 32 : 8,
@@ -222,7 +222,7 @@ const vmRows = vmNames.map(([name, os, cpu, ram, disk, datastore, network, snaps
 
 const payload = {
   assessment: {
-    safeReference: "assessment-demo-acme-ai-report-1",
+    safeReference: "assessment-demo-northbridge-ai-report-1",
     type: "vmware_to_proxmox",
     sourcePlatform: "vmware",
     targetPlatform: "proxmox",
@@ -250,7 +250,7 @@ const payload = {
     category,
     severity,
     entityType: "assessment",
-    entityName: "ACME Manufacturing Group",
+    entityName: "Northbridge Industrial Group",
     title,
     description,
     recommendation,
@@ -314,7 +314,7 @@ const payload = {
     },
   },
   evidenceReceived: [
-    { evidenceType: "rvtools", safeFilenameLabel: "synthetic-acme-rvtools-summary", processingStatus: "parsed", sizeBytes: 184000, uploadedAt: generatedAt.toISOString() },
+    { evidenceType: "rvtools", safeFilenameLabel: "synthetic-northbridge-rvtools-summary", processingStatus: "parsed", sizeBytes: 184000, uploadedAt: generatedAt.toISOString() },
     { evidenceType: "manual_csv", safeFilenameLabel: "synthetic-context-intake", processingStatus: "parsed", sizeBytes: 42000, uploadedAt: generatedAt.toISOString() },
   ],
   evidenceMissing: [
@@ -344,10 +344,10 @@ if (requireRealGemini && aiAdvisory.providerStatus !== "success") {
 }
 
 const reportPreview = {
-  assessmentId: "demo-acme-ai-report-1",
-  assessmentTitle: "DEMO - Full Synthetic Gemini Report - ACME Manufacturing",
+  assessmentId: "demo-northbridge-ai-report-1",
+  assessmentTitle: "DEMO - Full Synthetic Gemini Report - Northbridge Industrial",
   workspaceName: "Synthetic Demo Workspace",
-  clientLabel: "ACME Manufacturing Group (synthetic)",
+  clientLabel: "Northbridge Industrial Group (synthetic)",
   planLabel: "Readiness Report Pro",
   planRank: 3,
   reportPreviewStatus: "available",
@@ -416,7 +416,7 @@ const reportPreview = {
   },
   aiAdvisory,
   executiveSummary: [
-    "ACME Manufacturing Group is a synthetic 126-VM VMware estate with 6 hosts, 3 clusters and 14 datastores.",
+    "Northbridge Industrial Group is a synthetic 126-VM VMware estate with 6 hosts, 3 clusters and 14 datastores.",
     "The current recommendation is Pilot First, not direct migration.",
     "Cost pressure supports migration evaluation, but backup, dependency and Proxmox target evidence remain incomplete.",
     "Critical ERP, SQL, domain controller and warehouse workloads should not be first-wave candidates.",
@@ -432,7 +432,7 @@ const reportPreview = {
     category,
     severity,
     entityType: "assessment",
-    entityName: "ACME Manufacturing Group",
+    entityName: "Northbridge Industrial Group",
     title,
     description,
     recommendation,
@@ -483,7 +483,7 @@ const artifactSummary = {
   geminiKeyConfigured: Boolean(process.env.GEMINI_API_KEY),
   openAiConfigured: Boolean(process.env.OPENAI_API_KEY),
   dataset: {
-    company: "ACME Manufacturing Group",
+    company: "Northbridge Industrial Group",
     synthetic: true,
     totalVms: 126,
     detailedVms: vmNames.length,
@@ -512,7 +512,7 @@ fs.writeFileSync(
   readmePath,
   `${requireRealGemini ? "# AI-REPORT-1B Synthetic Gemini Success Readiness Report" : "# AI-REPORT-1 Synthetic Gemini Readiness Report"}\n\n` +
     `Generated at: ${generatedAt.toISOString()}\n\n` +
-    `Dataset: 100% synthetic/demo ACME Manufacturing Group.\n\n` +
+    `Dataset: 100% synthetic/demo Northbridge Industrial Group.\n\n` +
     `Provider: ${aiAdvisory.provider}\n\n` +
     `Model: ${aiAdvisory.model ?? "not configured"}\n\n` +
     `Provider status: ${aiAdvisory.providerStatus}\n\n` +

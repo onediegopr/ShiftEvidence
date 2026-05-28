@@ -4,7 +4,7 @@ Fecha: 2026-05-27
 
 ## Objetivo
 
-Regenerar el reporte sintetico ACME usando Gemini real y cerrar el bloqueo de AI-REPORT-1 con `providerStatus=success`.
+Regenerar el reporte sintetico Northbridge usando Gemini real y cerrar el bloqueo de AI-REPORT-1 con `providerStatus=success`.
 
 ## Resultado
 
@@ -52,7 +52,7 @@ Estado local seguro:
 
 Empresa:
 
-- ACME Manufacturing Group.
+- Northbridge Industrial Group.
 - 126 VMs.
 - 50 VMs representativas detalladas.
 - 6 ESXi hosts.
@@ -109,7 +109,7 @@ Condicion pendiente para completar:
 Artefacto generado:
 
 - folder: `qa-artifacts/ai-report-1b/`.
-- PDF: `acme-full-synthetic-gemini-success-readiness-report.pdf`.
+- PDF: `northbridge-full-synthetic-gemini-success-readiness-report.pdf`.
 - size: 30373 bytes.
 - page count: 13.
 - header: `%PDF-1.3`.

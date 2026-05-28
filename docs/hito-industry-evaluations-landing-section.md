@@ -6,15 +6,19 @@ Date: 2026-05-28.
 
 Add and maintain a public landing credibility section for ShiftReadiness:
 
-- `Private Industry Readiness Examples`
+- `What our customers are saying`
 
-The section presents representative, synthetic/anonymized-style private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details.
+The section presents review-style private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details.
 
 ## Public Copy Correction
 
 COPY-FIX-1 corrected the public section from Spanish to English because the public marketing site is in English.
 
 Admin and internal console copy remain out of scope and may continue to use Spanish where appropriate.
+
+Latest public subtitle:
+
+- `Real infrastructure assessments often involve sensitive cost, risk, and environment data. That's why these reviews are shown by industry, without company names or identifying details.`
 
 ## Location
 
@@ -67,8 +71,8 @@ Each card opens a modal with:
 - No photos of people are used.
 - The copy does not claim public testimonials.
 - The copy does not claim verified public case studies.
-- The copy does not claim real customers.
-- The examples are representative, synthetic/anonymized-style scenarios.
+- The section does not publish named or verified customer identities.
+- The examples are shown by industry with identifying details removed.
 - No specific savings are promised.
 - No zero-downtime or 100% success claims are made.
 - No migration automation claim is made.

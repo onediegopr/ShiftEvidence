@@ -29,7 +29,7 @@ Subtitulo:
 
 El sample usa el mismo contexto sintetico de DEMO-1:
 
-- Cliente: `ACME Manufacturing Group`.
+- Cliente: `Northbridge Industrial Group`.
 - 126 VMs.
 - 6 ESXi hosts.
 - 14 datastores.

@@ -22,7 +22,7 @@ Motivo:
 
 Empresa ficticia:
 
-- Nombre: ACME Manufacturing Group.
+- Nombre: Northbridge Industrial Group.
 - Industria: manufactura / distribucion regional.
 - Sedes: 3.
 - VMware estate: 126 VMs.
@@ -151,7 +151,7 @@ PDF result:
 
 - generated: YES.
 - renderer: real product PDF renderer.
-- path: `qa-artifacts/ai-report-1/acme-full-synthetic-gemini-readiness-report.pdf`.
+- path: `qa-artifacts/ai-report-1/northbridge-full-synthetic-gemini-readiness-report.pdf`.
 - size: 30353 bytes.
 - page count: 13.
 - PDF header: valid `%PDF-1.3`.
@@ -164,8 +164,8 @@ PDF result:
 
 Local ignored artifacts:
 
-- `qa-artifacts/ai-report-1/acme-full-synthetic-gemini-readiness-report.pdf`
-- `qa-artifacts/ai-report-1/acme-synthetic-assessment-evidence-summary.json`
+- `qa-artifacts/ai-report-1/northbridge-full-synthetic-gemini-readiness-report.pdf`
+- `qa-artifacts/ai-report-1/northbridge-synthetic-assessment-evidence-summary.json`
 - `qa-artifacts/ai-report-1/README.md`
 
 Binary artifacts are not committed because `qa-artifacts/` is ignored.

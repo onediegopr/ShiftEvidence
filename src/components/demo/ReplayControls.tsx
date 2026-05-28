@@ -7,6 +7,7 @@ type ReplayControlsProps = {
   soundEnabled: boolean;
   canGoBack: boolean;
   canGoNext: boolean;
+  playLabel?: string;
   onPlayPause: () => void;
   onPrevious: () => void;
   onNext: () => void;
@@ -20,6 +21,7 @@ export default function ReplayControls({
   soundEnabled,
   canGoBack,
   canGoNext,
+  playLabel = "Play",
   onPlayPause,
   onPrevious,
   onNext,
@@ -31,7 +33,7 @@ export default function ReplayControls({
     <div className="demo-replay-controls" aria-label="Replay controls">
       <button type="button" className="demo-control-btn demo-control-primary" onClick={onPlayPause} data-event="demo_started">
         {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-        <span>{isPlaying ? "Pause" : "Play"}</span>
+        <span>{isPlaying ? "Pause" : playLabel}</span>
       </button>
 
       <button type="button" className="demo-control-btn" onClick={onPrevious} disabled={!canGoBack} aria-label="Previous replay step">
@@ -58,10 +60,10 @@ export default function ReplayControls({
         className="demo-control-btn demo-sound-toggle"
         onClick={onToggleSound}
         aria-pressed={soundEnabled}
-        aria-label={soundEnabled ? "Disable visual sound mode" : "Enable visual sound mode"}
+        aria-label={soundEnabled ? "Turn demo sound off" : "Turn subtle demo sound on"}
       >
         {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
-        <span>{soundEnabled ? "Visual cue only" : "Audio off"}</span>
+        <span>{soundEnabled ? "Sound on" : "Sound off"}</span>
       </button>
     </div>
   );

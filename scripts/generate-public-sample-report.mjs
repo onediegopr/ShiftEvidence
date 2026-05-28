@@ -23,7 +23,7 @@ const colors = {
 };
 
 const dataset = {
-  client: "ACME Manufacturing Group",
+  client: "Northbridge Industrial Group",
   scope: [
     ["VMs", "126"],
     ["ESXi hosts", "6"],
@@ -151,8 +151,9 @@ function paintBackground() {
 }
 
 function header(eyebrow) {
-  doc.font("Helvetica-Bold").fontSize(8).fillColor(colors.cyan).text(eyebrow, 42, 34, { characterSpacing: 1.2 });
-  doc.font("Helvetica").fontSize(8).fillColor(colors.muted).text("ACME Manufacturing Group - synthetic dataset", 330, 34, {
+  drawShiftEvidenceMark(42, 29, 18);
+  doc.font("Helvetica-Bold").fontSize(8).fillColor(colors.cyan).text(eyebrow, 68, 34, { characterSpacing: 1.2 });
+  doc.font("Helvetica").fontSize(8).fillColor(colors.muted).text("Northbridge Industrial Group - synthetic dataset", 330, 34, {
     width: 220,
     align: "right",
   });
@@ -161,8 +162,21 @@ function header(eyebrow) {
 
 function footer() {
   const y = doc.page.height - 58;
-  doc.font("Helvetica").fontSize(8).fillColor(colors.muted).text("Synthetic sample. No customer data. No production access.", 42, y);
+  doc.font("Helvetica").fontSize(8).fillColor(colors.muted).text("Powered by Shift Evidence. Synthetic sample. No customer data. No production access.", 42, y);
   doc.text(`${pageNumber} / ${totalPages}`, 500, y, { width: 50, align: "right" });
+}
+
+function drawShiftEvidenceMark(x, y, size) {
+  doc.roundedRect(x, y, size, size, 5).fillAndStroke("#0b2238", colors.cyan);
+  doc.circle(x + size * 0.35, y + size * 0.35, size * 0.13).fill(colors.emerald);
+  doc.circle(x + size * 0.65, y + size * 0.58, size * 0.13).fill(colors.cyan);
+  doc.moveTo(x + size * 0.38, y + size * 0.4).lineTo(x + size * 0.62, y + size * 0.55).strokeColor(colors.white).lineWidth(1).stroke();
+}
+
+function drawShiftEvidenceWordmark(x, y) {
+  drawShiftEvidenceMark(x, y, 22);
+  doc.fillColor(colors.white).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x + 30, y + 1);
+  doc.fillColor(colors.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x + 30, y + 14);
 }
 
 function card(x, y, w, h, title, body, accent = colors.cyan) {
@@ -229,17 +243,18 @@ pageNumber = 0;
 pageNumber = 1;
 paintBackground();
 footer();
-doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(10).text("PUBLIC SYNTHETIC SAMPLE REPORT", 42, 54, { characterSpacing: 1.6 });
+drawShiftEvidenceWordmark(42, 42);
+doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(10).text("PUBLIC SYNTHETIC SAMPLE REPORT", 42, 82, { characterSpacing: 1.6 });
 doc.fillColor(colors.white).font("Helvetica-Bold").fontSize(42).text("Proxmox Migration Readiness", 42, 120, { width: 450, lineGap: -4 });
 doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(18).text("VMware -> Proxmox Migration Planning", 42, 232);
-sectionText("ACME Manufacturing Group\nBased on synthetic infrastructure evidence. No customer data.", 42, 278, 440);
+sectionText("Northbridge Industrial Group\nBased on synthetic infrastructure evidence. No customer data.", 42, 278, 440);
 card(42, 392, 238, 110, "Scope", "126 VMs / 6 ESXi hosts / 3 clusters / 14 datastores", colors.emerald);
 card(315, 392, 238, 110, "Use", "Commercial sample for understanding the deliverable before uploading real evidence.", colors.cyan);
 
 // 2. Executive Summary
 page("Executive Summary");
 sectionText(
-  "ACME Manufacturing has a medium migration readiness posture based on the evidence provided. The VMware inventory is usable for an initial assessment, but backup evidence, application dependency mapping and Proxmox target validation are missing or incomplete.",
+  "Northbridge Industrial has a medium migration readiness posture based on the evidence provided. The VMware inventory is usable for an initial assessment, but backup evidence, application dependency mapping and Proxmox target validation are missing or incomplete.",
 );
 card(42, 250, 240, 118, "Medium readiness", "Low-risk workloads may be candidates for a pilot after validation.", colors.emerald);
 card(313, 250, 240, 118, "Limited confidence", "Critical workloads require validation before entering a migration wave.", colors.amber);

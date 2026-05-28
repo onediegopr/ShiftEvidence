@@ -52,7 +52,7 @@ SAMPLE-REPORT-1 update:
 SAMPLE-REPORT-2 update:
 
 - Public synthetic PDF is live at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
-- The PDF has 15 pages and is generated from synthetic ACME data.
+- The PDF has 15 pages and is generated from synthetic Northbridge data.
 - `/sample-report` links to the PDF with `Download sample PDF`.
 - It uses no backend, DB, Gemini call, upload, lead capture or customer data.
 - It remains a commercial sample only and does not approve full public launch.

@@ -30,7 +30,7 @@ Resultado tecnico:
 - Header: `%PDF-`.
 - Page count: 15.
 - Size: 100137 bytes.
-- Dataset: `ACME Manufacturing Group`.
+- Dataset: `Northbridge Industrial Group`.
 - No `[object Object]`.
 - No JSON crudo detectado.
 - No markers de secrets.
@@ -43,7 +43,7 @@ Cover:
 
 - Profesional y claro.
 - Marca `PUBLIC SYNTHETIC SAMPLE REPORT`.
-- Dataset ACME visible.
+- Dataset Northbridge visible.
 - No se ve vacio.
 
 Executive Summary:
@@ -54,7 +54,7 @@ Executive Summary:
 
 Environment Overview:
 
-- Numeros ACME claros.
+- Numeros Northbridge claros.
 - No aparenta dato real.
 - Contexto de evidencia incompleta visible.
 

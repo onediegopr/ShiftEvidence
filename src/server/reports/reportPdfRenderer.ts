@@ -10,6 +10,22 @@ export type PdfReportRenderInput = {
   generatedAt: Date;
   generatedByLabel: string;
   reportPreview: ReportPreviewData;
+  reportBranding?: PdfReportBrandingInput | null;
+};
+
+export type PdfReportBrandLogo = {
+  label: string;
+  mimeType: "image/png" | "image/jpeg";
+  buffer: Buffer;
+};
+
+export type PdfReportBrandingInput = {
+  audience: "own_company" | "client";
+  companyName: string | null;
+  clientName: string | null;
+  companyLogo: PdfReportBrandLogo | null;
+  clientLogo: PdfReportBrandLogo | null;
+  whiteLabel: boolean;
 };
 
 type Tone = "neutral" | "good" | "warning" | "danger" | "info";
@@ -39,6 +55,99 @@ const TONE_COLORS: Record<Tone, { fill: string; stroke: string; text: string }> 
   danger: { fill: "#fef2f2", stroke: "#fecaca", text: THEME.red },
   info: { fill: "#ecfeff", stroke: "#a5f3fc", text: THEME.cyan },
 };
+
+function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number, dark = false) {
+  doc.roundedRect(x, y, size, size, size * 0.22).fillAndStroke(dark ? "#0b2238" : "#f8fafc", THEME.cyan);
+  doc.circle(x + size * 0.34, y + size * 0.34, size * 0.12).fill(THEME.green);
+  doc.circle(x + size * 0.66, y + size * 0.62, size * 0.12).fill(THEME.cyan);
+  doc
+    .strokeColor(dark ? "#ffffff" : THEME.navy)
+    .lineWidth(Math.max(0.7, size * 0.045))
+    .moveTo(x + size * 0.39, y + size * 0.4)
+    .lineTo(x + size * 0.61, y + size * 0.56)
+    .stroke();
+}
+
+function drawShiftEvidenceWordmark(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
+  drawShiftEvidenceMark(doc, x, y, 24, dark);
+  doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x + 32, y + 1);
+  doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x + 32, y + 15);
+}
+
+function drawLogoPanel(params: {
+  doc: PDFKit.PDFDocument;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  title: string;
+  name: string | null;
+  logo: PdfReportBrandLogo | null;
+}) {
+  const { doc, x, y, w, h, title, name, logo } = params;
+  doc.roundedRect(x, y, w, h, 10).fillAndStroke("#111827", "#334155");
+  doc.fillColor("#cbd5e1").font("Helvetica-Bold").fontSize(7.3).text(safeText(title).toUpperCase(), x + 12, y + 10, {
+    width: w - 24,
+  });
+  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(9).text(safeText(name ?? "Not provided"), x + 12, y + 24, {
+    width: w - 24,
+  });
+
+  const logoY = y + 44;
+  const logoH = h - 56;
+  if (logo) {
+    try {
+      doc.image(logo.buffer, x + 12, logoY, {
+        fit: [w - 24, logoH],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      doc.fillColor("#94a3b8").font("Helvetica").fontSize(8).text("Logo could not be embedded", x + 12, logoY + 8, {
+        width: w - 24,
+      });
+    }
+  } else {
+    doc.fillColor("#94a3b8").font("Helvetica").fontSize(8).text("Logo not provided", x + 12, logoY + 8, {
+      width: w - 24,
+    });
+  }
+}
+
+function drawCoverBranding(doc: PDFKit.PDFDocument, input: PdfReportRenderInput, x: number, y: number) {
+  const branding = input.reportBranding;
+  if (!branding || (!branding.companyLogo && !branding.clientLogo && !branding.companyName && !branding.clientName)) {
+    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(9).text("Report branding: Shift Evidence / ShiftReadiness", x, y, {
+      width: contentWidth(doc),
+    });
+    return;
+  }
+
+  const panelW = (contentWidth(doc) - 18) / 2;
+  drawLogoPanel({
+    doc,
+    x,
+    y,
+    w: panelW,
+    h: 82,
+    title: branding.audience === "client" ? "Partner / consultant" : "Company",
+    name: branding.companyName,
+    logo: branding.companyLogo,
+  });
+  drawLogoPanel({
+    doc,
+    x: x + panelW + 18,
+    y,
+    w: panelW,
+    h: 82,
+    title: branding.audience === "client" ? "End client" : "Client / assessment",
+    name: branding.audience === "client" ? branding.clientName : input.clientLabel,
+    logo: branding.audience === "client" ? branding.clientLogo : null,
+  });
+  doc.fillColor("#cbd5e1").font("Helvetica").fontSize(8).text("White-label output. Powered by Shift Evidence.", x, y + 92, {
+    width: contentWidth(doc),
+  });
+}
 
 function safeText(value: string | number | null | undefined) {
   const text = value === null || value === undefined ? "Not provided" : String(value);
@@ -528,8 +637,8 @@ function addPageNumbers(doc: PDFKit.PDFDocument) {
       .moveTo(MARGIN, footerLineY)
       .lineTo(doc.page.width - MARGIN, footerLineY)
       .stroke();
-    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("ShiftReadiness - Evidence-based readiness assessment", MARGIN, footerTextY, {
-      width: 280,
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("Powered by Shift Evidence | ShiftReadiness - Evidence-based readiness assessment", MARGIN, footerTextY, {
+      width: 360,
       lineBreak: false,
     });
     doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text(`Page ${pageNo} of ${range.count}`, doc.page.width - 150, footerTextY, {
@@ -577,7 +686,8 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(THEME.navy);
     doc.rect(0, 0, doc.page.width, 168).fill("#111827");
     doc.rect(0, 168, doc.page.width, 6).fill(THEME.cyan);
-    doc.fillColor("#67e8f9").font("Helvetica-Bold").fontSize(10).text("SHIFTREADINESS", MARGIN, 54, {
+    drawShiftEvidenceWordmark(doc, MARGIN, 48, true);
+    doc.fillColor("#67e8f9").font("Helvetica-Bold").fontSize(8).text("SHIFTREADINESS REPORT", MARGIN, 78, {
       characterSpacing: 2,
     });
     doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
@@ -625,10 +735,11 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       note: "Preliminary, evidence-based signal",
       tone: getScoreTone(preview.readinessScore),
     });
+    drawCoverBranding(doc, input, MARGIN, 452);
     doc.fillColor("#cbd5e1").font("Helvetica").fontSize(9.5).text(
       "Confidential / Evidence-based assessment. This report is generated from the evidence available at assessment time.",
       MARGIN,
-      510,
+      input.reportBranding ? 562 : 510,
       { width: contentWidth(doc), lineGap: 2 },
     );
 

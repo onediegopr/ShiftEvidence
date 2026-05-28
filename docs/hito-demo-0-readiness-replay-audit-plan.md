@@ -257,9 +257,9 @@ Restricciones:
 
 ## 11. Dataset sintetico recomendado
 
-Dataset ACME:
+Dataset Northbridge:
 
-- Cliente: `ACME Manufacturing Group`.
+- Cliente: `Northbridge Industrial Group`.
 - Tipo: manufactura regional.
 - VMs: 126.
 - ESXi hosts: 6.
@@ -327,7 +327,7 @@ Escena opcional:
 ## 13. Plan exacto para DEMO-1
 
 1. Crear ruta publica `/demo`.
-2. Crear dataset sintetico ACME local.
+2. Crear dataset sintetico Northbridge local.
 3. Crear componente interactivo `MigrationReadinessReplay`.
 4. Implementar escenas con transicion controlada y botonera.
 5. Agregar aviso visible: `Simulated demo. No customer data. No production access.`
@@ -436,7 +436,7 @@ DEMO-0 queda planificado con recomendacion clara:
 
 - Implementar `/demo` como pagina publica nueva.
 - Nombrarla `Migration Readiness Replay`.
-- Usar dataset sintetico ACME.
+- Usar dataset sintetico Northbridge.
 - Usar componentes locales sin backend.
 - Agregar CTAs limitados desde home y `/shiftreadiness`.
 - Mantener posicionamiento como readiness/planning basado en evidencia.
@@ -451,7 +451,7 @@ DEMO-1 implementa la recomendacion de este plan:
 
 - Ruta publica nueva: `/demo`.
 - Nombre visible: `Migration Readiness Replay`.
-- Dataset sintetico: `ACME Manufacturing Group`.
+- Dataset sintetico: `Northbridge Industrial Group`.
 - Componentes client-side sin backend, DB, upload real ni Gemini real.
 - CTAs acotados desde home y `/shiftreadiness`.
 - Documentacion principal: `docs/hito-demo-1-migration-readiness-replay.md`.

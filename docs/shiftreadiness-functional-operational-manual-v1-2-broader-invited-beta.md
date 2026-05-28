@@ -26,7 +26,7 @@ UX hardening update:
 Demo update:
 
 - `DEMO-1` adds public `/demo` as Migration Readiness Replay.
-- The replay is simulated and uses synthetic ACME data only.
+- The replay is simulated and uses synthetic Northbridge data only.
 - It does not require login, backend, DB, Gemini, upload real or customer data.
 - It is allowed for pre-onboarding education during broader invited beta.
 - It must not be described as automatic migration, zero-downtime guarantee, cutover automation or full public launch.
@@ -36,7 +36,7 @@ Sample report update:
 
 - `SAMPLE-REPORT-1` adds public `/sample-report` as a synthetic sample readiness report foundation.
 - It shows the expected deliverable structure before a prospect uploads their own data.
-- It uses synthetic ACME data only and does not use backend, DB, Gemini, upload, lead capture or customer data.
+- It uses synthetic Northbridge data only and does not use backend, DB, Gemini, upload, lead capture or customer data.
 - SAMPLE-REPORT-1 originally left the downloadable PDF pending.
 - `SAMPLE-REPORT-2` publishes the public synthetic PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - The PDF has 15 pages, is generated with `npm run sample-report:generate`, and remains synthetic/no-customer-data only.

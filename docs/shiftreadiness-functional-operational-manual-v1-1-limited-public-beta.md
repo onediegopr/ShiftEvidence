@@ -220,7 +220,7 @@ Fecha: 2026-05-27.
 Se agrego un generador local de reporte sintetico:
 
 - comando: `npm run ai:report-synthetic`;
-- empresa demo: ACME Manufacturing Group;
+- empresa demo: Northbridge Industrial Group;
 - dataset: 100% sintetico;
 - renderer: PDF real del producto;
 - artefactos: `qa-artifacts/ai-report-1/`;

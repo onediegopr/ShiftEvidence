@@ -576,10 +576,10 @@ export default function LandingPage() {
           <div className="container">
             <div className="industry-evaluations-header">
               <div className="badge badge-cyan">Private examples</div>
-              <h2 id="industry-evaluations-title">Private Industry Readiness Examples</h2>
+              <h2 id="industry-evaluations-title">What our customers are saying</h2>
               <p>
-                Representative, anonymized-style examples showing how a readiness assessment can surface migration
-                risk, missing evidence and next actions across different environments.
+                Real infrastructure assessments often involve sensitive cost, risk, and environment data. That&apos;s
+                why these reviews are shown by industry, without company names or identifying details.
               </p>
             </div>
 
