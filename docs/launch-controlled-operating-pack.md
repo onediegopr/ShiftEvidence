@@ -170,6 +170,26 @@ Decision:
 - Limited beta usage: YES, still controlled/low-volume/invitation-only.
 - Full public launch: NO.
 
+## QA-CLEANUP-ARCHIVE-1 Review
+
+Date: 2026-05-28.
+
+QA/demo data was inventoried without deletion:
+
+- 25 QA/demo assessments.
+- 14 `safe to delete` assessments.
+- 2 synthetic assessments.
+- 1 `internal_qa` entitlement.
+- 1 QA commercial opportunity.
+- 1 `admin_test` AI usage event.
+- 31 reports associated with QA assessments.
+
+Operating rule:
+
+- Do not hard-delete QA/demo records during controlled beta without a separate reviewed cleanup hito.
+- Prefer archive/mark/filter workflows over destructive deletion.
+- Treat QA/demo usage as non-commercial when interpreting metrics.
+
 ## Rollback / Pause
 
 If launch must be paused:

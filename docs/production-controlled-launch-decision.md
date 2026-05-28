@@ -586,3 +586,32 @@ Remaining before full public launch:
 - Public support/SLA and launch communications.
 
 PRE-LAUNCH-1 accepts controlled beta readiness but does not approve full public launch.
+
+## QA-CLEANUP-ARCHIVE-1 Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, controlled/low-volume/invitation-only.
+- Full public launch: NO.
+
+Result:
+
+- QA/demo data was inventoried with read-only queries.
+- No hard-delete was executed.
+- No users, assessments, evidence files, reports, entitlements or opportunities were deleted.
+- QA/demo records remain identifiable by names, `safe to delete`, synthetic labels, `internal_qa`, QA notes and `admin_test`.
+
+Counts:
+
+- QA/demo assessments: 25.
+- `safe to delete` assessments: 14.
+- Synthetic assessments: 2.
+- QA entitlements: 1.
+- QA opportunities: 1.
+- `admin_test` AI usage events: 1.
+- QA-associated reports: 31.
+
+Full public launch still requires a final decision on QA/demo archive or filtering.

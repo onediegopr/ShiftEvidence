@@ -128,6 +128,29 @@ Condicion:
 - full public launch sigue NO.
 - antes de full launch se requiere limpiar/archive QA, revisar logs Hostinger y cerrar soporte/SLA publico.
 
+## QA-CLEANUP-ARCHIVE-1
+
+Fecha: 2026-05-28.
+
+Se realizo inventario QA/demo sin borrado:
+
+- 25 assessments QA/demo;
+- 14 assessments `safe to delete`;
+- 2 assessments sinteticos;
+- 1 entitlement `internal_qa`;
+- 1 oportunidad comercial QA;
+- 1 evento IA `admin_test`;
+- 31 reportes asociados a assessments QA.
+
+Decision operativa:
+
+- no hard-delete;
+- no borrar usuarios;
+- no borrar evidencia;
+- mantener trazabilidad;
+- tratar QA/demo como no comercial al interpretar metricas;
+- preparar filtros/archive dedicados antes de full public launch si se requiere.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.
