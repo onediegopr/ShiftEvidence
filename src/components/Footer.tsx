@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 export default function Footer() {
   const copy = {
     brand:
-      "Enterprise-grade VMware to Proxmox migration assessments. Fully automated checks, custom analysis, and zero data loss guidance.",
+      "Enterprise-grade VMware to Proxmox migration assessments. Automated checks, custom analysis, and data-loss risk guidance.",
     platform: "Platform",
     resources: "Resources",
     checklist: "Get Free Migration Checklist",

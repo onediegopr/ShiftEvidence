@@ -22,8 +22,8 @@ export default function Process() {
       duration: "Day 1 - 2",
       color: "#06b6d4",
       description:
-        "We connect our audit appliance to your vCenter API. We analyze CPU profiles, disk formats and virtual network associations, generating a complete translation map.",
-      action: "Generate your custom migration compatibility scorecard.",
+        "You provide approved inventory and context evidence. ShiftReadiness analyzes CPU profiles, disk formats and virtual network associations to build a readiness map.",
+      action: "Generate your migration readiness scorecard.",
       callout:
         "Advisor lens: the former VMware TAM-led methodology helps distinguish what can be automated, what must be validated and what should not move first.",
     },
@@ -34,9 +34,9 @@ export default function Process() {
       duration: "Day 3 - 5",
       color: "#8b5cf6",
       description:
-        "We configure the target Proxmox cluster. Our converter replicates VM virtual disks asynchronously in the background. Your VMware workloads remain active and unchanged.",
+        "The report identifies target Proxmox design assumptions, storage decisions and preparation tasks that should be validated before execution.",
       action:
-        "Synchronize data blocks progressively without impacting network traffic.",
+        "Plan required validations without touching production workloads.",
     },
     {
       num: "03",
@@ -45,9 +45,9 @@ export default function Process() {
       duration: "Day 6",
       color: "#f59e0b",
       description:
-        "We boot the migrated virtual machines in an isolated, unrouted test network. We verify driver integrity, partition layouts and database health before cutover.",
+        "Use the findings to define pilot candidates and sandbox checks for drivers, partition layouts, dependencies and application health.",
       action:
-        "Ensure a 100% successful boot rate on the target Proxmox hypervisors.",
+        "Define pilot validation criteria before approving any production move.",
     },
     {
       num: "04",
@@ -56,9 +56,9 @@ export default function Process() {
       duration: "Day 7 (window)",
       color: "#ea580c",
       description:
-        "We gracefully shut down the source VMware VM, synchronize the final delta blocks (only minutes) and remap the network gateway to the new Proxmox cluster.",
+        "Plan workload-specific cutover windows, rollback conditions and owner approvals based on evidence quality and risk.",
       action:
-        "Complete VM cutovers with minimal downtime (typically <10 minutes).",
+        "Avoid unsupported downtime promises; use evidence to set realistic migration windows.",
     },
     {
       num: "05",
@@ -67,9 +67,9 @@ export default function Process() {
       duration: "Day 8+",
       color: "#10b981",
       description:
-        "We optimize ZFS caching, define storage performance metrics in Ceph and verify incremental deduplication schedules in Proxmox Backup Server.",
+        "Capture target storage and backup validation tasks for ZFS, Ceph, SAN, NAS or Proxmox Backup Server designs.",
       action:
-        "Move system management to the customer-defined dashboard metrics.",
+        "Turn readiness gaps into implementation and validation tasks.",
     },
   ];
 

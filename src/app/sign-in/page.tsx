@@ -88,6 +88,8 @@ export default function SignInPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
+              autoComplete="email"
+              spellCheck={false}
               placeholder="you@company.com"
               className="form-input"
             />
@@ -102,6 +104,7 @@ export default function SignInPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
+              autoComplete="current-password"
               placeholder="Enter your password"
               className="form-input"
             />

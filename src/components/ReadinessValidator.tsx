@@ -121,7 +121,7 @@ export default function ReadinessValidator({
           },
           networkType === "dvs"
             ? {
-                text: "[WARN] vSphere Distributed Switch (dVS) requires mapping to Proxmox Open vSwitch (OVS). Auto-converter mapping configured.",
+                text: "[WARN] vSphere Distributed Switch (dVS) requires mapping review for Proxmox Open vSwitch (OVS).",
                 type: "warn",
               }
             : {
@@ -658,8 +658,8 @@ export default function ReadinessValidator({
                         </div>
                         <div className="recommendation-desc">
                           {evidenceSource === "file" || storageType !== "vsan"
-                            ? "External block storage mapping verified. Incremental disk block converter staging available."
-                            : "VMware vSAN storage flagged: will utilize Proxmox Ceph RBD replication scripts."}
+                            ? "External block storage mapping requires staged migration planning and validation."
+                            : "VMware vSAN storage flagged for Proxmox Ceph design and replication planning review."}
                         </div>
                       </div>
                     </div>

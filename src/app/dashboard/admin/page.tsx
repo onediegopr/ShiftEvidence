@@ -361,7 +361,7 @@ export default async function AdminConsolePage() {
               <span>Input máximo: {ai.maxInputChars} chars</span>
               <span>Output máximo: {ai.maxOutputChars} chars</span>
             </div>
-            <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2B.</p>
+            <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Métricas en memoria</h3>
@@ -374,7 +374,7 @@ export default async function AdminConsolePage() {
               <span>Última duración: {formatDuration(ai.ultimaDuracionMs)}</span>
               <span>Promedio: {formatDuration(ai.duracionPromedioMs)}</span>
             </div>
-            <p className="assessment-inline-note">Las métricas son temporales y pueden perderse con un deploy. No hay billing real en ADMIN-2A.</p>
+            <p className="assessment-inline-note">Las métricas en memoria pueden perderse con un deploy. Los eventos persistentes y costos siguen siendo estimados; no hay billing automático real.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Alertas operativas</h3>
@@ -841,7 +841,7 @@ export default async function AdminConsolePage() {
           title="Health de configuración segura"
           description="Sólo estados seguros. No se muestran secretos, tokens, URLs privadas completas ni API keys."
         />
-        <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2B.</p>
+        <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola.</p>
         <div className="assessment-table-wrap">
           <table className="assessment-table">
             <thead>
@@ -992,10 +992,10 @@ export default async function AdminConsolePage() {
           icon={<Activity size={18} />}
           label="Auditoría y errores"
           title="Últimos eventos"
-          description="Eventos persistidos disponibles. Consola avanzada de errores queda para ADMIN-2."
+          description="Eventos persistidos disponibles. La consola avanzada de errores se mantiene como monitoreo operativo interno."
         />
         {data.advancedAuditEvents.length === 0 ? (
-          <p className="assessment-empty-note">Auditoría persistente pendiente o sin eventos recientes. Se ampliará en ADMIN-2 junto con eventos de usuario, IA, PDF y pagos.</p>
+          <p className="assessment-empty-note">No hay eventos recientes para mostrar. La auditoría persistente registra cambios admin, IA, PDF, accesos y eventos operativos cuando existen.</p>
         ) : (
           <div className="report-history-grid">
             {data.advancedAuditEvents.map((event) => (

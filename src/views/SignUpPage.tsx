@@ -103,7 +103,7 @@ export default function SignUpPage() {
             : { text: "[INFO] External SAN/NFS target selected. Storage volume mapping verified.", type: "success" },
           { text: `[INFO] Parsing network configuration... [${networkType === "dvs" ? "Distributed" : "Standard"}] Switch setup.`, type: "info" },
           networkType === "dvs"
-            ? { text: "[WARN] vSphere Distributed Switch (dVS) requires mapping to Proxmox Open vSwitch (OVS). Auto-converter mapping configured.", type: "warn" }
+            ? { text: "[WARN] vSphere Distributed Switch (dVS) requires mapping review for Proxmox Open vSwitch (OVS).", type: "warn" }
             : { text: "[INFO] Standard vSwitch maps cleanly to Linux Bridges (vmbr).", type: "success" },
           haRequired
             ? { text: "[INFO] High Availability enabled. Checking corosync cluster communication configuration...", type: "info" }
@@ -839,8 +839,8 @@ export default function SignUpPage() {
                             <div className="recommendation-title">Storage Targets: Configured</div>
                             <div className="recommendation-desc">
                               {evidenceSource === "file" || storageType !== "vsan"
-                                ? "External block storage mapping verified. Incremental disk block converter staging available."
-                                : "VMware vSAN storage flagged: will utilize Proxmox Ceph RBD replication scripts."}
+                                ? "External block storage mapping requires staged migration planning and validation."
+                                : "VMware vSAN storage flagged for Proxmox Ceph design and replication planning review."}
                             </div>
                           </div>
                         </div>
@@ -886,9 +886,9 @@ export default function SignUpPage() {
                 >
                   <ShieldCheck size={48} />
                 </div>
-                <h2 style={{ color: "white", margin: 0 }}>Assessment Complete!</h2>
+                <h2 style={{ color: "white", margin: 0 }}>Readiness Preview Prepared</h2>
                 <p className="text-muted" style={{ maxWidth: "550px", fontSize: "0.95rem", lineHeight: "1.6" }}>
-                  Congratulations, your preliminary VMware to Proxmox readiness assessment report has been compiled and is ready for review.
+                  Your preliminary VMware to Proxmox readiness preview is ready. Full reports and downloads are generated from the authenticated workspace after evidence review.
                 </p>
 
                 <div
@@ -921,10 +921,10 @@ export default function SignUpPage() {
                   <button
                     className="btn btn-secondary btn-sm"
                     style={{ display: "flex", gap: "0.5rem", alignItems: "center", border: "1px solid var(--border-color)" }}
-                    onClick={() => alert("Simulated download: PDF compiled successfully!")}
+                    onClick={() => alert("Full PDF downloads are available from the authenticated workspace after evidence review.")}
                   >
                     <Download size={16} />
-                    Download
+                    Download info
                   </button>
                 </div>
 

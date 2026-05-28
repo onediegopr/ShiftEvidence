@@ -22,24 +22,24 @@ const copy = {
     "Our automated compatibility engine scans vSphere hosts, storage formats, and distributed networks, flagging migration bottlenecks before they happen.",
   ],
   f2: [
-    "Automated VM Translation",
-    "Converts VMDK virtual disks into Proxmox-native RAW or QCOW2 files. VirtIO drivers are injected automatically to avoid boot failures.",
+    "VM Migration Planning",
+    "Identifies disk format, driver and compatibility considerations that must be validated before any VMware to Proxmox move.",
   ],
   f3: [
-    "Zero-Downtime Replication",
-    "Synchronizes virtual machine blocks asynchronously in the background. Production systems keep running on VMware, with only a brief restart at final cutover.",
+    "Downtime Window Review",
+    "Highlights workload risk, backup gaps and validation steps so teams can plan realistic migration windows and rollback paths.",
   ],
   f4: [
     "Instant Rollback Protection",
     "We operate in a strict read-only mode for VMware assets. If a migration anomaly appears, you can bring the source VMware cluster back immediately.",
   ],
   f5: [
-    "Storage Architecture Setup",
-    "We design and configure highly available target storage layers, aligning compute, network, and distributed storage topology with open standards.",
+    "Storage Architecture Readiness",
+    "Reviews target storage assumptions and evidence gaps across ZFS, Ceph, SAN or NAS options before implementation.",
   ],
   f6: [
-    "Backup Infrastructure Shift",
-    "Save on Veeam licenses. We build and deploy Proxmox Backup Server (PBS) setups with deduplication, encryption, and incremental backup routines.",
+    "Backup Evidence Review",
+    "Surfaces missing backup, restore and RPO/RTO evidence before production workloads are moved.",
   ],
   compHead: "Comparing architecture and costs",
   compBlurb:
