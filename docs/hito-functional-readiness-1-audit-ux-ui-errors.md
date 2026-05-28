@@ -442,3 +442,8 @@ No revisado:
 - Ready for first real client usage: **NO cerrar desde este hito sin user-attested fresco**.
 - Ready for full public launch: **NO**.
 - Proximo hito recomendado: completar user-attested de `FUNCTIONAL-READINESS-1` o ejecutar `FUNCTIONAL-READINESS-1B` autenticado.
+## LOCAL-GEMINI-1 Note
+
+Date: 2026-05-28.
+
+Local Gemini provider connectivity was validated with `npm run ai:smoke-local-gemini` using an ignored `.env.local` secret. The smoke returned `providerStatus=success` without printing the key or full response. The strict synthetic PDF generator still returned `providerStatus=error`, so local PDF/advisory success remains a separate hardening item.

@@ -192,6 +192,18 @@ npm run ai:report-synthetic:require-gemini
 
 This mode must fail unless Gemini returns `providerStatus=success`.
 
+## LOCAL-GEMINI-1 Guardrail
+
+Local Gemini setup must follow the same secret rules as production:
+
+- Keep `GEMINI_API_KEY` in ignored `.env.local` or process env only.
+- Never print key values.
+- Never commit `.env.local`.
+- Keep `OPENAI_API_KEY` absent unless a later hito explicitly approves OpenAI.
+- Prefer `npm run ai:smoke-local-gemini` for lightweight provider connectivity.
+- Treat `npm run ai:report-synthetic:require-gemini` as stricter PDF/advisory validation; it is not closed until it returns `providerStatus=success`.
+- If a key was pasted into chat or logs, rotate it when practical.
+
 ## ADMIN-2B Persistent Usage Guardrail
 
 ADMIN-2B adds persistent AI usage metrics with `AiUsageEvent`.

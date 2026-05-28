@@ -341,6 +341,36 @@ npm run ai:report-synthetic:require-gemini
 
 This writes to `qa-artifacts/ai-report-1b/` and exits non-zero unless `providerStatus=success`.
 
+## LOCAL-GEMINI-1 Local Smoke
+
+Date: 2026-05-28.
+
+Use this command to validate local Gemini connectivity without printing secrets or full responses:
+
+```bash
+npm run ai:smoke-local-gemini
+```
+
+Expected output:
+
+- `provider=gemini`.
+- `geminiKeyConfigured=YES`.
+- `geminiKeyPrinted=NO`.
+- `openAiConfigured=NO`.
+- `providerStatus=success`.
+- `outputShapeValid=YES`.
+- `responsePrinted=NO`.
+- `secretsPrinted=NO`.
+
+Local setup notes:
+
+- Keep `GEMINI_API_KEY` only in ignored `.env.local` or local process env.
+- Do not commit `.env.local`.
+- Do not paste keys into chat, logs, docs or Git.
+- `gemini-1.5-flash` returned `404 model_or_endpoint` in local smoke, so the local smoke used an available Gemini model.
+- Strict synthetic PDF mode remained pending because `ai:report-synthetic:require-gemini` still returned `providerStatus=error` locally.
+- OpenAI remains inactive.
+
 ## ADMIN-1 Console Consumption
 
 Date: 2026-05-27.

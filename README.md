@@ -63,6 +63,8 @@ LAUNCH-DECISION-1 formally approves broader invited beta for 3 to 10 controlled 
 
 MANUAL-FINAL-v1.2 creates the final internal operational and functional manual for broader invited beta. It documents customer flow, admin flow, Gemini/PDF/report operations, runtime controls, entitlements, budgets, opportunities, incident handling, manual payments and full public launch criteria. The source of truth is `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`. Full public launch remains NO.
 
+LOCAL-GEMINI-1 adds a safe local Gemini smoke workflow. Local `.env.local` now carries the developer-only Gemini config outside Git, `npm run ai:smoke-local-gemini` validates the real Gemini provider without printing keys or responses, and local route smoke passes. The strict synthetic PDF generator still needs hardening before it returns `providerStatus=success` locally.
+
 ## Stack
 - Next.js App Router
 - React 19
