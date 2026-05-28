@@ -41,9 +41,9 @@ ADMIN-2A improves the Spanish admin `IA y Consumo` panel without DB schema or mi
 
 ADMIN-2B adds persistent AI usage metrics through `AiUsageEvent`, estimated tokens/costs, admin `GET /api/admin/ai/usage`, usage by user/assessment and AI error visibility in the Spanish admin console. It does not store prompts, raw responses, raw files, secrets or private storage paths.
 
-ADMIN-2B-PROD-MIGRATION-SMOKE remains partial from Codex: production public/private no-session smoke passed, but `npm run prisma:deploy` could not run because the Codex runtime did not have `DATABASE_URL` available. Apply the migration from the secure production runtime before treating persistent AI usage as production-ready.
+ADMIN-2B-PROD-MIGRATION-SMOKE and USER-ATTESTED are superseded by DB-ACCESS-ADMIN-2B. `DATABASE_URL` was found in unversioned `.env.local`, validated against Neon `InfraShift` read-write compute metadata without printing the value, and `npm run prisma:deploy` applied `20260528103000_admin_2b_ai_usage_events`.
 
-ADMIN-2B-PROD-MIGRATION-USER-ATTESTED remained blocked for the same access reason: the active runtime did not expose production `DATABASE_URL`, `NODE_ENV` or production app URL markers. No migration was run, no secrets were printed, and production no-session smoke remained healthy.
+DB-ACCESS-ADMIN-2B confirms `AiUsageEvent` exists in production, safe count increased from `0` to `1` after a synthetic `admin_test` event, production no-session smoke passed, authenticated `/dashboard/admin` `IA y Consumo` rendered calls/tokens/costs/events/by-user/by-assessment without visible secret patterns, and full public launch remains NO.
 
 ## Stack
 - Next.js App Router

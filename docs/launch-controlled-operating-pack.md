@@ -435,3 +435,21 @@ Status: BLOCKED.
 - Public/private no-session production smoke remained healthy.
 
 Do not mark persistent AI usage production-ready until `prisma migrate deploy` runs in the secure production runtime and an authenticated admin confirms `IA y Consumo` plus at least one persisted AI event.
+
+## DB-ACCESS-ADMIN-2B Production Migration Closeout
+
+Date: 2026-05-28.
+
+Status: COMPLETE.
+
+- `DATABASE_URL` was found in existing unversioned `.env.local` and loaded only into the command process.
+- The value was not printed.
+- The DB target was confirmed against Neon `InfraShift` read-write compute metadata before migration.
+- `npm run prisma:deploy` applied `20260528103000_admin_2b_ai_usage_events`.
+- `AiUsageEvent` exists and safe count increased from `0` to `1`.
+- Production no-session smoke passed for `/`, `/shiftreadiness`, `/sign-in`, `/sign-up`, `/dashboard`, `/dashboard/admin` and `/api/admin/ai/usage`.
+- Authenticated `/dashboard/admin` loaded `IA y Consumo` with persisted usage visible.
+- One safe synthetic `admin_test` event is visible with provider/model/status/tokens/cost.
+- No secrets, raw files, prompts, raw responses or private storage paths were printed or persisted.
+- OpenAI remains inactive.
+- Full public launch remains NO.

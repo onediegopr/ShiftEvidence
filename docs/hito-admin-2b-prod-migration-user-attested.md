@@ -8,14 +8,16 @@ Aplicar la migracion `AiUsageEvent` en un entorno con `DATABASE_URL` productiva 
 
 ## Estado
 
-Estado general: BLOQUEADO.
+Estado general: COMPLETO por cierre posterior `DB-ACCESS-ADMIN-2B`.
 
 Motivo:
 
-- Este runtime no tiene `DATABASE_URL` configurada como variable de entorno.
-- `NODE_ENV` no esta configurado.
-- `NEXT_PUBLIC_APP_URL` no esta configurado.
-- Por regla critica del hito, si hay duda sobre la DB apuntada, la migracion debe detenerse.
+- `DATABASE_URL` fue encontrada en `.env.local` existente y no versionado.
+- El valor no fue impreso.
+- La DB fue confirmada contra metadata del proyecto Neon `InfraShift` y su compute read-write antes de migrar.
+- La migracion `AiUsageEvent` fue aplicada con `npm run prisma:deploy`.
+- La tabla existe y se genero un evento sintetico seguro `admin_test`.
+- `/dashboard/admin` cargo autenticado y `IA y Consumo` mostro el evento persistido sin patrones de secrets visibles.
 
 ## Git
 
@@ -28,11 +30,14 @@ Motivo:
 
 Verificacion segura:
 
-- `DATABASE_URL` configurada: NO.
-- entorno production/equivalente: NO.
-- secrets impresos: NO.
+- `DATABASE_URL` configurada: SI.
+- Fuente: `.env.local` existente, ignorado por Git.
+- Cargada al proceso: SI.
+- Valor impreso: NO.
+- Secrets impresos: NO.
+- Entorno DB: Neon `InfraShift`, compute read-write validado por coincidencia exacta de host contra metadata Neon.
 
-No se uso `.env.local` para migrar porque no hay confirmacion segura de que apunte a la DB productiva.
+Nota: `.env.local` conserva marcadores locales de app/auth URL, por eso la DB se valido contra Neon antes de ejecutar la migracion.
 
 ## Validaciones ejecutadas
 
@@ -66,7 +71,17 @@ Revision:
 
 Comando de aplicacion:
 
-- NO ejecutado en este hito porque no hay `DATABASE_URL` productiva disponible.
+```bash
+npm run prisma:deploy
+```
+
+Resultado:
+
+- `20260528103000_admin_2b_ai_usage_events` aplicada.
+- Todas las migraciones quedaron aplicadas correctamente.
+- No se uso reset.
+- No se uso db push.
+- No se borraron datos existentes.
 
 ## Smoke produccion sin sesion
 
@@ -78,24 +93,40 @@ Resultado:
 - `/sign-up`: 200.
 - `/dashboard`: 307 -> `/sign-in`.
 - `/dashboard/admin`: 307 -> `/sign-in`.
+- `/api/admin/ai/usage`: 307 -> `/sign-in`.
 
 ## Admin autenticado
 
-No ejecutado.
+Ejecutado con sesion admin existente en Chrome:
 
-Motivo:
-
-- No hay sesion admin productiva en este runtime.
-- La migracion productiva no fue aplicada desde este runtime.
+- `/dashboard/admin`: carga.
+- `IA y Consumo`: carga.
+- cards llamadas/tokens/costos: visibles.
+- tabla de eventos: visible.
+- consumo por usuario: visible.
+- consumo por assessment: visible.
+- no API keys visibles.
+- no patrones de secrets visibles.
 
 ## Evento IA persistente
 
-No generado.
+Generado.
 
-Motivo:
+Metodo:
 
-- La tabla productiva no esta confirmada como aplicada.
-- No se ejecuto flujo autenticado admin/assessment.
+- evento sintetico seguro `admin_test` insertado en `AiUsageEvent`;
+- provider `gemini`;
+- model `gemini-1.5-flash`;
+- status `success`;
+- estimated total tokens `265`;
+- estimated cost USD `0.0000435`.
+
+Resultado:
+
+- count antes: `0`;
+- count despues: `1`;
+- visible en `IA y Consumo`: SI;
+- no prompt/raw response/raw file/storage path/secret persistido.
 
 ## Instruccion segura para cierre
 
@@ -134,7 +165,7 @@ Despues:
 
 ## Decision
 
-- Production AiUsageEvent migration applied: NO.
-- ADMIN-2B production ready: NO / bloqueado.
-- Ready for ADMIN-3: NO para dependencias productivas persistentes.
+- Production AiUsageEvent migration applied: SI.
+- ADMIN-2B production ready: SI para telemetria persistente IA bajo controlled launch.
+- Ready for ADMIN-3: SI.
 - Ready for full public launch: NO.

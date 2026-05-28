@@ -1135,3 +1135,41 @@ Pending:
 - validate `IA y Consumo`;
 - generate or confirm one persisted `AiUsageEvent`;
 - confirm no secrets/API keys are visible.
+
+## Addendum - DB-ACCESS-ADMIN-2B Production Migration Closeout
+
+Date: 2026-05-28.
+
+Status: COMPLETO.
+
+Codex located `DATABASE_URL` in existing unversioned `.env.local`, loaded it only into the process, did not print the value and confirmed the DB target against Neon `InfraShift` read-write compute metadata.
+
+Production migration:
+
+- command: `npm run prisma:deploy`;
+- migration: `20260528103000_admin_2b_ai_usage_events`;
+- result: applied successfully;
+- Prisma reset: NO;
+- db push: NO;
+- existing data deleted: NO.
+
+Validation:
+
+- `AiUsageEvent` table exists;
+- safe count before synthetic event: `0`;
+- safe count after synthetic event: `1`;
+- `/`, `/shiftreadiness`, `/sign-in`, `/sign-up`: `200`;
+- `/dashboard`, `/dashboard/admin`, `/api/admin/ai/usage` without session: `307` to `/sign-in`;
+- authenticated `/dashboard/admin`: loaded;
+- `IA y Consumo`: loaded with calls/tokens/costs/events/by-user/by-assessment visible;
+- one synthetic `admin_test` event visible with `gemini`, `gemini-1.5-flash`, `success`, `265` estimated tokens and estimated cost;
+- no visible API keys or secret patterns.
+
+Security posture:
+
+- no `DATABASE_URL` value printed;
+- no secrets printed;
+- no `.env` or `.env.local` committed;
+- no raw files, prompts, raw AI responses or private storage paths persisted in the synthetic usage event;
+- OpenAI remains inactive;
+- full public launch remains NO.

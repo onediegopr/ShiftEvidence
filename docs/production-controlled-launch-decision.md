@@ -421,3 +421,35 @@ Result:
 - Production no-session smoke remained healthy.
 
 Persistent AI usage remains not production-ready until the migration is applied from the secure production runtime and admin user-attested QA confirms `IA y Consumo`.
+
+## DB-ACCESS-ADMIN-2B Closeout
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, controlled/low-volume/invitation-only.
+- Full public launch: NO.
+
+Result:
+
+- Production `AiUsageEvent` migration was applied with `npm run prisma:deploy`.
+- `DATABASE_URL` was found in unversioned `.env.local`, loaded to process and validated against Neon `InfraShift` read-write compute metadata without printing the value.
+- `AiUsageEvent` table exists.
+- Safe count increased from `0` to `1` after one synthetic `admin_test` usage event.
+- Production no-session route smoke passed.
+- Authenticated admin `IA y Consumo` loaded and showed persisted provider/model/status/tokens/cost without visible secret patterns.
+
+Security:
+
+- No Prisma reset.
+- No Prisma migrate reset.
+- No Prisma db push.
+- No data deletion.
+- No Hostinger config changes.
+- No OpenAI activation.
+- No full public launch declaration.
+- No secrets printed or committed.
+
+ADMIN-2B persistent AI usage is production-ready for controlled launch operations. Broader full-public launch remains blocked by the existing operational evidence, support/SLA, cleanup/archive and credentialed product-flow replay requirements.
