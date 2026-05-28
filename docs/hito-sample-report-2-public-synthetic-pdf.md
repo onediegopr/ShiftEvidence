@@ -8,6 +8,11 @@ Crear un PDF publico, sintetico y descargable que complemente `/demo` y `/sample
 
 El objetivo comercial es mostrar el entregable final antes de pedir registro, upload o llamada, sin usar datos reales y sin presentar ShiftReadiness como migrador automatico.
 
+Actualizacion SALES-PAGE-1:
+
+- `/sample-report` enlaza de forma discreta hacia `/vmware-to-proxmox-readiness`.
+- El enlace ayuda a explicar la oferta completa despues de ver el entregable sample.
+
 ## PDF generado
 
 Archivo versionado:
@@ -17,6 +22,11 @@ Archivo versionado:
 Ruta publica:
 
 - `/sample-reports/proxmox-migration-readiness-sample-report.pdf`
+
+Pagina relacionada:
+
+- `/sample-report`
+- `/vmware-to-proxmox-readiness` como pagina standalone de oferta agregada en SALES-PAGE-1.
 
 Caracteristicas:
 

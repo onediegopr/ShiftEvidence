@@ -244,6 +244,21 @@ SAMPLE-REPORT-2.1 visual QA:
 - `/sample-report` mobile overflow was corrected.
 - `npm run sample-report:generate` now normalizes non-sensitive PDF metadata for reproducible output.
 - Sample remains synthetic, commercial and non-executing.
+
+## SALES-PAGE-1 Standalone Readiness Offer Page
+
+Date: 2026-05-28.
+
+The public route `/vmware-to-proxmox-readiness` is available as a standalone VMware -> Proxmox readiness offer page.
+
+Operating rules:
+
+- The page is linked only from `/demo` and `/sample-report`.
+- Home `/`, global navigation and `/shiftreadiness` were not modified.
+- The page uses no backend, DB, Gemini call, upload, checkout, lead capture or customer data.
+- Pricing is a preview only; beta payments remain manual.
+- The page must not be presented as full public launch approval.
+- Claims remain limited to readiness, planning, evidence gaps, risk and decision support.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

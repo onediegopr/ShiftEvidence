@@ -254,6 +254,25 @@ export default function MigrationReadinessReplay() {
         </div>
       </section>
 
+      <section className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="glass-card sample-report-inline-cta">
+            <div>
+              <div className="badge badge-cyan">Readiness offer</div>
+              <h2>Want the full assessment offer?</h2>
+              <p>
+                The replay shows the process. The offer page explains what the readiness assessment includes, what
+                evidence is required, what the report delivers and what the platform does not promise.
+              </p>
+            </div>
+            <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary" data-event="demo_cta_clicked">
+              View the readiness assessment offer
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="section shiftreadiness-section demo-final-cta">
         <div className="container">
           <div className="glass-card sr-final-card">

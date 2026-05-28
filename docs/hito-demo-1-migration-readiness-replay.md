@@ -18,7 +18,7 @@ La demo esta pensada para explicar valor antes de pedir registro, upload o llama
 - Subtitulo: `See how a VMware export becomes a Proxmox migration readiness report.`
 - CTA principal: `Start replay`.
 - CTA secundario: `Start readiness assessment`.
-- CTAs adicionales: `Skip to final report`, `Book readiness review`, `Back to home`.
+- CTAs adicionales: `Skip to final report`, `Book readiness review`, `View the readiness assessment offer`, `Back to home`.
 
 ## 3. Narrativa
 
@@ -35,6 +35,11 @@ La pagina muestra un replay simulado desde evidencia exportada hasta un decision
 9. Preview de reporte final.
 
 El posicionamiento es readiness/planning basado en evidencia. No se presenta como migrador automatico, autoconverter ni herramienta de cutover.
+
+Actualizacion SALES-PAGE-1:
+
+- `/demo` enlaza de forma discreta hacia `/vmware-to-proxmox-readiness`.
+- El bloque agregado explica la oferta completa del assessment sin modificar la landing principal ni la navegacion global.
 
 ## 4. Dataset sintetico
 

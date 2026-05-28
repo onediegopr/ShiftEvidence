@@ -43,6 +43,15 @@ Sample report update:
 - `/sample-report` is the preferred page for explaining the sample before PDF download.
 - `SAMPLE-REPORT-2.1` validates the PDF visually, fixes `/sample-report` mobile overflow and makes the generator reproducible by normalizing non-sensitive PDF metadata.
 
+Sales page update:
+
+- `SALES-PAGE-1` adds `/vmware-to-proxmox-readiness` as a standalone VMware -> Proxmox readiness offer page.
+- It is linked only from `/demo` and `/sample-report`.
+- It does not modify home, global navigation or `/shiftreadiness`.
+- It uses no backend, DB, Gemini call, checkout, billing automatico, upload or customer data.
+- Pricing shown there is orientative and manual for beta.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
@@ -73,6 +82,7 @@ Estado actual:
 - PDF: PASS.
 - Admin console en espanol: PASS.
 - Migration Readiness Replay `/demo`: activo como demo sintetica publica.
+- Standalone VMware -> Proxmox readiness offer page `/vmware-to-proxmox-readiness`: activo, enlazado solo desde `/demo` y `/sample-report`.
 
 ShiftReadiness puede operarse con clientes invitados en volumen bajo o moderado. La plataforma permite crear assessments, cargar evidencia, completar contexto, generar preview, descargar PDF, usar AI Advisory con Gemini, administrar accesos manuales, revisar consumo IA, gestionar oportunidades comerciales y aplicar runtime controls.
 
@@ -107,6 +117,7 @@ Estado validado:
 - Migration Readiness Replay: activo en `/demo`, simulado y sin backend.
 - Public Sample Readiness Report: activo en `/sample-report`, sintetico y sin backend.
 - Public Sample PDF: activo en `/sample-reports/proxmox-migration-readiness-sample-report.pdf`, sintetico y sin backend.
+- Standalone Readiness Offer Page: activo en `/vmware-to-proxmox-readiness`, sin backend, sin checkout y sin full public launch.
 - QA/demo data: identificada y documentada, no eliminada.
 
 Condicion de uso:

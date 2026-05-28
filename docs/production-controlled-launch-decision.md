@@ -64,6 +64,15 @@ SAMPLE-REPORT-2.1 update:
 - The PDF generator now produces reproducible output by normalizing non-sensitive PDF metadata.
 - Full public launch remains NO.
 
+SALES-PAGE-1 update:
+
+- Public `/vmware-to-proxmox-readiness` is implemented as a standalone VMware -> Proxmox readiness offer page.
+- It is linked only from `/demo` and `/sample-report`.
+- Home `/`, global navigation and `/shiftreadiness` were not modified.
+- It uses no backend, DB, Gemini call, checkout, automatic billing, upload or customer data.
+- It supports broader invited beta education and commercial explanation only.
+- Full public launch remains NO.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.

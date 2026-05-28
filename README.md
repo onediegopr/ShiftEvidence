@@ -79,6 +79,8 @@ SAMPLE-REPORT-2 adds a public synthetic downloadable PDF at `/sample-reports/pro
 
 SAMPLE-REPORT-2.1 completes visual PDF QA and marketing polish: the 15-page PDF was rendered locally for review, `/sample-report` mobile overflow was corrected, and the PDF generator now normalizes non-sensitive metadata so regenerated output is reproducible. Full public launch remains NO.
 
+SALES-PAGE-1 adds a standalone VMware -> Proxmox readiness offer page at `/vmware-to-proxmox-readiness`. It is linked only from `/demo` and `/sample-report`, does not modify home, global navigation or `/shiftreadiness`, uses no backend/DB/Gemini/customer data, and keeps checkout, automatic billing and full public launch disabled.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -92,6 +94,7 @@ SAMPLE-REPORT-2.1 completes visual PDF QA and marketing polish: the 15-page PDF 
 - `/shiftreadiness`
 - `/demo`
 - `/sample-report`
+- `/vmware-to-proxmox-readiness`
 - `/contact`
 
 ## Auth routes
@@ -123,6 +126,7 @@ SAMPLE-REPORT-2.1 completes visual PDF QA and marketing polish: the 15-page PDF 
 - Public synthetic Migration Readiness Replay at `/demo`.
 - Public synthetic sample readiness report page at `/sample-report`.
 - Public synthetic sample PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- Standalone VMware -> Proxmox readiness offer page at `/vmware-to-proxmox-readiness`, linked only from `/demo` and `/sample-report`.
 
 ## Scripts
 - `npm run dev`

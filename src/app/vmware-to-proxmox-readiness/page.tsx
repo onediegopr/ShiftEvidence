@@ -1,0 +1,430 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  AlertTriangle,
+  ArrowRight,
+  BarChart3,
+  Brain,
+  CheckCircle2,
+  ClipboardCheck,
+  Database,
+  FileSpreadsheet,
+  FileText,
+  Layers3,
+  Waves,
+} from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "VMware to Proxmox Migration Readiness Assessment | Shift Evidence",
+  description:
+    "Understand VMware to Proxmox migration risk before execution: RVTools-based readiness, evidence gaps, Proxmox sizing, migration waves and executive-ready reports.",
+  alternates: {
+    canonical: "https://shiftevidence.com/vmware-to-proxmox-readiness",
+  },
+};
+
+const trustBullets = [
+  "Starts with RVTools",
+  "No agents required",
+  "No mandatory vCenter access",
+  "No production changes",
+  "Evidence-based scoring",
+];
+
+const steps = [
+  {
+    title: "Upload evidence",
+    body: "Start with RVTools. Add context, backup, network or Proxmox target evidence when available.",
+    icon: FileSpreadsheet,
+  },
+  {
+    title: "Validate evidence quality",
+    body: "The assessment separates confirmed findings, probable risks and missing information.",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "Analyze migration risk",
+    body: "Detect snapshots, storage issues, multi-NIC workloads, critical systems, backup gaps, network mapping gaps and sizing concerns.",
+    icon: AlertTriangle,
+  },
+  {
+    title: "Generate the decision pack",
+    body: "Receive readiness score, confidence score, migration waves, Proxmox sizing, required validations and an executive-ready report.",
+    icon: FileText,
+  },
+];
+
+const outputs = [
+  ["Executive Decision Report", FileText],
+  ["Technical Assessment", ClipboardCheck],
+  ["VM Risk Matrix", Layers3],
+  ["Proxmox Sizing Preview", Database],
+  ["Migration Wave Plan", Waves],
+  ["Evidence Missing Checklist", AlertTriangle],
+  ["AI Advisory Notes", Brain],
+  ["PDF Report", FileSpreadsheet],
+] as const;
+
+const evidenceSources = [
+  ["RVTools export", "Required base evidence"],
+  ["Technical context", "Required business context"],
+  ["Backup export", "Optional high-value evidence"],
+  ["Proxmox target export/API", "Optional destination validation"],
+  ["Network/IPAM/diagram", "Optional network clarity"],
+  ["CMDB/application list", "Optional dependency context"],
+  ["Performance history", "Future/high-confidence sizing"],
+];
+
+const pricingPackages = [
+  {
+    name: "Starter Readiness",
+    price: "USD 490",
+    fit: "For first evaluation and smaller environments.",
+    includes: "RVTools analysis, evidence coverage, basic readiness score, top risks, preliminary sizing, PDF summary.",
+  },
+  {
+    name: "Professional Assessment",
+    price: "USD 1,500",
+    fit: "Most popular.",
+    includes:
+      "Context form, confidence score, full readiness score, VM-by-VM risk matrix, sizing, migration waves, executive + technical report.",
+  },
+  {
+    name: "Migration Blueprint",
+    price: "from USD 3,500",
+    fit: "For teams preparing a serious migration plan.",
+    includes: "Target architecture, pilot selection, migration day checklist, rollback framework, remediation roadmap.",
+  },
+  {
+    name: "MSP Partner",
+    price: "from USD 399/month",
+    fit: "For consultants, MSPs and integrators.",
+    includes: "Reusable methodology, client-ready PDFs, assessment templates and partner workflow.",
+  },
+];
+
+const notAList = [
+  "It is not a VM migration tool.",
+  "It does not touch production.",
+  "It does not guarantee zero downtime.",
+  "It does not replace a pilot.",
+  "It does not infer evidence that was not provided.",
+  "It does not require agents for the base assessment.",
+];
+
+const faqs = [
+  [
+    "Is this a migration tool?",
+    "No. It is a readiness and planning assessment. It helps identify migration risk before execution.",
+  ],
+  ["Do you need access to vCenter?", "No for the base assessment. You can start with an RVTools export."],
+  ["Do you touch production?", "No. The base workflow analyzes exported evidence only."],
+  [
+    "What if I only have RVTools?",
+    "You can start. The report will include confidence scoring and missing evidence.",
+  ],
+  [
+    "What do I receive?",
+    "A professional readiness assessment with VM risk classification, readiness/confidence scores, evidence gaps, Proxmox sizing, migration waves and executive/technical reports.",
+  ],
+  [
+    "Can MSPs use it with clients?",
+    "Yes. The partner path is designed for MSPs, consultants and Proxmox integrators.",
+  ],
+  [
+    "Does it guarantee zero downtime?",
+    "No. Zero downtime cannot be guaranteed without pilots, validation and execution planning.",
+  ],
+  [
+    "Can this replace a consultant?",
+    "It accelerates discovery, analysis and reporting. Complex migrations may still need human execution or partner support.",
+  ],
+];
+
+export default function VMwareToProxmoxReadinessPage() {
+  return (
+    <main className="shiftreadiness-page demo-page sales-offer-page">
+      <section className="section demo-hero sales-hero">
+        <div className="bg-mesh" />
+        <div className="container sales-hero-grid">
+          <div className="demo-hero-copy">
+            <div className="badge badge-cyan">VMware -&gt; Proxmox readiness offer</div>
+            <h1>VMware to Proxmox Migration Readiness Assessment</h1>
+            <p className="demo-hero-subtitle">Before migrating VMware to Proxmox, know what can break.</p>
+            <p className="demo-hero-body">
+              ShiftReadiness turns VMware evidence into a professional migration decision pack: VM risk classification,
+              Proxmox sizing, evidence gaps, migration waves, AI Advisory notes and executive-ready reports.
+            </p>
+            <div className="demo-badge-row sales-trust-row" aria-label="Readiness assessment operating boundaries">
+              {trustBullets.map((bullet) => (
+                <span key={bullet}>{bullet}</span>
+              ))}
+            </div>
+            <div className="shiftreadiness-actions">
+              <Link href="/sign-up" className="btn btn-primary btn-glow">
+                Start readiness assessment
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/demo" className="btn btn-secondary">
+                Watch readiness replay
+              </Link>
+              <Link href="/sample-report" className="btn btn-secondary">
+                View sample report
+              </Link>
+            </div>
+          </div>
+
+          <aside className="glass-card sales-hero-panel" aria-label="Assessment offer summary">
+            <div className="demo-terminal-header">
+              <span className="sr-mockup-dot red" />
+              <span className="sr-mockup-dot yellow" />
+              <span className="sr-mockup-dot green" />
+              <strong>Assessment scope</strong>
+            </div>
+            <div className="sales-signal-list">
+              <span>input: RVTools export + technical context</span>
+              <span>output: readiness score + confidence score</span>
+              <span>risk: snapshots / storage / network / backups / critical workloads</span>
+              <span>deliverable: executive-ready PDF decision pack</span>
+              <span>mode: planning assessment, no production changes</span>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section">
+        <div className="container sales-split">
+          <div className="shiftreadiness-section-heading sales-left-heading">
+            <div className="badge">The problem</div>
+            <h2>Do not migrate VMware inventory. Migrate risk.</h2>
+          </div>
+          <article className="glass-card sales-copy-card">
+            <p>
+              Most migration projects start with the wrong question: &quot;Can we import the VM?&quot; The real question is:
+              which workloads are safe, which are risky, what evidence is missing, and what must be prepared in Proxmox
+              before production moves?
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="shiftreadiness-section-heading">
+            <div className="badge badge-cyan">How it works</div>
+            <h2>From VMware evidence to Proxmox migration decisions.</h2>
+          </div>
+          <div className="sales-step-grid">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <article key={step.title} className="glass-card sales-step-card">
+                  <span>Step {index + 1}</span>
+                  <Icon size={24} />
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section">
+        <div className="container sales-two-up">
+          <article className="glass-card sample-report-inline-cta sales-mini-cta">
+            <div>
+              <div className="badge badge-cyan">Watch the replay</div>
+              <h2>See the assessment before you start.</h2>
+              <p>
+                Watch a simulated Migration Readiness Replay and see how a raw RVTools export becomes a Proxmox
+                migration decision pack.
+              </p>
+            </div>
+            <Link href="/demo" className="btn btn-primary btn-glow">
+              Watch the readiness replay
+              <ArrowRight size={18} />
+            </Link>
+          </article>
+
+          <article className="glass-card sample-report-inline-cta sales-mini-cta">
+            <div>
+              <div className="badge badge-cyan">See the deliverable</div>
+              <h2>View the public sample report.</h2>
+              <p>
+                The sample report shows the executive and technical output: scores, evidence matrix, risk findings,
+                migration waves and next steps.
+              </p>
+            </div>
+            <div className="sales-inline-actions">
+              <Link href="/sample-report" className="btn btn-primary btn-glow">
+                View sample report
+                <ArrowRight size={18} />
+              </Link>
+              <a
+                href="/sample-reports/proxmox-migration-readiness-sample-report.pdf"
+                className="btn btn-secondary"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Download sample PDF
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="shiftreadiness-section-heading">
+            <div className="badge">What you receive</div>
+            <h2>A compact decision pack for executives and technical teams.</h2>
+          </div>
+          <div className="demo-output-grid sales-output-grid">
+            {outputs.map(([title, Icon]) => (
+              <article key={title} className="glass-card demo-output-card">
+                <Icon size={22} />
+                <h3>{title}</h3>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section">
+        <div className="container sales-two-up">
+          <article className="glass-card sales-copy-card sales-conservative-card">
+            <div className="badge badge-cyan">Evidence-based, not magic</div>
+            <h2>Evidence-based. Transparent. Conservative.</h2>
+            <p>
+              We do not pretend to know what the evidence does not prove. Every assessment separates confirmed
+              findings, probable risks and missing information.
+            </p>
+            <div className="demo-does-not-list">
+              <span>
+                <CheckCircle2 size={15} />
+                Missing backup evidence becomes a report finding.
+              </span>
+              <span>
+                <CheckCircle2 size={15} />
+                Missing dependency mapping lowers confidence.
+              </span>
+              <span>
+                <CheckCircle2 size={15} />
+                Missing Proxmox target data limits sizing certainty.
+              </span>
+              <span>
+                <CheckCircle2 size={15} />
+                Missing performance data means sizing is based on allocation, not usage.
+              </span>
+            </div>
+          </article>
+
+          <article className="glass-card sales-copy-card">
+            <div className="badge">Evidence sources</div>
+            <h2>Start with RVTools. Add more evidence when you need higher confidence.</h2>
+            <p>The base assessment can start with RVTools. Additional evidence improves confidence.</p>
+            <div className="sales-evidence-grid">
+              {evidenceSources.map(([source, note]) => (
+                <div key={source}>
+                  <strong>{source}</strong>
+                  <span>{note}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="shiftreadiness-section-heading">
+            <div className="badge badge-cyan">Pricing preview</div>
+            <h2>Simple packages for companies, consultants and MSPs.</h2>
+            <p>Payments are manual during beta. No public checkout or automatic billing is active.</p>
+          </div>
+          <div className="sales-pricing-grid">
+            {pricingPackages.map((pkg) => (
+              <article key={pkg.name} className="glass-card sales-pricing-card">
+                <span>{pkg.name}</span>
+                <strong>{pkg.price}</strong>
+                <p>{pkg.fit}</p>
+                <small>{pkg.includes}</small>
+              </article>
+            ))}
+          </div>
+          <div className="shiftreadiness-actions sales-centered-actions">
+            <Link href="/sign-up" className="btn btn-primary btn-glow">
+              Request access
+              <ArrowRight size={18} />
+            </Link>
+            <Link href="/contact" className="btn btn-secondary">
+              Book readiness review
+            </Link>
+            <Link href="/sign-up" className="btn btn-secondary">
+              Start assessment
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section">
+        <div className="container sales-two-up">
+          <article className="glass-card demo-does-not-card sales-not-card">
+            <div>
+              <div className="badge">What this is not</div>
+              <h2>Clear boundaries before you move production.</h2>
+            </div>
+            <div className="demo-does-not-list">
+              {notAList.map((item) => (
+                <span key={item}>
+                  <CheckCircle2 size={15} />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </article>
+
+          <article className="glass-card sales-copy-card">
+            <div className="badge badge-cyan">FAQ</div>
+            <h2>Common questions.</h2>
+            <div className="sales-faq-list">
+              {faqs.map(([question, answer]) => (
+                <div key={question}>
+                  <h3>{question}</h3>
+                  <p>{answer}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section demo-final-cta">
+        <div className="container">
+          <div className="glass-card sr-final-card">
+            <div>
+              <div className="badge badge-cyan">Ready for your own evidence?</div>
+              <h2>Before you move production, know what can break.</h2>
+              <p>Start with exported evidence, review confidence gaps and use the output to plan a safer pilot.</p>
+            </div>
+            <div className="sr-final-actions">
+              <Link href="/sign-up" className="btn btn-primary btn-glow">
+                Start readiness assessment
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/demo" className="btn btn-secondary">
+                Watch replay
+                <Waves size={17} />
+              </Link>
+              <Link href="/sample-report" className="btn btn-secondary">
+                View sample report
+                <BarChart3 size={17} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}

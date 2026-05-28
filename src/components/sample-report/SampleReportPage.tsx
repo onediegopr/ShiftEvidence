@@ -337,6 +337,25 @@ export default function SampleReportPage() {
         </div>
       </section>
 
+      <section className="section shiftreadiness-section">
+        <div className="container">
+          <div className="glass-card sample-report-inline-cta">
+            <div>
+              <div className="badge badge-cyan">Assessment offer</div>
+              <h2>Want to understand the full assessment?</h2>
+              <p>
+                The sample report shows the deliverable. The offer page explains how the assessment works, what evidence
+                improves confidence and how to start with your own VMware environment.
+              </p>
+            </div>
+            <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary">
+              View the assessment offer
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="section shiftreadiness-section demo-final-cta">
         <div className="container">
           <div className="glass-card sr-final-card">
