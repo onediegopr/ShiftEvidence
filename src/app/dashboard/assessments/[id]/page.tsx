@@ -634,16 +634,6 @@ export default async function AssessmentDetailPage({
           Intake & Basics
         </Link>
         <Link
-          href={`/dashboard/assessments/${assessment.id}?tab=context`}
-          className={`tab-btn ${activeTab === "context" ? "active" : ""}`}
-        >
-          <span
-            className="tab-progress-dot"
-            style={{ background: migrationContextCoverage.overallPercent >= 45 ? "#10b981" : migrationContextCoverage.overallPercent > 0 ? "#f59e0b" : "#475569" }}
-          ></span>
-          Migration Context
-        </Link>
-        <Link
           href={`/dashboard/assessments/${assessment.id}?tab=evidence`}
           className={`tab-btn ${activeTab === "evidence" ? "active" : ""}`}
         >
@@ -653,6 +643,16 @@ export default async function AssessmentDetailPage({
           ></span>
           Evidence Upload
           {totalPrereqs > 0 && <span className="badge badge-warning" style={{ fontSize: "0.7rem", padding: "0.05rem 0.3rem", marginLeft: "0.4rem", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#fca5a5" }}>Locked</span>}
+        </Link>
+        <Link
+          href={`/dashboard/assessments/${assessment.id}?tab=context`}
+          className={`tab-btn ${activeTab === "context" ? "active" : ""}`}
+        >
+          <span
+            className="tab-progress-dot"
+            style={{ background: migrationContextCoverage.overallPercent >= 45 ? "#10b981" : migrationContextCoverage.overallPercent > 0 ? "#f59e0b" : "#475569" }}
+          ></span>
+          Migration Context
         </Link>
         <Link
           href={`/dashboard/assessments/${assessment.id}?tab=inventory`}

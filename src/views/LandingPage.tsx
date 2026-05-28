@@ -238,8 +238,8 @@ export default function LandingPage() {
                 </ul>
 
                 <div className="sr-showcase-actions">
-                  <a href="/shiftreadiness" className="btn btn-primary btn-glow">
-                    Explore ShiftReadiness Workspace
+                  <a href="/sign-up" className="btn btn-primary btn-glow">
+                    Start Free Assessment
                     <ArrowRight size={18} />
                   </a>
                   <a href="/shiftreadiness#pricing" className="btn btn-secondary">

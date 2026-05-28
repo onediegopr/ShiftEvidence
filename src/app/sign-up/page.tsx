@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { authClient } from "../../lib/auth-client";
+import { createOnboardingAssessmentAction } from "./actions";
 import {
   ShieldCheck,
   Terminal,
@@ -86,6 +87,29 @@ export default function SignUpPage() {
     setIsSubmitting(false);
     setIsRegistered(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
+
+  const handleEnterWorkspace = async () => {
+    setIsCreatingAssessment(true);
+    setError(null);
+
+    try {
+      const result = await createOnboardingAssessmentAction({
+        company,
+        storageType: evidenceSource === "manual" ? storageType : undefined,
+        networkType: evidenceSource === "manual" ? networkType : undefined,
+        haRequired: evidenceSource === "manual" ? haRequired : undefined,
+        backupSystem: evidenceSource === "manual" ? backupSystem : undefined,
+      });
+
+      window.location.href = `/dashboard/assessments/${result.assessmentId}`;
+    } catch (err) {
+      console.error(err);
+      setError("Unable to initialize workspace. Please try again.");
+      setIsCreatingAssessment(false);
+    }
   };
 
   // Mock console log stream
@@ -531,8 +555,9 @@ export default function SignUpPage() {
                 >
                   Logged in as <strong style={{ color: "white" }}>{email}</strong>
                 </div>
-                <Link
-                  href="/dashboard"
+                <button
+                  onClick={handleEnterWorkspace}
+                  disabled={isCreatingAssessment}
                   className="btn btn-secondary btn-sm"
                   style={{
                     fontSize: "0.8rem",
@@ -543,8 +568,8 @@ export default function SignUpPage() {
                     gap: "0.35rem"
                   }}
                 >
-                  Go to Workspace <ArrowRight size={12} />
-                </Link>
+                  {isCreatingAssessment ? "Loading..." : "Go to Workspace"} <ArrowRight size={12} />
+                </button>
               </div>
             </div>
 
@@ -985,10 +1010,15 @@ export default function SignUpPage() {
                 ) : null}
 
                 <div className="shiftreadiness-actions" style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-                  <Link href="/dashboard" className="btn btn-primary btn-glow" style={{ background: "linear-gradient(135deg, #06b6d4 30%, #0891b2 100%)", boxShadow: "0 4px 20px rgba(6, 182, 212, 0.3)" }}>
-                    Enter Active Workspace
+                  <button
+                    onClick={handleEnterWorkspace}
+                    disabled={isCreatingAssessment}
+                    className="btn btn-primary btn-glow"
+                    style={{ background: "linear-gradient(135deg, #06b6d4 30%, #0891b2 100%)", boxShadow: "0 4px 20px rgba(6, 182, 212, 0.3)" }}
+                  >
+                    {isCreatingAssessment ? "Initializing Workspace..." : "Enter Active Workspace"}
                     <ArrowRight size={16} />
-                  </Link>
+                  </button>
                   <Link href="/shiftreadiness" className="btn btn-secondary">
                     Compare Professional Plans
                   </Link>
