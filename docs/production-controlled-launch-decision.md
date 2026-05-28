@@ -504,3 +504,31 @@ Security:
 - No secrets printed or committed.
 
 ADMIN-2B persistent AI usage is production-ready for controlled launch operations. Broader full-public launch remains blocked by the existing operational evidence, support/SLA, cleanup/archive and credentialed product-flow replay requirements.
+
+## ADMIN-4 Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, controlled/low-volume/invitation-only.
+- Full public launch: NO.
+
+Operational status:
+
+- Runtime operational settings were added using existing `SystemSetting`.
+- No new migration was required.
+- Admin can control AI effective mode as `env`, `disabled`, `mock` or `gemini` without editing Hostinger secrets.
+- AI, PDF/download and assessment-creation enforcement now use runtime settings and entitlements.
+- Operational changes require confirmation and are audited.
+
+Security:
+
+- No Hostinger config changes.
+- No OpenAI activation.
+- No API keys or DB URLs exposed.
+- No hard delete.
+- No impersonation.
+
+ADMIN-4 improves controlled-launch hardening. It does not approve full public launch.

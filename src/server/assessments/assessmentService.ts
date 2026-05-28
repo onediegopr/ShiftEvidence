@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ensureDefaultWorkspace } from "../workspace/workspaceService";
+import { assertCanCreateAssessment } from "../admin/runtimeSettingsService";
 
 export const assessmentDetailInclude = {
   workspace: {
@@ -241,6 +242,11 @@ export async function createAssessment(params: {
   const workspaceId = params.workspaceId ?? (await ensureDefaultWorkspace({ userId: params.userId })).id;
   const title = normalizeText(params.title) ?? "VMware to Proxmox readiness assessment";
   const clientLabel = normalizeText(params.clientLabel);
+
+  await assertCanCreateAssessment({
+    userId: params.userId,
+    workspaceId,
+  });
 
   return prisma.$transaction(async (tx) => {
     const assessment = await tx.assessment.create({

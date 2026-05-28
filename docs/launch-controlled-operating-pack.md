@@ -122,6 +122,25 @@ Operating rules:
 - Treat AI budget limits as informational until ADMIN-4.
 - Keep QA actions clearly marked, for example `QA ADMIN-3 smoke`.
 
+## ADMIN-4 Runtime Enforcement Update
+
+Date: 2026-05-28.
+
+ADMIN-4 adds operational runtime controls without editing Hostinger env vars:
+
+- AI runtime mode can be controlled by DB setting: `env`, `disabled`, `mock`, `gemini`.
+- AI budget/entitlement blocks return safe AI fallback and keep preview/PDF available.
+- PDF generation and report downloads can be paused by admin setting.
+- New assessment creation can be paused by admin setting.
+- Admin changes require confirmation and are audited.
+
+Operating rules:
+
+- Use runtime settings for temporary operational pauses.
+- Do not store provider secrets in `SystemSetting`.
+- Do not use runtime settings as billing automation yet.
+- Keep full public launch as NO until public-launch criteria close.
+
 ## Rollback / Pause
 
 If launch must be paused:

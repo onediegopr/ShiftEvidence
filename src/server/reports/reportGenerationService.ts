@@ -10,6 +10,10 @@ import {
 } from "./reportStorageService";
 import { renderPdfReportBuffer } from "./reportPdfRenderer";
 import { sanitizeOriginalFilename } from "../evidence/uploadValidation";
+import {
+  assertCanDownloadReport,
+  assertCanGeneratePdf,
+} from "../admin/runtimeSettingsService";
 
 function buildOriginalReportFilename(assessmentTitle: string, reportType: ReportType) {
   const safeTitle = sanitizeOriginalFilename(assessmentTitle)
@@ -65,8 +69,7 @@ export async function getReportForDownload(params: {
   reportId: string;
 }) {
   const assessment = await ensureAssessmentOwnership(params);
-
-  return prisma.report.findFirst({
+  const report = await prisma.report.findFirst({
     where: {
       id: params.reportId,
       assessmentId: assessment.id,
@@ -74,6 +77,21 @@ export async function getReportForDownload(params: {
       status: ReportStatus.generated,
     },
   });
+
+  if (report) {
+    const fullReportUnlocked = assessment.entitlements.some(
+      (item) => item.entitlementKey === "full_report_unlocked" && (item.status === "available" || item.status === "granted" || item.status === "purchased"),
+    );
+    await assertCanDownloadReport({
+      userId: params.userId,
+      assessmentId: assessment.id,
+      workspaceId: assessment.workspaceId,
+      reportType: report.reportType,
+      assessmentFullReportUnlocked: fullReportUnlocked,
+    });
+  }
+
+  return report;
 }
 
 export async function generatePdfReportForAssessment(params: {
@@ -83,6 +101,15 @@ export async function generatePdfReportForAssessment(params: {
 }) {
   const assessment = await ensureAssessmentOwnership(params);
   const reportType = params.reportType ?? ReportType.free_preview;
+  await assertCanGeneratePdf({
+    userId: params.userId,
+    assessmentId: assessment.id,
+    workspaceId: assessment.workspaceId,
+    reportType,
+    assessmentFullReportUnlocked: assessment.entitlements.some(
+      (item) => item.entitlementKey === "full_report_unlocked" && (item.status === "available" || item.status === "granted" || item.status === "purchased"),
+    ),
+  });
   const planRequired =
     reportType === ReportType.free_preview
       ? null

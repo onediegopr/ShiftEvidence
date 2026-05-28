@@ -162,6 +162,22 @@ Todo texto visible esta en espanol.
 - Integracion comercial/billing real si se aprueba.
 - Dashboard de cohortes/comercial mas avanzado.
 
+## ADMIN-4 follow-up
+
+Fecha: 2026-05-28.
+
+ADMIN-4 implementa la primera capa de enforcement operativo real sin nueva migracion:
+
+- runtime settings en `SystemSetting` bajo `ops.runtime`;
+- modo IA efectivo `env`, `disabled`, `mock` o `gemini`;
+- bloqueo IA por runtime/presupuesto/entitlement con fallback seguro;
+- bloqueo de generacion PDF y descargas por setting/entitlement;
+- bloqueo de creacion de assessments por setting/entitlement;
+- acciones admin con confirmacion y auditoria;
+- seccion `Configuracion Operativa` en espanol.
+
+Las variables de Hostinger siguen siendo la capa base y no se editan desde admin. No se guardan secrets ni prompts/responses crudos.
+
 ## Decision
 
 - ADMIN-3 complete: SI si validaciones pasan.

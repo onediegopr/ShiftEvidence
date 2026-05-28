@@ -1,4 +1,4 @@
-import { getAiAdvisoryConfig, getAiAdvisoryProviderKey } from "./aiAdvisoryConfig";
+import { getEffectiveAiAdvisoryConfig, getAiAdvisoryProviderKey } from "./aiAdvisoryConfig";
 import type { AiAdvisoryProvider } from "./aiAdvisoryTypes";
 
 export type AiRuntimeLastStatus = "success" | "error" | "timeout" | "unavailable" | "disabled" | "mock" | "unknown";
@@ -121,8 +121,8 @@ export function recordAiRuntimeEvent(event: Omit<AiRuntimeEvent, "createdAt">) {
   if (event.eventType === "ai_advisory_fallback_used") store.metrics.fallbackUsado += 1;
 }
 
-export function getAiRuntimeStatus(): AiRuntimeStatus {
-  const config = getAiAdvisoryConfig();
+export async function getAiRuntimeStatus(): Promise<AiRuntimeStatus> {
+  const config = await getEffectiveAiAdvisoryConfig();
   const store = getStore();
   const last = store.events.find((event) => event.eventType !== "ai_advisory_requested") ?? null;
   const eventsWithDuration = store.events.filter((event) => typeof event.durationMs === "number");

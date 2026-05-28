@@ -5,7 +5,7 @@ import { getAiRuntimeStatus } from "../../../../../server/ai/aiRuntimeStatus";
 export async function GET() {
   await requireAdminSession();
 
-  return NextResponse.json(getAiRuntimeStatus(), {
+  return NextResponse.json(await getAiRuntimeStatus(), {
     headers: {
       "Cache-Control": "no-store",
     },

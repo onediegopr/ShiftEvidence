@@ -9,6 +9,11 @@ import {
   updateCommercialOpportunityFromForm,
   upsertUserEntitlementFromForm,
 } from "../../../server/admin/adminOpsService";
+import {
+  parseOperationalRuntimeSettingsForm,
+  setRuntimeMode,
+  updateOperationalRuntimeSettings,
+} from "../../../server/admin/runtimeSettingsService";
 import { safeRedirectError } from "../../../server/assessments/formUtils";
 
 function adminRedirect(params: string) {
@@ -76,5 +81,47 @@ export async function updateCommercialOpportunityAction(formData: FormData) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar la oportunidad.";
     adminRedirect(`error=${safeRedirectError(message)}#oportunidades`);
+  }
+}
+
+export async function updateOperationalRuntimeSettingsAction(formData: FormData) {
+  const session = await requireAdminSession();
+
+  try {
+    if (formData.get("confirmRuntimeChange") !== "on") {
+      throw new Error("Confirmacion requerida para aplicar cambios operativos.");
+    }
+    await updateOperationalRuntimeSettings({
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      settings: parseOperationalRuntimeSettingsForm(formData),
+    });
+    adminRedirect("saved=runtime#configuracion-operativa");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo actualizar la configuracion operativa.";
+    adminRedirect(`error=${safeRedirectError(message)}#configuracion-operativa`);
+  }
+}
+
+export async function setAiRuntimeModeFormAction(formData: FormData) {
+  const session = await requireAdminSession();
+
+  try {
+    if (formData.get("confirmRuntimeChange") !== "on") {
+      throw new Error("Confirmacion requerida para cambiar el modo IA.");
+    }
+    const mode = formData.get("mode");
+    if (mode !== "env" && mode !== "disabled" && mode !== "mock" && mode !== "gemini") {
+      throw new Error("Modo IA invalido.");
+    }
+    await setRuntimeMode({
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      mode,
+    });
+    adminRedirect("saved=runtime#configuracion-operativa");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo cambiar el modo runtime IA.";
+    adminRedirect(`error=${safeRedirectError(message)}#configuracion-operativa`);
   }
 }

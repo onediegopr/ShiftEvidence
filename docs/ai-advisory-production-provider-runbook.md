@@ -274,6 +274,42 @@ AI_ADVISORY_PROVIDER=disabled
 
 ADMIN-1 can now build a Spanish admin console using the protected status endpoint without adding DB schema.
 
+## ADMIN-4 Runtime Override
+
+Date: 2026-05-28.
+
+ADMIN-4 adds a DB-backed runtime override using non-secret `SystemSetting` data.
+
+Effective AI mode:
+
+1. `aiRuntimeMode=disabled`: AI Advisory is disabled without editing Hostinger env vars.
+2. `aiRuntimeMode=mock`: AI Advisory uses mock output for controlled fallback.
+3. `aiRuntimeMode=gemini`: Gemini is used only if the Gemini key is configured in runtime env.
+4. `aiRuntimeMode=env`: AI Advisory follows `AI_ADVISORY_*` env vars.
+
+Enforcement before provider call:
+
+- runtime disabled check;
+- budget block if enabled;
+- entitlement check;
+- safe fallback output;
+- `AiUsageEvent` with `blocked_budget`, `blocked_limit` or `disabled_runtime`.
+
+The runtime override must never store:
+
+- provider API keys;
+- prompts;
+- raw responses;
+- cookies/tokens;
+- raw uploaded file contents;
+- private storage paths.
+
+Operational note:
+
+- Hostinger env vars remain the base layer.
+- Admin runtime settings are an override for temporary operations and controlled hardening.
+- OpenAI remains inactive unless explicitly approved in a later hito.
+
 ## AI-REPORT-1 Synthetic Report Generator
 
 Date: 2026-05-27.

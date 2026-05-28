@@ -164,7 +164,7 @@ export async function getAdminAiBudgetSummary() {
     {
       status: "Info",
       title: "Limites informativos",
-      message: "El bloqueo automatico se implementara en ADMIN-4.",
+      message: "El bloqueo automatico depende de Configuracion Operativa: enforcement IA y bloquear al superar presupuesto.",
     },
   ].filter((alert): alert is { status: string; title: string; message: string } => Boolean(alert));
 

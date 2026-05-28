@@ -1,4 +1,4 @@
-import { getAiAdvisoryConfig, getAiAdvisoryProviderKey } from "./aiAdvisoryConfig";
+import { getEffectiveAiAdvisoryConfig, getAiAdvisoryProviderKey } from "./aiAdvisoryConfig";
 import { buildAiAdvisoryContextPayload } from "./advisoryContextPayload";
 import { buildAiAdvisoryPrompt } from "./aiAdvisoryPrompts";
 import type { AssessmentDetail } from "../assessments/assessmentService";
@@ -10,6 +10,7 @@ import type {
 } from "./aiAdvisoryTypes";
 import { recordAiRuntimeEvent, type AiRuntimeErrorCategory } from "./aiRuntimeStatus";
 import { recordAiUsageEvent, type AiUsageOperationType } from "./aiUsageService";
+import { assertCanUseAi } from "../admin/runtimeSettingsService";
 
 type AiProviderJson = Omit<AiAdvisoryOutput, "providerStatus" | "generatedAt" | "provider" | "model">;
 
@@ -318,7 +319,7 @@ export async function generateAiAdvisoryFromPayload(
     operationType?: AiUsageOperationType;
   } = {},
 ): Promise<AiAdvisoryOutput> {
-  const config = getAiAdvisoryConfig();
+  const config = await getEffectiveAiAdvisoryConfig();
   const startedAt = Date.now();
   const inputJson = truncateJsonInput(payload, config.maxInputChars);
   const operationType = options.operationType ?? "unknown";
@@ -355,6 +356,56 @@ export async function generateAiAdvisoryFromPayload(
       outputChars: JSON.stringify(output).length,
       fallbackUsed: true,
       metadataJson: { reason: "disabled" },
+    });
+    return output;
+  }
+
+  const operationalCheck = await assertCanUseAi({
+    userId: options.userId,
+    assessmentId: safeAssessmentId,
+    provider: config.provider,
+    model: config.model,
+    inputChars: inputJson.length,
+    outputChars: 0,
+  });
+
+  if (!operationalCheck.allowed) {
+    const output = {
+      ...emptyOutput(config, "disabled"),
+      confidenceImpact: operationalCheck.message,
+      limitations: [
+        operationalCheck.message,
+        "Las secciones deterministicas del reporte siguen disponibles.",
+        "AI Advisory es una capa opcional y no reemplaza readiness/confidence.",
+      ],
+    };
+    const status =
+      operationalCheck.code === "blocked_budget"
+        ? "blocked_budget"
+        : operationalCheck.code === "disabled_runtime"
+          ? "disabled_runtime"
+          : "blocked_limit";
+    recordAiRuntimeEvent({
+      eventType: "ai_advisory_fallback_used",
+      provider: config.provider,
+      model: config.model,
+      assessmentId: safeAssessmentId,
+      durationMs: Date.now() - startedAt,
+      status: "disabled",
+      errorCategory: "none",
+    });
+    await recordAiUsageEvent({
+      assessmentId: safeAssessmentId,
+      userId: options.userId,
+      provider: config.provider,
+      model: config.model,
+      operationType,
+      status,
+      durationMs: Date.now() - startedAt,
+      inputChars: inputJson.length,
+      outputChars: JSON.stringify(output).length,
+      fallbackUsed: true,
+      metadataJson: { reason: operationalCheck.code },
     });
     return output;
   }

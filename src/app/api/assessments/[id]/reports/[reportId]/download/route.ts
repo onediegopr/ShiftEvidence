@@ -7,6 +7,7 @@ import { getReportTypeLabel } from "../../../../../../../server/reports/reportHi
 import { readReportFile } from "../../../../../../../server/reports/reportStorageService";
 import { prisma } from "../../../../../../../lib/prisma";
 import { getPublicUrl } from "../../../../../../../server/url/publicAppUrl";
+import { OperationalBlockError } from "../../../../../../../server/admin/runtimeSettingsService";
 
 export const runtime = "nodejs";
 
@@ -43,8 +44,10 @@ export async function GET(
       assessmentId,
       reportId,
     });
-  } catch {
-    return NextResponse.json({ error: "Report not found." }, { status: 404 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Report not found.";
+    const status = error instanceof OperationalBlockError ? 403 : 404;
+    return NextResponse.json({ error: message }, { status });
   }
 
   if (!report) {

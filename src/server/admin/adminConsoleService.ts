@@ -7,6 +7,7 @@ import {
   getCommercialOpportunities,
   listUserEntitlements,
 } from "./adminOpsService";
+import { getOperationalRuntimeSettings } from "./runtimeSettingsService";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -30,7 +31,9 @@ function statusFromBoolean(value: boolean, configuredLabel = "Operativo") {
   return value ? configuredLabel : "No configurado";
 }
 
-function getAiOperationalAlerts(aiStatus: ReturnType<typeof getAiRuntimeStatus>) {
+type AdminAiRuntimeStatus = Awaited<ReturnType<typeof getAiRuntimeStatus>>;
+
+function getAiOperationalAlerts(aiStatus: AdminAiRuntimeStatus) {
   const alerts: Array<{ title: string; status: "Operativo" | "Atencion" | "Info"; message: string }> = [];
 
   if (aiStatus.proveedor === "gemini" && !aiStatus.geminiConfigurado) {
@@ -103,6 +106,7 @@ export async function getAdminConsoleData() {
     commercialOpportunities,
     aiBudget,
     advancedAuditEvents,
+    runtimeSettings,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.assessment.count({ where: { archivedAt: null } }),
@@ -201,9 +205,10 @@ export async function getAdminConsoleData() {
     getCommercialOpportunities(),
     getAdminAiBudgetSummary(),
     getAdvancedAuditEvents(),
+    getOperationalRuntimeSettings(),
   ]);
 
-  const aiStatus = getAiRuntimeStatus();
+  const aiStatus = await getAiRuntimeStatus();
   const aiUsage = await getAdminAiUsage({ range: "30d" });
   const persistentUsageByUser = new Map(aiUsage.byUser.filter((item) => item.userId).map((item) => [item.userId, item]));
   const persistentUsageByAssessment = new Map(
@@ -328,6 +333,7 @@ export async function getAdminConsoleData() {
       { name: "AI_ADVISORY_MODEL", value: safeVisibleValue(process.env.AI_ADVISORY_MODEL), secret: false },
       { name: "MAX_UPLOAD_SIZE_MB", value: safeVisibleValue(process.env.MAX_UPLOAD_SIZE_MB), secret: false },
     ],
+    runtimeSettings,
     recentUsers: recentUsers.map((user) => {
       const usage = persistentUsageByUser.get(user.id);
       const entitlement = userEntitlements.find((item) => item.userId === user.id);

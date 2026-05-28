@@ -62,6 +62,32 @@ Limitacion:
 - las metricas son temporales y pueden reiniciarse con deploy/restart;
 - costos/tokens persistentes, consumo por usuario y consumo por assessment quedan para ADMIN-2B.
 
+## ADMIN-4 update - configuracion operativa y enforcement
+
+ADMIN-4 agrega controles operativos internos en `/dashboard/admin`.
+
+Incluye:
+
+- seccion `Configuracion Operativa`;
+- runtime mode de IA: `env`, `disabled`, `mock`, `gemini`;
+- apagado operativo de IA sin tocar Hostinger;
+- vuelta a mock sin tocar secrets;
+- enforcement basico de presupuesto/entitlement antes de llamar IA;
+- bloqueo operativo de generacion PDF;
+- bloqueo operativo de descargas;
+- bloqueo operativo de creacion de assessments;
+- auditoria de acciones admin;
+- mensajes de bloqueo en espanol;
+- fallbacks seguros para que preview/PDF no crasheen si IA esta bloqueada.
+
+Limitaciones:
+
+- no hay billing automatico real;
+- no se editan API keys desde admin;
+- no se activa OpenAI;
+- no se declara full public launch;
+- `uploads`, `registro publico` y `modo mantenimiento` quedan como settings operativos base para hardening futuro.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

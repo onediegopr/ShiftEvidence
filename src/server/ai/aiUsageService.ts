@@ -3,7 +3,17 @@ import { prisma } from "../../lib/prisma";
 import type { AiAdvisoryProvider } from "./aiAdvisoryTypes";
 
 export type AiUsageOperationType = "preview" | "pdf" | "synthetic_test" | "admin_test" | "retry" | "unknown";
-export type AiUsageStatus = "success" | "error" | "timeout" | "unavailable" | "fallback" | "disabled" | "mock";
+export type AiUsageStatus =
+  | "success"
+  | "error"
+  | "timeout"
+  | "unavailable"
+  | "fallback"
+  | "disabled"
+  | "mock"
+  | "blocked_budget"
+  | "blocked_limit"
+  | "disabled_runtime";
 
 const MODEL_COST_USD_PER_MILLION_TOKENS: Record<string, { input: number; output: number }> = {
   "gemini:gemini-1.5-flash": {
@@ -188,7 +198,7 @@ export async function getAdminAiUsage(params?: {
 
   const totalCalls = events.length;
   const successCount = events.filter((event) => event.status === "success" || event.status === "mock").length;
-  const errorCount = events.filter((event) => event.status === "error").length;
+  const errorCount = events.filter((event) => event.status === "error" || event.status.startsWith("blocked_") || event.status === "disabled_runtime").length;
   const timeoutCount = events.filter((event) => event.status === "timeout").length;
   const fallbackCount = events.filter((event) => event.fallbackUsed || event.status === "fallback").length;
   const durationEvents = events.filter((event) => typeof event.durationMs === "number");
@@ -232,7 +242,7 @@ export async function getAdminAiUsage(params?: {
     existingUser.calls += 1;
     existingUser.tokens += event.estimatedTotalTokens ?? 0;
     existingUser.cost += event.estimatedCostUsd ?? 0;
-    existingUser.errors += event.status === "error" || event.status === "timeout" ? 1 : 0;
+    existingUser.errors += event.status === "error" || event.status === "timeout" || event.status.startsWith("blocked_") || event.status === "disabled_runtime" ? 1 : 0;
     if (event.createdAt > existingUser.lastEventAt) existingUser.lastEventAt = event.createdAt;
     byUser.set(userKey, existingUser);
 
@@ -251,7 +261,7 @@ export async function getAdminAiUsage(params?: {
     existingAssessment.calls += 1;
     existingAssessment.tokens += event.estimatedTotalTokens ?? 0;
     existingAssessment.cost += event.estimatedCostUsd ?? 0;
-    existingAssessment.errors += event.status === "error" || event.status === "timeout" ? 1 : 0;
+    existingAssessment.errors += event.status === "error" || event.status === "timeout" || event.status.startsWith("blocked_") || event.status === "disabled_runtime" ? 1 : 0;
     if (event.createdAt > existingAssessment.lastEventAt) {
       existingAssessment.lastEventAt = event.createdAt;
       existingAssessment.lastStatus = event.status;
@@ -330,7 +340,7 @@ export async function getAdminAiUsage(params?: {
       .slice(0, 10)
       .map((item) => ({ ...item, cost: roundMoney(item.cost) })),
     recentErrors: events
-      .filter((event) => event.status === "error" || event.status === "timeout" || event.fallbackUsed)
+      .filter((event) => event.status === "error" || event.status === "timeout" || event.status.startsWith("blocked_") || event.status === "disabled_runtime" || event.fallbackUsed)
       .slice(0, 20)
       .map((event) => ({
         id: event.id,

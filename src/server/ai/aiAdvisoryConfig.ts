@@ -1,4 +1,5 @@
 import type { AiAdvisoryConfig, AiAdvisoryProvider } from "./aiAdvisoryTypes";
+import { getOperationalRuntimeSettings } from "../admin/runtimeSettingsService";
 
 function parseBoolean(value: string | undefined) {
   return value === "true" || value === "1" || value === "yes";
@@ -49,4 +50,38 @@ export function getAiAdvisoryConfig(): AiAdvisoryConfig {
     maxInputChars: parsePositiveInteger(process.env.AI_ADVISORY_MAX_INPUT_CHARS, 24000, 80000),
     maxOutputChars: parsePositiveInteger(process.env.AI_ADVISORY_MAX_OUTPUT_CHARS, 6000, 20000),
   };
+}
+
+export async function getEffectiveAiAdvisoryConfig(): Promise<AiAdvisoryConfig> {
+  const envConfig = getAiAdvisoryConfig();
+  const settings = await getOperationalRuntimeSettings();
+
+  if (settings.aiRuntimeMode === "disabled") {
+    return {
+      ...envConfig,
+      enabled: false,
+      provider: "disabled",
+      model: envConfig.model,
+    };
+  }
+
+  if (settings.aiRuntimeMode === "mock") {
+    return {
+      ...envConfig,
+      enabled: true,
+      provider: "mock",
+      model: "mock-admin-runtime",
+    };
+  }
+
+  if (settings.aiRuntimeMode === "gemini") {
+    return {
+      ...envConfig,
+      enabled: Boolean(getAiAdvisoryProviderKey("gemini")),
+      provider: "gemini",
+      model: process.env.AI_ADVISORY_MODEL?.trim() || "gemini-1.5-flash",
+    };
+  }
+
+  return envConfig;
 }

@@ -49,6 +49,8 @@ ADMIN-3 adds internal Spanish admin controls for estimated AI budget, informativ
 
 ADMIN-3-PROD-MIGRATION-SMOKE applied the ADMIN-3 migration in the production Neon database via `npm run prisma:deploy`, validated `SystemSetting`, `UserEntitlement`, `CommercialOpportunity`, `AuditEvent` and `AiUsageEvent` with safe counts, confirmed production public/private smoke, and completed authenticated admin smoke for budget, QA entitlement, QA commercial opportunity and audit visibility without exposing secrets. Full public launch remains NO.
 
+ADMIN-4 adds runtime operational settings and enforcement without a new schema migration. Admin can control AI runtime mode (`env`, `disabled`, `mock`, `gemini`), budget blocking, PDF generation/downloads and assessment creation through non-secret `SystemSetting` overrides. AI/PDF/assessment enforcement returns safe fallbacks or Spanish block messages, records audit/usage events, and does not edit Hostinger env vars or secrets. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -87,6 +89,7 @@ ADMIN-3-PROD-MIGRATION-SMOKE applied the ADMIN-3 migration in the production Neo
 - Spanish internal admin console at `/dashboard/admin` for operational status, AI health, users and assessments.
 - AI consumption panel with memory metrics plus persistent estimated tokens/costs by user and assessment.
 - Admin budgets, manual entitlements, commercial opportunities and advanced audit events.
+- Runtime operational settings and basic enforcement for AI, PDF/report downloads and assessment creation.
 
 ## Scripts
 - `npm run dev`
@@ -161,6 +164,7 @@ Optional for future work:
 - `docs/hito-admin-2b-prod-migration-user-attested.md`
 - `docs/hito-admin-3-budgets-entitlements-opportunities.md`
 - `docs/hito-admin-3-prod-migration-smoke.md`
+- `docs/hito-admin-4-runtime-settings-enforcement-commercial-hardening.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

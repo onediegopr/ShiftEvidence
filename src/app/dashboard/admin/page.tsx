@@ -19,8 +19,10 @@ import { getAdminConsoleData } from "../../../server/admin/adminConsoleService";
 import {
   createUserEntitlementAction,
   revokeUserEntitlementAction,
+  setAiRuntimeModeFormAction,
   updateAiBudgetAction,
   updateCommercialOpportunityAction,
+  updateOperationalRuntimeSettingsAction,
 } from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
@@ -186,6 +188,7 @@ export default async function AdminConsolePage() {
     ["Usuarios", "#usuarios"],
     ["Evaluaciones", "#assessments"],
     ["IA y Consumo", "#ia-consumo"],
+    ["Configuración Operativa", "#configuracion-operativa"],
     ["Accesos y Planes", "#accesos-planes"],
     ["Oportunidades", "#oportunidades"],
     ["Configuración", "#configuracion"],
@@ -229,6 +232,75 @@ export default async function AdminConsolePage() {
         <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
         <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Controlled launch" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          id="configuracion-operativa"
+          icon={<Settings size={18} />}
+          label="Configuración Operativa"
+          title="Runtime settings y enforcement"
+          description="Overrides operativos seguros desde DB. No editan Hostinger, no muestran secrets y requieren confirmación."
+        />
+        <section className="assessment-summary-grid">
+          <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Efectivo: ${ai.proveedor}`} />
+          <MetricCard icon={<ShieldCheck size={22} />} label="Enforcement IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
+          <MetricCard icon={<FileText size={22} />} label="Generación PDF" value={data.runtimeSettings.reportsPdfGenerationEnabled ? "Activa" : "Bloqueada"} note="Control operativo global" />
+          <MetricCard icon={<FileText size={22} />} label="Descargas" value={data.runtimeSettings.reportsDownloadEnabled ? "Activas" : "Bloqueadas"} note="Control operativo global" />
+          <MetricCard icon={<Database size={22} />} label="Nuevas evaluaciones" value={data.runtimeSettings.assessmentsCreationEnabled ? "Activas" : "Bloqueadas"} note="Aplica antes de crear assessment" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Mantenimiento" value={data.runtimeSettings.maintenanceMode ? "Activo" : "Inactivo"} note="Informativo en ADMIN-4" />
+        </section>
+        <div className="assessment-preview-grid">
+          <article className="glass-card report-history-card">
+            <h3>Acciones rápidas IA</h3>
+            <p className="assessment-inline-note">Cada acción usa `SystemSetting`, queda auditada y no toca variables Hostinger.</p>
+            <div className="assessment-preview-grid">
+              {[
+                ["disabled", "Apagar IA", "La IA queda desactivada por runtime setting."],
+                ["mock", "Volver a Mock", "Usa provider mock para QA/control operativo."],
+                ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* de Hostinger/runtime."],
+                ["gemini", "Forzar Gemini", "Usa Gemini si la key existe en env."],
+              ].map(([mode, label, help]) => (
+                <form key={mode} className="unlock-admin-form" action={setAiRuntimeModeFormAction}>
+                  <input type="hidden" name="mode" value={mode} />
+                  <p className="assessment-inline-note">{help}</p>
+                  <label className="assessment-inline-note">
+                    <input name="confirmRuntimeChange" type="checkbox" required /> Confirmo este cambio operativo.
+                  </label>
+                  <button type="submit" className="btn btn-secondary">{label}</button>
+                </form>
+              ))}
+            </div>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Configuración completa</h3>
+            <form className="unlock-admin-form" action={updateOperationalRuntimeSettingsAction}>
+              <label className="form-label">
+                Modo IA runtime
+                <select name="aiRuntimeMode" className="form-input" defaultValue={data.runtimeSettings.aiRuntimeMode}>
+                  <option value="env">Usar env</option>
+                  <option value="disabled">Desactivada</option>
+                  <option value="mock">Mock</option>
+                  <option value="gemini">Gemini</option>
+                </select>
+              </label>
+              <div className="assessment-preview-grid">
+                <label className="assessment-inline-note"><input name="aiEnforceBudget" type="checkbox" defaultChecked={data.runtimeSettings.aiEnforceBudget} /> Enforcement de presupuesto IA</label>
+                <label className="assessment-inline-note"><input name="aiBlockOnBudgetExceeded" type="checkbox" defaultChecked={data.runtimeSettings.aiBlockOnBudgetExceeded} /> Bloquear IA al superar presupuesto</label>
+                <label className="assessment-inline-note"><input name="reportsPdfGenerationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsPdfGenerationEnabled} /> Generación PDF activa</label>
+                <label className="assessment-inline-note"><input name="reportsDownloadEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsDownloadEnabled} /> Descargas de reportes activas</label>
+                <label className="assessment-inline-note"><input name="assessmentsCreationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.assessmentsCreationEnabled} /> Creación de assessments activa</label>
+                <label className="assessment-inline-note"><input name="uploadsEnabled" type="checkbox" defaultChecked={data.runtimeSettings.uploadsEnabled} /> Uploads activos</label>
+                <label className="assessment-inline-note"><input name="publicRegistrationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.publicRegistrationEnabled} /> Registro público activo</label>
+                <label className="assessment-inline-note"><input name="maintenanceMode" type="checkbox" defaultChecked={data.runtimeSettings.maintenanceMode} /> Modo mantenimiento informativo</label>
+              </div>
+              <label className="assessment-inline-note">
+                <input name="confirmRuntimeChange" type="checkbox" required /> Confirmo que este cambio puede afectar operación.
+              </label>
+              <button type="submit" className="btn btn-primary btn-glow">Guardar configuración operativa</button>
+            </form>
+          </article>
+        </div>
       </section>
 
       <section className="assessment-section glass-card">
@@ -342,7 +414,7 @@ export default async function AdminConsolePage() {
               <span>Limite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
               <span>Limite assessment: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
             </div>
-            <p className="assessment-inline-note">Limites informativos. El bloqueo automatico se implementara en ADMIN-4.</p>
+            <p className="assessment-inline-note">El bloqueo automatico se activa desde Configuracion Operativa con enforcement IA y bloqueo por presupuesto.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Configurar presupuesto IA</h3>
