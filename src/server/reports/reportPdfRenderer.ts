@@ -56,20 +56,32 @@ const TONE_COLORS: Record<Tone, { fill: string; stroke: string; text: string }> 
   info: { fill: "#ecfeff", stroke: "#a5f3fc", text: THEME.cyan },
 };
 
-function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number, dark = false) {
-  doc.roundedRect(x, y, size, size, size * 0.22).fillAndStroke(dark ? "#0b2238" : "#f8fafc", THEME.cyan);
-  doc.circle(x + size * 0.34, y + size * 0.34, size * 0.12).fill(THEME.green);
-  doc.circle(x + size * 0.66, y + size * 0.62, size * 0.12).fill(THEME.cyan);
+function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
+  const scale = size / 32;
+  const strokeWidth = Math.max(1, 2.5 * scale);
+
   doc
-    .strokeColor(dark ? "#ffffff" : THEME.navy)
-    .lineWidth(Math.max(0.7, size * 0.045))
-    .moveTo(x + size * 0.39, y + size * 0.4)
-    .lineTo(x + size * 0.61, y + size * 0.56)
+    .circle(x + 12 * scale, y + 16 * scale, 8 * scale)
+    .lineWidth(strokeWidth)
+    .strokeColor("#06b6d4")
+    .stroke();
+
+  doc
+    .moveTo(x + 12 * scale, y + 16 * scale)
+    .lineTo(x + 24 * scale, y + 16 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 12 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 20 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .lineJoin("round")
+    .strokeColor("#8b5cf6")
     .stroke();
 }
 
 function drawShiftEvidenceWordmark(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
-  drawShiftEvidenceMark(doc, x, y, 24, dark);
+  drawShiftEvidenceMark(doc, x, y, 24);
   doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x + 32, y + 1);
   doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x + 32, y + 15);
 }
