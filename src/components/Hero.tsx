@@ -50,28 +50,25 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <div className="badge badge-premium">
               <Shield size={13} className="shield-blink" />
               <span>
-                Pre-Migration Auditing | 100% Agentless & Compatibility Verified
+                Cognitive Advisory Copilot | 100% Agentless & Enterprise Verified
               </span>
             </div>
             <h1 className="hero-title">
-              VMware exit decisions
+              Not a parser. The first
               <br />
-              need <span className="text-gradient">evidence</span>,
+              AI-powered <span className="text-gradient">Senior Copilot</span>
               <br />
-              not guesses.
+              for VMware exits.
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                Broadcom's VMware licensing changes are forcing companies, MSPs
-                and infrastructure teams to rethink their VMware strategy. Shift
-                Evidence helps you plan the move before production is touched -
-                whether you are assessing your own environment or preparing a
-                client migration.
+                Go beyond basic calculators and scripts. Shift Evidence is a guided advisory engine
+                that combines raw configuration evidence with smart contextual intake to simulate a
+                principal architect review.
               </p>
               <p className="text-muted">
-                The platform turns RVTools exports, backup evidence,
-                configuration data and Proxmox target information into a
-                comprehensive VMware to Proxmox readiness audit report.
+                Our platform provides fully storage-agnostic modeling, optimized for high-performance Ceph
+                targets and compatible with SAN, NAS, or ZFS environments.
               </p>
             </div>
           </div>

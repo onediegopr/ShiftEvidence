@@ -1,49 +1,65 @@
 import {
   ShieldCheck,
-  ShieldAlert,
-  Cpu,
+  ClipboardList,
+  Activity,
+  Brain,
   Database,
-  RefreshCw,
-  Archive,
+  Sliders,
+  FileSpreadsheet,
+  History,
+  Briefcase,
   HardDrive,
   Boxes,
   DollarSign,
+  Cpu,
 } from "lucide-react";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
 const copy = {
-  headline: "Why Enterprises Choose Shift Evidence",
+  headline: "Architected Across 9 Layers of Value",
   blurb:
-    "Migrating core infrastructure should not feel like a leap of faith. Our specialized pipeline handles the complexity and keeps production data out of the blast radius.",
+    "We do not believe in push-button magic. A production VMware exit requires objective technical evidence, contextual risk intake, and editable financial templates.",
   f1: [
-    "Pre-Flight Audit & Scan",
-    "Our automated compatibility engine scans vSphere hosts, storage formats, and distributed networks, flagging migration bottlenecks before they happen.",
+    "Objective Evidence Ingestion",
+    "Safely import RVTools or CSV configuration exports. No production agents, no credentials, and 100% read-only.",
   ],
   f2: [
-    "VM Migration Planning",
-    "Identifies disk format, driver and compatibility considerations that must be validated before any VMware to Proxmox move.",
+    "Contextual Intake Forms",
+    "Capture what configuration sheets miss: workload criticality, application owners, maintenance windows, and risk appetite.",
   ],
   f3: [
-    "Downtime Window Review",
-    "Highlights workload risk, backup gaps and validation steps so teams can plan realistic migration windows and rollback paths.",
+    "Scoring Engine",
+    "Convert scattered cluster statistics into standardized compatibility scores and migration complexity ranks.",
   ],
   f4: [
-    "Instant Rollback Protection",
-    "We operate in a strict read-only mode for VMware assets. If a migration anomaly appears, you can bring the source VMware cluster back immediately.",
+    "Guided Advisory AI",
+    "A cognitive engine trained to spot nested switches, compute bottlenecks, and explain architectural validations.",
   ],
   f5: [
-    "Storage Architecture Readiness",
-    "Reviews target storage assumptions and evidence gaps across ZFS, Ceph, SAN or NAS options before implementation.",
+    "Agnostic Storage Modeling",
+    "Validate SAN, NAS, or ZFS target capacities, with dedicated configurations highlighting high-performance Ceph cluster standards.",
   ],
   f6: [
-    "Backup Evidence Review",
-    "Surfaces missing backup, restore and RPO/RTO evidence before production workloads are moved.",
+    "Editable Assumptions",
+    "No black-box calculations. Tweak hardware overcommit ratios, VM licensing costs, and storage profiles to match your context.",
   ],
-  compHead: "Comparing architecture and costs",
+  f7: [
+    "Executive & Technical Reports",
+    "Compile data-driven findings into professional, audit-ready PDF reports designed for executive approval.",
+  ],
+  f8: [
+    "Data Lineage & Audit Trail",
+    "Give stakeholders confidence. Track every recommendation directly back to its source configuration evidence.",
+  ],
+  f9: [
+    "Partner & MSP Operations",
+    "Equip your consulting team. A self-service workspace designed to deliver structured infrastructure audits.",
+  ],
+  compHead: "Market Landscape: How We Compare",
   compBlurb:
-    "Proxmox VE offers enterprise-grade virtualization with a modular, open architecture that reduces vendor lock-in.",
+    "Traditional assessments fall short of providing a concrete, actionable roadmap. Shift Evidence bridges the gap between raw data parsing and senior human expertise.",
 };
 
 export default function Features() {
@@ -55,14 +71,14 @@ export default function Features() {
       <section id="features" className="section" style={{ position: "relative" }}>
         <div className="container">
           <div className="text-center mb-8">
-            <div className="badge">Safe Shift System</div>
+            <div className="badge">Platform Value Model</div>
             <h2 className="mb-4">{copy.headline}</h2>
             <p className="mx-auto" style={{ maxWidth: "650px" }}>
               {copy.blurb}
             </p>
           </div>
 
-          <div className="features-grid">
+          <div className="features-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
             <div className="glass-card feature-card glow-primary">
               <div className="feature-icon-wrapper">
                 <ShieldCheck size={24} />
@@ -72,21 +88,21 @@ export default function Features() {
             </div>
             <div className="glass-card feature-card glow-secondary">
               <div className="feature-icon-wrapper">
-                <Cpu size={24} />
+                <ClipboardList size={24} />
               </div>
               <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f2[0]}</h3>
               <p style={{ fontSize: "0.9rem" }}>{copy.f2[1]}</p>
             </div>
             <div className="glass-card feature-card glow-primary">
               <div className="feature-icon-wrapper">
-                <RefreshCw size={24} />
+                <Activity size={24} />
               </div>
               <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f3[0]}</h3>
               <p style={{ fontSize: "0.9rem" }}>{copy.f3[1]}</p>
             </div>
             <div className="glass-card feature-card glow-secondary">
               <div className="feature-icon-wrapper">
-                <ShieldAlert size={24} />
+                <Brain size={24} />
               </div>
               <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f4[0]}</h3>
               <p style={{ fontSize: "0.9rem" }}>{copy.f4[1]}</p>
@@ -100,10 +116,31 @@ export default function Features() {
             </div>
             <div className="glass-card feature-card glow-secondary">
               <div className="feature-icon-wrapper">
-                <Archive size={24} />
+                <Sliders size={24} />
               </div>
               <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f6[0]}</h3>
               <p style={{ fontSize: "0.9rem" }}>{copy.f6[1]}</p>
+            </div>
+            <div className="glass-card feature-card glow-primary">
+              <div className="feature-icon-wrapper">
+                <FileSpreadsheet size={24} />
+              </div>
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f7[0]}</h3>
+              <p style={{ fontSize: "0.9rem" }}>{copy.f7[1]}</p>
+            </div>
+            <div className="glass-card feature-card glow-secondary">
+              <div className="feature-icon-wrapper">
+                <History size={24} />
+              </div>
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f8[0]}</h3>
+              <p style={{ fontSize: "0.9rem" }}>{copy.f8[1]}</p>
+            </div>
+            <div className="glass-card feature-card glow-primary">
+              <div className="feature-icon-wrapper">
+                <Briefcase size={24} />
+              </div>
+              <h3 style={{ color: "white", fontSize: "1.25rem" }}>{copy.f9[0]}</h3>
+              <p style={{ fontSize: "0.9rem" }}>{copy.f9[1]}</p>
             </div>
           </div>
         </div>
@@ -124,17 +161,12 @@ export default function Features() {
             <table className="comparison-table">
               <thead>
                 <tr>
-                  <th>Feature Capability</th>
-                  <th className="col-vs">
-                    <div className="cmp-th-brand">
-                      <img src={vmwareLogoSrc} alt="" className="cmp-table-logo" />
-                      VMware vSphere Suite
-                    </div>
-                  </th>
+                  <th>Assessment Approach</th>
+                  <th>Core Focus & Method</th>
+                  <th>Key Gaps & Vulnerabilities</th>
                   <th className="col-prox">
                     <div className="cmp-th-brand">
-                      <img src={proxmoxLogoSrc} alt="" className="cmp-table-logo" />
-                      Proxmox VE
+                      Shift Evidence AI Copilot
                     </div>
                   </th>
                 </tr>
@@ -142,65 +174,68 @@ export default function Features() {
               <tbody>
                 <tr>
                   <td className="cmp-feat">
-                    <Cpu size={16} /> Hypervisor Foundation
+                    <Cpu size={16} /> Generic Cloud Assessment
                   </td>
-                  <td className="col-vs">Proprietary Type-1 (ESXi)</td>
+                  <td>Scans standard hardware allocation metrics.</td>
+                  <td>Fails to analyze Proxmox cluster configurations or network layers.</td>
                   <td className="col-prox">
-                    Open-Source Type-1 (KVM)
+                    Deep Proxmox VE specialized mapping
                     <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
                 <tr>
                   <td className="cmp-feat">
-                    <Boxes size={16} /> Container Support
+                    <Boxes size={16} /> Vendor-Locked Tools
                   </td>
-                  <td className="col-vs">Requires Tanzu (Extra Add-on)</td>
+                  <td>Optimizes to promote a specific hypervisor/license tier.</td>
+                  <td>Biased, incomplete recommendations ignoring alternative targets.</td>
                   <td className="col-prox">
-                    Built-in LXC Containers
+                    100% Agnostic architecture target modeling
                     <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
                 <tr>
                   <td className="cmp-feat">
-                    <ShieldCheck size={16} /> High Availability & DRS
+                    <Briefcase size={16} /> Template Human Advisory
                   </td>
-                  <td className="col-vs">Paid licensing tier required</td>
+                  <td>Manual consultant audits using standard static worksheets.</td>
+                  <td>Extremely slow, expensive ($10k+), and variable expert quality.</td>
                   <td className="col-prox">
-                    Included / Free (Corosync)
+                    Software execution speed + Senior TAM-grade engine
                     <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
                 <tr>
                   <td className="cmp-feat">
-                    <HardDrive size={16} /> Storage Virtualization
+                    <DollarSign size={16} /> Basic TCO Calculators
                   </td>
-                  <td className="col-vs">vSAN (Separate licensing fee)</td>
+                  <td>Spreadsheets calculating license comparisons.</td>
+                  <td>Ignores actual VM risks, migration bottlenecks, and constraints.</td>
                   <td className="col-prox">
-                    Ceph RBD / ZFS (Built-in)
+                    Financial metrics bound to hardware risk findings
                     <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
                 <tr>
                   <td className="cmp-feat">
-                    <Archive size={16} /> Backup Infrastructure
+                    <FileSpreadsheet size={16} /> Raw Technical Parsers
                   </td>
-                  <td className="col-vs">Veeam / Cohesity (Paid)</td>
+                  <td>Converts configuration exports to basic HTML tables.</td>
+                  <td>No strategic roadmap, no business narrative, and no executive view.</td>
                   <td className="col-prox">
-                    Proxmox Backup Server (Free)
+                    Audit-ready executive-grade boardroom reports
                     <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
                 <tr className="cmp-cost-row">
                   <td className="cmp-feat">
-                    <DollarSign size={16} /> 3-Year Subscription Cost
+                    <Brain size={16} /> Generic Chatbots (LLMs)
                   </td>
-                  <td className="col-vs">
-                    <strong>High recurring cost</strong>
-                    <span className="cmp-sub">Licensed per physical core</span>
-                  </td>
+                  <td>Processes standard prompts without hardware verification.</td>
+                  <td>Hallucinates configurations; lacks structured metrics checking.</td>
                   <td className="col-prox">
-                    <strong>Low per-socket pricing</strong>
-                    <span className="cmp-sub">Up to 80% lower annual subscription costs</span>
+                    Guardrailed AI bound to validated infrastructure evidence
+                    <span className="cmp-check">{"✓"}</span>
                   </td>
                 </tr>
               </tbody>

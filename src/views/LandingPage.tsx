@@ -30,28 +30,28 @@ import {
 
 const appCopy = {
   methodology: "Methodology",
-  credibilityTitle: "Enterprise VMware discipline, without production access.",
+  credibilityTitle: "Enterprise advisory discipline, powered by specialized AI.",
   credibilityBody:
-    "This independent readiness methodology was developed by a former VMware Technical Account Manager and is designed to bring enterprise-grade risk review, evidence discipline and migration planning structure to VMware to Proxmox decisions.",
-  formerTam: "Former VMware TAM-led methodology",
-  formerTamBody: "Built from real-world enterprise advisory experience, not guesswork.",
-  evidence: "Evidence-based, not guess-based",
-  evidenceBody: "Every risk, gap and recommendation is backed by collected infrastructure evidence.",
+    "Our methodology was designed from the ground up by a former VMware Technical Account Manager to deliver the same depth of risk review, evidence audit, and architecture design as major specialized consulting firms—at software scale.",
+  formerTam: "AI Engine Trained on TAM Methodology",
+  formerTamBody: "Simulates real-world enterprise advisory guidelines, not generic chatbot templates.",
+  evidence: "No Push-Button Guesswork",
+  evidenceBody: "Unlike simple technical parsers, every finding combines configuration facts with contextual policy inputs.",
   noProd: "No production changes",
   noProdBody: "Read-only assessment. Zero agents, zero credentials, zero impact on running workloads.",
-  outputs: "Executive + technical outputs",
-  outputsBody: "Ready-to-share reports for both engineering teams and business stakeholders.",
+  outputs: "Audit-Ready Deliverables",
+  outputsBody: "Professional, boardroom-ready reports ready for engineering review and executive sign-off.",
   disclaimer: "Independent methodology. Not affiliated with, endorsed by or certified by VMware/Broadcom.",
   faqTitle: "Frequently Asked Questions",
-  q1: "Is this assessment certified by VMware or Proxmox?",
-  a1: "No. This is an independent readiness assessment. It is not affiliated with, endorsed by or certified by VMware, Broadcom or Proxmox. The methodology was developed by a former VMware Technical Account Manager to bring enterprise-grade risk review and evidence discipline to VMware to Proxmox planning.",
-  q2: 'What does "Former VMware TAM-led methodology" mean?',
-  a2: "It means the assessment structure was designed from real-world VMware enterprise advisory experience: evidence review, risk classification, migration readiness, gaps, executive communication and validation points. It does not mean VMware officially certifies or endorses the report.",
-  q3: "Why does that matter?",
-  a3: "VMware to Proxmox migration is not only a technical import task. It requires risk prioritization, evidence quality review, workload classification, business continuity thinking and a clear plan for what should move first, what needs remediation and what should wait.",
+  q1: "Is this just an automatic parser that converts my configuration files?",
+  a1: "No. While other tools act as basic parsers or simple calculators, Shift Evidence is the first cognitive AI copilot specifically trained for VMware exits. It takes your RVTools or CSV inventory and combines it with a contextual intake form (workload policies, maintenance constraints, risk appetite) to generate a complete senior consulting assessment.",
+  q2: "How does this compare to traditional consulting firms or a VMware TAM?",
+  a2: "Traditional consulting (like IBM, Deloitte, or Accenture) relies on manual human interviews and static templates that take weeks and cost tens of thousands of dollars. Shift Evidence productizes this process, using guardrailed AI to evaluate storage configurations, license deltas, and risk roadmap waves in minutes at a fraction of the cost.",
+  q3: "Is this target storage recommendation only for Ceph?",
+  a3: "No. Shift Evidence is fully storage-agnostic. It models storage compatibility across local ZFS, SAN, NAS, and Ceph environments. However, since Ceph is the preferred target for VMware-scale high-availability exits, the engine highlights optimal Ceph cluster target architectures when applicable.",
   ctaTitle: "Start Your VMware Readiness Assessment",
   ctaPain: "VMware exit decisions need evidence, not guesses.",
-  ctaBody: "Generate a preliminary evidence-backed view of cost exposure, migration blockers, and storage target configurations today.",
+  ctaBody: "Initialize an evidence-backed audit of cost exposure, migration blockers, and storage target configurations today.",
   ctaInput: "Enter corporate email",
   ctaBtn: "Initialize Assessment",
   noAgents: "No ESXi agents required",
@@ -192,10 +192,10 @@ export default function LandingPage() {
           <div className="container">
             <div className="glass-card shiftreadiness-promo-showcase">
               <div className="sr-showcase-copy">
-                <div className="badge badge-cyan">Pre-Migration Discovery</div>
-                <h2>Before you migrate, understand your readiness first.</h2>
+                <div className="badge badge-cyan">AI Advisory Platform</div>
+                <h2>AI-guided infrastructure assessments.</h2>
                 <p>
-                  ShiftReadiness productizes the first phase of a VMware migration assessment. Map your environment, calculate license delta, and spot architectural blockers in minutes at software pricing.
+                  Shift Evidence models the technical and business realities of your VMware exit. Upload your evidence and complete our contextual intake form to draft your boardroom-ready advisory report in minutes.
                 </p>
                 
                 <ul className="sr-showcase-features">
@@ -204,7 +204,7 @@ export default function LandingPage() {
                       <Search size={18} />
                     </div>
                     <div>
-                      <strong>Evidence-Based Intake</strong>
+                      <strong>Evidence-Based Ingestion</strong>
                       <span>Upload your RVTools or vSphere exports. Zero agents, read-only configuration.</span>
                     </div>
                   </li>
@@ -222,8 +222,8 @@ export default function LandingPage() {
                       <Layers size={18} />
                     </div>
                     <div>
-                      <strong>Storage Scenario Modeling</strong>
-                      <span>Agnostic architectural validation for ZFS, Ceph, SAN, or NAS targets.</span>
+                      <strong>Agnostic Storage Scenario Modeling</strong>
+                      <span>Validate target storage designs across SAN, NAS, or ZFS, with specific highlights for Ceph configurations.</span>
                     </div>
                   </li>
                   <li>
