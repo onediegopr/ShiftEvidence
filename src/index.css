@@ -6919,11 +6919,51 @@ p {
 }
 
 @media (max-width: 640px) {
+    .sample-report-page,
+    .sample-report-page .container {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
     .sample-report-stat-grid,
     .sample-report-toc,
     .sample-report-risk-grid,
     .sample-report-sizing-grid {
         grid-template-columns: 1fr;
+    }
+
+    .sample-report-page .demo-hero-copy,
+    .sample-report-page .sample-report-hero-grid,
+    .sample-report-page .sample-report-cover,
+    .sample-report-page .sample-report-cover-body,
+    .sample-report-page .sample-report-panel,
+    .sample-report-page .sample-report-score-card,
+    .sample-report-page .sample-report-score-note {
+        min-width: 0;
+        width: 100%;
+        max-width: min(100%, 19rem);
+    }
+
+    .sample-report-page .sample-report-hero-grid {
+        justify-items: stretch;
+    }
+
+    .sample-report-page .demo-hero-subtitle,
+    .sample-report-page .demo-hero-body,
+    .sample-report-page .demo-badge-row span,
+    .sample-report-page .sample-report-cover-body h2,
+    .sample-report-page .sample-report-cover-body p,
+    .sample-report-page .sample-report-panel,
+    .sample-report-page .sample-report-summary {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .sample-report-page .demo-badge-row span,
+    .sample-report-page .shiftreadiness-actions .btn {
+        max-width: 100%;
+        white-space: normal;
     }
 
     .sample-report-cover-body h2 {

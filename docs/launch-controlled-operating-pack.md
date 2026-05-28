@@ -237,6 +237,13 @@ Operating rules:
 - Present the PDF as a synthetic commercial sample, not a customer report.
 - Do not use it to claim migration automation, zero downtime or 100% success.
 - Regenerate only from synthetic data unless a separate approved sample-report hito changes the process.
+
+SAMPLE-REPORT-2.1 visual QA:
+
+- PDF rendered locally at 15 pages for visual review.
+- `/sample-report` mobile overflow was corrected.
+- `npm run sample-report:generate` now normalizes non-sensitive PDF metadata for reproducible output.
+- Sample remains synthetic, commercial and non-executing.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

@@ -370,4 +370,14 @@ await new Promise((resolve, reject) => {
   stream.on("error", reject);
 });
 
+const deterministicPdfId = "/ID [<0123456789abcdef0123456789abcdef> <0123456789abcdef0123456789abcdef>]";
+const pdfContent = fs.readFileSync(outputPath, "latin1");
+fs.writeFileSync(
+  outputPath,
+  pdfContent
+    .replace(/\/ID \[<[^>]{32}> <[^>]{32}>\]/, deterministicPdfId)
+    .replace(/D:\d{14}Z/g, "D:20260528000000Z"),
+  "latin1",
+);
+
 console.log(`Generated ${path.relative(repoRoot, outputPath)}`);

@@ -57,6 +57,13 @@ SAMPLE-REPORT-2 update:
 - It uses no backend, DB, Gemini call, upload, lead capture or customer data.
 - It remains a commercial sample only and does not approve full public launch.
 
+SAMPLE-REPORT-2.1 update:
+
+- The public sample PDF passed local visual review across all 15 pages.
+- `/sample-report` mobile layout was tightened to avoid horizontal overflow.
+- The PDF generator now produces reproducible output by normalizing non-sensitive PDF metadata.
+- Full public launch remains NO.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.

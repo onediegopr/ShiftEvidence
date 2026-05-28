@@ -77,6 +77,8 @@ SAMPLE-REPORT-1 adds the public `/sample-report` foundation: a synthetic ACME sa
 
 SAMPLE-REPORT-2 adds a public synthetic downloadable PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`. The PDF is generated from local synthetic ACME data via `npm run sample-report:generate`, has 15 pages, uses no backend, DB, Gemini call or customer data, and is linked from `/sample-report`. Full public launch remains NO.
 
+SAMPLE-REPORT-2.1 completes visual PDF QA and marketing polish: the 15-page PDF was rendered locally for review, `/sample-report` mobile overflow was corrected, and the PDF generator now normalizes non-sensitive metadata so regenerated output is reproducible. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -206,6 +208,7 @@ Optional for future work:
 - `docs/hito-demo-1-migration-readiness-replay.md`
 - `docs/hito-sample-report-1-public-sample-report-foundation.md`
 - `docs/hito-sample-report-2-public-synthetic-pdf.md`
+- `docs/hito-sample-report-2-1-visual-pdf-qa.md`
 - `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`

@@ -164,3 +164,14 @@ Rutas esperadas:
 - Ready for broader invited beta marketing: SI.
 - Ready for full public launch: NO.
 
+## SAMPLE-REPORT-2.1 Visual QA
+
+SAMPLE-REPORT-2.1 reviso el PDF visualmente con render local de las 15 paginas y capturas de `/sample-report`.
+
+Resultado:
+
+- PDF visualmente usable como sample comercial.
+- No se detectaron paginas vacias innecesarias.
+- No se detecto texto cortado grave en el PDF.
+- Se corrigio overflow horizontal mobile en `/sample-report`.
+- `npm run sample-report:generate` ahora produce un PDF reproducible al normalizar metadata no sensible.

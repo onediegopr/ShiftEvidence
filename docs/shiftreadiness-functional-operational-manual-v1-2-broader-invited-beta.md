@@ -41,6 +41,7 @@ Sample report update:
 - `SAMPLE-REPORT-2` publishes the public synthetic PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - The PDF has 15 pages, is generated with `npm run sample-report:generate`, and remains synthetic/no-customer-data only.
 - `/sample-report` is the preferred page for explaining the sample before PDF download.
+- `SAMPLE-REPORT-2.1` validates the PDF visually, fixes `/sample-report` mobile overflow and makes the generator reproducible by normalizing non-sensitive PDF metadata.
 
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
