@@ -35,6 +35,8 @@ AI-1.2-PROD-GEMINI-SMOKE and the follow-up MCP activation attempt remained block
 
 AI-1.3 production Gemini user-attested QA reported PASS for the main visual flow: AI Advisory appears in preview and PDF, scores remain visible, PDF downloads/opens, and no raw JSON, `[object Object]`, secrets or raw file content were visible. Full public launch remains NO.
 
+ADMIN-1 adds the first Spanish internal admin console at `/dashboard/admin`: protected by the same product login and `ADMIN_EMAILS`, with operational summary, system health, Gemini status, safe config health, read-only users/assessments, audit placeholders and Spanish unlock-request administration. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -68,8 +70,9 @@ AI-1.3 production Gemini user-attested QA reported PASS for the main visual flow
 - Private evidence upload and secure download.
 - RVTools parser and inventory/risk scoring.
 - Report preview and PDF generation.
-- Optional AI Advisory Notes architecture, disabled by default and safe/mock only in AI-1.
+- Optional AI Advisory Notes architecture with Gemini real provider support and safe fallback.
 - Manual admin unlock/entitlement flow.
+- Spanish internal admin console at `/dashboard/admin` for operational status, AI health, users and assessments.
 
 ## Scripts
 - `npm run dev`
@@ -137,6 +140,7 @@ Optional for future work:
 - `docs/hito-ai-ops-1-gemini-runtime-monitoring-fallback.md`
 - `docs/hito-ai-report-1-full-synthetic-gemini-readiness-report.md`
 - `docs/hito-ai-report-1b-full-synthetic-gemini-success-report.md`
+- `docs/hito-admin-1-spanish-admin-console-foundation.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

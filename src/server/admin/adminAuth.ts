@@ -57,6 +57,29 @@ export async function getCurrentAdminUser() {
   return session;
 }
 
+export async function getCurrentAdminUserForConsole() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  await upsertUserProfileFromSession({
+    userId: session.user.id,
+    email: session.user.email,
+    name: session.user.name,
+    imageUrl: session.user.image ?? null,
+    authProvider: "better-auth",
+  });
+
+  return {
+    session,
+    isAdmin: isAdminEmail(session.user.email),
+  };
+}
+
 export async function requireAdminSession() {
   return getCurrentAdminUser();
 }

@@ -16,6 +16,19 @@ function getAdminRedirectPath(query?: string) {
     : `/dashboard/admin/unlock-requests`;
 }
 
+function translateAdminUnlockError(error: unknown, fallback: string) {
+  const message = error instanceof Error ? error.message : fallback;
+  const knownErrors: Record<string, string> = {
+    "Unlock request not found.": "Solicitud no encontrada.",
+    "This unlock request is already closed.": "Esta solicitud ya esta cerrada.",
+    "This unlock request is already fulfilled.": "Esta solicitud ya fue completada.",
+    "Only pending or approved unlock requests can be rejected.":
+      "Solo se pueden rechazar solicitudes pendientes o aprobadas.",
+  };
+
+  return knownErrors[message] ?? message;
+}
+
 export async function approveUnlockRequestAction(unlockRequestId: string, formData: FormData) {
   const session = await requireAdminSession();
   let redirectTarget = getAdminRedirectPath("saved=1");
@@ -28,7 +41,7 @@ export async function approveUnlockRequestAction(unlockRequestId: string, formDa
       adminNotes,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to approve the unlock request.";
+    const message = translateAdminUnlockError(error, "No se pudo aprobar la solicitud.");
     redirectTarget = getAdminRedirectPath(`error=${safeRedirectError(message)}`);
   }
 
@@ -47,7 +60,7 @@ export async function fulfillUnlockRequestAction(unlockRequestId: string, formDa
       adminNotes,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to fulfill the unlock request.";
+    const message = translateAdminUnlockError(error, "No se pudo completar la solicitud.");
     redirectTarget = getAdminRedirectPath(`error=${safeRedirectError(message)}`);
   }
 
@@ -66,7 +79,7 @@ export async function rejectUnlockRequestAction(unlockRequestId: string, formDat
       adminNotes,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to reject the unlock request.";
+    const message = translateAdminUnlockError(error, "No se pudo rechazar la solicitud.");
     redirectTarget = getAdminRedirectPath(`error=${safeRedirectError(message)}`);
   }
 
@@ -85,7 +98,7 @@ export async function cancelUnlockRequestAction(unlockRequestId: string, formDat
       adminNotes,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to cancel the unlock request.";
+    const message = translateAdminUnlockError(error, "No se pudo cancelar la solicitud.");
     redirectTarget = getAdminRedirectPath(`error=${safeRedirectError(message)}`);
   }
 

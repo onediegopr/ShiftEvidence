@@ -24,6 +24,23 @@ ShiftReadiness incluye una capa minima de operacion para AI Advisory:
 
 La IA sigue siendo advisory. No reemplaza readiness score, evidence confidence score ni risk findings deterministas. OpenAI no esta activo.
 
+## ADMIN-1 update - consola interna en espanol
+
+ADMIN-1 agrega la primera consola interna de administracion en `/dashboard/admin`.
+
+Estado:
+
+- usa el mismo login del producto;
+- autoriza admin por `ADMIN_EMAILS`;
+- redirige usuarios sin sesion a `/sign-in`;
+- muestra acceso denegado en espanol para usuarios autenticados no admin;
+- oculta navegacion admin para clientes normales;
+- incluye resumen operativo, estado del sistema, estado Gemini, configuracion segura, usuarios, assessments, auditoria basica y cola de unlock requests;
+- no expone secrets, API keys, DB URLs, cookies, tokens, raw files ni storage paths privados;
+- no agrega DB schema ni acciones destructivas.
+
+La consola es interna para operador/dueno. No es una pantalla cliente y no cambia la decision de full public launch.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.
@@ -180,7 +197,7 @@ Limites:
 | Report preview / PDF | OK |
 | Admin / entitlement | OK por evidencia manual previa |
 | Resend email | OK |
-| AI Advisory real Gemini | Bloqueado por env/secret access |
+| AI Advisory real Gemini | Activo por evidencia AI-1.3; regeneracion local depende de secret seguro |
 | Limited public beta | OK |
 | Full public launch | NO |
 | Checkout / pagos | NO |

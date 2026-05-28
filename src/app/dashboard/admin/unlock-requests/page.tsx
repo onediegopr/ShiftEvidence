@@ -1,11 +1,9 @@
 import Link from "next/link";
-import type { UnlockRequestStatus } from "@prisma/client";
+import type { UnlockRequestStatus, UnlockRequestType } from "@prisma/client";
 import { ArrowLeft, BadgePercent, CheckCircle2, CircleAlert, ClipboardList, ShieldCheck, XCircle } from "lucide-react";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import {
-  getUnlockRequestStatusLabel,
   getUnlockRequestStatusTone,
-  getUnlockRequestTypeLabel,
   listPendingUnlockRequestsForAdmin,
   listRecentUnlockRequestsForAdmin,
 } from "../../../../server/unlocks/unlockRequestService";
@@ -21,7 +19,7 @@ function formatDate(value: Date | string | null | undefined) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("es-AR", {
     month: "short",
     day: "2-digit",
     year: "numeric",
@@ -44,6 +42,27 @@ function formatMoneyCents(value: number | null | undefined, currency = "USD") {
 
 function renderStatusPill(label: string, tone: "neutral" | "good" | "warning" | "danger") {
   return <span className={`assessment-chip assessment-chip-${tone}`}>{label}</span>;
+}
+
+function getStatusLabelEs(status: UnlockRequestStatus) {
+  const labels: Record<UnlockRequestStatus, string> = {
+    pending: "Pendiente",
+    approved: "Aprobada",
+    rejected: "Rechazada",
+    fulfilled: "Completada",
+    cancelled: "Cancelada",
+  };
+  return labels[status];
+}
+
+function getTypeLabelEs(type: UnlockRequestType) {
+  const labels: Record<UnlockRequestType, string> = {
+    readiness_report: "Reporte completo",
+    readiness_report_pro: "Reporte Pro",
+    storage_addon: "Addon de storage",
+    technical_review: "Revision tecnica",
+  };
+  return labels[type];
 }
 
 function redactEmail(email: string | null | undefined) {
@@ -74,73 +93,73 @@ function RequestCard({
     <article className="glass-card report-history-card">
       <div className="report-history-header">
         <div>
-          <span className="assessment-preview-label">{getUnlockRequestTypeLabel(request.requestedType)}</span>
+          <span className="assessment-preview-label">{getTypeLabelEs(request.requestedType)}</span>
           <h3>{request.assessment.title}</h3>
         </div>
-        {renderStatusPill(getUnlockRequestStatusLabel(request.status), getUnlockRequestStatusTone(request.status))}
+        {renderStatusPill(getStatusLabelEs(request.status), getUnlockRequestStatusTone(request.status))}
       </div>
 
       <div className="report-history-meta">
         <span>Workspace: {request.workspace.name}</span>
-        <span>User: {redactEmail(request.user.email)}</span>
-        <span>Created: {formatDate(request.createdAt)}</span>
+        <span>Usuario: {redactEmail(request.user.email)}</span>
+        <span>Creada: {formatDate(request.createdAt)}</span>
       </div>
       <div className="report-history-meta">
-        <span>Amount: {formatMoneyCents(request.amountCents, request.currency)}</span>
-        <span>Contact: {redactEmail(request.contactEmail)}</span>
+        <span>Monto: {formatMoneyCents(request.amountCents, request.currency)}</span>
+        <span>Contacto: {redactEmail(request.contactEmail)}</span>
       </div>
       {request.notes ? <p className="report-history-error">{request.notes}</p> : null}
-      {request.adminNotes ? <p className="assessment-inline-note">Admin notes: {request.adminNotes}</p> : null}
+      {request.adminNotes ? <p className="assessment-inline-note">Notas internas: {request.adminNotes}</p> : null}
 
       <div className="assessment-inline-actions report-history-actions">
         <Link href={assessmentHref} className="btn btn-secondary">
-          Open report
+          Abrir reporte
         </Link>
       </div>
 
       {request.status === "pending" ? (
         <form className="unlock-admin-form">
           <label className="form-label">
-            Admin notes
-            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Optional internal note" />
+            Notas internas
+            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Nota interna opcional" />
           </label>
           <div className="assessment-inline-actions">
             <button type="submit" className="btn btn-primary btn-glow" formAction={approveUnlockRequestAction.bind(null, request.id)}>
               <CheckCircle2 size={16} />
-              Approve
+              Aprobar
             </button>
             <button type="submit" className="btn btn-secondary" formAction={fulfillUnlockRequestAction.bind(null, request.id)}>
               <ShieldCheck size={16} />
-              Fulfill
+              Completar
             </button>
             <button type="submit" className="btn btn-secondary" formAction={rejectUnlockRequestAction.bind(null, request.id)}>
               <XCircle size={16} />
-              Reject
+              Rechazar
             </button>
             <button type="submit" className="btn btn-secondary" formAction={cancelUnlockRequestAction.bind(null, request.id)}>
               <CircleAlert size={16} />
-              Cancel
+              Cancelar
             </button>
           </div>
         </form>
       ) : request.status === "approved" ? (
         <form className="unlock-admin-form">
           <label className="form-label">
-            Admin notes
-            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Optional internal note" />
+            Notas internas
+            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Nota interna opcional" />
           </label>
           <div className="assessment-inline-actions">
             <button type="submit" className="btn btn-primary btn-glow" formAction={fulfillUnlockRequestAction.bind(null, request.id)}>
               <ShieldCheck size={16} />
-              Mark fulfilled
+              Marcar como completada
             </button>
             <button type="submit" className="btn btn-secondary" formAction={cancelUnlockRequestAction.bind(null, request.id)}>
               <CircleAlert size={16} />
-              Cancel
+              Cancelar
             </button>
             <button type="submit" className="btn btn-secondary" formAction={rejectUnlockRequestAction.bind(null, request.id)}>
               <XCircle size={16} />
-              Reject
+              Rechazar
             </button>
           </div>
         </form>
@@ -191,47 +210,47 @@ export default async function UnlockRequestsAdminPage({
     <main className="dashboard-page">
       <section className="dashboard-hero glass-card">
         <div>
-          <div className="badge badge-cyan">Admin</div>
-          <h1>Manual unlock requests</h1>
+          <div className="badge badge-cyan">Administracion</div>
+          <h1>Solicitudes manuales de desbloqueo</h1>
           <p>
-            Admin-only manual approval. Payment is not automated and no checkout flow is active.
+            Aprobacion manual interna. El pago no esta automatizado y no hay checkout activo.
           </p>
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard" className="btn btn-secondary">
             <ArrowLeft size={16} />
-            Back to dashboard
+            Volver al dashboard
           </Link>
         </div>
       </section>
 
-      {saved ? <div className="dashboard-banner dashboard-banner-success">Admin unlock action saved.</div> : null}
+      {saved ? <div className="dashboard-banner dashboard-banner-success">Accion administrativa guardada.</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error">{error}</div> : null}
 
       <section className="assessment-summary-grid">
         <article className="glass-card assessment-summary-card">
           <ClipboardList size={22} />
-          <span className="assessment-summary-label">Pending</span>
+          <span className="assessment-summary-label">Pendientes</span>
           <strong>{pendingRequests.length}</strong>
-          <p>Unlock requests waiting for manual review</p>
+          <p>Solicitudes esperando revision manual</p>
         </article>
         <article className="glass-card assessment-summary-card">
           <BadgePercent size={22} />
-          <span className="assessment-summary-label">Approved</span>
+          <span className="assessment-summary-label">Aprobadas</span>
           <strong>{getStatusCount(recentRequests, "approved")}</strong>
-          <p>Requests approved but not fulfilled</p>
+          <p>Solicitudes aprobadas pero no completadas</p>
         </article>
         <article className="glass-card assessment-summary-card">
           <ShieldCheck size={22} />
-          <span className="assessment-summary-label">Fulfilled</span>
+          <span className="assessment-summary-label">Completadas</span>
           <strong>{getStatusCount(recentRequests, "fulfilled")}</strong>
-          <p>Entitlements manually granted</p>
+          <p>Entitlements otorgados manualmente</p>
         </article>
         <article className="glass-card assessment-summary-card">
           <XCircle size={22} />
-          <span className="assessment-summary-label">Rejected</span>
+          <span className="assessment-summary-label">Rechazadas</span>
           <strong>{getStatusCount(recentRequests, "rejected")}</strong>
-          <p>Requests closed without entitlement</p>
+          <p>Solicitudes cerradas sin entitlement</p>
         </article>
       </section>
 
@@ -239,24 +258,24 @@ export default async function UnlockRequestsAdminPage({
         <div className="assessment-section-title">
           <div className="assessment-section-eyebrow">
             <CircleAlert size={18} />
-            <span>Queue</span>
+            <span>Cola</span>
           </div>
-          <h2>Unlock request queue</h2>
-          <p>Approve, fulfill, reject or cancel a request from this protected admin view.</p>
+          <h2>Cola de solicitudes</h2>
+          <p>Aprobar, completar, rechazar o cancelar solicitudes desde esta vista protegida.</p>
         </div>
-        <div className="admin-filter-row" aria-label="Unlock request filters">
+        <div className="admin-filter-row" aria-label="Filtros de solicitudes">
           {statusFilters.map((filter) => (
             <Link
               key={filter}
               href={filter === "all" ? "/dashboard/admin/unlock-requests" : `/dashboard/admin/unlock-requests?status=${filter}`}
               className={`assessment-chip ${activeFilter === filter ? "assessment-chip-good" : "assessment-chip-neutral"}`}
             >
-              {filter === "all" ? "All" : getUnlockRequestStatusLabel(filter as UnlockRequestStatus)}
+              {filter === "all" ? "Todas" : getStatusLabelEs(filter as UnlockRequestStatus)}
             </Link>
           ))}
         </div>
         {filteredRequests.length === 0 ? (
-          <p className="assessment-empty-note">No unlock requests match this filter.</p>
+          <p className="assessment-empty-note">No hay solicitudes que coincidan con este filtro.</p>
         ) : (
           <div className="report-history-grid">
             {filteredRequests.map((request) => (

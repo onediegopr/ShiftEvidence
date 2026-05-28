@@ -271,3 +271,23 @@ npm run ai:report-synthetic:require-gemini
 ```
 
 This writes to `qa-artifacts/ai-report-1b/` and exits non-zero unless `providerStatus=success`.
+
+## ADMIN-1 Console Consumption
+
+Date: 2026-05-27.
+
+The Spanish admin console now consumes the safe AI runtime status server-side and presents:
+
+- AI enabled state.
+- Provider.
+- Model.
+- Gemini/OpenAI key configured state without values.
+- Last provider state and last error category.
+- Fallback availability.
+- Safe counters in memory.
+- Secrets exposed: false unless runtime status reports otherwise.
+- Raw files sent: false unless runtime status reports otherwise.
+
+The console must never display API keys, prompts, raw responses, uploaded file contents, cookies, tokens or private storage paths.
+
+Detailed cost/tokens, per-user consumption and budget alerts remain ADMIN-2 scope.

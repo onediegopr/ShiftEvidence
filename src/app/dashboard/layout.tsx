@@ -70,8 +70,8 @@ export default async function DashboardLayout({
                 </li>
                 {showAdminLink && (
                   <li>
-                    <Link href="/dashboard/admin/unlock-requests" className="dashboard-nav-link" style={{ color: "#f472b6" }}>
-                      Admin queue
+                    <Link href="/dashboard/admin" className="dashboard-nav-link" style={{ color: "#22d3ee" }}>
+                      Panel de Administración
                     </Link>
                   </li>
                 )}

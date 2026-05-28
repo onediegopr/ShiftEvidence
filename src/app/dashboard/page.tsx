@@ -72,14 +72,14 @@ export default async function DashboardPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <ClipboardList size={20} style={{ color: "#38bdf8" }} />
             <div>
-              <strong style={{ color: "white" }}>Admin Control Panel Active</strong>
+              <strong style={{ color: "white" }}>Consola interna activa</strong>
               <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                You have administrative access to approve, reject or fulfill manual report unlock requests.
+                Tenés acceso administrativo al centro operativo interno y a las solicitudes manuales.
               </p>
             </div>
           </div>
-          <Link href="/dashboard/admin/unlock-requests" className="btn btn-secondary btn-sm" style={{ border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "6px" }}>
-            Open Admin Queue
+          <Link href="/dashboard/admin" className="btn btn-secondary btn-sm" style={{ border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "6px" }}>
+            Abrir consola interna
           </Link>
         </section>
       )}

@@ -294,3 +294,34 @@ Operational status:
 - No Hostinger config was changed.
 - OpenAI was not activated.
 - No DB schema or Prisma migration was introduced.
+
+## ADMIN-1 Follow-up
+
+Date: 2026-05-27.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational status:
+
+- Spanish internal admin console foundation was added at `/dashboard/admin`.
+- Access uses the same product login and `ADMIN_EMAILS`.
+- Non-admin authenticated users receive a Spanish no-permission screen.
+- Customers do not see admin navigation.
+- The console exposes operational summary, system health, Gemini status, safe config health, users, assessments and audit placeholders.
+
+Security:
+
+- No DB schema change.
+- No Prisma reset.
+- No Hostinger config change.
+- No secrets are displayed.
+- User and assessment views are read-only.
+
+Remaining blockers:
+
+- ADMIN-2 still needs persisted consumption/cost metrics, advanced audit/errors and safe operational actions.
+- Full public launch remains blocked by broader operational evidence, support/SLA and cleanup requirements.

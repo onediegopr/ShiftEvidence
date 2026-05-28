@@ -346,3 +346,23 @@ AI_ADVISORY_PROVIDER=disabled
 ```
 
 Do not approve full public launch until authenticated Gemini preview/PDF smoke passes with no leaks and no raw JSON / `[object Object]`.
+
+## ADMIN-1 Spanish Admin Console
+
+Date: 2026-05-27.
+
+Operational status:
+
+- Internal Spanish admin console exists at `/dashboard/admin`.
+- Access uses the same product login.
+- Admin authorization uses `ADMIN_EMAILS`.
+- Non-admin authenticated users receive a Spanish no-permission screen.
+- Normal customers do not see admin navigation.
+- The console shows operational summary, system health, Gemini status, safe config health, read-only users, read-only assessments, audit placeholders and the existing unlock queue.
+
+Operational rules:
+
+- Do not expose secrets, API keys, database URLs, cookies, tokens or private storage paths.
+- Keep user/assessment actions read-only until ADMIN-2 explicitly adds safe operations.
+- Do not use the admin console as evidence for full public launch by itself.
+- Full public launch remains NO.
