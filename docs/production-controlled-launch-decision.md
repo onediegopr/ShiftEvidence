@@ -557,3 +557,32 @@ User-attested authenticated production result:
 - Visible errors: none reported.
 
 ADMIN-4 runtime controls are production-ready for controlled launch operations. This does not approve full public launch.
+
+## PRE-LAUNCH-1 Controlled Beta Acceptance
+
+Date: 2026-05-28.
+
+Decision:
+
+- Controlled production launch: YES.
+- Limited public beta: YES, accepted for controlled/low-volume/invitation-only usage.
+- Full public launch: NO.
+
+Validated:
+
+- Public routes healthy.
+- Private/admin routes redirect without session.
+- Build/lint/typecheck/guardrails/Prisma checks passed.
+- Public HTML sample did not expose secret/error patterns.
+- ADMIN-4 authenticated evidence remains PASS.
+- Runtime settings final state remains operational.
+- QA/demo data was reviewed without deletion.
+
+Remaining before full public launch:
+
+- Fresh authenticated user dashboard replay if required as final launch gate.
+- Hostinger runtime/build/error logs review from production console.
+- QA/demo cleanup/archive.
+- Public support/SLA and launch communications.
+
+PRE-LAUNCH-1 accepts controlled beta readiness but does not approve full public launch.

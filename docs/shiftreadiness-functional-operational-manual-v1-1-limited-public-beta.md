@@ -108,6 +108,26 @@ La validacion autenticada user-attested confirmo:
 
 Full public launch sigue NO.
 
+## PRE-LAUNCH-1 controlled beta acceptance
+
+Fecha: 2026-05-28.
+
+PRE-LAUNCH-1 confirma que la beta controlada puede continuar:
+
+- produccion publica sana;
+- rutas privadas/admin redirigen sin sesion;
+- build/lint/typecheck/guardrails/Prisma OK;
+- no patrones de secrets o stack traces en HTML publico muestreado;
+- admin autenticado cubierto por evidencia user-attested ADMIN-4;
+- runtime settings en estado operativo final;
+- QA/demo data revisada sin borrado;
+- documentos launch actualizados.
+
+Condicion:
+
+- full public launch sigue NO.
+- antes de full launch se requiere limpiar/archive QA, revisar logs Hostinger y cerrar soporte/SLA publico.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

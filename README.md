@@ -53,6 +53,8 @@ ADMIN-4 adds runtime operational settings and enforcement without a new schema m
 
 ADMIN-4-PROD-OPS-SMOKE received user-attested authenticated production evidence: admin console and operational settings load, AI runtime toggles `disabled`, `mock` and `env/gemini` work without crashes, audit records actions, no secrets are visible, and final production state is operational with AI `env/gemini`, PDF/download enabled and assessment creation enabled. Full public launch remains NO.
 
+PRE-LAUNCH-1 completed full controlled beta acceptance hardening without new features: public production routes are healthy, private/admin routes redirect unauthenticated users, base validations pass, public HTML does not expose secret/error patterns, ADMIN-4 authenticated evidence is accepted, QA/demo data was reviewed without deletion, and launch docs were updated. Controlled beta is accepted; full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -168,6 +170,7 @@ Optional for future work:
 - `docs/hito-admin-3-prod-migration-smoke.md`
 - `docs/hito-admin-4-runtime-settings-enforcement-commercial-hardening.md`
 - `docs/hito-admin-4-prod-ops-smoke.md`
+- `docs/hito-pre-launch-1-full-controlled-beta-acceptance.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

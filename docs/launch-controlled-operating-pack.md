@@ -150,6 +150,26 @@ Production ops smoke:
 - No secrets were visible.
 - Final state: AI `env/gemini`, PDF/download enabled, assessment creation enabled.
 
+## PRE-LAUNCH-1 Controlled Beta Acceptance
+
+Date: 2026-05-28.
+
+Controlled beta acceptance hardening was completed without new features:
+
+- Public production routes returned healthy responses.
+- Private/admin routes redirected unauthenticated users to `/sign-in`.
+- Build, lint, typecheck, AI guardrails and Prisma validation passed.
+- Public HTML did not expose secret/error patterns in the sampled routes.
+- ADMIN-4 authenticated production evidence remains accepted.
+- QA/demo data was reviewed, not deleted.
+- Runtime settings final state is operational.
+
+Decision:
+
+- Controlled beta accepted: YES.
+- Limited beta usage: YES, still controlled/low-volume/invitation-only.
+- Full public launch: NO.
+
 ## Rollback / Pause
 
 If launch must be paused:
