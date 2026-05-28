@@ -71,6 +71,8 @@ UX-HARDENING-1 applies a pre-real-use UX/accessibility polish pass without new f
 
 DEMO-1 adds the public `/demo` Migration Readiness Replay: a fully simulated, synthetic, no-login walkthrough showing how a VMware/RVTools-style export becomes a Proxmox readiness decision pack. It uses no backend, no DB, no Gemini call, no real upload and no customer data. CTAs were added from home and `/shiftreadiness`; full public launch remains NO.
 
+DEMO-1.1 completes visual QA and conversion polish for `/demo`: mobile layout was tightened, long technical strings now wrap safely, the sound control is clarified as visual-only, and public marketing copy was adjusted away from execution/cutover language. Production `/demo` remains healthy; full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

@@ -34,6 +34,13 @@ DEMO-1 update:
 - It does not change the launch decision: full public launch remains NO.
 - Hostinger/HCDN cache must be checked after deploy so HTML and `_next` assets are not stale/mismatched.
 
+DEMO-1.1 update:
+
+- `/demo` passed visual QA/conversion polish for desktop and mobile 390 px.
+- Long technical strings now wrap safely in the replay and dataset panels.
+- Sound control is clarified as visual-only.
+- Public marketing copy was adjusted away from execution/cutover wording.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.

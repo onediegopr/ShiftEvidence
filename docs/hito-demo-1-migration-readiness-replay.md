@@ -250,3 +250,13 @@ Opcionales:
 - No backend/DB/Gemini: SI.
 - CTAs agregados: SI.
 - Full public launch: NO.
+
+## 15. DEMO-1.1 visual QA
+
+DEMO-1.1 completo la revision visual y de conversion:
+
+- Mobile 390 px validado sin overflow real.
+- Hero y panel dataset ajustados para textos largos.
+- Toggle de sonido aclarado como visual-only.
+- Copy publico ajustado para evitar lenguaje de ejecucion/cutover como promesa.
+- Produccion `/demo`: 200 OK.

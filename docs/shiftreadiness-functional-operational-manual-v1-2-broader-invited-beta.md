@@ -30,6 +30,7 @@ Demo update:
 - It does not require login, backend, DB, Gemini, upload real or customer data.
 - It is allowed for pre-onboarding education during broader invited beta.
 - It must not be described as automatic migration, zero-downtime guarantee, cutover automation or full public launch.
+- `DEMO-1.1` completes visual QA/conversion polish: mobile layout tightened, sound control clarified as visual-only and public copy moved away from execution/cutover wording.
 
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 

@@ -197,6 +197,13 @@ Operating rules:
 Post-deploy rule:
 
 - If Hostinger/HCDN serves stale HTML with missing `_next` assets, purge cache before inviting prospects to `/demo`.
+
+DEMO-1.1 visual QA:
+
+- Mobile layout and long technical strings were tightened.
+- Sound control is explicitly visual-only.
+- Public marketing copy was adjusted away from execution/cutover language.
+- `/demo` remains simulated and suitable for pre-onboarding education, not full public launch.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

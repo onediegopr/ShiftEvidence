@@ -5703,6 +5703,7 @@ p {
     --demo-amber: #f59e0b;
     --demo-red: #ef4444;
     --demo-violet: #8b5cf6;
+    overflow-x: clip;
 }
 
 .demo-hero {
@@ -5739,6 +5740,7 @@ p {
     line-height: 0.9;
     letter-spacing: -0.08em;
     color: white;
+    overflow-wrap: break-word;
 }
 
 .demo-hero-subtitle {
@@ -5747,6 +5749,7 @@ p {
     color: var(--demo-cyan);
     font-size: clamp(1.05rem, 2vw, 1.35rem);
     font-weight: 700;
+    overflow-wrap: break-word;
 }
 
 .demo-hero-body {
@@ -5755,6 +5758,7 @@ p {
     color: var(--text-muted);
     font-size: 1rem;
     line-height: 1.7;
+    overflow-wrap: break-word;
 }
 
 .demo-badge-row,
@@ -5782,6 +5786,7 @@ p {
 .demo-hero-panel {
     padding: 0;
     border-color: rgba(34, 211, 238, 0.2);
+    min-width: 0;
 }
 
 .demo-terminal-header {
@@ -5813,6 +5818,7 @@ p {
     border: 1px solid rgba(34, 211, 238, 0.1);
     border-radius: 12px;
     background: rgba(3, 7, 18, 0.42);
+    overflow-wrap: anywhere;
 }
 
 .demo-replay-section {
@@ -5985,6 +5991,7 @@ p {
 .demo-does-not-mini strong {
     display: block;
     color: white;
+    overflow-wrap: anywhere;
 }
 
 .demo-file-card span,
@@ -6061,6 +6068,7 @@ p {
     background: rgba(3, 7, 18, 0.45);
     color: #bff7ff;
     animation: demoSignalIn 0.42s ease both;
+    min-width: 0;
 }
 
 .demo-signal-line span {
@@ -6475,7 +6483,14 @@ p {
     }
 
     .demo-hero-copy h1 {
-        max-width: none;
+        max-width: 10ch;
+        font-size: clamp(2.45rem, 12vw, 3.15rem);
+        letter-spacing: -0.065em;
+    }
+
+    .demo-hero-subtitle,
+    .demo-hero-body {
+        max-width: 100%;
     }
 
     .demo-replay-topbar,
@@ -6513,6 +6528,61 @@ p {
 
     .demo-scene-header {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .demo-page .container {
+        max-width: 100%;
+        padding-inline: 1.25rem;
+        overflow: hidden;
+    }
+
+    .demo-hero {
+        padding-top: 5.75rem;
+    }
+
+    .demo-hero-copy,
+    .demo-hero-panel,
+    .demo-replay-shell,
+    .demo-scene-stage {
+        width: 100%;
+        max-width: calc(100vw - 2.5rem);
+        min-width: 0;
+    }
+
+    .demo-hero-copy h1 {
+        max-width: 9.5ch;
+        font-size: clamp(2.2rem, 11vw, 2.75rem);
+    }
+
+    .demo-hero-subtitle,
+    .demo-hero-body,
+    .demo-terminal-body span,
+    .demo-scene-header p {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .demo-terminal-body,
+    .demo-table th,
+    .demo-table td {
+        font-size: 0.78rem;
+    }
+
+    .demo-replay-shell {
+        padding: 1rem;
+    }
+
+    .demo-page .shiftreadiness-actions,
+    .demo-page .shiftreadiness-actions .btn {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .demo-page .shiftreadiness-actions .btn {
+        white-space: normal;
+        text-align: center;
     }
 }
 

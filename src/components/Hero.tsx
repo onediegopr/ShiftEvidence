@@ -1919,7 +1919,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   { x: -118, y: -84, text: "COMPATIBLE", c: "#22d3ee", w: 82 },
                   { x: 36, y: -84, text: "VERIFIED", c: "#10b981", w: 68 },
                   { x: -118, y: 82, text: "LOW RISK", c: "#10b981", w: 70 },
-                  { x: 24, y: 82, text: "SAFE CUTOVER", c: "#a855f7", w: 92 },
+                  { x: 24, y: 82, text: "READY PLAN", c: "#a855f7", w: 82 },
                 ].map((tag, idx) => (
                   <g key={`engine-status-${tag.text}`} transform={`translate(${tag.x}, ${tag.y})`}>
                     <rect

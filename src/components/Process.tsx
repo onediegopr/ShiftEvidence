@@ -52,13 +52,13 @@ export default function Process() {
     {
       num: "04",
       icon: Rocket,
-      title: "Live cutover",
-      duration: "Day 7 (window)",
+      title: "Readiness handoff",
+      duration: "Day 7",
       color: "#ea580c",
       description:
-        "Plan workload-specific cutover windows, rollback conditions and owner approvals based on evidence quality and risk.",
+        "Translate the evidence into workload-specific migration windows, rollback criteria and owner approvals for the delivery team.",
       action:
-        "Avoid unsupported downtime promises; use evidence to set realistic migration windows.",
+        "Avoid unsupported downtime promises; use evidence to set realistic implementation constraints.",
     },
     {
       num: "05",
@@ -79,9 +79,9 @@ export default function Process() {
       <div className="container">
         <div className="text-center mb-8">
           <div className="badge">Execution Pipeline</div>
-          <h2 className="mb-4">From Readiness to Controlled Execution</h2>
+          <h2 className="mb-4">From Readiness to Controlled Planning</h2>
           <p className="mx-auto" style={{ maxWidth: "750px" }}>
-            Once your VMware environment has been assessed, Shift Evidence turns the findings into a staged execution pipeline: validate assumptions, design the Proxmox target, plan the migration waves, verify backups, execute controlled cutovers, and document every decision.
+            Once your VMware environment has been assessed, Shift Evidence turns the findings into a staged planning pipeline: validate assumptions, design the Proxmox target, plan the migration waves, verify backups, define implementation constraints, and document every decision.
           </p>
         </div>
 
@@ -174,7 +174,7 @@ export default function Process() {
             }}
             className="btn btn-secondary"
           >
-            View Execution Methodology
+            View Readiness Methodology
           </button>
         </div>
       </div>

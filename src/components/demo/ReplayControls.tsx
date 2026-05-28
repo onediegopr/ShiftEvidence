@@ -61,7 +61,7 @@ export default function ReplayControls({
         aria-label={soundEnabled ? "Disable visual sound mode" : "Enable visual sound mode"}
       >
         {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
-        <span>{soundEnabled ? "Sound visual on" : "Sound off"}</span>
+        <span>{soundEnabled ? "Visual cue only" : "Audio off"}</span>
       </button>
     </div>
   );
