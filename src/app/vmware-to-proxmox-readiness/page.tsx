@@ -13,6 +13,8 @@ import {
   Layers3,
   Waves,
 } from "lucide-react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export const metadata: Metadata = {
   title: "VMware to Proxmox Migration Readiness Assessment | Shift Evidence",
@@ -143,6 +145,8 @@ const faqs = [
 
 export default function VMwareToProxmoxReadinessPage() {
   return (
+    <>
+    <Navbar />
     <main className="shiftreadiness-page demo-page sales-offer-page">
       <section className="section demo-hero sales-hero">
         <div className="bg-mesh" />
@@ -433,5 +437,7 @@ export default function VMwareToProxmoxReadinessPage() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }

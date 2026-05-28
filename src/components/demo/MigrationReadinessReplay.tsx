@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Home, Play, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, Home, Play, ShieldCheck, Download, AlertTriangle } from "lucide-react";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import ReplayControls from "./ReplayControls";
@@ -15,6 +15,17 @@ import {
   type ReplayStepId,
   whatYouGet,
 } from "./replayData";
+
+const featureDescriptions: Record<string, string> = {
+  "Executive Decision Report": "A high-level business summary presenting the financial impact, readiness posture, and total ROI timeline to secure executive buy-in.",
+  "Technical Assessment": "Deep-dive analysis of hardware compatibility, VM flags, and configurations detailing the direct technical path to Proxmox.",
+  "VM Risk Matrix": "VM-by-VM classification mapping workloads to complexity bands so you immediately identify low-hanging fruit vs critical blockers.",
+  "Proxmox Sizing": "Conservative target sizing (RAM, CPU, storage) mapped to allocation thresholds, preventing over-provisioning and reducing hardware costs.",
+  "Migration Wave Plan": "A structured, phased schedule grouping workloads by risk profile and dependencies to ensure controlled, low-impact rollouts.",
+  "Evidence Missing Checklist": "A prioritized gaps list highlighting what information is missing (backups, performance metrics) and how it affects risk levels.",
+  "AI Advisory Notes": "Context-aware architectural warnings and recommendations that highlight anomalous configurations before they trigger migration failures.",
+  "PDF Report": "A polished, self-contained 12-page deliverable ready to be shared with stakeholders, partners, or internal compliance teams.",
+};
 
 const AUTO_ADVANCE_MS = 4200;
 type AudioCue = "tap" | "step" | "warning" | "complete";
@@ -129,11 +140,11 @@ export default function MigrationReadinessReplay() {
         <div className="bg-mesh" />
         <div className="container demo-hero-grid">
           <div className="demo-hero-copy">
-            <div className="badge badge-cyan">Simulated readiness walkthrough</div>
-            <h1>Migration Readiness Replay</h1>
-            <p className="demo-hero-subtitle">See how a VMware export becomes a Proxmox migration readiness report.</p>
+            <div className="badge badge-cyan">Cognitive TAM Methodology</div>
+            <h1>Stop Guessing. Map Your VMware Exit with Precision.</h1>
+            <p className="demo-hero-subtitle">Transition from VMware to Proxmox with a productized risk-discovery engine.</p>
             <p className="demo-hero-body">
-              This simulated replay shows how ShiftReadiness analyzes VMware evidence, detects migration risks, identifies missing information, estimates Proxmox sizing and generates an executive-ready report.
+              ShiftReadiness applies our cognitive Target Architecture Mapping (TAM) methodology. We analyze your VMware export data to expose hidden configuration anomalies, flag hypervisor mismatches, and build a phased, risk-adjusted migration plan before you touch production.
             </p>
             <div className="demo-badge-row" aria-label="Demo safety notes">
               {demoBadges.map((badge) => (
@@ -149,7 +160,7 @@ export default function MigrationReadinessReplay() {
                 Skip to final report
               </a>
               <Link href="/sign-up" className="btn btn-secondary" data-event="demo_cta_clicked">
-                Start readiness assessment
+                Start free check
                 <ArrowRight size={18} />
               </Link>
             </div>
@@ -157,16 +168,23 @@ export default function MigrationReadinessReplay() {
 
           <div className="glass-card demo-hero-panel">
             <div className="demo-terminal-header">
-              <span className="sr-mockup-dot red" />
-              <span className="sr-mockup-dot yellow" />
+              <span className={`sr-mockup-dot ${isPlaying ? "green animate-pulse" : "yellow"}`} />
               <span className="sr-mockup-dot green" />
-              <strong>Replay dataset</strong>
+              <span className="sr-mockup-dot red" />
+              <strong>{isPlaying ? "ANALYSIS ACTIVE: MIGRATION TELEMETRY" : "TELEMETRY ENGINE: IDLE"}</strong>
             </div>
             <div className="demo-terminal-body">
-              <span>client: {demoDataset.client}</span>
-              <span>source: {demoDataset.fileName}</span>
-              <span>scope: {demoDataset.vmCount} VMs / {demoDataset.hosts} ESXi hosts / {demoDataset.clusters} clusters</span>
-              <span>mode: synthetic demo, no backend, no production access</span>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", paddingBottom: "0.5rem", marginBottom: "0.5rem" }}>
+                <span>Status: <strong style={{ color: isPlaying ? "#22d3ee" : "#e2e8f0" }}>{isPlaying ? "STREAMING ENGINE" : "STANDBY"}</strong></span>
+                <span className="pulse-light" style={{ width: "10px", height: "10px", borderRadius: "50%", background: isPlaying ? "#22d3ee" : "#eab308", display: "inline-block" }} />
+              </div>
+              <span>Target cluster: <strong style={{ color: "white" }}>{demoDataset.client}</strong></span>
+              <span>Source dataset: <strong style={{ color: "white" }}>{demoDataset.fileName}</strong></span>
+              <span>Inventory scope: <strong style={{ color: "white" }}>{demoDataset.vmCount} VMs / {demoDataset.hosts} Hosts / {demoDataset.clusters} Clusters</strong></span>
+              <span>Active scene: <strong style={{ color: "#8b5cf6" }}>{activeStep.title} ({activeStep.eyebrow})</strong></span>
+              <span style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.5rem" }}>
+                Methodology: target architecture mapping, agentless, metadata-only
+              </span>
             </div>
           </div>
         </div>
@@ -259,21 +277,82 @@ export default function MigrationReadinessReplay() {
             <h2>From spreadsheet chaos to migration clarity.</h2>
           </div>
           <div className="demo-before-after-grid">
-            <article className="glass-card demo-before-card">
-              <span>Before</span>
-              <h3>Raw RVTools spreadsheet</h3>
-              <p>Thousands of rows, hidden risk patterns, unclear migration order and incomplete context.</p>
+            <article className="demo-mock-spreadsheet">
+              <div className="demo-spreadsheet-header">
+                <span>VM Name</span>
+                <span>vCPU</span>
+                <span>RAM (GB)</span>
+                <span>Alerts/Errors</span>
+              </div>
+              <div className="demo-spreadsheet-row warning-row">
+                <span>sql-prod-01</span>
+                <span>16</span>
+                <span>64</span>
+                <span className="demo-spreadsheet-badge">CRITICAL SNAPSHOTS</span>
+              </div>
+              <div className="demo-spreadsheet-row">
+                <span>web-portal-01</span>
+                <span>4</span>
+                <span>16</span>
+                <span>None</span>
+              </div>
+              <div className="demo-spreadsheet-row warning-row">
+                <span>dc-main-01</span>
+                <span>8</span>
+                <span>32</span>
+                <span className="demo-spreadsheet-badge">NO BACKUP FLAG</span>
+              </div>
+              <div className="demo-spreadsheet-row blur">
+                <span>app-dev-34</span>
+                <span>2</span>
+                <span>8</span>
+                <span>-</span>
+              </div>
+              <div className="demo-spreadsheet-row blur">
+                <span>test-vm-12</span>
+                <span>1</span>
+                <span>4</span>
+                <span>-</span>
+              </div>
+
+              <div className="demo-spreadsheet-alert-box">
+                <AlertTriangle size={20} />
+                <div>
+                  <p><strong>Warning:</strong> 7 hidden active snapshots and 12 outdated integration tools found in unmapped columns. Manual calculation required to find actual storage impact.</p>
+                </div>
+              </div>
             </article>
-            <article className="glass-card demo-after-card">
-              <span>After</span>
-              <h3>Migration decision pack</h3>
-              <div className="demo-after-metrics">
-                <strong>{demoDataset.vmCount} VMs analyzed</strong>
-                <strong>21 migration risks identified</strong>
-                <strong>{demoDataset.waveOneCandidates} wave-1 candidates</strong>
-                <strong>{demoDataset.highRiskWorkloads} high-risk workloads</strong>
-                <strong>{demoDataset.missingEvidenceItems} missing evidence items</strong>
-                <strong>Migration plan generated</strong>
+
+            <article className="demo-mock-dashboard">
+              <div className="demo-dash-score-row">
+                <div className="demo-dash-score-item">
+                  <span>Readiness Score</span>
+                  <strong>{demoDataset.readinessScore}/100</strong>
+                </div>
+                <div className="demo-dash-score-item">
+                  <span>Confidence Score</span>
+                  <strong>{demoDataset.evidenceConfidence}/100</strong>
+                </div>
+              </div>
+              <div className="demo-dash-metrics-grid">
+                <div className="demo-dash-metric-card">
+                  <span>VMs Analyzed</span>
+                  <strong>{demoDataset.vmCount} VMs</strong>
+                </div>
+                <div className="demo-dash-metric-card">
+                  <span>Migration Risks</span>
+                  <strong>21 Items</strong>
+                </div>
+              </div>
+              <div className="demo-dash-wave-timeline">
+                <div className="demo-dash-wave-item">
+                  <span>Wave 1 (Low Risk)</span>
+                  <strong>{demoDataset.waveOneCandidates} VMs</strong>
+                </div>
+                <div className="demo-dash-wave-item" style={{ borderColor: 'rgba(139, 92, 246, 0.3)', background: 'rgba(139, 92, 246, 0.08)' }}>
+                  <span>Wave 2 (Prod)</span>
+                  <strong>44 VMs</strong>
+                </div>
               </div>
             </article>
           </div>
@@ -286,13 +365,16 @@ export default function MigrationReadinessReplay() {
             <div className="badge badge-cyan">What you get</div>
             <h2>Professional outputs before you commit to a migration path.</h2>
           </div>
-          <div className="demo-output-grid">
+          <div className="demo-feature-card-grid">
             {whatYouGet.map((item) => {
               const Icon = item.icon;
               return (
-                <article key={item.title} className="glass-card demo-output-card">
-                  <Icon size={22} />
+                <article key={item.title} className="demo-premium-feature-card">
+                  <div className="demo-feature-icon-wrapper">
+                    <Icon size={22} />
+                  </div>
                   <h3>{item.title}</h3>
+                  <p>{featureDescriptions[item.title] || "Detailed assessment output report."}</p>
                 </article>
               );
             })}
@@ -301,84 +383,96 @@ export default function MigrationReadinessReplay() {
       </section>
 
       <section className="section shiftreadiness-section shiftreadiness-section-alt">
-        <div className="container">
-          <div className="glass-card demo-does-not-card">
-            <div>
-              <div className="badge">What this demo does not do</div>
+        <div className="container demo-integrity-container">
+          <div className="demo-integrity-card">
+            <div className="demo-integrity-header">
+              <div className="badge">No-Nonsense Integrity Commitment</div>
               <h2>Clear boundaries. No migration theater.</h2>
-              <p>This replay is a product walkthrough, not a migration execution engine.</p>
-            </div>
-            <div className="demo-does-not-list">
-              {demoDoesNotDo.map((item) => (
-                <span key={item}>
-                  <CheckCircle2 size={15} />
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section shiftreadiness-section">
-        <div className="container">
-          <div className="glass-card sample-report-inline-cta">
-            <div>
-              <div className="badge badge-cyan">Public sample report</div>
-              <h2>Want to see the final deliverable?</h2>
-              <p>
-                The replay shows the process. The sample report shows the output: executive summary, readiness and
-                confidence scores, evidence gaps, VM risk matrix, Proxmox sizing and migration waves.
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.5rem' }}>
+                We focus strictly on the pre-flight planning and risk validation phase. ShiftReadiness is designed around clear operational guardrails:
               </p>
             </div>
-            <Link href="/sample-report" className="btn btn-primary btn-glow" data-event="demo_cta_clicked">
-              View and download sample report
-              <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="section shiftreadiness-section shiftreadiness-section-alt">
-        <div className="container">
-          <div className="glass-card sample-report-inline-cta">
-            <div>
-              <div className="badge badge-cyan">Readiness offer</div>
-              <h2>Want the full assessment offer?</h2>
-              <p>
-                The replay shows the process. The offer page explains what the readiness assessment includes, what
-                evidence is required, what the report delivers and what the platform does not promise.
-              </p>
+            <div className="demo-integrity-grid">
+              <div className="demo-integrity-item">
+                <CheckCircle2 size={16} />
+                <span><strong>No Production Writes:</strong> We analyze exported metadata offline. We never request write permissions, credentials, or agent installs on production systems.</span>
+              </div>
+              <div className="demo-integrity-item">
+                <CheckCircle2 size={16} />
+                <span><strong>No Automated Migration:</strong> We do not move VMs or orchestrate conversion scripts. Execution belongs to specialized automation tools or experienced engineers.</span>
+              </div>
+              <div className="demo-integrity-item">
+                <CheckCircle2 size={16} />
+                <span><strong>Zero Downtime Excluded:</strong> We do not promise zero downtime. True downtime minimization requires a dedicated pilot, storage synchronization, and rollback drills.</span>
+              </div>
+              <div className="demo-integrity-item">
+                <CheckCircle2 size={16} />
+                <span><strong>No Guesswork or Inference:</strong> If evidence (like backup logs or disk performance metrics) is not uploaded, we list it as missing, lowering your confidence score rather than guessing.</span>
+              </div>
             </div>
-            <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary" data-event="demo_cta_clicked">
-              View the readiness assessment offer
-              <ArrowRight size={18} />
-            </Link>
           </div>
         </div>
       </section>
 
       <section className="section shiftreadiness-section demo-final-cta">
         <div className="container">
-          <div className="glass-card sr-final-card">
-            <div>
-              <div className="badge badge-cyan">Ready for your own evidence?</div>
-              <h2>Ready to check your own VMware environment?</h2>
-              <p>Start with a readiness assessment, or book a review if you want help interpreting the output.</p>
+          <div className="shiftreadiness-section-heading">
+            <div className="badge badge-cyan">Action Center</div>
+            <h2>Accelerate Your VMware Exit Today</h2>
+            <p>Select your path: start your assessment immediately or review a detailed sample report.</p>
+          </div>
+          
+          <div className="demo-conversion-hub">
+            <div className="glass-card demo-conversion-main-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div className="badge badge-cyan">Ready for your environment?</div>
+                <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'white', margin: '0.5rem 0' }}>Upload Your VMware Evidence</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                  Get a structured pre-flight check for your VMware cluster. Start with your RVTools inventory export to discover licensing exposure, sizing issues, and migration readiness scores in minutes.
+                </p>
+              </div>
+              <div className="demo-conversion-actions-row">
+                <Link href="/sign-up" className="btn btn-primary btn-glow" style={{ width: '100%', justifyContent: 'center' }} data-event="demo_cta_clicked">
+                  Start Free Readiness Assessment
+                  <ArrowRight size={18} />
+                </Link>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <Link href="/contact" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                    Book Technical Review
+                    <ShieldCheck size={18} />
+                  </Link>
+                  <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                    View Assessment Offer
+                    <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div className="sr-final-actions">
-              <Link href="/sign-up" className="btn btn-primary btn-glow" data-event="demo_cta_clicked">
-                Start readiness assessment
-                <ArrowRight size={18} />
-              </Link>
-              <Link href="/contact" className="btn btn-secondary" data-event="demo_cta_clicked">
-                Book readiness review
-                <ShieldCheck size={17} />
-              </Link>
-              <Link href="/" className="btn btn-secondary">
-                Back to home
-                <Home size={17} />
-              </Link>
+
+            <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div className="badge">Output Sample</div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 600, color: 'white', margin: '0.5rem 0' }}>See the final deliverable</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+                  Download a complete, executive-ready PDF report containing sizing benchmarks, migration wave definitions, and full VM risk matrixes.
+                </p>
+              </div>
+              
+              <div className="demo-download-row">
+                <div className="demo-download-info">
+                  <strong>Northbridge Industrial Sample</strong>
+                  <span>PDF Report • 2.4 MB</span>
+                </div>
+                <a 
+                  href="/sample-reports/proxmox-migration-readiness-sample-report.pdf" 
+                  className="btn btn-primary btn-sm btn-glow" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  style={{ padding: '0.5rem 1rem' }}
+                >
+                  <Download size={16} />
+                </a>
+              </div>
             </div>
           </div>
         </div>

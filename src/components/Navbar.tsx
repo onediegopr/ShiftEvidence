@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -20,7 +21,7 @@ export default function Navbar() {
   return (
     <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
       <div className="container navbar-container">
-        <a href="#" className="logo-container">
+        <a href="/" className="logo-container">
           <svg
             width="40"
             height="40"
@@ -73,6 +74,12 @@ export default function Navbar() {
             </li>
           </ul>
         </nav>
+
+        <div className="navbar-actions">
+          <a href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
+            Start Free Check
+          </a>
+        </div>
       </div>
     </header>
   );

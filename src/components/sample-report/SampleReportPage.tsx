@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   Waves,
 } from "lucide-react";
+import Navbar from "../Navbar";
+import Footer from "../Footer";
 
 const reportStats = [
   ["126", "VMs analyzed"],
@@ -104,6 +106,8 @@ const limitations = [
 
 export default function SampleReportPage() {
   return (
+    <>
+    <Navbar />
     <main className="shiftreadiness-page demo-page sample-report-page">
       <section className="section demo-hero sample-report-hero">
         <div className="bg-mesh" />
@@ -386,6 +390,8 @@ export default function SampleReportPage() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }
 
