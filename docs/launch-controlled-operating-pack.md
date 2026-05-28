@@ -402,3 +402,22 @@ Rules:
 - Do not use admin usage metrics to trigger automatic billing yet.
 - Do not edit provider secrets from the admin console.
 - Full public launch remains NO.
+
+## ADMIN-2B Production Migration Smoke
+
+Date: 2026-05-28.
+
+Status: PARTIAL.
+
+- `npm run prisma:deploy` could not apply the migration from the Codex runtime because `DATABASE_URL` was not available.
+- No secrets were printed.
+- No Prisma reset was executed.
+- Public unauthenticated production smoke passed.
+- Authenticated admin usage smoke remains pending until the migration is applied from the secure production runtime.
+
+Required closeout:
+
+1. Run `npm run prisma:deploy` where production `DATABASE_URL` is configured securely.
+2. Verify `/dashboard/admin` as admin.
+3. Generate a Gemini preview/PDF event.
+4. Confirm `IA y Consumo` shows persisted usage without secrets.

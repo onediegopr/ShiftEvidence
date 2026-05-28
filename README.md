@@ -41,6 +41,8 @@ ADMIN-2A improves the Spanish admin `IA y Consumo` panel without DB schema or mi
 
 ADMIN-2B adds persistent AI usage metrics through `AiUsageEvent`, estimated tokens/costs, admin `GET /api/admin/ai/usage`, usage by user/assessment and AI error visibility in the Spanish admin console. It does not store prompts, raw responses, raw files, secrets or private storage paths.
 
+ADMIN-2B-PROD-MIGRATION-SMOKE remains partial from Codex: production public/private no-session smoke passed, but `npm run prisma:deploy` could not run because the Codex runtime did not have `DATABASE_URL` available. Apply the migration from the secure production runtime before treating persistent AI usage as production-ready.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -148,6 +150,7 @@ Optional for future work:
 - `docs/hito-admin-1-spanish-admin-console-foundation.md`
 - `docs/hito-admin-2a-ai-consumption-panel-no-db.md`
 - `docs/hito-admin-2b-persistent-ai-usage-cost-audit.md`
+- `docs/hito-admin-2b-prod-migration-smoke.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

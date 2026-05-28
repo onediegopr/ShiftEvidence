@@ -379,3 +379,26 @@ Remaining blockers:
 - Billing automation and budgets remain future scope.
 - Advanced audit/actions remain ADMIN-3 scope.
 - Full public launch remains blocked by broader operational evidence, support/SLA and cleanup requirements.
+
+## ADMIN-2B Production Migration Smoke Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Result:
+
+- Production route smoke without session passed.
+- Production migration was not applied from Codex because `DATABASE_URL` was unavailable in the runtime.
+- No secrets were printed.
+- No destructive command was executed.
+
+Pending before production-ready persistent AI usage:
+
+- Apply `prisma migrate deploy` from the secure production runtime.
+- Validate admin `IA y Consumo` authenticated.
+- Confirm at least one persisted `AiUsageEvent` after preview/PDF generation.

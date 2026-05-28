@@ -1089,3 +1089,25 @@ Safety boundaries:
 - API keys, env vars, cookies, tokens and private storage paths are not displayed.
 - OpenAI remains inactive.
 - Full public launch remains NO.
+
+## Addendum - ADMIN-2B Production Migration Smoke
+
+Date: 2026-05-28.
+
+Status: PARCIAL.
+
+Codex validated:
+
+- local guardrails/typecheck/lint/build;
+- Prisma schema with temporary local dummy `DATABASE_URL`;
+- public production routes without session;
+- private/admin routes redirect to sign-in without session.
+
+Codex could not apply production migration because `DATABASE_URL` was not available in the runtime used for `npm run prisma:deploy`.
+
+Operational instruction:
+
+- Run `npm run prisma:deploy` only in the secure runtime where production `DATABASE_URL` is already configured.
+- Do not print `DATABASE_URL`.
+- Do not run Prisma reset.
+- After migration, validate admin `IA y Consumo` and generate one Gemini preview/PDF event.

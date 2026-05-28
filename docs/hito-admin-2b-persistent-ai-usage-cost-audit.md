@@ -190,3 +190,22 @@ Si falla la escritura de `AiUsageEvent`, preview/PDF no se rompen.
 - ADMIN-2B complete: SI si migracion segura, typecheck/lint/build/guardrails y push pasan.
 - Ready for ADMIN-3: SI.
 - Ready for full public launch: NO.
+
+## Follow-up ADMIN-2B-PROD-MIGRATION-SMOKE
+
+Fecha: 2026-05-28.
+
+Resultado: PARCIAL.
+
+El comando `npm run prisma:deploy` fue ejecutado en el runtime Codex, pero fallo de forma segura porque `DATABASE_URL` no esta disponible en ese shell. No se imprimieron secrets y no se aplico migracion productiva desde este entorno.
+
+Produccion sin sesion siguio sana:
+
+- publicas 200.
+- privadas/admin 307 a `/sign-in`.
+
+Pendiente:
+
+- ejecutar `npm run prisma:deploy` en el entorno con `DATABASE_URL` productiva segura;
+- validar `/dashboard/admin` autenticado;
+- generar preview/PDF con Gemini para confirmar evento `AiUsageEvent` persistido.
