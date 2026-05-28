@@ -167,10 +167,22 @@ function footer() {
 }
 
 function drawShiftEvidenceMark(x, y, size) {
-  doc.roundedRect(x, y, size, size, 5).fillAndStroke("#0b2238", colors.cyan);
-  doc.circle(x + size * 0.35, y + size * 0.35, size * 0.13).fill(colors.emerald);
-  doc.circle(x + size * 0.65, y + size * 0.58, size * 0.13).fill(colors.cyan);
-  doc.moveTo(x + size * 0.38, y + size * 0.4).lineTo(x + size * 0.62, y + size * 0.55).strokeColor(colors.white).lineWidth(1).stroke();
+  const scale = size / 32;
+  const strokeWidth = Math.max(1, 2.5 * scale);
+
+  doc.circle(x + 12 * scale, y + 16 * scale, 8 * scale).lineWidth(strokeWidth).strokeColor("#06b6d4").stroke();
+  doc
+    .moveTo(x + 12 * scale, y + 16 * scale)
+    .lineTo(x + 24 * scale, y + 16 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 12 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 20 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .lineJoin("round")
+    .strokeColor("#8b5cf6")
+    .stroke();
 }
 
 function drawShiftEvidenceWordmark(x, y) {
