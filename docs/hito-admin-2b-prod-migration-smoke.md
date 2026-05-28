@@ -136,3 +136,22 @@ Despues completar QA autenticado:
 - ADMIN-2B production ready: PARCIAL hasta aplicar migracion real.
 - Ready for ADMIN-3: NO para dependencias persistentes productivas hasta cerrar este smoke.
 - Ready for full public launch: NO.
+
+## Follow-up ADMIN-2B-PROD-MIGRATION-USER-ATTESTED
+
+Fecha: 2026-05-28.
+
+Resultado: BLOQUEADO.
+
+Se repitio el preflight en `main` con `HEAD = origin/main = 66ecca0`. El runtime seguia sin `DATABASE_URL`, sin `NODE_ENV=production` y sin marcador de `NEXT_PUBLIC_APP_URL` productiva.
+
+Por regla critica, no se ejecuto migracion ni se uso `.env.local` para inferir DB productiva.
+
+Produccion sin sesion siguio sana:
+
+- `/`: 200.
+- `/shiftreadiness`: 200.
+- `/sign-in`: 200.
+- `/sign-up`: 200.
+- `/dashboard`: 307 -> `/sign-in`.
+- `/dashboard/admin`: 307 -> `/sign-in`.

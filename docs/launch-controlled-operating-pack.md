@@ -421,3 +421,17 @@ Required closeout:
 2. Verify `/dashboard/admin` as admin.
 3. Generate a Gemini preview/PDF event.
 4. Confirm `IA y Consumo` shows persisted usage without secrets.
+
+## ADMIN-2B Production Migration User-Attested Attempt
+
+Date: 2026-05-28.
+
+Status: BLOCKED.
+
+- The runtime still did not expose production `DATABASE_URL`.
+- `NODE_ENV` and production app URL markers were not available in shell env.
+- Migration was not executed.
+- No secrets were printed.
+- Public/private no-session production smoke remained healthy.
+
+Do not mark persistent AI usage production-ready until `prisma migrate deploy` runs in the secure production runtime and an authenticated admin confirms `IA y Consumo` plus at least one persisted AI event.

@@ -1111,3 +1111,27 @@ Operational instruction:
 - Do not print `DATABASE_URL`.
 - Do not run Prisma reset.
 - After migration, validate admin `IA y Consumo` and generate one Gemini preview/PDF event.
+
+## Addendum - ADMIN-2B Production Migration User-Attested Attempt
+
+Date: 2026-05-28.
+
+Status: BLOQUEADO.
+
+Codex did not apply the migration because the active runtime still did not expose production `DATABASE_URL` or production environment markers.
+
+Validated:
+
+- Git synced.
+- Guardrails/typecheck/lint/build.
+- Prisma schema with temporary dummy `DATABASE_URL`.
+- Public production routes.
+- Private/admin no-session redirect behavior.
+
+Pending:
+
+- run `npm run prisma:deploy` in the secure production runtime;
+- validate `/dashboard/admin` as admin;
+- validate `IA y Consumo`;
+- generate or confirm one persisted `AiUsageEvent`;
+- confirm no secrets/API keys are visible.

@@ -43,6 +43,8 @@ ADMIN-2B adds persistent AI usage metrics through `AiUsageEvent`, estimated toke
 
 ADMIN-2B-PROD-MIGRATION-SMOKE remains partial from Codex: production public/private no-session smoke passed, but `npm run prisma:deploy` could not run because the Codex runtime did not have `DATABASE_URL` available. Apply the migration from the secure production runtime before treating persistent AI usage as production-ready.
 
+ADMIN-2B-PROD-MIGRATION-USER-ATTESTED remained blocked for the same access reason: the active runtime did not expose production `DATABASE_URL`, `NODE_ENV` or production app URL markers. No migration was run, no secrets were printed, and production no-session smoke remained healthy.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -151,6 +153,7 @@ Optional for future work:
 - `docs/hito-admin-2a-ai-consumption-panel-no-db.md`
 - `docs/hito-admin-2b-persistent-ai-usage-cost-audit.md`
 - `docs/hito-admin-2b-prod-migration-smoke.md`
+- `docs/hito-admin-2b-prod-migration-user-attested.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

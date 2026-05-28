@@ -402,3 +402,22 @@ Pending before production-ready persistent AI usage:
 - Apply `prisma migrate deploy` from the secure production runtime.
 - Validate admin `IA y Consumo` authenticated.
 - Confirm at least one persisted `AiUsageEvent` after preview/PDF generation.
+
+## ADMIN-2B Production Migration User-Attested Attempt
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Result:
+
+- Migration remained blocked because production `DATABASE_URL` was unavailable in the runtime.
+- No migration command was run against an uncertain DB.
+- No secrets were printed.
+- Production no-session smoke remained healthy.
+
+Persistent AI usage remains not production-ready until the migration is applied from the secure production runtime and admin user-attested QA confirms `IA y Consumo`.
