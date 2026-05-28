@@ -8,14 +8,10 @@ import {
   FileSpreadsheet,
   History,
   Briefcase,
-  HardDrive,
   Boxes,
   DollarSign,
   Cpu,
 } from "lucide-react";
-import { assetSrc } from "../lib/assetSrc";
-import vmwareLogo from "../../images/vmware.svg";
-import proxmoxLogo from "../../images/proxmox.svg";
 
 const copy = {
   headline: "Architected Across 9 Layers of Value",
@@ -63,9 +59,6 @@ const copy = {
 };
 
 export default function Features() {
-  const vmwareLogoSrc = assetSrc(vmwareLogo);
-  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
-
   return (
     <>
       <section id="features" className="section" style={{ position: "relative" }}>
