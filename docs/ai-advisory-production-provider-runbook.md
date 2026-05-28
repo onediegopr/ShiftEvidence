@@ -263,3 +263,11 @@ Closure rule:
 - `providerStatus=success` is required before calling the Gemini portion complete.
 - If local `GEMINI_API_KEY` is missing, the script still generates a renderer artifact but the hito remains partial.
 - Do not commit PDFs or generated QA artifacts unless explicitly approved.
+
+Strict Gemini-success mode:
+
+```bash
+npm run ai:report-synthetic:require-gemini
+```
+
+This writes to `qa-artifacts/ai-report-1b/` and exits non-zero unless `providerStatus=success`.

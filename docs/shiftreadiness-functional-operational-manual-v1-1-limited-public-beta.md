@@ -39,6 +39,13 @@ Se agrego un generador local de reporte sintetico:
 
 El primer run local genero un PDF de 13 paginas, pero Gemini quedo `providerStatus=unavailable` porque la credencial Gemini no esta configurada en el entorno local. Por lo tanto, AI-REPORT-1 queda parcial hasta regenerar con `GEMINI_API_KEY` disponible y `providerStatus=success`.
 
+AI-REPORT-1B agrego modo estricto:
+
+- comando: `npm run ai:report-synthetic:require-gemini`;
+- output: `qa-artifacts/ai-report-1b/`;
+- cierre requerido: `providerStatus=success`;
+- resultado local actual: `providerStatus=unavailable`, porque `GEMINI_API_KEY` sigue ausente localmente.
+
 ## Indice
 
 1. Resumen ejecutivo

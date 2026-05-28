@@ -136,6 +136,7 @@ Optional for future work:
 ## Documentation
 - `docs/hito-ai-ops-1-gemini-runtime-monitoring-fallback.md`
 - `docs/hito-ai-report-1-full-synthetic-gemini-readiness-report.md`
+- `docs/hito-ai-report-1b-full-synthetic-gemini-success-report.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

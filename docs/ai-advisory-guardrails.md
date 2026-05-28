@@ -183,3 +183,11 @@ Rules:
 - Gemini success must be represented only by `providerStatus=success`.
 - if `GEMINI_API_KEY` is missing, the result must be marked partial/unavailable.
 - no real customer files, raw uploads, API keys or storage paths may be printed or committed.
+
+Strict mode:
+
+```bash
+npm run ai:report-synthetic:require-gemini
+```
+
+This mode must fail unless Gemini returns `providerStatus=success`.

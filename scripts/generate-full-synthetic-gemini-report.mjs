@@ -7,6 +7,11 @@ import { renderPdfReportBuffer } from "../src/server/reports/reportPdfRenderer.t
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 
+const args = new Set(process.argv.slice(2));
+const requireRealGemini = args.has("--require-real-gemini");
+const outputDirArg = process.argv.find((arg) => arg.startsWith("--output-dir="));
+const artifactRelativeDir = outputDirArg?.split("=").slice(1).join("=") || "qa-artifacts/ai-report-1";
+
 process.env.AI_ADVISORY_ENABLED ??= "true";
 process.env.AI_ADVISORY_PROVIDER ??= "gemini";
 process.env.AI_ADVISORY_MODEL ??= "gemini-1.5-flash";
@@ -14,11 +19,16 @@ process.env.AI_ADVISORY_TIMEOUT_MS ??= "15000";
 process.env.AI_ADVISORY_MAX_INPUT_CHARS ??= "24000";
 process.env.AI_ADVISORY_MAX_OUTPUT_CHARS ??= "6000";
 
-const artifactDir = path.join(process.cwd(), "qa-artifacts", "ai-report-1");
+const artifactDir = path.join(process.cwd(), artifactRelativeDir);
 fs.mkdirSync(artifactDir, { recursive: true });
 
 const generatedAt = new Date();
-const pdfPath = path.join(artifactDir, "acme-full-synthetic-gemini-readiness-report.pdf");
+const pdfPath = path.join(
+  artifactDir,
+  requireRealGemini
+    ? "acme-full-synthetic-gemini-success-readiness-report.pdf"
+    : "acme-full-synthetic-gemini-readiness-report.pdf",
+);
 const summaryPath = path.join(artifactDir, "acme-synthetic-assessment-evidence-summary.json");
 const readmePath = path.join(artifactDir, "README.md");
 
@@ -327,6 +337,12 @@ const payload = {
 
 const aiAdvisory = await generateSyntheticGeminiAdvisory(payload);
 
+if (requireRealGemini && aiAdvisory.providerStatus !== "success") {
+  console.error(`AI-REPORT-1B requires providerStatus=success, received providerStatus=${aiAdvisory.providerStatus}.`);
+  console.error("No secret values were printed. Configure GEMINI_API_KEY in a secure runtime and retry.");
+  process.exitCode = 2;
+}
+
 const reportPreview = {
   assessmentId: "demo-acme-ai-report-1",
   assessmentTitle: "DEMO - Full Synthetic Gemini Report - ACME Manufacturing",
@@ -450,7 +466,7 @@ const pdfBuffer = await renderPdfReportBuffer({
   workspaceName: reportPreview.workspaceName,
   reportTypeLabel: "Readiness Report",
   generatedAt,
-  generatedByLabel: "AI-REPORT-1 synthetic generator",
+  generatedByLabel: requireRealGemini ? "AI-REPORT-1B synthetic Gemini success generator" : "AI-REPORT-1 synthetic generator",
   reportPreview,
 });
 
@@ -459,7 +475,7 @@ fs.writeFileSync(pdfPath, pdfBuffer);
 const pageCount = (pdfBuffer.toString("latin1").match(/\/Type\s*\/Page\b/g) ?? []).length;
 const artifactSummary = {
   generatedAt: generatedAt.toISOString(),
-  environment: "local synthetic artifact",
+  environment: requireRealGemini ? "local synthetic artifact requiring real Gemini" : "local synthetic artifact",
   assessmentId: reportPreview.assessmentId,
   provider: aiAdvisory.provider,
   model: aiAdvisory.model,
@@ -494,7 +510,7 @@ const artifactSummary = {
 fs.writeFileSync(summaryPath, `${JSON.stringify(artifactSummary, null, 2)}\n`);
 fs.writeFileSync(
   readmePath,
-  `# AI-REPORT-1 Synthetic Gemini Readiness Report\n\n` +
+  `${requireRealGemini ? "# AI-REPORT-1B Synthetic Gemini Success Readiness Report" : "# AI-REPORT-1 Synthetic Gemini Readiness Report"}\n\n` +
     `Generated at: ${generatedAt.toISOString()}\n\n` +
     `Dataset: 100% synthetic/demo ACME Manufacturing Group.\n\n` +
     `Provider: ${aiAdvisory.provider}\n\n` +
@@ -504,12 +520,17 @@ fs.writeFileSync(
     `PDF size bytes: ${pdfBuffer.byteLength}\n\n` +
     `Page count: ${pageCount}\n\n` +
     `No customer data, raw uploaded files, secrets, cookies, tokens or private storage paths were used.\n\n` +
-    `If providerStatus is not success, Gemini real was not available in this local run and the hito must remain partial.\n`,
+    `Require real Gemini: ${requireRealGemini ? "YES" : "NO"}\n\n` +
+    `If providerStatus is not success, Gemini real was not available in this run and the hito must remain partial.\n`,
 );
 
-console.log(`AI-REPORT-1 synthetic PDF generated: ${pdfPath}`);
+console.log(`${requireRealGemini ? "AI-REPORT-1B" : "AI-REPORT-1"} synthetic PDF generated: ${pdfPath}`);
 console.log(`providerStatus=${aiAdvisory.providerStatus}`);
 console.log(`provider=${aiAdvisory.provider}`);
 console.log(`model=${aiAdvisory.model ?? "not configured"}`);
 console.log(`pageCount=${pageCount}`);
 console.log(`sizeBytes=${pdfBuffer.byteLength}`);
+
+if (requireRealGemini && aiAdvisory.providerStatus !== "success") {
+  process.exit(2);
+}

@@ -23,6 +23,7 @@
     "ai:guardrails": "node scripts/ai-advisory-guardrails-smoke.mjs",
     "ai:fallback-drill": "node scripts/ai-advisory-fallback-drill.mjs",
     "ai:report-synthetic": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/generate-full-synthetic-gemini-report.mjs",
+    "ai:report-synthetic:require-gemini": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/generate-full-synthetic-gemini-report.mjs --require-real-gemini --output-dir=qa-artifacts/ai-report-1b",
     "postinstall": "prisma generate"
   },
   "dependencies": {
