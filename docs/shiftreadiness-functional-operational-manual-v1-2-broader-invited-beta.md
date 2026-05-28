@@ -37,7 +37,10 @@ Sample report update:
 - `SAMPLE-REPORT-1` adds public `/sample-report` as a synthetic sample readiness report foundation.
 - It shows the expected deliverable structure before a prospect uploads their own data.
 - It uses synthetic ACME data only and does not use backend, DB, Gemini, upload, lead capture or customer data.
-- Downloadable PDF is not live yet and must be described as coming soon until SAMPLE-REPORT-2.
+- SAMPLE-REPORT-1 originally left the downloadable PDF pending.
+- `SAMPLE-REPORT-2` publishes the public synthetic PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- The PDF has 15 pages, is generated with `npm run sample-report:generate`, and remains synthetic/no-customer-data only.
+- `/sample-report` is the preferred page for explaining the sample before PDF download.
 
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
@@ -102,6 +105,7 @@ Estado validado:
 - AiUsageEvent persistente: activo.
 - Migration Readiness Replay: activo en `/demo`, simulado y sin backend.
 - Public Sample Readiness Report: activo en `/sample-report`, sintetico y sin backend.
+- Public Sample PDF: activo en `/sample-reports/proxmox-migration-readiness-sample-report.pdf`, sintetico y sin backend.
 - QA/demo data: identificada y documentada, no eliminada.
 
 Condicion de uso:

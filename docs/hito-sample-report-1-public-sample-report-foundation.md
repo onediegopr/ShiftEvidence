@@ -69,6 +69,15 @@ Decision:
 - La UI muestra `Sample PDF coming soon`.
 - SAMPLE-REPORT-2 puede crear un PDF sintetico seguro de 12-18 paginas si se aprueba.
 
+Actualizacion SAMPLE-REPORT-2:
+
+- PDF publico sintetico publicado en `public/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- Ruta publica: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- 15 paginas.
+- Generado con `npm run sample-report:generate`.
+- La pagina `/sample-report` ahora muestra CTA real `Download sample PDF`.
+- Sigue siendo sintetico, sin datos reales, sin backend, sin DB y sin llamada Gemini.
+
 ## CTAs agregados
 
 Agregados:

@@ -219,6 +219,24 @@ Operating rules:
 - Downloadable PDF is not published yet and must be described as coming soon.
 - Sample must not be presented as migration automation, zero-downtime assurance or 100% success guarantee.
 - Use it with `/demo`: replay explains the process, sample report explains the deliverable.
+
+## SAMPLE-REPORT-2 Public Synthetic PDF
+
+Date: 2026-05-28.
+
+The public sample report now includes a downloadable synthetic PDF:
+
+- Public URL: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- 15 pages.
+- Generated from local synthetic ACME data with `npm run sample-report:generate`.
+- No backend, DB, Gemini call, upload, lead capture or customer data.
+- `/sample-report` is the preferred entry point before PDF download.
+
+Operating rules:
+
+- Present the PDF as a synthetic commercial sample, not a customer report.
+- Do not use it to claim migration automation, zero downtime or 100% success.
+- Regenerate only from synthetic data unless a separate approved sample-report hito changes the process.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

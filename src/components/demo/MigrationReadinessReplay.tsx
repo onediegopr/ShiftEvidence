@@ -247,7 +247,7 @@ export default function MigrationReadinessReplay() {
               </p>
             </div>
             <Link href="/sample-report" className="btn btn-primary btn-glow" data-event="demo_cta_clicked">
-              View sample report
+              View and download sample report
               <ArrowRight size={18} />
             </Link>
           </div>

@@ -269,3 +269,13 @@ SAMPLE-REPORT-1 agrega `/sample-report` como foundation publica para mostrar el 
 - No usa backend, DB, Gemini, upload real ni datos reales.
 - No publica PDF real todavia; muestra `Sample PDF coming soon`.
 - `/demo` incluye un bloque `Want to see the final deliverable?` con CTA a `/sample-report`.
+
+## 17. SAMPLE-REPORT-2 PDF linkage
+
+SAMPLE-REPORT-2 agrega el PDF publico sintetico descargable:
+
+- Ruta: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- 15 paginas.
+- Dataset sintetico ACME.
+- Sin backend, DB, Gemini real, upload o datos reales.
+- `/demo` mantiene el CTA hacia `/sample-report` para que el usuario vea contexto antes de descargar.

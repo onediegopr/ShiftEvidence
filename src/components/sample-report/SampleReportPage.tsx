@@ -134,9 +134,14 @@ export default function SampleReportPage() {
               <Link href="/demo" className="btn btn-secondary">
                 Watch the readiness replay
               </Link>
-              <span className="sample-report-disabled-cta" aria-disabled="true">
-                Sample PDF coming soon
-              </span>
+              <a
+                href="/sample-reports/proxmox-migration-readiness-sample-report.pdf"
+                className="btn btn-secondary"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Download sample PDF
+              </a>
             </div>
           </div>
 
@@ -171,10 +176,10 @@ export default function SampleReportPage() {
           <div className="shiftreadiness-section-heading">
             <div className="badge badge-cyan">Report foundation</div>
             <h2>A compact view of the future 12-18 page report.</h2>
-            <p>
-              The final downloadable PDF is not published yet. This page shows the public sample structure and the
-              decision artifacts prospects should expect.
-            </p>
+              <p>
+                The downloadable PDF is a synthetic public sample. This page shows the report structure and the decision
+                artifacts prospects should expect before uploading their own evidence.
+              </p>
           </div>
 
           <div className="sample-report-stat-grid">
