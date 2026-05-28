@@ -26,6 +26,14 @@ Current operating manual:
 
 The previous v1.1 manual remains historical documentation.
 
+DEMO-1 update:
+
+- Public `/demo` Migration Readiness Replay is implemented as a simulated, synthetic walkthrough.
+- It uses no backend, no DB, no Gemini call, no real upload and no customer data.
+- It supports broader invited beta education before onboarding.
+- It does not change the launch decision: full public launch remains NO.
+- Hostinger/HCDN cache must be checked after deploy so HTML and `_next` assets are not stale/mismatched.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.

@@ -442,3 +442,21 @@ DEMO-0 queda planificado con recomendacion clara:
 - Mantener posicionamiento como readiness/planning basado en evidencia.
 
 Estado: listo para DEMO-1, condicionado a resolver o aceptar explicitamente el lint preexistente antes del commit funcional.
+
+## 18. DEMO-1 implementation follow-up
+
+Fecha: 2026-05-28.
+
+DEMO-1 implementa la recomendacion de este plan:
+
+- Ruta publica nueva: `/demo`.
+- Nombre visible: `Migration Readiness Replay`.
+- Dataset sintetico: `ACME Manufacturing Group`.
+- Componentes client-side sin backend, DB, upload real ni Gemini real.
+- CTAs acotados desde home y `/shiftreadiness`.
+- Documentacion principal: `docs/hito-demo-1-migration-readiness-replay.md`.
+
+Nota operativa:
+
+- Antes de DEMO-1 se cerro RECOVERY-2 y el lint gate de `sign-up` quedo limpio.
+- Hostinger/HCDN puede requerir purga de cache despues del deploy para evitar HTML stale con assets `_next` antiguos.

@@ -178,6 +178,25 @@ QA/demo data was inventoried without deletion:
 
 - 25 QA/demo assessments.
 - 14 `safe to delete` assessments.
+
+## DEMO-1 Migration Readiness Replay
+
+Date: 2026-05-28.
+
+The public route `/demo` is available as a simulated Migration Readiness Replay for pre-onboarding education.
+
+Operating rules:
+
+- Demo uses synthetic ACME data only.
+- Demo does not require login.
+- Demo does not use backend, DB, Gemini, uploads or customer data.
+- Demo must be described as simulated.
+- Demo must not be presented as migration automation, zero-downtime assurance, cutover automation or 100% success guarantee.
+- CTAs may send users to `/sign-up`, `/contact` or back to `/`.
+
+Post-deploy rule:
+
+- If Hostinger/HCDN serves stale HTML with missing `_next` assets, purge cache before inviting prospects to `/demo`.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.
@@ -520,7 +539,7 @@ AI_ADVISORY_MODEL=gemini-1.5-flash
 AI_ADVISORY_TIMEOUT_MS=15000
 AI_ADVISORY_MAX_INPUT_CHARS=24000
 AI_ADVISORY_MAX_OUTPUT_CHARS=6000
-GEMINI_API_KEY=<secret>
+# Gemini API key is configured in Hostinger runtime and must never be documented here.
 ```
 
 Rollback remains:

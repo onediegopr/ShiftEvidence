@@ -242,6 +242,9 @@ export default function LandingPage() {
                     Start Free Assessment
                     <ArrowRight size={18} />
                   </a>
+                  <a href="/demo" className="btn btn-secondary">
+                    Watch the readiness replay
+                  </a>
                   <a href="/shiftreadiness#pricing" className="btn btn-secondary">
                     View Assessment Plans
                   </a>
@@ -330,6 +333,30 @@ export default function LandingPage() {
         </section>
 
         <Features />
+
+        <section className="section demo-cta-strip-section">
+          <div className="container">
+            <div className="glass-card demo-cta-strip">
+              <div>
+                <div className="badge badge-cyan">Simulated demo</div>
+                <h2>See the assessment before you start.</h2>
+                <p>
+                  Watch a simulated VMware {"->"} Proxmox readiness replay and see how a raw RVTools export becomes a professional migration decision pack: evidence coverage, VM risk classification, Proxmox sizing, migration waves, AI Advisory notes and an executive-ready PDF report.
+                </p>
+                <div className="demo-mini-badge-row">
+                  <span>No agents</span>
+                  <span>No production access</span>
+                  <span>Starts with RVTools</span>
+                  <span>Evidence-based</span>
+                </div>
+              </div>
+              <a href="/demo" className="btn btn-primary btn-glow">
+                Watch the readiness replay
+                <ArrowRight size={18} />
+              </a>
+            </div>
+          </div>
+        </section>
 
         <SavingsCalculator />
 

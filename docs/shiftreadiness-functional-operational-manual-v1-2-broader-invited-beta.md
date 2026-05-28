@@ -23,6 +23,14 @@ UX hardening update:
 - Admin microcopy remains Spanish.
 - Full public launch remains NO.
 
+Demo update:
+
+- `DEMO-1` adds public `/demo` as Migration Readiness Replay.
+- The replay is simulated and uses synthetic ACME data only.
+- It does not require login, backend, DB, Gemini, upload real or customer data.
+- It is allowed for pre-onboarding education during broader invited beta.
+- It must not be described as automatic migration, zero-downtime guarantee, cutover automation or full public launch.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
@@ -52,6 +60,7 @@ Estado actual:
 - Gemini Advisory: PASS.
 - PDF: PASS.
 - Admin console en espanol: PASS.
+- Migration Readiness Replay `/demo`: activo como demo sintetica publica.
 
 ShiftReadiness puede operarse con clientes invitados en volumen bajo o moderado. La plataforma permite crear assessments, cargar evidencia, completar contexto, generar preview, descargar PDF, usar AI Advisory con Gemini, administrar accesos manuales, revisar consumo IA, gestionar oportunidades comerciales y aplicar runtime controls.
 
@@ -83,6 +92,7 @@ Estado validado:
 - Auditoria: activa para acciones admin y eventos operativos.
 - Runtime controls: activos via `SystemSetting`.
 - AiUsageEvent persistente: activo.
+- Migration Readiness Replay: activo en `/demo`, simulado y sin backend.
 - QA/demo data: identificada y documentada, no eliminada.
 
 Condicion de uso:

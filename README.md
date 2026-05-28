@@ -69,6 +69,8 @@ FUNCTIONAL-READINESS-1B closes the fresh authenticated smoke gap by user-atteste
 
 UX-HARDENING-1 applies a pre-real-use UX/accessibility polish pass without new features: source CSS no longer uses `transition: all` or `outline: none`, focus-visible states are explicit, public `alert()` calls were replaced by inline status messages, key success/error banners now expose basic ARIA roles, admin microcopy remains Spanish, and dangerous migration/full-launch claims remain controlled. Full public launch remains NO.
 
+DEMO-1 adds the public `/demo` Migration Readiness Replay: a fully simulated, synthetic, no-login walkthrough showing how a VMware/RVTools-style export becomes a Proxmox readiness decision pack. It uses no backend, no DB, no Gemini call, no real upload and no customer data. CTAs were added from home and `/shiftreadiness`; full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -80,6 +82,7 @@ UX-HARDENING-1 applies a pre-real-use UX/accessibility polish pass without new f
 ## Public routes
 - `/`
 - `/shiftreadiness`
+- `/demo`
 - `/contact`
 
 ## Auth routes
@@ -108,6 +111,7 @@ UX-HARDENING-1 applies a pre-real-use UX/accessibility polish pass without new f
 - AI consumption panel with memory metrics plus persistent estimated tokens/costs by user and assessment.
 - Admin budgets, manual entitlements, commercial opportunities and advanced audit events.
 - Runtime operational settings and basic enforcement for AI, PDF/report downloads and assessment creation.
+- Public synthetic Migration Readiness Replay at `/demo`.
 
 ## Scripts
 - `npm run dev`
@@ -188,6 +192,8 @@ Optional for future work:
 - `docs/hito-qa-cleanup-archive-1.md`
 - `docs/hito-public-launch-readiness-2.md`
 - `docs/hito-launch-decision-1-broader-invited-beta.md`
+- `docs/hito-demo-0-readiness-replay-audit-plan.md`
+- `docs/hito-demo-1-migration-readiness-replay.md`
 - `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`

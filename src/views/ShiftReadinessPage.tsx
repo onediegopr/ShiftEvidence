@@ -264,6 +264,9 @@ export default function ShiftReadinessPage() {
                 Start Free Readiness Check
                 <ArrowRight size={18} />
               </a>
+              <a href="/demo" className="btn btn-secondary">
+                Watch the readiness replay
+              </a>
               <a href="#pricing" className="btn btn-secondary">
                 View plans and add-ons
               </a>
