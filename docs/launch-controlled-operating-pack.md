@@ -253,6 +253,24 @@ DOCX export remains pending until a repo-safe generator/render verification path
 
 Full public launch remains NO.
 
+## FUNCTIONAL-READINESS-1B Authenticated Smoke
+
+Date: 2026-05-28.
+
+Fresh authenticated evidence was received for the real product flow:
+
+- User flow PASS: login, dashboard, assessments, controlled QA assessment, Context Intake, report preview, Gemini Advisory, readiness/confidence scores, PDF generation/download/open and AI Advisory in PDF.
+- Admin flow PASS: admin dashboard, system status, users, evaluations, AI consumption, access plans, opportunities, operational settings and audit.
+- Localhost PASS.
+- Local Gemini smoke PASS with `providerStatus=success` and model `gemini-flash-lite-latest`.
+- No raw JSON, no `[object Object]`, no visible secrets and no visible storage paths were reported.
+
+Decision:
+
+- Product is functional for broader invited beta and first controlled real-client usage.
+- Full public launch remains NO.
+- Strict synthetic Gemini/PDF report success remains separate under `AI-REPORT-SYNTHETIC-HARDENING`.
+
 ## Rollback / Pause
 
 If launch must be paused:

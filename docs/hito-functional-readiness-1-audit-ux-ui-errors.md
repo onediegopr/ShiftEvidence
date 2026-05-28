@@ -4,9 +4,19 @@
 
 Auditoria funcional pre-uso real ejecutada sobre `main` despues de `RECOVERY-1`.
 
-Estado del hito: **PARCIAL CONTROLADO**.
+Estado del hito: **SUPERSEDED BY FUNCTIONAL-READINESS-1B**.
 
-Motivo: validaciones base, localhost, produccion sin sesion, rutas privadas, seguridad de codigo, conteos QA/demo y hotfixes UX/copy pasaron. No se cierra como completo porque Codex no tiene sesion autenticada para confirmar evidencia fresca de Gemini real en preview/PDF, user dashboard y admin dashboard.
+Motivo original: validaciones base, localhost, produccion sin sesion, rutas privadas, seguridad de codigo, conteos QA/demo y hotfixes UX/copy pasaron. En este hito Codex no tenia sesion autenticada para confirmar evidencia fresca de Gemini real en preview/PDF, user dashboard y admin dashboard.
+
+Actualizacion 2026-05-28:
+
+- `FUNCTIONAL-READINESS-1B` recibio evidencia user-attested fresca.
+- User flow: PASS.
+- Admin flow: PASS.
+- Localhost: PASS.
+- Gemini local smoke: PASS con `providerStatus=success`.
+- PDF/report preview/Gemini Advisory del flujo real: PASS por user-attested evidence.
+- Full public launch: sigue NO.
 
 ## Metodologia
 

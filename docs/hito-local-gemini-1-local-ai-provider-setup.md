@@ -19,6 +19,13 @@ Reason:
 - Real Gemini local smoke passed with `providerStatus=success`.
 - The heavier synthetic PDF generator still produced `providerStatus=error`; it generated a PDF artifact, but the AI advisory section did not close as Gemini success.
 
+Update after FUNCTIONAL-READINESS-1B:
+
+- `npm run ai:smoke-local-gemini` remains PASS.
+- Latest recorded local smoke result: `providerStatus=success`.
+- Latest recorded local model: `gemini-flash-lite-latest`.
+- Local Gemini smoke supports functional readiness, but strict synthetic PDF success remains separate under `AI-REPORT-SYNTHETIC-HARDENING`.
+
 ## Required Local Variables
 
 Configure these only in `.env.local` or process env. Do not commit values.

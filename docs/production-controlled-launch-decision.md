@@ -10,6 +10,16 @@ Public launch: NO.
 
 Broader invited beta: YES, approved for controlled/invitation-only usage.
 
+FUNCTIONAL-READINESS-1B update:
+
+- Fresh authenticated user flow: PASS by user-attested evidence.
+- Fresh authenticated admin flow: PASS by user-attested evidence.
+- Localhost: PASS.
+- Local Gemini smoke: PASS with `providerStatus=success` and model `gemini-flash-lite-latest`.
+- Real product preview/PDF/Gemini Advisory flow: PASS by user-attested evidence.
+- No raw JSON, no `[object Object]`, no visible secrets and no visible storage paths were reported.
+- Full public launch remains NO until explicit owner/commercial decision and remaining full-launch criteria close.
+
 Current operating manual:
 
 - `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`

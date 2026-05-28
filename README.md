@@ -65,6 +65,8 @@ MANUAL-FINAL-v1.2 creates the final internal operational and functional manual f
 
 LOCAL-GEMINI-1 adds a safe local Gemini smoke workflow. Local `.env.local` now carries the developer-only Gemini config outside Git, `npm run ai:smoke-local-gemini` validates the real Gemini provider without printing keys or responses, and local route smoke passes. The strict synthetic PDF generator still needs hardening before it returns `providerStatus=success` locally.
 
+FUNCTIONAL-READINESS-1B closes the fresh authenticated smoke gap by user-attested evidence. User flow PASS: dashboard, assessments, Context Intake, report preview, Gemini Advisory, deterministic scores, PDF generation/download/open, AI Advisory in PDF, no raw JSON, no `[object Object]`, no visible secrets/storage paths. Admin flow PASS: `/dashboard/admin`, Estado del Sistema, Usuarios, Evaluaciones, IA y Consumo, Accesos y Planes, Oportunidades, Configuracion Operativa and Auditoria load; Gemini appears active/runtime env-gemini and AI usage/consumption state is visible. Localhost PASS and `npm run ai:smoke-local-gemini` returns `providerStatus=success` with `gemini-flash-lite-latest`. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

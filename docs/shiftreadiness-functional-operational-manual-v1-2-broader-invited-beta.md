@@ -5,6 +5,15 @@ Fecha: 2026-05-28
 
 Estado: manual interno vigente para broader invited beta.
 
+Functional readiness update:
+
+- `FUNCTIONAL-READINESS-1B` closed fresh authenticated smoke evidence for broader invited beta.
+- User flow PASS by user-attested evidence.
+- Admin flow PASS by user-attested evidence.
+- Localhost PASS.
+- Local Gemini smoke PASS with `providerStatus=success` using `gemini-flash-lite-latest`.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
