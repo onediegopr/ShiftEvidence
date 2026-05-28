@@ -9,6 +9,7 @@ import type {
   AiAdvisoryProviderStatus,
 } from "./aiAdvisoryTypes";
 import { recordAiRuntimeEvent, type AiRuntimeErrorCategory } from "./aiRuntimeStatus";
+import { recordAiUsageEvent, type AiUsageOperationType } from "./aiUsageService";
 
 type AiProviderJson = Omit<AiAdvisoryOutput, "providerStatus" | "generatedAt" | "provider" | "model">;
 
@@ -312,9 +313,15 @@ async function callOpenAiProvider(params: {
 export async function generateAiAdvisoryFromPayload(
   payload: AiAdvisoryContextPayload,
   safeAssessmentId = "synthetic-ai-advisory",
+  options: {
+    userId?: string | null;
+    operationType?: AiUsageOperationType;
+  } = {},
 ): Promise<AiAdvisoryOutput> {
   const config = getAiAdvisoryConfig();
   const startedAt = Date.now();
+  const inputJson = truncateJsonInput(payload, config.maxInputChars);
+  const operationType = options.operationType ?? "unknown";
 
   recordAiRuntimeEvent({
     eventType: "ai_advisory_requested",
@@ -326,6 +333,7 @@ export async function generateAiAdvisoryFromPayload(
   });
 
   if (!config.enabled || config.provider === "none" || config.provider === "disabled") {
+    const output = emptyOutput(config, "disabled");
     recordAiRuntimeEvent({
       eventType: "ai_advisory_fallback_used",
       provider: config.provider,
@@ -335,11 +343,25 @@ export async function generateAiAdvisoryFromPayload(
       status: "disabled",
       errorCategory: "none",
     });
-    return emptyOutput(config, "disabled");
+    await recordAiUsageEvent({
+      assessmentId: safeAssessmentId,
+      userId: options.userId,
+      provider: config.provider,
+      model: config.model,
+      operationType,
+      status: "disabled",
+      durationMs: Date.now() - startedAt,
+      inputChars: inputJson.length,
+      outputChars: JSON.stringify(output).length,
+      fallbackUsed: true,
+      metadataJson: { reason: "disabled" },
+    });
+    return output;
   }
 
   try {
     if (config.provider === "mock") {
+      const output = buildMockAdvisory(payload, config);
       recordAiRuntimeEvent({
         eventType: "ai_advisory_success",
         provider: config.provider,
@@ -349,11 +371,29 @@ export async function generateAiAdvisoryFromPayload(
         status: "mock",
         errorCategory: "none",
       });
-      return buildMockAdvisory(payload, config);
+      await recordAiUsageEvent({
+        assessmentId: safeAssessmentId,
+        userId: options.userId,
+        provider: config.provider,
+        model: config.model,
+        operationType,
+        status: "mock",
+        durationMs: Date.now() - startedAt,
+        inputChars: inputJson.length,
+        outputChars: JSON.stringify(output).length,
+      });
+      return output;
     }
 
     const apiKey = getAiAdvisoryProviderKey(config.provider);
     if (!apiKey) {
+      const output = {
+        ...emptyOutput(config, "unavailable"),
+        limitations: [
+          `AI provider ${config.provider} is enabled but no server-side API key is configured.`,
+          "Deterministic report sections remain available.",
+        ],
+      };
       recordAiRuntimeEvent({
         eventType: "ai_advisory_fallback_used",
         provider: config.provider,
@@ -363,20 +403,28 @@ export async function generateAiAdvisoryFromPayload(
         status: "unavailable",
         errorCategory: "config_missing",
       });
-      return {
-        ...emptyOutput(config, "unavailable"),
-        limitations: [
-          `AI provider ${config.provider} is enabled but no server-side API key is configured.`,
-          "Deterministic report sections remain available.",
-        ],
-      };
+      await recordAiUsageEvent({
+        assessmentId: safeAssessmentId,
+        userId: options.userId,
+        provider: config.provider,
+        model: config.model,
+        operationType,
+        status: "unavailable",
+        durationMs: Date.now() - startedAt,
+        inputChars: inputJson.length,
+        outputChars: JSON.stringify(output).length,
+        errorCategory: "config_missing",
+        fallbackUsed: true,
+        metadataJson: { reason: "config_missing" },
+      });
+      return output;
     }
 
     const fallback = buildMockAdvisory(payload, {
       ...config,
       provider: "mock",
     });
-    const prompt = buildAiAdvisoryPrompt(truncateJsonInput(payload, config.maxInputChars));
+    const prompt = buildAiAdvisoryPrompt(inputJson);
     const output = config.provider === "gemini"
       ? await callGeminiProvider({ config, apiKey, prompt, fallback })
       : await callOpenAiProvider({ config, apiKey, prompt, fallback });
@@ -391,7 +439,7 @@ export async function generateAiAdvisoryFromPayload(
       errorCategory: "none",
     });
 
-    return {
+    const finalOutput: AiAdvisoryOutput = {
       ...output,
       providerStatus: "success",
       generatedAt: new Date().toISOString(),
@@ -402,15 +450,29 @@ export async function generateAiAdvisoryFromPayload(
         "AI advisory is generated from sanitized metadata and is not a deterministic readiness score.",
       ].slice(0, 8),
     };
+    await recordAiUsageEvent({
+      assessmentId: safeAssessmentId,
+      userId: options.userId,
+      provider: config.provider,
+      model: config.model,
+      operationType,
+      status: "success",
+      durationMs: Date.now() - startedAt,
+      inputChars: inputJson.length,
+      outputChars: JSON.stringify(finalOutput).length,
+    });
+
+    return finalOutput;
   } catch (error) {
     const errorCategory = getErrorCategory(error);
+    const status = errorCategory === "timeout" ? "timeout" : "error";
     recordAiRuntimeEvent({
       eventType: errorCategory === "timeout" ? "ai_advisory_timeout" : "ai_advisory_failed",
       provider: config.provider,
       model: config.model,
       assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
-      status: errorCategory === "timeout" ? "timeout" : "error",
+      status,
       errorCategory,
     });
     recordAiRuntimeEvent({
@@ -419,13 +481,37 @@ export async function generateAiAdvisoryFromPayload(
       model: config.model,
       assessmentId: safeAssessmentId,
       durationMs: Date.now() - startedAt,
-      status: errorCategory === "timeout" ? "timeout" : "error",
+      status,
       errorCategory,
     });
-    return emptyOutput(config, "error");
+    const output = emptyOutput(config, "error");
+    await recordAiUsageEvent({
+      assessmentId: safeAssessmentId,
+      userId: options.userId,
+      provider: config.provider,
+      model: config.model,
+      operationType,
+      status,
+      durationMs: Date.now() - startedAt,
+      inputChars: inputJson.length,
+      outputChars: JSON.stringify(output).length,
+      errorCategory,
+      fallbackUsed: true,
+      metadataJson: { reason: errorCategory },
+    });
+    return output;
   }
 }
 
-export async function generateAiAdvisory(assessment: AssessmentDetail): Promise<AiAdvisoryOutput> {
-  return generateAiAdvisoryFromPayload(buildAiAdvisoryContextPayload(assessment), assessment.id);
+export async function generateAiAdvisory(
+  assessment: AssessmentDetail,
+  options: {
+    userId?: string | null;
+    operationType?: AiUsageOperationType;
+  } = {},
+): Promise<AiAdvisoryOutput> {
+  return generateAiAdvisoryFromPayload(buildAiAdvisoryContextPayload(assessment), assessment.id, {
+    userId: options.userId ?? assessment.workspace.ownerUserId,
+    operationType: options.operationType ?? "preview",
+  });
 }

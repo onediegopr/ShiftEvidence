@@ -33,6 +33,20 @@ function formatDuration(value: number | null | undefined) {
   return typeof value === "number" ? `${value} ms` : "No disponible";
 }
 
+function formatNumber(value: number | null | undefined) {
+  return typeof value === "number" ? new Intl.NumberFormat("es-AR").format(value) : "No disponible";
+}
+
+function formatCurrency(value: number | null | undefined) {
+  return typeof value === "number"
+    ? new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 6,
+      }).format(value)
+    : "No disponible";
+}
+
 function formatAiEventType(value: string) {
   const labels: Record<string, string> = {
     ai_advisory_requested: "Solicitud IA",
@@ -152,6 +166,7 @@ export default async function AdminConsolePage() {
 
   const data = await getAdminConsoleData();
   const ai = data.aiStatus;
+  const aiUsage = data.aiConsumption.persistentUsage;
 
   const navItems = [
     ["Resumen", "#resumen"],
@@ -240,7 +255,13 @@ export default async function AdminConsolePage() {
           <MetricCard icon={<Activity size={22} />} label="Llamadas en memoria" value={data.aiConsumption.callsInMemory} note="Se reinician con deploy/restart" />
           <MetricCard icon={<Gauge size={22} />} label="Duración promedio" value={formatDuration(data.aiConsumption.averageDurationMs)} note="Sobre eventos en memoria" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Errores" value={data.aiConsumption.errorsInMemory} note={`Timeouts: ${data.aiConsumption.timeoutsInMemory}`} />
-          <MetricCard icon={<FileText size={22} />} label="Costos y tokens" value="Pendiente" note="Se implementa con persistencia en ADMIN-2B" />
+          <MetricCard icon={<FileText size={22} />} label="Costos y tokens" value={formatCurrency(aiUsage.summary.estimatedCostUsd)} note={`${formatNumber(aiUsage.summary.estimatedTotalTokens)} tokens estimados`} />
+          <MetricCard icon={<Activity size={22} />} label="Llamadas 24h" value={aiUsage.summary.calls24h} note="Eventos IA persistidos" />
+          <MetricCard icon={<Activity size={22} />} label="Llamadas 7 dias" value={aiUsage.summary.calls7d} note="Eventos IA persistidos" />
+          <MetricCard icon={<Activity size={22} />} label="Llamadas 30 dias" value={aiUsage.summary.calls30d} note="Eventos IA persistidos" />
+          <MetricCard icon={<CheckCircle2 size={22} />} label="Exitos persistidos" value={aiUsage.summary.successCount} note={`Fallbacks: ${aiUsage.summary.fallbackCount}`} />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Errores persistidos" value={aiUsage.summary.errorCount} note={`Timeouts: ${aiUsage.summary.timeoutCount}`} />
+          <MetricCard icon={<Gauge size={22} />} label="Duracion persistente" value={formatDuration(aiUsage.summary.averageDurationMs)} note={`Ultima llamada: ${formatDate(aiUsage.summary.lastEventAt)}`} />
         </section>
         <div className="assessment-preview-grid">
           <article className="glass-card report-history-card">
@@ -254,7 +275,7 @@ export default async function AdminConsolePage() {
               <span>Input máximo: {ai.maxInputChars} chars</span>
               <span>Output máximo: {ai.maxOutputChars} chars</span>
             </div>
-            <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2A.</p>
+            <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2B.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Métricas en memoria</h3>
@@ -283,7 +304,152 @@ export default async function AdminConsolePage() {
             <h3>Costos estimados</h3>
             <p>{data.aiConsumption.costStatus}</p>
             <p className="assessment-inline-note">{data.aiConsumption.costDescription}</p>
-            <p className="assessment-inline-note">No se inventan tokens ni costos sin eventos persistentes.</p>
+            <p className="assessment-inline-note">No se guardan prompts completos ni respuestas crudas. No es billing automatico.</p>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Uso persistente 30 dias</h3>
+            <div className="report-history-meta">
+              <span>Llamadas: {aiUsage.summary.totalCalls}</span>
+              <span>Tokens input: {formatNumber(aiUsage.summary.estimatedInputTokens)}</span>
+              <span>Tokens output: {formatNumber(aiUsage.summary.estimatedOutputTokens)}</span>
+              <span>Tokens totales: {formatNumber(aiUsage.summary.estimatedTotalTokens)}</span>
+              <span>Costo estimado: {formatCurrency(aiUsage.summary.estimatedCostUsd)}</span>
+              <span>Ultima llamada: {formatDate(aiUsage.summary.lastEventAt)}</span>
+            </div>
+          </article>
+        </div>
+        <div className="assessment-table-wrap">
+          <table className="assessment-table">
+            <thead>
+              <tr>
+                <th>Evento persistente</th>
+                <th>Usuario</th>
+                <th>Evaluacion</th>
+                <th>Proveedor</th>
+                <th>Operacion</th>
+                <th>Estado</th>
+                <th>Tokens</th>
+                <th>Costo</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {aiUsage.recentEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={9}>Todavia no hay eventos IA persistidos.</td>
+                </tr>
+              ) : (
+                aiUsage.recentEvents.map((event) => (
+                  <tr key={event.id}>
+                    <td>{event.id.slice(0, 8)}</td>
+                    <td>{event.userEmail ?? "No disponible"}</td>
+                    <td>{event.assessmentTitle ?? event.assessmentId ?? "No disponible"}</td>
+                    <td>{event.provider}</td>
+                    <td>{event.operationType}</td>
+                    <td>{event.status}</td>
+                    <td>{formatNumber(event.estimatedTotalTokens)}</td>
+                    <td>{formatCurrency(event.estimatedCostUsd)}</td>
+                    <td>{formatDate(event.createdAt)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="assessment-preview-grid">
+          <article className="glass-card report-history-card">
+            <h3>Consumo por usuario</h3>
+            <div className="assessment-table-wrap">
+              <table className="assessment-table">
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Llamadas</th>
+                    <th>Tokens</th>
+                    <th>Costo</th>
+                    <th>Errores</th>
+                    <th>Ultimo uso</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aiUsage.byUser.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>Sin consumo IA por usuario todavia.</td>
+                    </tr>
+                  ) : (
+                    aiUsage.byUser.map((item) => (
+                      <tr key={item.userId ?? item.email}>
+                        <td>{item.email}</td>
+                        <td>{item.calls}</td>
+                        <td>{formatNumber(item.tokens)}</td>
+                        <td>{formatCurrency(item.cost)}</td>
+                        <td>{item.errors}</td>
+                        <td>{formatDate(item.lastEventAt)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Consumo por evaluacion</h3>
+            <div className="assessment-table-wrap">
+              <table className="assessment-table">
+                <thead>
+                  <tr>
+                    <th>Evaluacion</th>
+                    <th>Llamadas</th>
+                    <th>Estado</th>
+                    <th>Tokens</th>
+                    <th>Costo</th>
+                    <th>Errores</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aiUsage.byAssessment.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>Sin consumo IA por evaluacion todavia.</td>
+                    </tr>
+                  ) : (
+                    aiUsage.byAssessment.map((item) => (
+                      <tr key={item.assessmentId ?? item.title}>
+                        <td>{item.title}</td>
+                        <td>{item.calls}</td>
+                        <td>{item.lastStatus}</td>
+                        <td>{formatNumber(item.tokens)}</td>
+                        <td>{formatCurrency(item.cost)}</td>
+                        <td>{item.errors}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Errores IA recientes</h3>
+            <div className="report-history-grid">
+              {aiUsage.recentErrors.length === 0 ? (
+                <p className="assessment-inline-note">No hay errores IA persistidos en el rango seleccionado.</p>
+              ) : (
+                aiUsage.recentErrors.map((event) => (
+                  <div key={event.id} className="assessment-inline-note">
+                    <strong>{event.status}</strong> / {event.errorCategory ?? "sin categoria"} - {event.assessmentTitle ?? "sin evaluacion"} - {formatDate(event.createdAt)}
+                  </div>
+                ))
+              )}
+            </div>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Alertas persistentes</h3>
+            <div className="report-history-grid">
+              {aiUsage.alerts.map((alert) => (
+                <div key={alert.title} className="assessment-inline-note">
+                  <StatusPill status={alert.status} /> <strong>{alert.title}</strong>: {alert.message}
+                </div>
+              ))}
+            </div>
           </article>
         </div>
         <div className="assessment-table-wrap">
@@ -330,7 +496,7 @@ export default async function AdminConsolePage() {
           title="Health de configuración segura"
           description="Sólo estados seguros. No se muestran secretos, tokens, URLs privadas completas ni API keys."
         />
-        <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2A.</p>
+        <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2B.</p>
         <div className="assessment-table-wrap">
           <table className="assessment-table">
             <thead>
@@ -373,6 +539,10 @@ export default async function AdminConsolePage() {
                 <th>Estado</th>
                 <th>Evaluaciones</th>
                 <th>Plan</th>
+                <th>Llamadas IA</th>
+                <th>Tokens IA</th>
+                <th>Costo IA</th>
+                <th>Ultimo uso IA</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -387,6 +557,10 @@ export default async function AdminConsolePage() {
                   <td><StatusPill status={user.status} /></td>
                   <td>{user.assessments}</td>
                   <td>{user.plan}</td>
+                  <td>{user.aiCalls}</td>
+                  <td>{formatNumber(user.aiTokens)}</td>
+                  <td>{formatCurrency(user.aiCost)}</td>
+                  <td>{formatDate(user.lastAiUsage)}</td>
                   <td>Ver usuario / Ver evaluaciones</td>
                 </tr>
               ))}
@@ -416,6 +590,11 @@ export default async function AdminConsolePage() {
                 <th>IA</th>
                 <th>Readiness</th>
                 <th>Confidence</th>
+                <th>Llamadas IA</th>
+                <th>Tokens IA</th>
+                <th>Costo IA</th>
+                <th>Errores IA</th>
+                <th>Ultimo estado IA</th>
                 <th>Actualizado</th>
                 <th>Acciones</th>
               </tr>
@@ -432,6 +611,11 @@ export default async function AdminConsolePage() {
                   <td>{assessment.ai}</td>
                   <td>{assessment.readiness ?? "No disponible"}</td>
                   <td>{assessment.confidence ?? "No disponible"}</td>
+                  <td>{assessment.aiCalls}</td>
+                  <td>{formatNumber(assessment.aiTokens)}</td>
+                  <td>{formatCurrency(assessment.aiCost)}</td>
+                  <td>{assessment.aiErrors}</td>
+                  <td>{assessment.lastAiStatus}</td>
                   <td>{formatDate(assessment.updatedAt)}</td>
                   <td>
                     <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">Ver detalle</Link>

@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { getAdminAiUsage } from "../ai/aiUsageService";
 import { getAiRuntimeStatus } from "../ai/aiRuntimeStatus";
 
 function isConfigured(value: string | undefined) {
@@ -189,6 +190,11 @@ export async function getAdminConsoleData() {
   ]);
 
   const aiStatus = getAiRuntimeStatus();
+  const aiUsage = await getAdminAiUsage({ range: "30d" });
+  const persistentUsageByUser = new Map(aiUsage.byUser.filter((item) => item.userId).map((item) => [item.userId, item]));
+  const persistentUsageByAssessment = new Map(
+    aiUsage.byAssessment.filter((item) => item.assessmentId).map((item) => [item.assessmentId, item]),
+  );
   const databaseConfigured = isConfigured(process.env.DATABASE_URL);
   const authConfigured = isConfigured(process.env.BETTER_AUTH_SECRET) && isConfigured(process.env.BETTER_AUTH_URL);
   const storageConfigured = isConfigured(process.env.HOSTINGER_STORAGE_ROOT);
@@ -219,8 +225,10 @@ export async function getAdminConsoleData() {
       averageDurationMs: aiStatus.duracionPromedioMs,
       recentEvents: aiStatus.eventosRecientes,
       alerts: getAiOperationalAlerts(aiStatus),
-      costStatus: "Pendiente para ADMIN-2B",
-      costDescription: "El calculo persistente de tokens y costos requiere guardar eventos de uso IA.",
+      persistentUsage: aiUsage,
+      costStatus: aiUsage.summary.totalCalls > 0 ? "Estimacion persistente disponible" : "Sin eventos persistidos todavia",
+      costDescription:
+        "Costo estimado a partir de caracteres/tokens aproximados. Puede diferir de la facturacion real del proveedor.",
     },
     systemHealth: [
       {
@@ -305,17 +313,26 @@ export async function getAdminConsoleData() {
       { name: "AI_ADVISORY_MODEL", value: safeVisibleValue(process.env.AI_ADVISORY_MODEL), secret: false },
       { name: "MAX_UPLOAD_SIZE_MB", value: safeVisibleValue(process.env.MAX_UPLOAD_SIZE_MB), secret: false },
     ],
-    recentUsers: recentUsers.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt,
-      lastAccess: user.sessions[0]?.updatedAt ?? null,
-      role: "Usuario",
-      status: user.emailVerified ? "Verificado" : "Pendiente",
-      assessments: user.ownedWorkspaces.reduce((total, workspace) => total + workspace._count.assessments, 0),
-      plan: user.ownedWorkspaces[0]?.plan ?? "No disponible",
-    })),
+    recentUsers: recentUsers.map((user) => {
+      const usage = persistentUsageByUser.get(user.id);
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        lastAccess: user.sessions[0]?.updatedAt ?? null,
+        role: "Usuario",
+        status: user.emailVerified ? "Verificado" : "Pendiente",
+        assessments: user.ownedWorkspaces.reduce((total, workspace) => total + workspace._count.assessments, 0),
+        plan: user.ownedWorkspaces[0]?.plan ?? "No disponible",
+        aiCalls: usage?.calls ?? 0,
+        aiTokens: usage?.tokens ?? 0,
+        aiCost: usage?.cost ?? 0,
+        aiErrors: usage?.errors ?? 0,
+        lastAiUsage: usage?.lastEventAt ?? null,
+      };
+    }),
     recentAssessments: recentAssessments.map((assessment) => {
       const parsedFiles = assessment.evidenceFiles.filter((file) => file.processingStatus === "parsed").length;
       const generatedReports = assessment.reports.filter((report) => report.status === "generated").length;
@@ -327,6 +344,8 @@ export async function getAdminConsoleData() {
           "migrationContext" in assumptions,
       );
 
+      const usage = persistentUsageByAssessment.get(assessment.id);
+
       return {
         id: assessment.id,
         title: assessment.title,
@@ -337,6 +356,12 @@ export async function getAdminConsoleData() {
         context: hasContext ? "Con contexto" : "Pendiente",
         pdf: generatedReports > 0 ? `${generatedReports} generado(s)` : "Pendiente",
         ai: aiStatus.iaActiva ? "Disponible" : "Desactivada",
+        aiCalls: usage?.calls ?? 0,
+        aiTokens: usage?.tokens ?? 0,
+        aiCost: usage?.cost ?? 0,
+        aiErrors: usage?.errors ?? 0,
+        lastAiStatus: usage?.lastStatus ?? "Sin eventos",
+        lastAiUsage: usage?.lastEventAt ?? null,
         readiness: assessment.assessmentScore?.readinessScore ?? null,
         confidence: assessment.assessmentScore?.confidenceScore ?? null,
         createdAt: assessment.createdAt,

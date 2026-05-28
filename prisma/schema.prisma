@@ -23,6 +23,7 @@ model User {
   memberships   WorkspaceMember[]
   evidenceFiles  EvidenceFile[]
   auditEvents   AuditEvent[]
+  aiUsageEvents AiUsageEvent[]
   upgradeEvents  UpgradeEvent[]
   reports        Report[]
   unlockRequests UnlockRequest[]
@@ -182,6 +183,7 @@ model Assessment {
   riskFindings             RiskFinding[]
   assessmentScore          AssessmentScore?
   auditEvents              AuditEvent[]
+  aiUsageEvents            AiUsageEvent[]
   upgradeEvents             UpgradeEvent[]
   reports                  Report[]
   unlockRequests           UnlockRequest[]
@@ -519,6 +521,36 @@ model AuditEvent {
   @@index([workspaceId])
   @@index([assessmentId])
   @@index([userId])
+}
+
+model AiUsageEvent {
+  id                    String    @id @default(cuid())
+  createdAt             DateTime  @default(now())
+  assessmentId           String?
+  userId                 String?
+  provider               String
+  model                  String?
+  operationType          String   @default("unknown")
+  status                 String
+  durationMs             Int?
+  inputChars             Int?
+  outputChars            Int?
+  estimatedInputTokens   Int?
+  estimatedOutputTokens  Int?
+  estimatedTotalTokens   Int?
+  estimatedCostUsd       Float?
+  errorCategory          String?
+  fallbackUsed           Boolean  @default(false)
+  metadataJson           Json?
+  user                   User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  assessment             Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([assessmentId])
+  @@index([provider])
+  @@index([status])
+  @@index([operationType])
 }
 
 model UpgradeEvent {

@@ -384,3 +384,21 @@ Rules:
 - Do not edit provider secrets from the admin console.
 - Do not activate OpenAI.
 - Full public launch remains NO.
+
+## ADMIN-2B Persistent AI Usage
+
+Date: 2026-05-28.
+
+Operational status:
+
+- `AiUsageEvent` persists safe AI usage metadata.
+- Admin `IA y Consumo` shows estimated tokens/costs, recent events, errors, and usage by user/assessment.
+- Preview and PDF calls are tracked separately.
+- Prompt text, raw AI responses, secrets, raw uploaded files and private storage paths are not persisted.
+
+Rules:
+
+- Treat cost as estimated, not billing authority.
+- Do not use admin usage metrics to trigger automatic billing yet.
+- Do not edit provider secrets from the admin console.
+- Full public launch remains NO.

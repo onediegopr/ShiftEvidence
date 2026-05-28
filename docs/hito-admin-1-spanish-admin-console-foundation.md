@@ -208,8 +208,7 @@ Validacion funcional esperada:
 
 ## Limitaciones
 
-- No hay consola completa de costos/tokens de IA.
-- No hay persistencia avanzada de runtime metrics.
+- ADMIN-2B agrega persistencia de eventos IA, tokens/costos estimados y consumo por usuario/evaluacion.
 - No hay acciones destructivas sobre usuarios o assessments.
 - No hay impersonation.
 - No hay billing automatico.

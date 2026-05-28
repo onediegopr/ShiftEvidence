@@ -39,6 +39,8 @@ ADMIN-1 adds the first Spanish internal admin console at `/dashboard/admin`: pro
 
 ADMIN-2A improves the Spanish admin `IA y Consumo` panel without DB schema or migrations. It shows Gemini/provider status, safe credential booleans, memory metrics, recent in-memory AI events, operational alerts and honest placeholders for persistent tokens/costs in ADMIN-2B.
 
+ADMIN-2B adds persistent AI usage metrics through `AiUsageEvent`, estimated tokens/costs, admin `GET /api/admin/ai/usage`, usage by user/assessment and AI error visibility in the Spanish admin console. It does not store prompts, raw responses, raw files, secrets or private storage paths.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -75,7 +77,7 @@ ADMIN-2A improves the Spanish admin `IA y Consumo` panel without DB schema or mi
 - Optional AI Advisory Notes architecture with Gemini real provider support and safe fallback.
 - Manual admin unlock/entitlement flow.
 - Spanish internal admin console at `/dashboard/admin` for operational status, AI health, users and assessments.
-- No-DB AI consumption panel with memory metrics and safe operational alerts.
+- AI consumption panel with memory metrics plus persistent estimated tokens/costs by user and assessment.
 
 ## Scripts
 - `npm run dev`
@@ -145,6 +147,7 @@ Optional for future work:
 - `docs/hito-ai-report-1b-full-synthetic-gemini-success-report.md`
 - `docs/hito-admin-1-spanish-admin-console-foundation.md`
 - `docs/hito-admin-2a-ai-consumption-panel-no-db.md`
+- `docs/hito-admin-2b-persistent-ai-usage-cost-audit.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

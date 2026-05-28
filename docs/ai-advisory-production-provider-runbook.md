@@ -227,6 +227,39 @@ They do not expose:
 - raw uploaded file contents.
 - private storage paths.
 
+## Persistent AI Usage Metrics
+
+ADMIN-2B adds persistent usage events through `AiUsageEvent`.
+
+Persisted data is limited to safe operational metadata:
+
+- assessment/user references when available.
+- provider and model.
+- operation type: preview, pdf, synthetic/admin test, retry or unknown.
+- status: success, error, timeout, unavailable, fallback, disabled or mock.
+- duration.
+- input/output character counts.
+- estimated tokens.
+- estimated cost.
+- error category.
+- fallback flag.
+- sanitized metadata.
+
+The system does not persist:
+
+- prompts.
+- raw provider responses.
+- API keys.
+- cookies or tokens.
+- raw uploaded files.
+- private storage paths.
+
+Admin endpoint:
+
+- `GET /api/admin/ai/usage`
+
+The endpoint is admin-protected and read-only.
+
 Operational rollback remains:
 
 ```text

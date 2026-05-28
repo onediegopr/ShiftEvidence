@@ -92,7 +92,10 @@ export async function generatePdfReportForAssessment(params: {
           ? "custom_blueprint"
           : "readiness_report";
   const generatedAt = new Date();
-  const preview = await getReportPreviewData(assessment);
+  const preview = await getReportPreviewData(assessment, {
+    userId: params.userId,
+    aiOperationType: "pdf",
+  });
   const fileLocation = prepareReportFileLocation({
     userId: params.userId,
     workspaceId: assessment.workspaceId,

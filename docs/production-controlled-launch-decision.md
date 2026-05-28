@@ -348,3 +348,34 @@ Security:
 - No Hostinger config changed.
 - No OpenAI activation.
 - No DB migration.
+
+## ADMIN-2B Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational status:
+
+- Persistent AI usage metrics were added through `AiUsageEvent`.
+- The Spanish admin console now shows estimated tokens/costs, events, errors, and usage by user/assessment.
+- Preview and PDF AI advisory calls are tracked separately.
+
+Security:
+
+- No prompts or raw AI responses are persisted.
+- No raw uploaded files are persisted in AI usage events.
+- No API keys, env vars, cookies, tokens or private storage paths are shown.
+- No Hostinger config changed.
+- No OpenAI activation.
+- Migration is additive and non-destructive.
+
+Remaining blockers:
+
+- Billing automation and budgets remain future scope.
+- Advanced audit/actions remain ADMIN-3 scope.
+- Full public launch remains blocked by broader operational evidence, support/SLA and cleanup requirements.

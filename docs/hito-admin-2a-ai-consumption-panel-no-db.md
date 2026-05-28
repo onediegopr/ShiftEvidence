@@ -111,6 +111,27 @@ Alertas visibles:
 - Errores operativos persistidos.
 - Acciones seguras basadas en runtime settings persistente.
 
+## Cierre posterior ADMIN-2B
+
+ADMIN-2B reemplaza el placeholder principal de tokens/costos con persistencia real basada en `AiUsageEvent`.
+
+Queda implementado:
+
+- eventos IA persistidos;
+- tokens estimados;
+- costo estimado;
+- consumo por usuario;
+- consumo por evaluacion;
+- endpoint admin `GET /api/admin/ai/usage`;
+- tablas de errores y eventos IA en la consola.
+
+Sigue fuera de alcance:
+
+- billing real;
+- presupuesto mensual persistente;
+- cambio de provider desde admin;
+- auditoria avanzada completa.
+
 ## Decision
 
 - ADMIN-2A complete: SI si build/lint/typecheck/guardrails pasan.

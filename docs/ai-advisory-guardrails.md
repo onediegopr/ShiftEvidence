@@ -191,3 +191,31 @@ npm run ai:report-synthetic:require-gemini
 ```
 
 This mode must fail unless Gemini returns `providerStatus=success`.
+
+## ADMIN-2B Persistent Usage Guardrail
+
+ADMIN-2B adds persistent AI usage metrics with `AiUsageEvent`.
+
+Allowed persisted fields are operational metadata only:
+
+- provider/model.
+- operation type.
+- status.
+- duration.
+- input/output character counts.
+- estimated tokens.
+- estimated cost.
+- error category.
+- fallback flag.
+- safe user/assessment references.
+
+The tracker must not persist:
+
+- full prompts.
+- raw provider responses.
+- API keys or env vars.
+- cookies, session tokens or reset tokens.
+- raw uploaded files.
+- private storage paths.
+
+`metadataJson` is sanitized before persistence and provider write failures must not break report preview or PDF generation.

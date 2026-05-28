@@ -1063,3 +1063,29 @@ Required before marking AI Advisory real Gemini operational:
 - Validate PDF output with real Gemini advisory output.
 - Confirm no raw JSON, `[object Object]`, secrets, raw evidence or private paths are exposed.
 - Keep rollback ready with `AI_ADVISORY_ENABLED=false` or `AI_ADVISORY_PROVIDER=disabled`.
+
+## Addendum - ADMIN-2B Persistent AI Usage
+
+Date: 2026-05-28.
+
+The internal Spanish admin console now includes persistent AI usage metrics.
+
+Available to admins:
+
+- recent AI events.
+- estimated tokens.
+- estimated cost.
+- success/error/timeout/fallback counts.
+- usage by user.
+- usage by assessment.
+- recent AI-related errors.
+
+Safety boundaries:
+
+- cost is estimated and not billing authority.
+- prompts are not persisted.
+- raw provider responses are not persisted.
+- raw uploaded files are not persisted in AI usage events.
+- API keys, env vars, cookies, tokens and private storage paths are not displayed.
+- OpenAI remains inactive.
+- Full public launch remains NO.
