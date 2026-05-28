@@ -26,6 +26,14 @@ type Step = "setup" | "scanning" | "results" | "download";
 type LogType = "info" | "success" | "warn";
 type EvidenceSource = "none" | "file" | "manual";
 
+const readEmailParam = () => {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return new URLSearchParams(window.location.search).get("email") ?? "";
+};
+
 export default function SignUpPage() {
   // Signup states
   const [isRegistered, setIsRegistered] = useState(false);
@@ -33,12 +41,16 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const emailParam = new URLSearchParams(window.location.search).get("email");
-      if (emailParam) {
-        setEmail(emailParam);
-      }
+    const emailParam = readEmailParam();
+    if (!emailParam) {
+      return;
     }
+
+    const frame = window.requestAnimationFrame(() => {
+      setEmail(emailParam);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const [company, setCompany] = useState("");
