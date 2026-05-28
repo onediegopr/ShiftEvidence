@@ -259,6 +259,13 @@ Operating rules:
 - Pricing is a preview only; beta payments remain manual.
 - The page must not be presented as full public launch approval.
 - Claims remain limited to readiness, planning, evidence gaps, risk and decision support.
+
+SALES-PAGE-1.1 visual QA:
+
+- Desktop and mobile local screenshots were reviewed.
+- Production routes for sales page, demo and sample report returned healthy responses.
+- Hero copy now clarifies planning assessment vs. migration execution.
+- Pricing copy now reinforces manual beta access and no instant purchase.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

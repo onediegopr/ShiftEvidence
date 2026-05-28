@@ -51,6 +51,7 @@ Sales page update:
 - It uses no backend, DB, Gemini call, checkout, billing automatico, upload or customer data.
 - Pricing shown there is orientative and manual for beta.
 - Full public launch remains NO.
+- `SALES-PAGE-1.1` validates desktop/mobile visual QA and tightens copy around planning assessment, manual beta pricing and no instant purchase.
 
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 

@@ -153,7 +153,8 @@ export default function VMwareToProxmoxReadinessPage() {
             <p className="demo-hero-subtitle">Before migrating VMware to Proxmox, know what can break.</p>
             <p className="demo-hero-body">
               ShiftReadiness turns VMware evidence into a professional migration decision pack: VM risk classification,
-              Proxmox sizing, evidence gaps, migration waves, AI Advisory notes and executive-ready reports.
+              Proxmox sizing, evidence gaps, migration waves, AI Advisory notes and executive-ready reports. It is a
+              planning assessment, not a migration execution tool.
             </p>
             <div className="demo-badge-row sales-trust-row" aria-label="Readiness assessment operating boundaries">
               {trustBullets.map((bullet) => (
@@ -341,7 +342,10 @@ export default function VMwareToProxmoxReadinessPage() {
           <div className="shiftreadiness-section-heading">
             <div className="badge badge-cyan">Pricing preview</div>
             <h2>Simple packages for companies, consultants and MSPs.</h2>
-            <p>Payments are manual during beta. No public checkout or automatic billing is active.</p>
+            <p>
+              Pricing is a preview for broader invited beta. Payments and access are handled manually; no public
+              checkout or automatic billing is active.
+            </p>
           </div>
           <div className="sales-pricing-grid">
             {pricingPackages.map((pkg) => (
@@ -365,6 +369,9 @@ export default function VMwareToProxmoxReadinessPage() {
               Start assessment
             </Link>
           </div>
+          <p className="sales-pricing-note">
+            Submitting access or contact starts a manual review, not an instant purchase.
+          </p>
         </div>
       </section>
 

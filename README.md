@@ -81,6 +81,8 @@ SAMPLE-REPORT-2.1 completes visual PDF QA and marketing polish: the 15-page PDF 
 
 SALES-PAGE-1 adds a standalone VMware -> Proxmox readiness offer page at `/vmware-to-proxmox-readiness`. It is linked only from `/demo` and `/sample-report`, does not modify home, global navigation or `/shiftreadiness`, uses no backend/DB/Gemini/customer data, and keeps checkout, automatic billing and full public launch disabled.
 
+SALES-PAGE-1.1 completes visual QA and conversion polish for `/vmware-to-proxmox-readiness`: desktop/mobile screenshots were reviewed, pricing copy was tightened around manual beta access, and the hero now states the offer is a planning assessment, not migration execution. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

@@ -128,6 +128,10 @@ Local:
 
 SALES-PAGE-1 deja disponible una pagina comercial standalone para explicar la oferta VMware -> Proxmox Readiness, sin alterar la landing principal y sin declarar full public launch.
 
+## SALES-PAGE-1.1 polish
+
+El hito posterior `SALES-PAGE-1.1` reviso visualmente la pagina en desktop/mobile y produccion. Se aplico polish de copy para aclarar que es un assessment de planificacion, no una herramienta de ejecucion, y para reforzar que pricing/acceso son manuales durante beta, sin checkout ni compra instantanea.
+
 ## Proximos pasos
 
 - SALES-PAGE-1.1: visual QA post-deploy y polish de conversion si hace falta.

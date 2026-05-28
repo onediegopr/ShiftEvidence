@@ -73,6 +73,13 @@ SALES-PAGE-1 update:
 - It supports broader invited beta education and commercial explanation only.
 - Full public launch remains NO.
 
+SALES-PAGE-1.1 update:
+
+- `/vmware-to-proxmox-readiness` passed local desktop/mobile visual QA and production no-session smoke.
+- Copy was tightened to clarify planning assessment, manual beta pricing and no instant checkout.
+- No home, global navigation or `/shiftreadiness` changes were made.
+- Full public launch remains NO.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.
