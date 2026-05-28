@@ -32,9 +32,17 @@ export default function SignUpPage() {
   // Signup states
   const [isRegistered, setIsRegistered] = useState(false);
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState(() =>
-    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("email") ?? "",
-  );
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const emailParam = new URLSearchParams(window.location.search).get("email");
+      if (emailParam) {
+        setEmail(emailParam);
+      }
+    }
+  }, []);
+
   const [company, setCompany] = useState("");
   const [clusterSize, setClusterSize] = useState("< 50 VMs");
   const [password, setPassword] = useState("");
