@@ -37,6 +37,8 @@ AI-1.3 production Gemini user-attested QA reported PASS for the main visual flow
 
 ADMIN-1 adds the first Spanish internal admin console at `/dashboard/admin`: protected by the same product login and `ADMIN_EMAILS`, with operational summary, system health, Gemini status, safe config health, read-only users/assessments, audit placeholders and Spanish unlock-request administration. Full public launch remains NO.
 
+ADMIN-2A improves the Spanish admin `IA y Consumo` panel without DB schema or migrations. It shows Gemini/provider status, safe credential booleans, memory metrics, recent in-memory AI events, operational alerts and honest placeholders for persistent tokens/costs in ADMIN-2B.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -73,6 +75,7 @@ ADMIN-1 adds the first Spanish internal admin console at `/dashboard/admin`: pro
 - Optional AI Advisory Notes architecture with Gemini real provider support and safe fallback.
 - Manual admin unlock/entitlement flow.
 - Spanish internal admin console at `/dashboard/admin` for operational status, AI health, users and assessments.
+- No-DB AI consumption panel with memory metrics and safe operational alerts.
 
 ## Scripts
 - `npm run dev`
@@ -141,6 +144,7 @@ Optional for future work:
 - `docs/hito-ai-report-1-full-synthetic-gemini-readiness-report.md`
 - `docs/hito-ai-report-1b-full-synthetic-gemini-success-report.md`
 - `docs/hito-admin-1-spanish-admin-console-foundation.md`
+- `docs/hito-admin-2a-ai-consumption-panel-no-db.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

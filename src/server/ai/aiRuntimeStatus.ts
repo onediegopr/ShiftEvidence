@@ -45,6 +45,10 @@ export type AiRuntimeStatus = {
     timeouts: number;
     fallbackUsado: number;
   };
+  metricasEnMemoriaDisponibles: boolean;
+  ultimaDuracionMs: number | null;
+  duracionPromedioMs: number | null;
+  eventosRecientes: AiRuntimeEvent[];
 };
 
 type AiRuntimeStore = {
@@ -121,6 +125,14 @@ export function getAiRuntimeStatus(): AiRuntimeStatus {
   const config = getAiAdvisoryConfig();
   const store = getStore();
   const last = store.events.find((event) => event.eventType !== "ai_advisory_requested") ?? null;
+  const eventsWithDuration = store.events.filter((event) => typeof event.durationMs === "number");
+  const averageDuration =
+    eventsWithDuration.length > 0
+      ? Math.round(
+          eventsWithDuration.reduce((total, event) => total + (event.durationMs ?? 0), 0) /
+            eventsWithDuration.length,
+        )
+      : null;
   const geminiConfigured = Boolean(getAiAdvisoryProviderKey("gemini"));
   const openaiConfigured = Boolean(getAiAdvisoryProviderKey("openai"));
   const hasProviderKey =
@@ -149,5 +161,9 @@ export function getAiRuntimeStatus(): AiRuntimeStatus {
     archivosCrudosEnviados: false,
     redaccionSecretos: "enabled",
     metricas: { ...store.metrics },
+    metricasEnMemoriaDisponibles: true,
+    ultimaDuracionMs: last?.durationMs ?? null,
+    duracionPromedioMs: averageDuration,
+    eventosRecientes: store.events.slice(0, 10),
   };
 }

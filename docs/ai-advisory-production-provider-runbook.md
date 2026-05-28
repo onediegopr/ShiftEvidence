@@ -291,3 +291,26 @@ The Spanish admin console now consumes the safe AI runtime status server-side an
 The console must never display API keys, prompts, raw responses, uploaded file contents, cookies, tokens or private storage paths.
 
 Detailed cost/tokens, per-user consumption and budget alerts remain ADMIN-2 scope.
+
+## ADMIN-2A No-DB AI Consumption Panel
+
+Date: 2026-05-28.
+
+The admin console now exposes a no-database AI consumption panel using runtime memory only:
+
+- Gemini/provider status.
+- Model.
+- Safe key configured booleans.
+- Last status and error category.
+- Last duration and average duration when available.
+- In-memory calls, successes, errors, timeouts and fallback counters.
+- Recent in-memory AI events.
+- Operational alerts.
+- Honest placeholders for persistent tokens/costs.
+
+Limitations:
+
+- Metrics reset on deploy/restart.
+- Costs and tokens are not persisted.
+- User/assessment-level consumption remains ADMIN-2B scope.
+- No Hostinger env vars are edited from the console.

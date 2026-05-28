@@ -29,16 +29,34 @@ function formatDate(value: Date | string | null | undefined) {
   }).format(new Date(value));
 }
 
+function formatDuration(value: number | null | undefined) {
+  return typeof value === "number" ? `${value} ms` : "No disponible";
+}
+
+function formatAiEventType(value: string) {
+  const labels: Record<string, string> = {
+    ai_advisory_requested: "Solicitud IA",
+    ai_advisory_success: "IA exitosa",
+    ai_advisory_failed: "IA con error",
+    ai_advisory_timeout: "Timeout IA",
+    ai_advisory_fallback_used: "Fallback usado",
+  };
+  return labels[value] ?? value;
+}
+
 function statusTone(status: string) {
   switch (status) {
     case "Operativo":
     case "Configurada":
     case "Verificado":
     case "Activa":
+    case "Info":
       return "good";
     case "Atención":
     case "Pendiente":
     case "Desconocido":
+      return "warning";
+    case "Atencion":
       return "warning";
     case "Degradado":
       return "danger";
@@ -219,6 +237,10 @@ export default async function AdminConsolePage() {
           <MetricCard icon={<Settings size={22} />} label="Modelo" value={ai.modelo ?? "No configurado"} note="Modelo activo o fallback" />
           <MetricCard icon={<CheckCircle2 size={22} />} label="Último estado" value={ai.ultimoEstado} note={`Último error: ${ai.ultimoError}`} />
           <MetricCard icon={<ShieldCheck size={22} />} label="Fallback" value={ai.fallbackDisponible ? "Disponible" : "No disponible"} note="Preview/PDF no deben romperse" />
+          <MetricCard icon={<Activity size={22} />} label="Llamadas en memoria" value={data.aiConsumption.callsInMemory} note="Se reinician con deploy/restart" />
+          <MetricCard icon={<Gauge size={22} />} label="Duración promedio" value={formatDuration(data.aiConsumption.averageDurationMs)} note="Sobre eventos en memoria" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Errores" value={data.aiConsumption.errorsInMemory} note={`Timeouts: ${data.aiConsumption.timeoutsInMemory}`} />
+          <MetricCard icon={<FileText size={22} />} label="Costos y tokens" value="Pendiente" note="Se implementa con persistencia en ADMIN-2B" />
         </section>
         <div className="assessment-preview-grid">
           <article className="glass-card report-history-card">
@@ -228,8 +250,11 @@ export default async function AdminConsolePage() {
               <span>OpenAI API Key: {ai.openaiConfigurado ? "Configurada" : "No configurada"}</span>
               <span>Secretos expuestos: {ai.secretosExpuestos ? "Sí" : "No"}</span>
               <span>Archivos crudos enviados: {ai.archivosCrudosEnviados ? "Sí" : "No"}</span>
+              <span>Timeout: {ai.timeoutMs} ms</span>
+              <span>Input máximo: {ai.maxInputChars} chars</span>
+              <span>Output máximo: {ai.maxOutputChars} chars</span>
             </div>
-            <p className="assessment-inline-note">Las métricas actuales pueden reiniciarse con deploy/restart.</p>
+            <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2A.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Métricas en memoria</h3>
@@ -239,9 +264,61 @@ export default async function AdminConsolePage() {
               <span>Errores: {ai.metricas.errores}</span>
               <span>Timeouts: {ai.metricas.timeouts}</span>
               <span>Fallback usado: {ai.metricas.fallbackUsado}</span>
+              <span>Última duración: {formatDuration(ai.ultimaDuracionMs)}</span>
+              <span>Promedio: {formatDuration(ai.duracionPromedioMs)}</span>
             </div>
-            <p className="assessment-inline-note">Consumo detallado y costos estimados se implementarán en ADMIN-2.</p>
+            <p className="assessment-inline-note">Las métricas son temporales y pueden perderse con un deploy. No hay billing real en ADMIN-2A.</p>
           </article>
+          <article className="glass-card report-history-card">
+            <h3>Alertas operativas</h3>
+            <div className="report-history-grid">
+              {data.aiConsumption.alerts.map((alert) => (
+                <div key={alert.title} className="assessment-inline-note">
+                  <StatusPill status={alert.status} /> <strong>{alert.title}</strong>: {alert.message}
+                </div>
+              ))}
+            </div>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Costos estimados</h3>
+            <p>{data.aiConsumption.costStatus}</p>
+            <p className="assessment-inline-note">{data.aiConsumption.costDescription}</p>
+            <p className="assessment-inline-note">No se inventan tokens ni costos sin eventos persistentes.</p>
+          </article>
+        </div>
+        <div className="assessment-table-wrap">
+          <table className="assessment-table">
+            <thead>
+              <tr>
+                <th>Evento</th>
+                <th>Proveedor</th>
+                <th>Modelo</th>
+                <th>Estado</th>
+                <th>Error</th>
+                <th>Duración</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ai.eventosRecientes.length === 0 ? (
+                <tr>
+                  <td colSpan={7}>No hay eventos IA recientes en memoria.</td>
+                </tr>
+              ) : (
+                ai.eventosRecientes.map((event) => (
+                  <tr key={`${event.createdAt}-${event.eventType}`}>
+                    <td>{formatAiEventType(event.eventType)}</td>
+                    <td>{event.provider}</td>
+                    <td>{event.model ?? "No disponible"}</td>
+                    <td>{event.status}</td>
+                    <td>{event.errorCategory}</td>
+                    <td>{formatDuration(event.durationMs)}</td>
+                    <td>{formatDate(event.createdAt)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -253,6 +330,7 @@ export default async function AdminConsolePage() {
           title="Health de configuración segura"
           description="Sólo estados seguros. No se muestran secretos, tokens, URLs privadas completas ni API keys."
         />
+        <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola en ADMIN-2A.</p>
         <div className="assessment-table-wrap">
           <table className="assessment-table">
             <thead>

@@ -102,6 +102,12 @@ Limitacion:
 
 - Consumo detallado, costos estimados, presupuesto mensual y consumo por usuario/assessment quedan para ADMIN-2.
 
+ADMIN-2A update:
+
+- La consola ahora muestra metricas IA en memoria, eventos recientes, duracion ultima/promedio, alertas operativas y placeholders claros para tokens/costos persistentes.
+- No se agrego DB schema ni migracion.
+- La persistencia de consumo queda para ADMIN-2B.
+
 ## Configuracion segura
 
 La consola muestra solamente estados seguros:

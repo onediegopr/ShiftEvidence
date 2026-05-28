@@ -41,6 +41,27 @@ Estado:
 
 La consola es interna para operador/dueno. No es una pantalla cliente y no cambia la decision de full public launch.
 
+## ADMIN-2A update - IA y Consumo sin DB
+
+ADMIN-2A mejora la seccion `IA y Consumo` de la consola interna sin agregar schema ni migraciones.
+
+Incluye:
+
+- estado actual de Gemini;
+- provider/modelo;
+- credenciales como configurada/no configurada sin valores;
+- fallback disponible;
+- ultimo estado/error;
+- metricas en memoria;
+- eventos IA recientes en memoria;
+- alertas operativas basicas;
+- placeholder honesto para tokens/costos persistentes.
+
+Limitacion:
+
+- las metricas son temporales y pueden reiniciarse con deploy/restart;
+- costos/tokens persistentes, consumo por usuario y consumo por assessment quedan para ADMIN-2B.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

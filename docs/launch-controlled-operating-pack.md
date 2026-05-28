@@ -366,3 +366,21 @@ Operational rules:
 - Keep user/assessment actions read-only until ADMIN-2 explicitly adds safe operations.
 - Do not use the admin console as evidence for full public launch by itself.
 - Full public launch remains NO.
+
+## ADMIN-2A AI Consumption Panel
+
+Date: 2026-05-28.
+
+Operational status:
+
+- The Spanish admin console now has a stronger `IA y Consumo` panel.
+- It uses in-memory runtime metrics only.
+- It shows Gemini status, provider/model, safe key configured states, recent memory events and operational alerts.
+- Tokens, cost estimates, per-user usage and per-assessment usage remain pending for ADMIN-2B.
+
+Rules:
+
+- Do not treat in-memory metrics as billing evidence.
+- Do not edit provider secrets from the admin console.
+- Do not activate OpenAI.
+- Full public launch remains NO.

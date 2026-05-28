@@ -325,3 +325,26 @@ Remaining blockers:
 
 - ADMIN-2 still needs persisted consumption/cost metrics, advanced audit/errors and safe operational actions.
 - Full public launch remains blocked by broader operational evidence, support/SLA and cleanup requirements.
+
+## ADMIN-2A Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational status:
+
+- The admin console `IA y Consumo` panel was improved without DB schema or migrations.
+- It shows Gemini status, provider/model, safe credential booleans, in-memory metrics, recent in-memory events and basic operational alerts.
+- Persistent tokens/costs and per-user/per-assessment consumption remain ADMIN-2B scope.
+
+Security:
+
+- No secrets displayed.
+- No Hostinger config changed.
+- No OpenAI activation.
+- No DB migration.

@@ -23,6 +23,62 @@ function statusFromBoolean(value: boolean, configuredLabel = "Operativo") {
   return value ? configuredLabel : "No configurado";
 }
 
+function getAiOperationalAlerts(aiStatus: ReturnType<typeof getAiRuntimeStatus>) {
+  const alerts: Array<{ title: string; status: "Operativo" | "Atencion" | "Info"; message: string }> = [];
+
+  if (aiStatus.proveedor === "gemini" && !aiStatus.geminiConfigurado) {
+    alerts.push({
+      title: "Gemini requiere configuracion",
+      status: "Atencion",
+      message: "El proveedor es Gemini, pero la key no aparece configurada en este runtime.",
+    });
+  }
+
+  if (aiStatus.iaActiva && !["gemini", "mock", "openai"].includes(aiStatus.proveedor)) {
+    alerts.push({
+      title: "Proveedor desconocido",
+      status: "Atencion",
+      message: "AI Advisory esta activo con un proveedor no esperado.",
+    });
+  }
+
+  if (aiStatus.openaiConfigurado && aiStatus.proveedor !== "openai") {
+    alerts.push({
+      title: "OpenAI configurado pero no activo",
+      status: "Info",
+      message: "OpenAI no se usa mientras el proveedor activo sea distinto de openai.",
+    });
+  }
+
+  if (aiStatus.ultimoEstado === "error" || aiStatus.ultimoEstado === "timeout") {
+    alerts.push({
+      title: "Ultima llamada con atencion",
+      status: "Atencion",
+      message: `Ultimo estado: ${aiStatus.ultimoEstado}. Error: ${aiStatus.ultimoError}.`,
+    });
+  }
+
+  alerts.push({
+    title: "Metricas temporales",
+    status: "Info",
+    message: "Las metricas actuales son en memoria y pueden reiniciarse con deploy/restart.",
+  });
+
+  alerts.push({
+    title: "Fallback disponible",
+    status: "Operativo",
+    message: "Preview y PDF mantienen fallback si el proveedor IA falla.",
+  });
+
+  alerts.push({
+    title: "Privacidad IA",
+    status: "Operativo",
+    message: "No se reportan secretos expuestos ni archivos crudos enviados al proveedor.",
+  });
+
+  return alerts;
+}
+
 export async function getAdminConsoleData() {
   const since = sevenDaysAgo();
   const [
@@ -153,6 +209,19 @@ export async function getAdminConsoleData() {
       generalStatus: failedSignals > 0 ? "Atención" : "Operativo",
     },
     aiStatus,
+    aiConsumption: {
+      callsInMemory: aiStatus.metricas.solicitudes,
+      successesInMemory: aiStatus.metricas.exitos,
+      errorsInMemory: aiStatus.metricas.errores,
+      timeoutsInMemory: aiStatus.metricas.timeouts,
+      fallbackInMemory: aiStatus.metricas.fallbackUsado,
+      lastDurationMs: aiStatus.ultimaDuracionMs,
+      averageDurationMs: aiStatus.duracionPromedioMs,
+      recentEvents: aiStatus.eventosRecientes,
+      alerts: getAiOperationalAlerts(aiStatus),
+      costStatus: "Pendiente para ADMIN-2B",
+      costDescription: "El calculo persistente de tokens y costos requiere guardar eventos de uso IA.",
+    },
     systemHealth: [
       {
         title: "Sistema general",
