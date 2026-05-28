@@ -454,11 +454,11 @@ export default async function ReportPreviewPage({
         </div>
       </section>
 
-      {upgradeMessage ? <div className="dashboard-banner dashboard-banner-success">{upgradeMessage}</div> : null}
-      {generatedMessage ? <div className="dashboard-banner dashboard-banner-success">{generatedMessage}</div> : null}
-      {deletedMessage ? <div className="dashboard-banner dashboard-banner-success">{deletedMessage}</div> : null}
-      {unlockMessage ? <div className="dashboard-banner dashboard-banner-success">{unlockMessage}</div> : null}
-      {error ? <div className="dashboard-banner dashboard-banner-error">{error}</div> : null}
+      {upgradeMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{upgradeMessage}</div> : null}
+      {generatedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{generatedMessage}</div> : null}
+      {deletedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{deletedMessage}</div> : null}
+      {unlockMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{unlockMessage}</div> : null}
+      {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
 
       <section className="assessment-summary-grid report-summary-grid">
         {report.reportCards.map((card) => (

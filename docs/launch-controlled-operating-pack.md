@@ -271,6 +271,25 @@ Decision:
 - Full public launch remains NO.
 - Strict synthetic Gemini/PDF report success remains separate under `AI-REPORT-SYNTHETIC-HARDENING`.
 
+## UX-HARDENING-1 Pre-Real-Use Polish
+
+Date: 2026-05-28.
+
+Pre-real-use UX/UI hardening was completed without adding features or changing production settings.
+
+Implemented polish:
+
+- Removed `transition: all` and `outline: none` from source CSS.
+- Added explicit `:focus-visible` treatment for key controls.
+- Replaced public `alert()` flows with inline status messages.
+- Added basic `role="status"` / `role="alert"` semantics to dynamic banners.
+- Tightened admin Spanish microcopy and readiness-oriented public footer copy.
+
+Decision:
+
+- Product remains ready for broader invited beta / first controlled real-client usage.
+- Full public launch remains NO.
+
 ## Rollback / Pause
 
 If launch must be paused:

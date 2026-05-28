@@ -128,7 +128,7 @@ export default async function AssessmentsPage({ searchParams }: AssessmentsPageP
       </section>
 
       {resolvedSearchParams?.archived === "1" ? (
-        <div className="dashboard-banner dashboard-banner-success">
+        <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">
           Assessment archived successfully.
         </div>
       ) : null}

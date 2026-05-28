@@ -18,7 +18,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     setMessage(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords do not match. Re-enter both fields and try again.");
       setIsSubmitting(false);
       return;
     }
@@ -32,7 +32,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       const payload = (await response.json()) as { ok?: boolean; message?: string };
 
       if (!response.ok || !payload.ok) {
-        setError(payload.message ?? "Unable to reset password.");
+        setError(payload.message ?? "Unable to reset password. Request a new reset link and try again.");
         return;
       }
 
@@ -40,7 +40,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       setConfirmPassword("");
       setMessage(payload.message ?? "Password updated. You can sign in now.");
     } catch {
-      setError("Unable to reset password.");
+      setError("Unable to reset password. Request a new reset link and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -49,7 +49,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   if (!token) {
     return (
       <>
-        <p className="auth-error">This reset link is missing a token.</p>
+        <p className="auth-error" role="alert">This reset link is missing a token. Request a new recovery link.</p>
         <div className="auth-footer">
           <span>
             <ShieldCheck size={16} /> Request a new recovery link
@@ -80,7 +80,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           <ShieldCheck size={24} />
         </div>
         <h3 style={{ color: "white", marginBottom: "0.5rem" }}>Password updated successfully!</h3>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "2rem" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "2rem" }} role="status" aria-live="polite">
           {message}
         </p>
         <Link href="/sign-in" className="btn btn-primary btn-glow" style={{ justifyContent: "center" }}>
@@ -122,9 +122,9 @@ export default function ResetPasswordForm({ token }: { token: string }) {
             autoComplete="new-password"
           />
         </label>
-        {error ? <p className="auth-error">{error}</p> : null}
+        {error ? <p className="auth-error" role="alert">{error}</p> : null}
         <button type="submit" className="btn btn-primary btn-glow" disabled={isSubmitting}>
-          {isSubmitting ? "Updating..." : "Update password"}
+          {isSubmitting ? "Updating…" : "Update password"}
           <ArrowRight size={16} />
         </button>
       </form>

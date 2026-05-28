@@ -38,6 +38,7 @@ export default function SignUpPage() {
   const [clusterSize, setClusterSize] = useState("< 50 VMs");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [reportInfoMessage, setReportInfoMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Scanner wizard states
@@ -77,7 +78,7 @@ export default function SignUpPage() {
     });
 
     if (authError) {
-      setError(authError.message ?? "Unable to create account.");
+      setError(authError.message ?? "Unable to create account. Check your details and try again.");
       setIsSubmitting(false);
       return;
     }
@@ -354,7 +355,11 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                {error ? <p className="auth-error" style={{ color: "var(--accent-red)", fontSize: "0.85rem", margin: 0 }}>{error}</p> : null}
+                {error ? (
+                  <p className="auth-error" role="alert" style={{ color: "var(--accent-red)", fontSize: "0.85rem", margin: 0 }}>
+                    {error}
+                  </p>
+                ) : null}
 
                 <button
                   type="submit"
@@ -362,7 +367,7 @@ export default function SignUpPage() {
                   disabled={isSubmitting}
                   style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
                 >
-                  {isSubmitting ? "Creating Account..." : "Create Account & Start Audit"}
+                  {isSubmitting ? "Creating account…" : "Create Account & Start Audit"}
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -800,7 +805,7 @@ export default function SignUpPage() {
                   </div>
                   <div>
                     <h4 className="mb-2" style={{ color: "white" }}>
-                      Analyzing Cluster Architecture...
+                      Analyzing Cluster Architecture…
                     </h4>
                     <p style={{ fontSize: "0.85rem" }}>
                       Evaluating compatibility profiles and configuration alignments.
@@ -958,12 +963,26 @@ export default function SignUpPage() {
                   <button
                     className="btn btn-secondary btn-sm"
                     style={{ display: "flex", gap: "0.5rem", alignItems: "center", border: "1px solid var(--border-color)" }}
-                    onClick={() => alert("Full PDF downloads are available from the authenticated workspace after evidence review.")}
+                    onClick={() =>
+                      setReportInfoMessage(
+                        "Full PDF downloads are available inside the authenticated workspace after evidence review.",
+                      )
+                    }
                   >
                     <Download size={16} />
                     Download info
                   </button>
                 </div>
+                {reportInfoMessage ? (
+                  <p
+                    className="auth-success"
+                    role="status"
+                    aria-live="polite"
+                    style={{ marginTop: "0.75rem", maxWidth: "500px", width: "100%" }}
+                  >
+                    {reportInfoMessage}
+                  </p>
+                ) : null}
 
                 <div className="shiftreadiness-actions" style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
                   <Link href="/dashboard" className="btn btn-primary btn-glow" style={{ background: "linear-gradient(135deg, #06b6d4 30%, #0891b2 100%)", boxShadow: "0 4px 20px rgba(6, 182, 212, 0.3)" }}>

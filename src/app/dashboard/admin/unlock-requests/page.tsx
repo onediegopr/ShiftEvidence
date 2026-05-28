@@ -219,13 +219,13 @@ export default async function UnlockRequestsAdminPage({
         <div className="dashboard-hero-actions">
           <Link href="/dashboard" className="btn btn-secondary">
             <ArrowLeft size={16} />
-            Volver al dashboard
+            Volver al panel
           </Link>
         </div>
       </section>
 
-      {saved ? <div className="dashboard-banner dashboard-banner-success">Accion administrativa guardada.</div> : null}
-      {error ? <div className="dashboard-banner dashboard-banner-error">{error}</div> : null}
+      {saved ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">Acción administrativa guardada.</div> : null}
+      {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
 
       <section className="assessment-summary-grid">
         <article className="glass-card assessment-summary-card">

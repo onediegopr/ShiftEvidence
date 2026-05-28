@@ -68,7 +68,7 @@ export default async function DashboardPage() {
       </section>
 
       {isAdmin && (
-        <section className="dashboard-banner dashboard-banner-success" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <section className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <ClipboardList size={20} style={{ color: "#38bdf8" }} />
             <div>

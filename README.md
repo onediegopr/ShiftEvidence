@@ -67,6 +67,8 @@ LOCAL-GEMINI-1 adds a safe local Gemini smoke workflow. Local `.env.local` now c
 
 FUNCTIONAL-READINESS-1B closes the fresh authenticated smoke gap by user-attested evidence. User flow PASS: dashboard, assessments, Context Intake, report preview, Gemini Advisory, deterministic scores, PDF generation/download/open, AI Advisory in PDF, no raw JSON, no `[object Object]`, no visible secrets/storage paths. Admin flow PASS: `/dashboard/admin`, Estado del Sistema, Usuarios, Evaluaciones, IA y Consumo, Accesos y Planes, Oportunidades, Configuracion Operativa and Auditoria load; Gemini appears active/runtime env-gemini and AI usage/consumption state is visible. Localhost PASS and `npm run ai:smoke-local-gemini` returns `providerStatus=success` with `gemini-flash-lite-latest`. Full public launch remains NO.
 
+UX-HARDENING-1 applies a pre-real-use UX/accessibility polish pass without new features: source CSS no longer uses `transition: all` or `outline: none`, focus-visible states are explicit, public `alert()` calls were replaced by inline status messages, key success/error banners now expose basic ARIA roles, admin microcopy remains Spanish, and dangerous migration/full-launch claims remain controlled. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

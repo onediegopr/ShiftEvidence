@@ -621,8 +621,8 @@ export default async function AssessmentDetailPage({
         </div>
       </section>
 
-      {saved ? <div className="dashboard-banner dashboard-banner-success">Changes saved.</div> : null}
-      {error ? <div className="dashboard-banner dashboard-banner-error">{error}</div> : null}
+      {saved ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">Changes saved.</div> : null}
+      {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
 
       {/* Tabs Navigation */}
       <nav className="tabs-container" aria-label="Assessment tabs" style={{ marginTop: "1rem" }}>
@@ -1331,7 +1331,7 @@ export default async function AssessmentDetailPage({
                           <div className="assessment-evidence-actions" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
                             {file.evidenceType === "rvtools" && (
                               file.processingStatus === "processing" ? (
-                                <span className="assessment-inline-note">Parsing...</span>
+                                <span className="assessment-inline-note">Parsing…</span>
                               ) : (
                                 <form action={parseRvtoolsEvidenceAction.bind(null, assessment.id, file.id)}>
                                   <button type="submit" className="btn btn-primary btn-glow btn-sm" style={{ padding: "0.45rem 1rem", fontSize: "0.85rem", background: "linear-gradient(135deg, #06b6d4 30%, #0891b2 100%)", border: "none" }}>

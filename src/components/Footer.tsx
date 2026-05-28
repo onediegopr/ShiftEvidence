@@ -1,9 +1,11 @@
 import { ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 export default function Footer() {
+  const [newsletterStatus, setNewsletterStatus] = useState<string | null>(null);
   const copy = {
     brand:
-      "Enterprise-grade VMware to Proxmox migration assessments. Automated checks, custom analysis, and data-loss risk guidance.",
+      "Enterprise-grade VMware to Proxmox readiness assessments. Evidence review, custom analysis, and data-loss risk guidance before migration.",
     platform: "Platform",
     resources: "Resources",
     checklist: "Get Free Migration Checklist",
@@ -16,7 +18,7 @@ export default function Footer() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you! We will reach out to you with migration resources shortly.");
+    setNewsletterStatus("Thank you. We will reach out with migration readiness resources shortly.");
   };
 
   return (
@@ -103,7 +105,9 @@ export default function Footer() {
             >
               <input
                 type="email"
-                placeholder="Enter work email"
+                name="workEmail"
+                autoComplete="email"
+                placeholder="you@company.com"
                 required
                 className="form-input"
                 style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}
@@ -112,10 +116,16 @@ export default function Footer() {
                 type="submit"
                 className="btn btn-primary"
                 style={{ padding: "0.5rem 1rem", borderRadius: "9999px" }}
+                aria-label="Request migration readiness resources"
               >
                 <ArrowRight size={16} />
               </button>
             </form>
+            {newsletterStatus ? (
+              <p className="auth-success" role="status" aria-live="polite" style={{ marginTop: "0.75rem" }}>
+                {newsletterStatus}
+              </p>
+            ) : null}
           </div>
         </div>
 

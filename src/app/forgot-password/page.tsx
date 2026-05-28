@@ -5,7 +5,7 @@ import { useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 
-const NEUTRAL_MESSAGE = "If an account exists, we'll send recovery instructions.";
+const NEUTRAL_MESSAGE = "If an account exists, we will send recovery instructions.";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -94,10 +94,10 @@ export default function ForgotPasswordPage() {
                 autoComplete="email"
               />
             </label>
-            {message ? <p className="auth-success">{message}</p> : null}
-            {error ? <p className="auth-error">{error}</p> : null}
+            {message ? <p className="auth-success" role="status" aria-live="polite">{message}</p> : null}
+            {error ? <p className="auth-error" role="alert">{error}</p> : null}
             <button type="submit" className="btn btn-primary btn-glow" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Send recovery instructions"}
+              {isSubmitting ? "Submitting…" : "Send recovery instructions"}
               <ArrowRight size={16} />
             </button>
           </form>

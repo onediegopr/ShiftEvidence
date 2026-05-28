@@ -553,7 +553,7 @@ export default function ReadinessValidator({
               </div>
               <div>
                 <h4 className="mb-2" style={{ color: "white" }}>
-                  Analyzing Cluster Architecture...
+                  Analyzing Cluster Architecture…
                 </h4>
                 <p style={{ fontSize: "0.85rem" }}>
                   Evaluating compatibility profiles and configuration alignments.

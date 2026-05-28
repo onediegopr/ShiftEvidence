@@ -23,7 +23,7 @@ export default function NewAssessmentPage({ searchParams }: NewAssessmentPagePro
         </div>
       </section>
 
-      {error ? <div className="dashboard-banner dashboard-banner-error">{error}</div> : null}
+      {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
 
       <form action={createAssessmentAction} className="glass-card assessment-builder">
         <div className="assessment-builder-grid">

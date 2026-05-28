@@ -14,6 +14,15 @@ Functional readiness update:
 - Local Gemini smoke PASS with `providerStatus=success` using `gemini-flash-lite-latest`.
 - Full public launch remains NO.
 
+UX hardening update:
+
+- `UX-HARDENING-1` completed pre-real-use polish without new features.
+- Source CSS focus and transition behavior was tightened.
+- Public `alert()` flows were replaced with inline status messaging.
+- Dynamic success/error messages received basic ARIA semantics.
+- Admin microcopy remains Spanish.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.

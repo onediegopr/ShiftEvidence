@@ -195,7 +195,7 @@ function AccessDenied() {
           <p>Tu sesión está activa, pero tu usuario no está autorizado como administrador.</p>
         </div>
         <Link href="/dashboard" className="btn btn-secondary">
-          Volver al dashboard
+          Volver al panel
         </Link>
       </section>
       <section className="assessment-section glass-card">
@@ -270,7 +270,7 @@ export default async function AdminConsolePage() {
         <MetricCard icon={<FileText size={22} />} label="PDF generados" value={data.summary.totalReports} note="Reportes no borrados" />
         <MetricCard icon={<Bot size={22} />} label="IA Gemini" value={ai.iaActiva ? "Activa" : "No activa"} note={`Proveedor: ${ai.proveedor}`} />
         <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
-        <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Controlled launch" />
+        <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Lanzamiento controlado" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
       </section>
 
@@ -450,8 +450,8 @@ export default async function AdminConsolePage() {
               <span>Consumido mes actual: {formatCurrency(data.aiConsumption.budget.spentMonthUsd)}</span>
               <span>Uso: {formatPercent(data.aiConsumption.budget.percentUsed)}</span>
               <span>Restante: {formatCurrency(data.aiConsumption.budget.remainingMonthUsd)}</span>
-              <span>Limite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
-              <span>Limite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
+              <span>Límite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
+              <span>Límite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
               <span>Límite por evaluación: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
             </div>
             <p className="assessment-inline-note">El bloqueo automático se activa desde Configuración Operativa con aplicación de límites IA y bloqueo por presupuesto.</p>
@@ -465,11 +465,11 @@ export default async function AdminConsolePage() {
                   <input name="monthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.monthlyBudgetUsd ?? ""} />
                 </label>
                 <label className="form-label">
-                  Limite diario USD
+                  Límite diario USD
                   <input name="dailyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.dailyBudgetUsd ?? ""} />
                 </label>
                 <label className="form-label">
-                  Limite por usuario USD
+                  Límite por usuario USD
                   <input name="perUserMonthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd ?? ""} />
                 </label>
                 <label className="form-label">

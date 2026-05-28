@@ -182,7 +182,11 @@ p {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     position: relative;
 }
@@ -226,7 +230,12 @@ p {
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     border: 1px solid transparent;
     gap: 0.5rem;
@@ -239,7 +248,12 @@ p {
     box-shadow:
         0 4px 14px rgba(255, 255, 255, 0.08),
         0 1px 2px rgba(0, 0, 0, 0.05);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -265,7 +279,12 @@ p {
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-secondary svg {
@@ -1026,8 +1045,21 @@ p {
     height: 6px;
     border-radius: 3px;
     background: rgba(255, 255, 255, 0.1);
-    outline: none;
     transition: background 0.3s;
+}
+
+.custom-range:focus-visible,
+.price-input:focus-visible,
+.form-input:focus-visible,
+.btn:focus-visible,
+.dashboard-card-link:focus-visible,
+.footer-links-list a:focus-visible,
+.auth-footer a:focus-visible,
+.tab-btn:focus-visible,
+.collapse-toggle:focus-visible,
+.intake-option-btn:focus-visible {
+    outline: 2px solid hsl(var(--secondary));
+    outline-offset: 3px;
 }
 
 .custom-range::-webkit-slider-thumb {
@@ -1062,7 +1094,11 @@ p {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-muted);
-    transition: all 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        box-shadow 0.2s,
+        color 0.2s;
 }
 
 .radio-btn.active {
@@ -1175,7 +1211,11 @@ p {
     font-size: 0.85rem;
     font-weight: 600;
     font-family: var(--font-mono);
-    transition: all 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        box-shadow 0.2s,
+        color 0.2s;
 }
 
 .core-btn:hover {
@@ -1269,7 +1309,6 @@ p {
     font-size: 0.85rem;
     padding: 0.35rem 0.5rem 0.35rem 1.3rem;
     width: 90px;
-    outline: none;
     transition: border-color 0.2s;
 }
 
@@ -1310,7 +1349,10 @@ p {
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        color 0.2s;
     font-family: inherit;
 }
 
@@ -1415,7 +1457,9 @@ p {
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(8px);
     min-width: 220px;
-    transition: all 0.3s;
+    transition:
+        box-shadow 0.3s,
+        transform 0.3s;
 }
 
 .cmp-header-badge:hover {
@@ -1804,7 +1848,9 @@ p {
     height: 4px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s;
+    transition:
+        background-color 0.3s,
+        box-shadow 0.3s;
 }
 
 .step-dot.active {
@@ -1854,7 +1900,11 @@ p {
     border-radius: var(--radius-md);
     padding: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        box-shadow 0.2s,
+        transform 0.2s;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -2113,7 +2163,10 @@ p {
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.015);
-    transition: all 0.3s;
+    transition:
+        border-color 0.3s,
+        box-shadow 0.3s,
+        transform 0.3s;
 }
 
 .cred-card:hover {
@@ -2216,7 +2269,11 @@ p {
     align-items: center;
     justify-content: center;
     color: hsl(var(--primary));
-    transition: all 0.3s;
+    transition:
+        background-color 0.3s,
+        border-color 0.3s,
+        color 0.3s,
+        transform 0.3s;
 }
 
 .feature-card:hover .feature-icon-wrapper {
@@ -2496,7 +2553,9 @@ p {
     border: 2px solid;
     background: var(--bg-base);
     z-index: 2;
-    transition: all 0.3s;
+    transition:
+        box-shadow 0.3s,
+        transform 0.3s;
     margin-top: 1rem;
 }
 
@@ -2513,7 +2572,10 @@ p {
     flex-direction: column;
     gap: 0.9rem;
     border: 1px solid var(--border-color);
-    transition: all 0.3s;
+    transition:
+        border-color 0.3s,
+        box-shadow 0.3s,
+        transform 0.3s;
 }
 
 .pipeline-card:hover {
@@ -2818,8 +2880,11 @@ p {
     padding: 0.85rem 1.5rem;
     color: white;
     font-size: 0.95rem;
-    outline: none;
-    transition: all 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        box-shadow 0.2s,
+        color 0.2s;
     font-family: inherit;
 }
 
@@ -4151,7 +4216,10 @@ p {
 
 /* Card Hover Polish & Mesh Background Orbs */
 .shiftreadiness-page .glass-card {
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .shiftreadiness-page .glass-card:hover {
@@ -5257,7 +5325,10 @@ p {
     background: rgba(5, 7, 18, 0.85);
     border-color: rgba(255, 255, 255, 0.09);
     font-size: 0.95rem;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .auth-form .form-input:hover {
@@ -5341,7 +5412,9 @@ p {
     font-weight: 700;
     text-decoration: none;
     font-size: 0.88rem;
-    transition: all 0.2s;
+    transition:
+        color 0.2s,
+        text-shadow 0.2s;
 }
 
 .auth-footer a:hover {
@@ -5501,7 +5574,10 @@ p {
     padding: 2.5rem 2rem;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -5585,7 +5661,10 @@ p {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
     text-align: left;
 }
 
@@ -5637,7 +5716,10 @@ p {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0.003) 100%);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    transition: all 0.3s ease;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -5650,7 +5732,7 @@ p {
     width: 100%;
     height: 3px;
     background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent);
-    transition: all 0.3s ease;
+    transition: background 0.3s ease;
 }
 
 .pain-card:hover {
@@ -5715,7 +5797,10 @@ p {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    transition: all 0.3s ease;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -5875,7 +5960,9 @@ p {
     font-weight: 600;
     padding: 0.75rem 1.25rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition:
+        border-color 0.2s,
+        color 0.2s;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;

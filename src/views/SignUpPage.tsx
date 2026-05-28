@@ -36,6 +36,7 @@ export default function SignUpPage() {
   const [company, setCompany] = useState("");
   const [clusterSize, setClusterSize] = useState("< 50 VMs");
   const [password, setPassword] = useState("");
+  const [reportInfoMessage, setReportInfoMessage] = useState<string | null>(null);
 
   // Scanner wizard states
   const [currentStep, setCurrentStep] = useState<Step>("setup");
@@ -763,7 +764,7 @@ export default function SignUpPage() {
                   </div>
                   <div>
                     <h4 className="mb-2" style={{ color: "white" }}>
-                      Analyzing Cluster Architecture...
+                      Analyzing Cluster Architecture…
                     </h4>
                     <p style={{ fontSize: "0.85rem" }}>
                       Evaluating compatibility profiles and configuration alignments.
@@ -921,12 +922,26 @@ export default function SignUpPage() {
                   <button
                     className="btn btn-secondary btn-sm"
                     style={{ display: "flex", gap: "0.5rem", alignItems: "center", border: "1px solid var(--border-color)" }}
-                    onClick={() => alert("Full PDF downloads are available from the authenticated workspace after evidence review.")}
+                    onClick={() =>
+                      setReportInfoMessage(
+                        "Full PDF downloads are available inside the authenticated workspace after evidence review.",
+                      )
+                    }
                   >
                     <Download size={16} />
                     Download info
                   </button>
                 </div>
+                {reportInfoMessage ? (
+                  <p
+                    className="auth-success"
+                    role="status"
+                    aria-live="polite"
+                    style={{ marginTop: "0.75rem", maxWidth: "500px", width: "100%" }}
+                  >
+                    {reportInfoMessage}
+                  </p>
+                ) : null}
 
                 <div className="shiftreadiness-actions" style={{ marginTop: "2rem" }}>
                   <a href="/shiftreadiness" className="btn btn-primary">

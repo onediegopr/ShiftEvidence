@@ -26,7 +26,7 @@ export default function SignInPage() {
     });
 
     if (authError) {
-      setError(authError.message ?? "Unable to sign in.");
+      setError(authError.message ?? "Unable to sign in. Check your email and password, then try again.");
       setIsSubmitting(false);
       return;
     }
@@ -109,9 +109,9 @@ export default function SignInPage() {
               className="form-input"
             />
           </label>
-          {error ? <p className="auth-error">{error}</p> : null}
+          {error ? <p className="auth-error" role="alert">{error}</p> : null}
           <button type="submit" className="btn btn-primary btn-glow" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? "Signing in…" : "Sign in"}
             <ArrowRight size={16} />
           </button>
         </form>
