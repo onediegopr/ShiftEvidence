@@ -178,6 +178,41 @@ Condicion:
 - full public launch requiere decision explicita del owner/comercial.
 - soporte/SLA publico y comunicacion de lanzamiento deben cerrarse antes de trafico publico amplio.
 
+## LAUNCH-DECISION-1 broader invited beta
+
+Fecha: 2026-05-28.
+
+Decision:
+
+- broader invited beta: SI;
+- full public launch: NO.
+
+Alcance:
+
+- 3 a 10 clientes controlados;
+- empresas con VMware real;
+- MSPs/consultores conocidos;
+- usuarios dispuestos a feedback;
+- invitacion manual;
+- entitlements manuales.
+
+Limites recomendados:
+
+- 1 a 3 assessments por cliente;
+- 3 a 5 PDFs;
+- Gemini activo con fallback;
+- full report habilitado manualmente;
+- pagos manuales;
+- sin checkout publico;
+- sin SLA contractual.
+
+No permitido:
+
+- trafico masivo;
+- campañas fuertes;
+- registro publico amplio;
+- full public launch sin decision explicita.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

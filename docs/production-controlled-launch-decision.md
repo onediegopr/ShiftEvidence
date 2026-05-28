@@ -644,3 +644,31 @@ Reason full public launch remains NO:
 - Public support/SLA and launch communications should be finalized.
 - QA/demo filtering/archive may still be useful before broad public traffic.
 - Billing/checkout remains manual/invitation-oriented.
+
+## LAUNCH-DECISION-1 Broader Invited Beta
+
+Date: 2026-05-28.
+
+Decision:
+
+- Broader invited beta: APPROVED.
+- Full public launch: NO.
+- Initial scope: 3 to 10 controlled customers.
+- Eligible users: known companies with VMware estates, MSPs, consultants and feedback-friendly beta users.
+- Traffic: no mass public traffic.
+- Paid flow: manual only.
+- Checkout/billing automation: NO.
+
+Operating limits:
+
+- 1 to 3 assessments per beta customer by default.
+- 3 to 5 PDFs by default.
+- Full report and AI access controlled by manual entitlements.
+- Gemini remains active with fallback.
+- OpenAI remains inactive.
+
+Decision rationale:
+
+- Product flows and admin operations passed readiness checks.
+- Remaining gaps are commercial/operational rather than core product blockers for invited beta.
+- Full public launch requires a separate explicit owner/commercial decision.

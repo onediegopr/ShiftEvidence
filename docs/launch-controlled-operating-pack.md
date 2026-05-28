@@ -211,6 +211,25 @@ Decision:
 - Broader invited beta: accepted.
 - Full public launch: NO until explicit owner/commercial decision.
 
+## LAUNCH-DECISION-1 Broader Invited Beta
+
+Date: 2026-05-28.
+
+Broader invited beta is approved under these operating conditions:
+
+- 3 to 10 controlled customers initially.
+- Known VMware customers, MSPs or consultants only.
+- Manual invitation and manual entitlement.
+- 1 to 3 assessments per customer by default.
+- 3 to 5 PDFs per customer by default.
+- Gemini enabled with fallback.
+- PDF/download/assessment creation enabled for entitled users.
+- Manual payments only.
+- No public checkout.
+- No broad ads or mass self-service launch.
+
+Full public launch remains NO.
+
 ## Rollback / Pause
 
 If launch must be paused:
