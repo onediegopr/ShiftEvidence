@@ -74,6 +74,9 @@ const appCopy = {
 const industryEvaluations = [
   {
     id: "manufacturing-readiness",
+    caseId: "SECURE DOSSIER #SR-MFR-91",
+    readinessScore: 68,
+    confidenceScore: 54,
     label: "MANUFACTURING",
     Icon: Factory,
     quote: "A mixed VMware estate with ERP, SQL and file services required wave planning before any Proxmox pilot.",
@@ -81,7 +84,7 @@ const industryEvaluations = [
     title: "Manufacturing environment preparing for VMware renewal",
     industry: "Manufacturing / industrial operations",
     scenario:
-      "A medium VMware estate included production file services, database workloads and operational systems under renewal cost pressure.",
+      "A mixed VMware estate included production file services, database workloads and operational systems under renewal cost pressure.",
     keySignals: [
       "ERP, SQL and file services needed separate risk treatment",
       "Early pilot candidates existed, but not among critical workloads",
@@ -95,6 +98,9 @@ const industryEvaluations = [
   },
   {
     id: "financial-services",
+    caseId: "SECURE DOSSIER #SR-FIN-33",
+    readinessScore: 74,
+    confidenceScore: 48,
     label: "FINANCIAL SERVICES",
     Icon: Building2,
     quote: "The inventory looked manageable, but evidence confidence was limited by backup and dependency gaps.",
@@ -116,6 +122,9 @@ const industryEvaluations = [
   },
   {
     id: "healthcare-regulated-operations",
+    caseId: "SECURE DOSSIER #SR-MED-84",
+    readinessScore: 59,
+    confidenceScore: 62,
     label: "HEALTHCARE / REGULATED OPERATIONS",
     Icon: HeartPulse,
     quote: "Migration sequencing depended on business criticality, not only VM metrics.",
@@ -137,6 +146,9 @@ const industryEvaluations = [
   },
   {
     id: "msp-it-services",
+    caseId: "SECURE DOSSIER #SR-MSP-15",
+    readinessScore: 82,
+    confidenceScore: 70,
     label: "MSP / IT SERVICES",
     Icon: Network,
     quote: "A repeatable assessment workflow turned raw RVTools exports into client-ready reports and next steps.",
@@ -591,22 +603,56 @@ export default function LandingPage() {
                   <button
                     key={evaluation.id}
                     type="button"
-                    className="glass-card industry-evaluation-card"
+                    className="case-dossier-card"
                     onClick={() => setSelectedEvaluationId(evaluation.id)}
                     aria-haspopup="dialog"
                   >
-                    <span className="industry-evaluation-mark" aria-hidden="true">
-                      <Icon size={24} />
-                    </span>
-                    <span className="industry-evaluation-label">{evaluation.label}</span>
-                    <span className="industry-evaluation-quote">&ldquo;{evaluation.quote}&rdquo;</span>
-                    <span className="industry-evaluation-tags" aria-label={`Topics: ${evaluation.tags.join(", ")}`}>
+                    <div className="case-dossier-header">
+                      <span className="case-dossier-id">{evaluation.caseId}</span>
+                      <span className="case-dossier-badge">
+                        <span className="case-dossier-badge-glow" />
+                        Anonymized
+                      </span>
+                    </div>
+
+                    <div className="case-dossier-title">
+                      <div className="case-dossier-icon">
+                        <Icon size={20} />
+                      </div>
+                      <span className="case-dossier-label">{evaluation.label}</span>
+                    </div>
+
+                    <p className="case-dossier-quote">&ldquo;{evaluation.quote}&rdquo;</p>
+
+                    <div className="case-dossier-metrics">
+                      <div className="case-dossier-metric-row">
+                        <div className="case-dossier-metric-label">
+                          <span>Readiness</span>
+                          <span>{evaluation.readinessScore}%</span>
+                        </div>
+                        <div className="case-dossier-metric-track">
+                          <div className="case-dossier-metric-fill" style={{ width: `${evaluation.readinessScore}%` }} />
+                        </div>
+                      </div>
+                      <div className="case-dossier-metric-row">
+                        <div className="case-dossier-metric-label">
+                          <span>Evidence Confidence</span>
+                          <span>{evaluation.confidenceScore}%</span>
+                        </div>
+                        <div className="case-dossier-metric-track">
+                          <div className="case-dossier-metric-fill" style={{ width: `${evaluation.confidenceScore}%`, background: 'linear-gradient(90deg, #8b5cf6, #ec4899)' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="case-dossier-tags">
                       {evaluation.tags.map((tag) => (
-                        <span key={tag}>{tag}</span>
+                        <span key={tag} className="case-dossier-tag">{tag}</span>
                       ))}
-                    </span>
-                    <span className="industry-evaluation-link">
-                      View evaluation
+                    </div>
+
+                    <span className="case-dossier-link">
+                      Decrypt Case File
                       <ArrowRight size={15} />
                     </span>
                   </button>
