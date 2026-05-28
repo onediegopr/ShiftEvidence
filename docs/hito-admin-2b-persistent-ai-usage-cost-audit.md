@@ -209,3 +209,19 @@ Pendiente:
 - ejecutar `npm run prisma:deploy` en el entorno con `DATABASE_URL` productiva segura;
 - validar `/dashboard/admin` autenticado;
 - generar preview/PDF con Gemini para confirmar evento `AiUsageEvent` persistido.
+
+## Follow-up ADMIN-3
+
+Fecha: 2026-05-28.
+
+ADMIN-3 agrega sobre la base de `AiUsageEvent`:
+
+- presupuesto IA estimado;
+- limites informativos;
+- alertas por consumo;
+- entitlements manuales por usuario;
+- oportunidades comerciales deterministicas;
+- next best action;
+- auditoria avanzada de acciones admin.
+
+Los costos siguen siendo estimados y no constituyen billing real.

@@ -45,6 +45,8 @@ ADMIN-2B-PROD-MIGRATION-SMOKE and USER-ATTESTED are superseded by DB-ACCESS-ADMI
 
 DB-ACCESS-ADMIN-2B confirms `AiUsageEvent` exists in production, safe count increased from `0` to `1` after a synthetic `admin_test` event, production no-session smoke passed, authenticated `/dashboard/admin` `IA y Consumo` rendered calls/tokens/costs/events/by-user/by-assessment without visible secret patterns, and full public launch remains NO.
 
+ADMIN-3 adds internal Spanish admin controls for estimated AI budget, informative operating limits, manual entitlements, commercial opportunities, next-best-action tracking and advanced admin audit events. It adds only safe non-secret operational data and does not implement automatic billing, impersonation, hard delete, OpenAI activation or full public launch.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -82,6 +84,7 @@ DB-ACCESS-ADMIN-2B confirms `AiUsageEvent` exists in production, safe count incr
 - Manual admin unlock/entitlement flow.
 - Spanish internal admin console at `/dashboard/admin` for operational status, AI health, users and assessments.
 - AI consumption panel with memory metrics plus persistent estimated tokens/costs by user and assessment.
+- Admin budgets, manual entitlements, commercial opportunities and advanced audit events.
 
 ## Scripts
 - `npm run dev`
@@ -154,6 +157,7 @@ Optional for future work:
 - `docs/hito-admin-2b-persistent-ai-usage-cost-audit.md`
 - `docs/hito-admin-2b-prod-migration-smoke.md`
 - `docs/hito-admin-2b-prod-migration-user-attested.md`
+- `docs/hito-admin-3-budgets-entitlements-opportunities.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

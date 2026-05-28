@@ -422,6 +422,28 @@ Result:
 
 Persistent AI usage remains not production-ready until the migration is applied from the secure production runtime and admin user-attested QA confirms `IA y Consumo`.
 
+## ADMIN-3 Follow-up
+
+Date: 2026-05-28.
+
+Decision remains:
+
+- Controlled production launch: YES.
+- Limited public beta: YES.
+- Full public launch: NO.
+
+Operational status:
+
+- Admin budgets, manual entitlements and commercial opportunities were added in code.
+- Actions are audited with safe metadata.
+- No automatic billing was introduced.
+- No OpenAI activation.
+- No Hostinger config change.
+
+Production readiness:
+
+- Requires standard migration smoke for the ADMIN-3 schema before treating the new admin controls as production-ready.
+
 ## DB-ACCESS-ADMIN-2B Closeout
 
 Date: 2026-05-28.

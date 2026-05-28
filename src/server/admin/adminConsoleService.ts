@@ -1,6 +1,12 @@
 import { prisma } from "../../lib/prisma";
 import { getAdminAiUsage } from "../ai/aiUsageService";
 import { getAiRuntimeStatus } from "../ai/aiRuntimeStatus";
+import {
+  getAdminAiBudgetSummary,
+  getAdvancedAuditEvents,
+  getCommercialOpportunities,
+  listUserEntitlements,
+} from "./adminOpsService";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -93,6 +99,10 @@ export async function getAdminConsoleData() {
     recentUsers,
     recentAssessments,
     recentAuditEvents,
+    userEntitlements,
+    commercialOpportunities,
+    aiBudget,
+    advancedAuditEvents,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.assessment.count({ where: { archivedAt: null } }),
@@ -187,6 +197,10 @@ export async function getAdminConsoleData() {
         },
       },
     }),
+    listUserEntitlements(),
+    getCommercialOpportunities(),
+    getAdminAiBudgetSummary(),
+    getAdvancedAuditEvents(),
   ]);
 
   const aiStatus = getAiRuntimeStatus();
@@ -229,6 +243,7 @@ export async function getAdminConsoleData() {
       costStatus: aiUsage.summary.totalCalls > 0 ? "Estimacion persistente disponible" : "Sin eventos persistidos todavia",
       costDescription:
         "Costo estimado a partir de caracteres/tokens aproximados. Puede diferir de la facturacion real del proveedor.",
+      budget: aiBudget,
     },
     systemHealth: [
       {
@@ -315,6 +330,8 @@ export async function getAdminConsoleData() {
     ],
     recentUsers: recentUsers.map((user) => {
       const usage = persistentUsageByUser.get(user.id);
+      const entitlement = userEntitlements.find((item) => item.userId === user.id);
+      const opportunity = commercialOpportunities.find((item) => item.userId === user.id);
 
       return {
         id: user.id,
@@ -331,6 +348,11 @@ export async function getAdminConsoleData() {
         aiCost: usage?.cost ?? 0,
         aiErrors: usage?.errors ?? 0,
         lastAiUsage: usage?.lastEventAt ?? null,
+        entitlementPlan: entitlement?.planKey ?? "free_preview",
+        entitlementStatus: entitlement?.status ?? "No configurado",
+        opportunityScore: opportunity?.score ?? 0,
+        commercialStatus: opportunity?.status ?? "new_lead",
+        nextBestAction: opportunity?.nextBestAction ?? "No contactar todavia",
       };
     }),
     recentAssessments: recentAssessments.map((assessment) => {
@@ -345,6 +367,7 @@ export async function getAdminConsoleData() {
       );
 
       const usage = persistentUsageByAssessment.get(assessment.id);
+      const opportunity = commercialOpportunities.find((item) => item.assessmentId === assessment.id);
 
       return {
         id: assessment.id,
@@ -362,6 +385,10 @@ export async function getAdminConsoleData() {
         aiErrors: usage?.errors ?? 0,
         lastAiStatus: usage?.lastStatus ?? "Sin eventos",
         lastAiUsage: usage?.lastEventAt ?? null,
+        opportunityScore: opportunity?.score ?? 0,
+        opportunityTags: opportunity?.tags ?? [],
+        nextBestAction: opportunity?.nextBestAction ?? "No contactar todavia",
+        commercialStatus: opportunity?.status ?? "new_lead",
         readiness: assessment.assessmentScore?.readinessScore ?? null,
         confidence: assessment.assessmentScore?.confidenceScore ?? null,
         createdAt: assessment.createdAt,
@@ -369,5 +396,8 @@ export async function getAdminConsoleData() {
       };
     }),
     recentAuditEvents,
+    advancedAuditEvents,
+    userEntitlements,
+    commercialOpportunities,
   };
 }

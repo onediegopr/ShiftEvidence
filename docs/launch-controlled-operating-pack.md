@@ -436,6 +436,25 @@ Status: BLOCKED.
 
 Do not mark persistent AI usage production-ready until `prisma migrate deploy` runs in the secure production runtime and an authenticated admin confirms `IA y Consumo` plus at least one persisted AI event.
 
+## ADMIN-3 Budgets, Entitlements and Opportunities
+
+Date: 2026-05-28.
+
+Operational status:
+
+- Internal admin can configure estimated AI budgets and informational limits.
+- Manual user entitlements are available for internal access control.
+- Commercial opportunity scoring and next-best-action guidance are visible.
+- Admin actions are audited through safe `AuditEvent` entries.
+
+Rules:
+
+- Budget/cost data is estimated, not billing authority.
+- Limits are informational until ADMIN-4.
+- Do not edit API keys or Hostinger env vars from admin.
+- Do not activate OpenAI.
+- Full public launch remains NO.
+
 ## DB-ACCESS-ADMIN-2B Production Migration Closeout
 
 Date: 2026-05-28.

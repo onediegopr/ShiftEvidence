@@ -16,6 +16,12 @@ import {
 } from "lucide-react";
 import { getCurrentAdminUserForConsole } from "../../../server/admin/adminAuth";
 import { getAdminConsoleData } from "../../../server/admin/adminConsoleService";
+import {
+  createUserEntitlementAction,
+  revokeUserEntitlementAction,
+  updateAiBudgetAction,
+  updateCommercialOpportunityAction,
+} from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "No disponible";
@@ -47,6 +53,10 @@ function formatCurrency(value: number | null | undefined) {
     : "No disponible";
 }
 
+function formatPercent(value: number | null | undefined) {
+  return typeof value === "number" ? `${value}%` : "No configurado";
+}
+
 function formatAiEventType(value: string) {
   const labels: Record<string, string> = {
     ai_advisory_requested: "Solicitud IA",
@@ -73,6 +83,8 @@ function statusTone(status: string) {
     case "Atencion":
       return "warning";
     case "Degradado":
+      return "danger";
+    case "Critico":
       return "danger";
     case "Crítico":
       return "danger";
@@ -174,6 +186,8 @@ export default async function AdminConsolePage() {
     ["Usuarios", "#usuarios"],
     ["Evaluaciones", "#assessments"],
     ["IA y Consumo", "#ia-consumo"],
+    ["Accesos y Planes", "#accesos-planes"],
+    ["Oportunidades", "#oportunidades"],
     ["Configuración", "#configuracion"],
     ["Auditoría", "#auditoria"],
   ];
@@ -317,6 +331,55 @@ export default async function AdminConsolePage() {
               <span>Ultima llamada: {formatDate(aiUsage.summary.lastEventAt)}</span>
             </div>
           </article>
+          <article className="glass-card report-history-card">
+            <h3>Presupuesto IA</h3>
+            <div className="report-history-meta">
+              <span>Presupuesto mensual: {formatCurrency(data.aiConsumption.budget.monthlyBudgetUsd)}</span>
+              <span>Consumido mes actual: {formatCurrency(data.aiConsumption.budget.spentMonthUsd)}</span>
+              <span>Uso: {formatPercent(data.aiConsumption.budget.percentUsed)}</span>
+              <span>Restante: {formatCurrency(data.aiConsumption.budget.remainingMonthUsd)}</span>
+              <span>Limite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
+              <span>Limite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
+              <span>Limite assessment: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
+            </div>
+            <p className="assessment-inline-note">Limites informativos. El bloqueo automatico se implementara en ADMIN-4.</p>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Configurar presupuesto IA</h3>
+            <form className="unlock-admin-form" action={updateAiBudgetAction}>
+              <div className="assessment-preview-grid">
+                <label className="form-label">
+                  Presupuesto mensual USD
+                  <input name="monthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.monthlyBudgetUsd ?? ""} />
+                </label>
+                <label className="form-label">
+                  Limite diario USD
+                  <input name="dailyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.dailyBudgetUsd ?? ""} />
+                </label>
+                <label className="form-label">
+                  Limite por usuario USD
+                  <input name="perUserMonthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd ?? ""} />
+                </label>
+                <label className="form-label">
+                  Limite por assessment USD
+                  <input name="perAssessmentBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perAssessmentBudgetUsd ?? ""} />
+                </label>
+              </div>
+              <div className="assessment-inline-actions">
+                <label className="assessment-inline-note"><input name="alertThreshold50" type="checkbox" defaultChecked={data.aiConsumption.budget.settings.alertThreshold50} /> Alerta 50%</label>
+                <label className="assessment-inline-note"><input name="alertThreshold80" type="checkbox" defaultChecked={data.aiConsumption.budget.settings.alertThreshold80} /> Alerta 80%</label>
+                <label className="assessment-inline-note"><input name="alertThreshold100" type="checkbox" defaultChecked={data.aiConsumption.budget.settings.alertThreshold100} /> Alerta 100%</label>
+              </div>
+              <button type="submit" className="btn btn-primary btn-glow">Guardar presupuesto IA</button>
+            </form>
+          </article>
+        </div>
+        <div className="report-history-grid">
+          {data.aiConsumption.budget.alerts.map((alert) => (
+            <div key={alert.title} className="assessment-inline-note">
+              <StatusPill status={alert.status} /> <strong>{alert.title}</strong>: {alert.message}
+            </div>
+          ))}
         </div>
         <div className="assessment-table-wrap">
           <table className="assessment-table">
@@ -490,6 +553,216 @@ export default async function AdminConsolePage() {
 
       <section className="assessment-section glass-card">
         <SectionTitle
+          id="accesos-planes"
+          icon={<ShieldCheck size={18} />}
+          label="Accesos y Planes"
+          title="Entitlements y accesos manuales"
+          description="Gestion interna read-only/confirmada para planes, accesos, IA y reportes. No hay billing automatico ni hard delete."
+        />
+        <div className="assessment-preview-grid">
+          <article className="glass-card report-history-card">
+            <h3>Crear acceso manual</h3>
+            <form className="unlock-admin-form" action={createUserEntitlementAction}>
+              <label className="form-label">
+                Usuario
+                <select name="userId" className="form-input" required>
+                  <option value="">Seleccionar usuario</option>
+                  {data.recentUsers.map((user) => (
+                    <option key={user.id} value={user.id}>{user.email}</option>
+                  ))}
+                </select>
+              </label>
+              <div className="assessment-preview-grid">
+                <label className="form-label">
+                  Plan
+                  <select name="planKey" className="form-input" defaultValue="professional">
+                    <option value="free_preview">Free Preview</option>
+                    <option value="starter">Starter</option>
+                    <option value="professional">Professional</option>
+                    <option value="blueprint">Blueprint</option>
+                    <option value="msp_partner">MSP Partner</option>
+                    <option value="internal_qa">Internal QA</option>
+                  </select>
+                </label>
+                <label className="form-label">
+                  Estado
+                  <select name="status" className="form-input" defaultValue="manual">
+                    <option value="active">Activo</option>
+                    <option value="pending_payment">Pendiente de pago</option>
+                    <option value="trial">Trial</option>
+                    <option value="manual">Manual</option>
+                    <option value="expired">Expirado</option>
+                  </select>
+                </label>
+                <label className="form-label">
+                  Origen
+                  <select name="source" className="form-input" defaultValue="admin">
+                    <option value="admin">Admin</option>
+                    <option value="manual">Manual</option>
+                    <option value="wise">Wise</option>
+                    <option value="transfer">Transferencia</option>
+                    <option value="stripe">Stripe</option>
+                    <option value="unknown">Desconocido</option>
+                  </select>
+                </label>
+                <label className="form-label">
+                  Vence
+                  <input name="expiresAt" type="date" className="form-input" />
+                </label>
+                <label className="form-label">
+                  Max assessments
+                  <input name="maxAssessments" type="number" min="0" className="form-input" />
+                </label>
+                <label className="form-label">
+                  Max PDFs
+                  <input name="maxPdfReports" type="number" min="0" className="form-input" />
+                </label>
+              </div>
+              <label className="form-label">
+                Notas internas
+                <textarea name="notesInternal" className="form-input form-textarea" rows={3} placeholder="Nota interna, sin secrets" />
+              </label>
+              <div className="assessment-inline-actions">
+                <label className="assessment-inline-note"><input name="aiEnabled" type="checkbox" /> IA habilitada</label>
+                <label className="assessment-inline-note"><input name="fullReportEnabled" type="checkbox" /> Full report/PDF habilitado</label>
+              </div>
+              <button type="submit" className="btn btn-primary btn-glow">Confirmar cambio de acceso</button>
+            </form>
+          </article>
+          <article className="glass-card report-history-card">
+            <h3>Acciones operativas IA</h3>
+            <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita Hostinger env vars.</p>
+            <div className="report-history-meta">
+              <span>Apagar IA: configurar AI_ADVISORY_ENABLED=false en Hostinger.</span>
+              <span>Volver a mock: configurar AI_ADVISORY_PROVIDER=mock.</span>
+              <span>Reactivar Gemini: validar provider, key y smoke antes de exponerlo.</span>
+            </div>
+          </article>
+        </div>
+        <div className="assessment-table-wrap">
+          <table className="assessment-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Plan</th>
+                <th>Estado</th>
+                <th>Origen</th>
+                <th>Vence</th>
+                <th>IA</th>
+                <th>Full report</th>
+                <th>Notas</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.userEntitlements.length === 0 ? (
+                <tr><td colSpan={9}>Todavia no hay accesos manuales configurados.</td></tr>
+              ) : (
+                data.userEntitlements.map((entitlement) => (
+                  <tr key={entitlement.id}>
+                    <td>{entitlement.user.email}</td>
+                    <td>{entitlement.planKey}</td>
+                    <td>{entitlement.status}</td>
+                    <td>{entitlement.source}</td>
+                    <td>{formatDate(entitlement.expiresAt)}</td>
+                    <td>{entitlement.aiEnabled ? "Si" : "No"}</td>
+                    <td>{entitlement.fullReportEnabled ? "Si" : "No"}</td>
+                    <td>{entitlement.notesInternal ?? "Sin notas"}</td>
+                    <td>
+                      <form>
+                        <button type="submit" className="btn btn-secondary" formAction={revokeUserEntitlementAction.bind(null, entitlement.id)}>
+                          Revocar acceso
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          id="oportunidades"
+          icon={<Gauge size={18} />}
+          label="Oportunidades"
+          title="Oportunidades comerciales y proxima accion"
+          description="Scoring deterministico inicial para seguimiento comercial relacionado al assessment. No usa IA como autoridad."
+        />
+        <section className="assessment-summary-grid">
+          <MetricCard icon={<Gauge size={22} />} label="Alto potencial" value={data.commercialOpportunities.filter((item) => item.score >= 70).length} note="Score >= 70" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Requieren seguimiento" value={data.commercialOpportunities.filter((item) => item.tags.includes("Requiere seguimiento")).length} note="Customer success" />
+          <MetricCard icon={<FileText size={22} />} label="Candidatos Blueprint" value={data.commercialOpportunities.filter((item) => item.tags.includes("Candidato Blueprint")).length} note="DiseÃ±o destino" />
+          <MetricCard icon={<Users size={22} />} label="Pendientes de pago" value={data.commercialOpportunities.filter((item) => item.status === "pending_payment").length} note="Estado comercial" />
+        </section>
+        <div className="assessment-table-wrap">
+          <table className="assessment-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Assessment</th>
+                <th>Score</th>
+                <th>Tags</th>
+                <th>Proxima accion</th>
+                <th>Plan sugerido</th>
+                <th>Estado</th>
+                <th>Notas</th>
+                <th>Actualizar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.commercialOpportunities.length === 0 ? (
+                <tr><td colSpan={9}>No hay oportunidades detectadas todavia.</td></tr>
+              ) : (
+                data.commercialOpportunities.map((opportunity) => (
+                  <tr key={opportunity.id}>
+                    <td>{opportunity.client}</td>
+                    <td>
+                      <Link href={`/dashboard/assessments/${opportunity.assessmentId}`} className="dashboard-card-link">
+                        {opportunity.assessmentTitle}
+                      </Link>
+                    </td>
+                    <td>{opportunity.score}</td>
+                    <td>{opportunity.tags.join(", ")}</td>
+                    <td>{opportunity.nextBestAction}</td>
+                    <td>{opportunity.suggestedPlan}</td>
+                    <td>{opportunity.status}</td>
+                    <td>{opportunity.notesInternal ?? "Sin notas"}</td>
+                    <td>
+                      <form className="unlock-admin-form" action={updateCommercialOpportunityAction}>
+                        <input type="hidden" name="assessmentId" value={opportunity.assessmentId ?? ""} />
+                        <input type="hidden" name="userId" value={opportunity.userId ?? ""} />
+                        <input type="hidden" name="score" value={opportunity.score} />
+                        <label className="form-label">
+                          Estado
+                          <select name="status" className="form-input" defaultValue={opportunity.status}>
+                            <option value="new_lead">Nuevo lead</option>
+                            <option value="needs_follow_up">Requiere seguimiento</option>
+                            <option value="proposal_sent">Propuesta enviada</option>
+                            <option value="paid">Pagado</option>
+                            <option value="lost">Perdido</option>
+                            <option value="dormant">Dormido</option>
+                            <option value="partner_candidate">Candidato partner</option>
+                          </select>
+                        </label>
+                        <input name="nextBestAction" className="form-input" defaultValue={opportunity.nextBestAction ?? ""} />
+                        <input name="suggestedPlan" className="form-input" defaultValue={opportunity.suggestedPlan ?? ""} />
+                        <textarea name="notesInternal" className="form-input form-textarea" rows={2} defaultValue={opportunity.notesInternal ?? ""} />
+                        <button type="submit" className="btn btn-secondary">Guardar</button>
+                      </form>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
           id="configuracion"
           icon={<Settings size={18} />}
           label="Configuración"
@@ -543,6 +816,9 @@ export default async function AdminConsolePage() {
                 <th>Tokens IA</th>
                 <th>Costo IA</th>
                 <th>Ultimo uso IA</th>
+                <th>Acceso</th>
+                <th>Oportunidad</th>
+                <th>Proxima accion</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -561,6 +837,9 @@ export default async function AdminConsolePage() {
                   <td>{formatNumber(user.aiTokens)}</td>
                   <td>{formatCurrency(user.aiCost)}</td>
                   <td>{formatDate(user.lastAiUsage)}</td>
+                  <td>{user.entitlementPlan} / {user.entitlementStatus}</td>
+                  <td>{user.opportunityScore} - {user.commercialStatus}</td>
+                  <td>{user.nextBestAction}</td>
                   <td>Ver usuario / Ver evaluaciones</td>
                 </tr>
               ))}
@@ -595,6 +874,9 @@ export default async function AdminConsolePage() {
                 <th>Costo IA</th>
                 <th>Errores IA</th>
                 <th>Ultimo estado IA</th>
+                <th>Oportunidad</th>
+                <th>Tags</th>
+                <th>Proxima accion</th>
                 <th>Actualizado</th>
                 <th>Acciones</th>
               </tr>
@@ -616,6 +898,9 @@ export default async function AdminConsolePage() {
                   <td>{formatCurrency(assessment.aiCost)}</td>
                   <td>{assessment.aiErrors}</td>
                   <td>{assessment.lastAiStatus}</td>
+                  <td>{assessment.opportunityScore} - {assessment.commercialStatus}</td>
+                  <td>{assessment.opportunityTags.join(", ") || "Sin tags"}</td>
+                  <td>{assessment.nextBestAction}</td>
                   <td>{formatDate(assessment.updatedAt)}</td>
                   <td>
                     <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">Ver detalle</Link>
@@ -637,11 +922,11 @@ export default async function AdminConsolePage() {
           title="Últimos eventos"
           description="Eventos persistidos disponibles. Consola avanzada de errores queda para ADMIN-2."
         />
-        {data.recentAuditEvents.length === 0 ? (
+        {data.advancedAuditEvents.length === 0 ? (
           <p className="assessment-empty-note">Auditoría persistente pendiente o sin eventos recientes. Se ampliará en ADMIN-2 junto con eventos de usuario, IA, PDF y pagos.</p>
         ) : (
           <div className="report-history-grid">
-            {data.recentAuditEvents.map((event) => (
+            {data.advancedAuditEvents.map((event) => (
               <article key={event.id} className="glass-card report-history-card">
                 <div className="report-history-header">
                   <h3>{event.eventType}</h3>

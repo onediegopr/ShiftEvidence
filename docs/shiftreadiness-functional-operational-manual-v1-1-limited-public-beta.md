@@ -1136,6 +1136,33 @@ Pending:
 - generate or confirm one persisted `AiUsageEvent`;
 - confirm no secrets/API keys are visible.
 
+## Addendum - ADMIN-3 Budgets, Entitlements and Opportunities
+
+Date: 2026-05-28.
+
+The internal Spanish admin console now includes:
+
+- estimated monthly AI budget;
+- informational AI limits;
+- threshold alerts;
+- manual user entitlements;
+- commercial opportunity score;
+- tags and next-best-action;
+- advanced admin audit events.
+
+Boundaries:
+
+- costs are estimates only;
+- no automatic billing;
+- no secret editing;
+- no API key display;
+- no OpenAI activation;
+- no impersonation;
+- no hard delete;
+- no full public launch.
+
+ADMIN-3 schema requires the standard production migration smoke before the new persistent admin controls are considered production-ready.
+
 ## Addendum - DB-ACCESS-ADMIN-2B Production Migration Closeout
 
 Date: 2026-05-28.
