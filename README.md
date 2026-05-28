@@ -57,6 +57,8 @@ PRE-LAUNCH-1 completed full controlled beta acceptance hardening without new fea
 
 QA-CLEANUP-ARCHIVE-1 reviewed QA/demo data without hard-delete: 25 QA/demo assessments, 14 `safe to delete` assessments, 2 synthetic assessments, 1 `internal_qa` entitlement, 1 QA opportunity, 1 `admin_test` AI usage event and 31 QA-associated reports were inventoried. No production data was deleted or modified. Full public launch remains NO.
 
+PUBLIC-LAUNCH-READINESS-2 completed final readiness review with user-attested authenticated user and admin smoke PASS. Public production routes are healthy, private/admin routes redirect unauthenticated users, Gemini/PDF/report preview are healthy in user flow, admin operational sections load, no secrets were visible, and settings are correct. Controlled beta and broader invited beta are approved; full public launch remains NO pending explicit owner/commercial launch decision.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -174,6 +176,7 @@ Optional for future work:
 - `docs/hito-admin-4-prod-ops-smoke.md`
 - `docs/hito-pre-launch-1-full-controlled-beta-acceptance.md`
 - `docs/hito-qa-cleanup-archive-1.md`
+- `docs/hito-public-launch-readiness-2.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`

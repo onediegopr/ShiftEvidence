@@ -151,6 +151,33 @@ Decision operativa:
 - tratar QA/demo como no comercial al interpretar metricas;
 - preparar filtros/archive dedicados antes de full public launch si se requiere.
 
+## PUBLIC-LAUNCH-READINESS-2
+
+Fecha: 2026-05-28.
+
+Resultado:
+
+- controlled beta accepted: SI;
+- limited beta usage: SI;
+- broader invited beta: SI;
+- full public launch: NO.
+
+Evidencia:
+
+- rutas publicas productivas sanas;
+- rutas privadas/admin redirigen sin sesion;
+- user flow autenticado PASS por evidencia user-attested;
+- admin flow autenticado PASS por evidencia user-attested;
+- Gemini Advisory/PDF/report preview sanos en user flow;
+- admin muestra Estado del Sistema, IA y Consumo, Accesos y Planes, Oportunidades, Configuracion Operativa y Auditoria;
+- no secrets visibles;
+- settings finales correctas.
+
+Condicion:
+
+- full public launch requiere decision explicita del owner/comercial.
+- soporte/SLA publico y comunicacion de lanzamiento deben cerrarse antes de trafico publico amplio.
+
 ## AI-REPORT-1 Synthetic Report Addendum
 
 Fecha: 2026-05-27.

@@ -615,3 +615,32 @@ Counts:
 - QA-associated reports: 31.
 
 Full public launch still requires a final decision on QA/demo archive or filtering.
+
+## PUBLIC-LAUNCH-READINESS-2
+
+Date: 2026-05-28.
+
+Decision:
+
+- Controlled beta accepted: YES.
+- Ready for limited beta usage: YES.
+- Ready for broader invited beta: YES.
+- Full public launch: NO.
+
+Validated:
+
+- Public production route smoke passed.
+- Private/admin routes redirect unauthenticated users.
+- User authenticated smoke PASS by user-attested evidence.
+- Admin authenticated smoke PASS by user-attested evidence.
+- Gemini advisory and PDF/report preview are healthy in the user flow.
+- Admin operational sections load and show no visible secrets.
+- Settings final state is correct by user-attested admin evidence.
+- Base build/lint/typecheck/guardrails/Prisma checks passed.
+
+Reason full public launch remains NO:
+
+- Requires explicit owner/commercial launch decision.
+- Public support/SLA and launch communications should be finalized.
+- QA/demo filtering/archive may still be useful before broad public traffic.
+- Billing/checkout remains manual/invitation-oriented.

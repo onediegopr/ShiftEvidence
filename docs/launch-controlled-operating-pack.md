@@ -190,6 +190,27 @@ Operating rule:
 - Prefer archive/mark/filter workflows over destructive deletion.
 - Treat QA/demo usage as non-commercial when interpreting metrics.
 
+## PUBLIC-LAUNCH-READINESS-2
+
+Date: 2026-05-28.
+
+Final readiness review result:
+
+- Public production routes healthy.
+- Private/admin routes redirect unauthenticated users.
+- User authenticated flow PASS by user-attested evidence.
+- Admin authenticated flow PASS by user-attested evidence.
+- Gemini advisory/PDF/report preview healthy in the validated user flow.
+- Admin sections load: system health, AI consumption, access plans, opportunities, operational settings and audit.
+- No visible secrets.
+- QA/demo data identified and documented.
+
+Decision:
+
+- Controlled beta: accepted.
+- Broader invited beta: accepted.
+- Full public launch: NO until explicit owner/commercial decision.
+
 ## Rollback / Pause
 
 If launch must be paused:
