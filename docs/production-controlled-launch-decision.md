@@ -46,7 +46,7 @@ SAMPLE-REPORT-1 update:
 - Public `/sample-report` foundation is implemented as a synthetic sample readiness report page.
 - It shows the expected deliverable structure: executive summary, scores, evidence matrix, top risks, VM classification, waves, sizing and AI Advisory notes.
 - It uses no backend, no DB, no Gemini call, no lead capture, no upload and no customer data.
-- Downloadable PDF is not live yet and is labeled as coming soon.
+- Downloadable synthetic PDF is live at `/sample-reports/proxmox-migration-readiness-sample-report.pdf` and is labeled as a public synthetic sample with no customer data.
 - Full public launch remains NO.
 
 SAMPLE-REPORT-2 update:

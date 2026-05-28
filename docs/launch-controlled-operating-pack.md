@@ -216,7 +216,7 @@ Operating rules:
 - Sample uses synthetic Northbridge data only.
 - Sample does not require login.
 - Sample does not use backend, DB, Gemini, uploads, lead capture or customer data.
-- Downloadable PDF is not published yet and must be described as coming soon.
+- Downloadable synthetic PDF is published at `/sample-reports/proxmox-migration-readiness-sample-report.pdf` and must be described as a public synthetic sample with no customer data.
 - Sample must not be presented as migration automation, zero-downtime assurance or 100% success guarantee.
 - Use it with `/demo`: replay explains the process, sample report explains the deliverable.
 

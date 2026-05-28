@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Home, Play, ShieldCheck, Download, AlertTriangle } from "lucide-react";
+import { ArrowRight, CheckCircle2, Play, ShieldCheck, Download, AlertTriangle } from "lucide-react";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import ReplayControls from "./ReplayControls";
@@ -10,7 +10,6 @@ import ReplayScene from "./ReplayScene";
 import {
   demoDataset,
   demoBadges,
-  demoDoesNotDo,
   replaySteps,
   type ReplayStepId,
   whatYouGet,

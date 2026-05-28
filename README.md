@@ -73,7 +73,7 @@ DEMO-1 adds the public `/demo` Migration Readiness Replay: a fully simulated, sy
 
 DEMO-1.1 completes visual QA and conversion polish for `/demo`: mobile layout was tightened, long technical strings now wrap safely, the sound control is clarified as visual-only, and public marketing copy was adjusted away from execution/cutover language. Production `/demo` remains healthy; full public launch remains NO.
 
-SAMPLE-REPORT-1 adds the public `/sample-report` foundation: a synthetic Northbridge sample readiness report page showing the expected deliverable structure, executive summary, scores, evidence matrix, top risks, VM classification, migration waves, Proxmox sizing and AI Advisory notes. It has no backend, DB, Gemini call, upload, lead capture or real customer data; the downloadable PDF is explicitly marked as coming soon. Full public launch remains NO.
+SAMPLE-REPORT-1 adds the public `/sample-report` foundation: a synthetic Northbridge sample readiness report page showing the expected deliverable structure, executive summary, scores, evidence matrix, top risks, VM classification, migration waves, Proxmox sizing and AI Advisory notes. SAMPLE-REPORT-2 adds the downloadable synthetic PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`. The public sample has no backend, DB, Gemini call, upload, lead capture or real customer data. Full public launch remains NO.
 
 SAMPLE-REPORT-2 adds a public synthetic downloadable PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`. The PDF is generated from local synthetic Northbridge data via `npm run sample-report:generate`, has 15 pages, uses no backend, DB, Gemini call or customer data, and is linked from `/sample-report`. Full public launch remains NO.
 

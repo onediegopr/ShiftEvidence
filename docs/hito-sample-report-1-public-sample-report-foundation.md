@@ -65,9 +65,9 @@ No se publico PDF real en SAMPLE-REPORT-1.
 
 Decision:
 
-- El boton de descarga no descarga nada.
-- La UI muestra `Sample PDF coming soon`.
-- SAMPLE-REPORT-2 puede crear un PDF sintetico seguro de 12-18 paginas si se aprueba.
+- Estado superseded por SAMPLE-REPORT-2: el boton de descarga apunta al PDF publico sintetico real.
+- La UI ya no debe mostrar `Sample PDF coming soon`.
+- SAMPLE-REPORT-2 creo un PDF sintetico seguro de 15 paginas.
 
 Actualizacion SAMPLE-REPORT-2:
 

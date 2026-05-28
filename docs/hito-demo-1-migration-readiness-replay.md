@@ -272,7 +272,7 @@ SAMPLE-REPORT-1 agrega `/sample-report` como foundation publica para mostrar el 
 
 - Usa el mismo dataset sintetico Northbridge.
 - No usa backend, DB, Gemini, upload real ni datos reales.
-- No publica PDF real todavia; muestra `Sample PDF coming soon`.
+- Estado superseded por SAMPLE-REPORT-2: el PDF publico sintetico ya existe en `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - `/demo` incluye un bloque `Want to see the final deliverable?` con CTA a `/sample-report`.
 
 ## 17. SAMPLE-REPORT-2 PDF linkage

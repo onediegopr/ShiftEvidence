@@ -6,9 +6,9 @@ Date: 2026-05-28.
 
 Add and maintain a public landing credibility section for ShiftReadiness:
 
-- `What our customers are saying`
+- `What private assessments reveal`
 
-The section presents review-style private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details.
+The section presents representative private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details, and it must not be interpreted as verified customer reviews.
 
 ## Public Copy Correction
 
@@ -18,7 +18,7 @@ Admin and internal console copy remain out of scope and may continue to use Span
 
 Latest public subtitle:
 
-- `Real infrastructure assessments often involve sensitive cost, risk, and environment data. That's why these reviews are shown by industry, without company names or identifying details.`
+- `Infrastructure assessments often involve sensitive cost, risk, and environment data. These anonymized-style examples show the kinds of decisions ShiftReadiness helps structure, without company names or identifying details.`
 
 ## Location
 
@@ -70,6 +70,7 @@ Each card opens a modal with:
 - No real company names are used.
 - No photos of people are used.
 - The copy does not claim public testimonials.
+- The copy does not claim verified customer reviews.
 - The copy does not claim verified public case studies.
 - The section does not publish named or verified customer identities.
 - The examples are shown by industry with identifying details removed.

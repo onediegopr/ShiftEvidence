@@ -125,8 +125,7 @@ export default function SignUpPage() {
       });
 
       window.location.href = `/dashboard/assessments/${result.assessmentId}`;
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Unable to initialize workspace. Please try again.");
       setIsCreatingAssessment(false);
     }

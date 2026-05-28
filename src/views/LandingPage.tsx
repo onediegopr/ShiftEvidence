@@ -171,7 +171,7 @@ const industryEvaluations = [
 ] as const;
 
 const privacyNote =
-  "This is a representative, synthetic/anonymized-style evaluation example. It does not contain customer data and is not a public case study.";
+  "This is a representative, synthetic/anonymized-style evaluation example. It does not contain customer data and is not a public case study, testimonial, or verified customer review.";
 
 export default function LandingPage() {
   const [ctaEmail, setCtaEmail] = useState("");
@@ -587,11 +587,12 @@ export default function LandingPage() {
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="industry-evaluations-header">
-              <div className="badge badge-cyan">Private examples</div>
-              <h2 id="industry-evaluations-title">What our customers are saying</h2>
+              <div className="badge badge-cyan">Representative examples</div>
+              <h2 id="industry-evaluations-title">What private assessments reveal</h2>
               <p>
-                Real infrastructure assessments often involve sensitive cost, risk, and environment data. That&apos;s
-                why these reviews are shown by industry, without company names or identifying details.
+                Infrastructure assessments often involve sensitive cost, risk, and environment data. These
+                anonymized-style examples show the kinds of decisions ShiftReadiness helps structure, without company
+                names or identifying details.
               </p>
             </div>
 
@@ -611,7 +612,7 @@ export default function LandingPage() {
                       <span className="case-dossier-id">{evaluation.caseId}</span>
                       <span className="case-dossier-badge">
                         <span className="case-dossier-badge-glow" />
-                        Anonymized
+                        Anonymized-style
                       </span>
                     </div>
 
@@ -652,7 +653,7 @@ export default function LandingPage() {
                     </div>
 
                     <span className="case-dossier-link">
-                      Decrypt Case File
+                      View evaluation
                       <ArrowRight size={15} />
                     </span>
                   </button>
@@ -662,7 +663,7 @@ export default function LandingPage() {
 
             <p className="industry-evaluations-disclaimer">
               These examples are representative scenarios. They do not disclose customer data and should not be
-              interpreted as verified public case studies.
+              interpreted as testimonials, verified customer reviews, or public case studies.
             </p>
           </div>
         </section>
