@@ -32,6 +32,13 @@ Demo update:
 - It must not be described as automatic migration, zero-downtime guarantee, cutover automation or full public launch.
 - `DEMO-1.1` completes visual QA/conversion polish: mobile layout tightened, sound control clarified as visual-only and public copy moved away from execution/cutover wording.
 
+Sample report update:
+
+- `SAMPLE-REPORT-1` adds public `/sample-report` as a synthetic sample readiness report foundation.
+- It shows the expected deliverable structure before a prospect uploads their own data.
+- It uses synthetic ACME data only and does not use backend, DB, Gemini, upload, lead capture or customer data.
+- Downloadable PDF is not live yet and must be described as coming soon until SAMPLE-REPORT-2.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
@@ -94,6 +101,7 @@ Estado validado:
 - Runtime controls: activos via `SystemSetting`.
 - AiUsageEvent persistente: activo.
 - Migration Readiness Replay: activo en `/demo`, simulado y sin backend.
+- Public Sample Readiness Report: activo en `/sample-report`, sintetico y sin backend.
 - QA/demo data: identificada y documentada, no eliminada.
 
 Condicion de uso:

@@ -204,6 +204,21 @@ DEMO-1.1 visual QA:
 - Sound control is explicitly visual-only.
 - Public marketing copy was adjusted away from execution/cutover language.
 - `/demo` remains simulated and suitable for pre-onboarding education, not full public launch.
+
+## SAMPLE-REPORT-1 Public Sample Report Foundation
+
+Date: 2026-05-28.
+
+The public route `/sample-report` is available as a synthetic sample readiness report foundation.
+
+Operating rules:
+
+- Sample uses synthetic ACME data only.
+- Sample does not require login.
+- Sample does not use backend, DB, Gemini, uploads, lead capture or customer data.
+- Downloadable PDF is not published yet and must be described as coming soon.
+- Sample must not be presented as migration automation, zero-downtime assurance or 100% success guarantee.
+- Use it with `/demo`: replay explains the process, sample report explains the deliverable.
 - 2 synthetic assessments.
 - 1 `internal_qa` entitlement.
 - 1 QA commercial opportunity.

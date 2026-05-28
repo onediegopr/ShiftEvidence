@@ -41,6 +41,14 @@ DEMO-1.1 update:
 - Sound control is clarified as visual-only.
 - Public marketing copy was adjusted away from execution/cutover wording.
 
+SAMPLE-REPORT-1 update:
+
+- Public `/sample-report` foundation is implemented as a synthetic sample readiness report page.
+- It shows the expected deliverable structure: executive summary, scores, evidence matrix, top risks, VM classification, waves, sizing and AI Advisory notes.
+- It uses no backend, no DB, no Gemini call, no lead capture, no upload and no customer data.
+- Downloadable PDF is not live yet and is labeled as coming soon.
+- Full public launch remains NO.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.

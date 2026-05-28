@@ -260,3 +260,12 @@ DEMO-1.1 completo la revision visual y de conversion:
 - Toggle de sonido aclarado como visual-only.
 - Copy publico ajustado para evitar lenguaje de ejecucion/cutover como promesa.
 - Produccion `/demo`: 200 OK.
+
+## 16. SAMPLE-REPORT-1 linkage
+
+SAMPLE-REPORT-1 agrega `/sample-report` como foundation publica para mostrar el entregable esperado:
+
+- Usa el mismo dataset sintetico ACME.
+- No usa backend, DB, Gemini, upload real ni datos reales.
+- No publica PDF real todavia; muestra `Sample PDF coming soon`.
+- `/demo` incluye un bloque `Want to see the final deliverable?` con CTA a `/sample-report`.

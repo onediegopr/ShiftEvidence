@@ -73,6 +73,8 @@ DEMO-1 adds the public `/demo` Migration Readiness Replay: a fully simulated, sy
 
 DEMO-1.1 completes visual QA and conversion polish for `/demo`: mobile layout was tightened, long technical strings now wrap safely, the sound control is clarified as visual-only, and public marketing copy was adjusted away from execution/cutover language. Production `/demo` remains healthy; full public launch remains NO.
 
+SAMPLE-REPORT-1 adds the public `/sample-report` foundation: a synthetic ACME sample readiness report page showing the expected deliverable structure, executive summary, scores, evidence matrix, top risks, VM classification, migration waves, Proxmox sizing and AI Advisory notes. It has no backend, DB, Gemini call, upload, lead capture or real customer data; the downloadable PDF is explicitly marked as coming soon. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -85,6 +87,7 @@ DEMO-1.1 completes visual QA and conversion polish for `/demo`: mobile layout wa
 - `/`
 - `/shiftreadiness`
 - `/demo`
+- `/sample-report`
 - `/contact`
 
 ## Auth routes

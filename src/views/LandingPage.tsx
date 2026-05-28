@@ -350,10 +350,15 @@ export default function LandingPage() {
                   <span>Evidence-based</span>
                 </div>
               </div>
-              <a href="/demo" className="btn btn-primary btn-glow">
-                Watch the readiness replay
-                <ArrowRight size={18} />
-              </a>
+              <div className="sample-report-cta-pair">
+                <a href="/demo" className="btn btn-primary btn-glow">
+                  Watch the readiness replay
+                  <ArrowRight size={18} />
+                </a>
+                <a href="/sample-report" className="btn btn-secondary">
+                  View sample report
+                </a>
+              </div>
             </div>
           </div>
         </section>

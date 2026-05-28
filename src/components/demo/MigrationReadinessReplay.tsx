@@ -235,6 +235,25 @@ export default function MigrationReadinessReplay() {
         </div>
       </section>
 
+      <section className="section shiftreadiness-section">
+        <div className="container">
+          <div className="glass-card sample-report-inline-cta">
+            <div>
+              <div className="badge badge-cyan">Public sample report</div>
+              <h2>Want to see the final deliverable?</h2>
+              <p>
+                The replay shows the process. The sample report shows the output: executive summary, readiness and
+                confidence scores, evidence gaps, VM risk matrix, Proxmox sizing and migration waves.
+              </p>
+            </div>
+            <Link href="/sample-report" className="btn btn-primary btn-glow" data-event="demo_cta_clicked">
+              View sample report
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="section shiftreadiness-section demo-final-cta">
         <div className="container">
           <div className="glass-card sr-final-card">
