@@ -70,6 +70,46 @@ function formatAiEventType(value: string) {
   return labels[value] ?? value;
 }
 
+function formatStatusLabel(value: string | null | undefined) {
+  if (!value) return "No disponible";
+
+  const labels: Record<string, string> = {
+    active: "Activo",
+    admin: "Administrador",
+    admin_test: "Prueba admin",
+    blueprint: "Blueprint",
+    disabled: "Desactivado",
+    disabled_runtime: "Desactivado por runtime",
+    env: "Entorno",
+    error: "Error",
+    expired: "Vencido",
+    fallback: "Fallback",
+    free_preview: "Vista previa gratuita",
+    gemini: "Gemini",
+    internal_qa: "QA interno",
+    lost: "Perdido",
+    manual: "Manual",
+    mock: "Simulación",
+    msp_partner: "MSP Partner",
+    needs_follow_up: "Requiere seguimiento",
+    new_lead: "Nuevo lead",
+    partner_candidate: "Candidato partner",
+    paid: "Pagado",
+    pending_payment: "Pago pendiente",
+    professional: "Professional",
+    proposal_sent: "Propuesta enviada",
+    revoked: "Revocado",
+    starter: "Starter",
+    success: "Exitoso",
+    timeout: "Timeout",
+    trial: "Prueba",
+    unavailable: "No disponible",
+    unknown: "Desconocido",
+  };
+
+  return labels[value] ?? value;
+}
+
 function statusTone(status: string) {
   switch (status) {
     case "Operativo":
@@ -96,7 +136,7 @@ function statusTone(status: string) {
 }
 
 function StatusPill({ status }: { status: string }) {
-  return <span className={`assessment-chip assessment-chip-${statusTone(status)}`}>{status}</span>;
+  return <span className={`assessment-chip assessment-chip-${statusTone(status)}`}>{formatStatusLabel(status)}</span>;
 }
 
 function SectionTitle({
@@ -186,7 +226,7 @@ export default async function AdminConsolePage() {
     ["Resumen", "#resumen"],
     ["Estado del Sistema", "#estado-sistema"],
     ["Usuarios", "#usuarios"],
-    ["Evaluaciones", "#assessments"],
+    ["Evaluaciones", "#evaluaciones"],
     ["IA y Consumo", "#ia-consumo"],
     ["Configuración Operativa", "#configuracion-operativa"],
     ["Accesos y Planes", "#accesos-planes"],
@@ -239,15 +279,15 @@ export default async function AdminConsolePage() {
           id="configuracion-operativa"
           icon={<Settings size={18} />}
           label="Configuración Operativa"
-          title="Runtime settings y enforcement"
-          description="Overrides operativos seguros desde DB. No editan Hostinger, no muestran secrets y requieren confirmación."
+          title="Configuración runtime y aplicación de límites"
+          description="Overrides operativos seguros desde DB. No editan Hostinger, no muestran secretos y requieren confirmación."
         />
         <section className="assessment-summary-grid">
           <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Efectivo: ${ai.proveedor}`} />
-          <MetricCard icon={<ShieldCheck size={22} />} label="Enforcement IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
+          <MetricCard icon={<ShieldCheck size={22} />} label="Aplicación de límites IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
           <MetricCard icon={<FileText size={22} />} label="Generación PDF" value={data.runtimeSettings.reportsPdfGenerationEnabled ? "Activa" : "Bloqueada"} note="Control operativo global" />
           <MetricCard icon={<FileText size={22} />} label="Descargas" value={data.runtimeSettings.reportsDownloadEnabled ? "Activas" : "Bloqueadas"} note="Control operativo global" />
-          <MetricCard icon={<Database size={22} />} label="Nuevas evaluaciones" value={data.runtimeSettings.assessmentsCreationEnabled ? "Activas" : "Bloqueadas"} note="Aplica antes de crear assessment" />
+          <MetricCard icon={<Database size={22} />} label="Nuevas evaluaciones" value={data.runtimeSettings.assessmentsCreationEnabled ? "Activas" : "Bloqueadas"} note="Aplica antes de crear evaluaciones" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Mantenimiento" value={data.runtimeSettings.maintenanceMode ? "Activo" : "Inactivo"} note="Informativo en ADMIN-4" />
         </section>
         <div className="assessment-preview-grid">
@@ -257,9 +297,9 @@ export default async function AdminConsolePage() {
             <div className="assessment-preview-grid">
               {[
                 ["disabled", "Apagar IA", "La IA queda desactivada por runtime setting."],
-                ["mock", "Volver a Mock", "Usa provider mock para QA/control operativo."],
+                ["mock", "Volver a simulación", "Usa proveedor simulado para QA/control operativo."],
                 ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* de Hostinger/runtime."],
-                ["gemini", "Forzar Gemini", "Usa Gemini si la key existe en env."],
+                ["gemini", "Forzar Gemini", "Usa Gemini si la credencial existe en el entorno."],
               ].map(([mode, label, help]) => (
                 <form key={mode} className="unlock-admin-form" action={setAiRuntimeModeFormAction}>
                   <input type="hidden" name="mode" value={mode} />
@@ -280,16 +320,16 @@ export default async function AdminConsolePage() {
                 <select name="aiRuntimeMode" className="form-input" defaultValue={data.runtimeSettings.aiRuntimeMode}>
                   <option value="env">Usar env</option>
                   <option value="disabled">Desactivada</option>
-                  <option value="mock">Mock</option>
+                  <option value="mock">Simulación</option>
                   <option value="gemini">Gemini</option>
                 </select>
               </label>
               <div className="assessment-preview-grid">
-                <label className="assessment-inline-note"><input name="aiEnforceBudget" type="checkbox" defaultChecked={data.runtimeSettings.aiEnforceBudget} /> Enforcement de presupuesto IA</label>
+                <label className="assessment-inline-note"><input name="aiEnforceBudget" type="checkbox" defaultChecked={data.runtimeSettings.aiEnforceBudget} /> Aplicar presupuesto IA</label>
                 <label className="assessment-inline-note"><input name="aiBlockOnBudgetExceeded" type="checkbox" defaultChecked={data.runtimeSettings.aiBlockOnBudgetExceeded} /> Bloquear IA al superar presupuesto</label>
                 <label className="assessment-inline-note"><input name="reportsPdfGenerationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsPdfGenerationEnabled} /> Generación PDF activa</label>
                 <label className="assessment-inline-note"><input name="reportsDownloadEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsDownloadEnabled} /> Descargas de reportes activas</label>
-                <label className="assessment-inline-note"><input name="assessmentsCreationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.assessmentsCreationEnabled} /> Creación de assessments activa</label>
+                <label className="assessment-inline-note"><input name="assessmentsCreationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.assessmentsCreationEnabled} /> Creación de evaluaciones activa</label>
                 <label className="assessment-inline-note"><input name="uploadsEnabled" type="checkbox" defaultChecked={data.runtimeSettings.uploadsEnabled} /> Uploads activos</label>
                 <label className="assessment-inline-note"><input name="publicRegistrationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.publicRegistrationEnabled} /> Registro público activo</label>
                 <label className="assessment-inline-note"><input name="maintenanceMode" type="checkbox" defaultChecked={data.runtimeSettings.maintenanceMode} /> Modo mantenimiento informativo</label>
@@ -353,13 +393,13 @@ export default async function AdminConsolePage() {
           <article className="glass-card report-history-card">
             <h3>Configuración segura de IA</h3>
             <div className="report-history-meta">
-              <span>Gemini API Key: {ai.geminiConfigurado ? "Configurada" : "No configurada"}</span>
-              <span>OpenAI API Key: {ai.openaiConfigurado ? "Configurada" : "No configurada"}</span>
+              <span>Credencial Gemini: {ai.geminiConfigurado ? "Configurada" : "No configurada"}</span>
+              <span>Credencial OpenAI: {ai.openaiConfigurado ? "Configurada" : "No configurada"}</span>
               <span>Secretos expuestos: {ai.secretosExpuestos ? "Sí" : "No"}</span>
               <span>Archivos crudos enviados: {ai.archivosCrudosEnviados ? "Sí" : "No"}</span>
               <span>Timeout: {ai.timeoutMs} ms</span>
-              <span>Input máximo: {ai.maxInputChars} chars</span>
-              <span>Output máximo: {ai.maxOutputChars} chars</span>
+              <span>Entrada máxima: {ai.maxInputChars} caracteres</span>
+              <span>Salida máxima: {ai.maxOutputChars} caracteres</span>
             </div>
             <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola.</p>
           </article>
@@ -374,7 +414,7 @@ export default async function AdminConsolePage() {
               <span>Última duración: {formatDuration(ai.ultimaDuracionMs)}</span>
               <span>Promedio: {formatDuration(ai.duracionPromedioMs)}</span>
             </div>
-            <p className="assessment-inline-note">Las métricas en memoria pueden perderse con un deploy. Los eventos persistentes y costos siguen siendo estimados; no hay billing automático real.</p>
+            <p className="assessment-inline-note">Las métricas en memoria pueden perderse con un deploy. Los eventos persistentes y costos siguen siendo estimados; no hay facturación automática real.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Alertas operativas</h3>
@@ -390,7 +430,7 @@ export default async function AdminConsolePage() {
             <h3>Costos estimados</h3>
             <p>{data.aiConsumption.costStatus}</p>
             <p className="assessment-inline-note">{data.aiConsumption.costDescription}</p>
-            <p className="assessment-inline-note">No se guardan prompts completos ni respuestas crudas. No es billing automatico.</p>
+            <p className="assessment-inline-note">No se guardan prompts completos ni respuestas crudas. No es facturación automática.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Uso persistente 30 dias</h3>
@@ -412,9 +452,9 @@ export default async function AdminConsolePage() {
               <span>Restante: {formatCurrency(data.aiConsumption.budget.remainingMonthUsd)}</span>
               <span>Limite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
               <span>Limite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
-              <span>Limite assessment: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
+              <span>Límite por evaluación: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
             </div>
-            <p className="assessment-inline-note">El bloqueo automatico se activa desde Configuracion Operativa con enforcement IA y bloqueo por presupuesto.</p>
+            <p className="assessment-inline-note">El bloqueo automático se activa desde Configuración Operativa con aplicación de límites IA y bloqueo por presupuesto.</p>
           </article>
           <article className="glass-card report-history-card">
             <h3>Configurar presupuesto IA</h3>
@@ -433,7 +473,7 @@ export default async function AdminConsolePage() {
                   <input name="perUserMonthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd ?? ""} />
                 </label>
                 <label className="form-label">
-                  Limite por assessment USD
+                  Límite por evaluación USD
                   <input name="perAssessmentBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perAssessmentBudgetUsd ?? ""} />
                 </label>
               </div>
@@ -481,7 +521,7 @@ export default async function AdminConsolePage() {
                     <td>{event.assessmentTitle ?? event.assessmentId ?? "No disponible"}</td>
                     <td>{event.provider}</td>
                     <td>{event.operationType}</td>
-                    <td>{event.status}</td>
+                    <td>{formatStatusLabel(event.status)}</td>
                     <td>{formatNumber(event.estimatedTotalTokens)}</td>
                     <td>{formatCurrency(event.estimatedCostUsd)}</td>
                     <td>{formatDate(event.createdAt)}</td>
@@ -551,7 +591,7 @@ export default async function AdminConsolePage() {
                       <tr key={item.assessmentId ?? item.title}>
                         <td>{item.title}</td>
                         <td>{item.calls}</td>
-                        <td>{item.lastStatus}</td>
+                        <td>{formatStatusLabel(item.lastStatus)}</td>
                         <td>{formatNumber(item.tokens)}</td>
                         <td>{formatCurrency(item.cost)}</td>
                         <td>{item.errors}</td>
@@ -570,7 +610,7 @@ export default async function AdminConsolePage() {
               ) : (
                 aiUsage.recentErrors.map((event) => (
                   <div key={event.id} className="assessment-inline-note">
-                    <strong>{event.status}</strong> / {event.errorCategory ?? "sin categoria"} - {event.assessmentTitle ?? "sin evaluacion"} - {formatDate(event.createdAt)}
+                    <strong>{formatStatusLabel(event.status)}</strong> / {event.errorCategory ?? "sin categoría"} - {event.assessmentTitle ?? "sin evaluación"} - {formatDate(event.createdAt)}
                   </div>
                 ))
               )}
@@ -611,7 +651,7 @@ export default async function AdminConsolePage() {
                     <td>{formatAiEventType(event.eventType)}</td>
                     <td>{event.provider}</td>
                     <td>{event.model ?? "No disponible"}</td>
-                    <td>{event.status}</td>
+                    <td>{formatStatusLabel(event.status)}</td>
                     <td>{event.errorCategory}</td>
                     <td>{formatDuration(event.durationMs)}</td>
                     <td>{formatDate(event.createdAt)}</td>
@@ -628,8 +668,8 @@ export default async function AdminConsolePage() {
           id="accesos-planes"
           icon={<ShieldCheck size={18} />}
           label="Accesos y Planes"
-          title="Entitlements y accesos manuales"
-          description="Gestion interna read-only/confirmada para planes, accesos, IA y reportes. No hay billing automatico ni hard delete."
+          title="Derechos de acceso y accesos manuales"
+          description="Gestión interna de sólo lectura o confirmada para planes, accesos, IA y reportes. No hay facturación automática ni borrado duro."
         />
         <div className="assessment-preview-grid">
           <article className="glass-card report-history-card">
@@ -648,12 +688,12 @@ export default async function AdminConsolePage() {
                 <label className="form-label">
                   Plan
                   <select name="planKey" className="form-input" defaultValue="professional">
-                    <option value="free_preview">Free Preview</option>
+                    <option value="free_preview">Vista previa gratuita</option>
                     <option value="starter">Starter</option>
                     <option value="professional">Professional</option>
                     <option value="blueprint">Blueprint</option>
                     <option value="msp_partner">MSP Partner</option>
-                    <option value="internal_qa">Internal QA</option>
+                    <option value="internal_qa">QA interno</option>
                   </select>
                 </label>
                 <label className="form-label">
@@ -661,7 +701,7 @@ export default async function AdminConsolePage() {
                   <select name="status" className="form-input" defaultValue="manual">
                     <option value="active">Activo</option>
                     <option value="pending_payment">Pendiente de pago</option>
-                    <option value="trial">Trial</option>
+                    <option value="trial">Prueba</option>
                     <option value="manual">Manual</option>
                     <option value="expired">Expirado</option>
                   </select>
@@ -669,7 +709,7 @@ export default async function AdminConsolePage() {
                 <label className="form-label">
                   Origen
                   <select name="source" className="form-input" defaultValue="admin">
-                    <option value="admin">Admin</option>
+                    <option value="admin">Administrador</option>
                     <option value="manual">Manual</option>
                     <option value="wise">Wise</option>
                     <option value="transfer">Transferencia</option>
@@ -682,7 +722,7 @@ export default async function AdminConsolePage() {
                   <input name="expiresAt" type="date" className="form-input" />
                 </label>
                 <label className="form-label">
-                  Max assessments
+                  Máximo de evaluaciones
                   <input name="maxAssessments" type="number" min="0" className="form-input" />
                 </label>
                 <label className="form-label">
@@ -692,22 +732,22 @@ export default async function AdminConsolePage() {
               </div>
               <label className="form-label">
                 Notas internas
-                <textarea name="notesInternal" className="form-input form-textarea" rows={3} placeholder="Nota interna, sin secrets" />
+                <textarea name="notesInternal" className="form-input form-textarea" rows={3} placeholder="Nota interna, sin secretos" />
               </label>
               <div className="assessment-inline-actions">
                 <label className="assessment-inline-note"><input name="aiEnabled" type="checkbox" /> IA habilitada</label>
-                <label className="assessment-inline-note"><input name="fullReportEnabled" type="checkbox" /> Full report/PDF habilitado</label>
+                <label className="assessment-inline-note"><input name="fullReportEnabled" type="checkbox" /> Reporte completo/PDF habilitado</label>
               </div>
               <button type="submit" className="btn btn-primary btn-glow">Confirmar cambio de acceso</button>
             </form>
           </article>
           <article className="glass-card report-history-card">
             <h3>Acciones operativas IA</h3>
-            <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita Hostinger env vars.</p>
+            <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita variables Hostinger.</p>
             <div className="report-history-meta">
               <span>Apagar IA: configurar AI_ADVISORY_ENABLED=false en Hostinger.</span>
-              <span>Volver a mock: configurar AI_ADVISORY_PROVIDER=mock.</span>
-              <span>Reactivar Gemini: validar provider, key y smoke antes de exponerlo.</span>
+              <span>Volver a simulación: configurar AI_ADVISORY_PROVIDER=mock.</span>
+              <span>Reactivar Gemini: validar proveedor, credencial configurada y prueba de humo antes de exponerlo.</span>
             </div>
           </article>
         </div>
@@ -721,7 +761,7 @@ export default async function AdminConsolePage() {
                 <th>Origen</th>
                 <th>Vence</th>
                 <th>IA</th>
-                <th>Full report</th>
+                <th>Reporte completo</th>
                 <th>Notas</th>
                 <th>Acciones</th>
               </tr>
@@ -733,12 +773,12 @@ export default async function AdminConsolePage() {
                 data.userEntitlements.map((entitlement) => (
                   <tr key={entitlement.id}>
                     <td>{entitlement.user.email}</td>
-                    <td>{entitlement.planKey}</td>
-                    <td>{entitlement.status}</td>
-                    <td>{entitlement.source}</td>
+                    <td>{formatStatusLabel(entitlement.planKey)}</td>
+                    <td>{formatStatusLabel(entitlement.status)}</td>
+                    <td>{formatStatusLabel(entitlement.source)}</td>
                     <td>{formatDate(entitlement.expiresAt)}</td>
-                    <td>{entitlement.aiEnabled ? "Si" : "No"}</td>
-                    <td>{entitlement.fullReportEnabled ? "Si" : "No"}</td>
+                    <td>{entitlement.aiEnabled ? "Sí" : "No"}</td>
+                    <td>{entitlement.fullReportEnabled ? "Sí" : "No"}</td>
                     <td>{entitlement.notesInternal ?? "Sin notas"}</td>
                     <td>
                       <form>
@@ -760,8 +800,8 @@ export default async function AdminConsolePage() {
           id="oportunidades"
           icon={<Gauge size={18} />}
           label="Oportunidades"
-          title="Oportunidades comerciales y proxima accion"
-          description="Scoring deterministico inicial para seguimiento comercial relacionado al assessment. No usa IA como autoridad."
+          title="Oportunidades comerciales y próxima acción"
+          description="Score determinístico inicial para seguimiento comercial relacionado con la evaluación. No usa IA como autoridad."
         />
         <section className="assessment-summary-grid">
           <MetricCard icon={<Gauge size={22} />} label="Alto potencial" value={data.commercialOpportunities.filter((item) => item.score >= 70).length} note="Score >= 70" />
@@ -774,10 +814,10 @@ export default async function AdminConsolePage() {
             <thead>
               <tr>
                 <th>Cliente</th>
-                <th>Assessment</th>
+                <th>Evaluación</th>
                 <th>Score</th>
-                <th>Tags</th>
-                <th>Proxima accion</th>
+                <th>Etiquetas</th>
+                <th>Próxima acción</th>
                 <th>Plan sugerido</th>
                 <th>Estado</th>
                 <th>Notas</th>
@@ -800,7 +840,7 @@ export default async function AdminConsolePage() {
                     <td>{opportunity.tags.join(", ")}</td>
                     <td>{opportunity.nextBestAction}</td>
                     <td>{opportunity.suggestedPlan}</td>
-                    <td>{opportunity.status}</td>
+                    <td>{formatStatusLabel(opportunity.status)}</td>
                     <td>{opportunity.notesInternal ?? "Sin notas"}</td>
                     <td>
                       <form className="unlock-admin-form" action={updateCommercialOpportunityAction}>
@@ -870,7 +910,7 @@ export default async function AdminConsolePage() {
           icon={<Users size={18} />}
           label="Usuarios"
           title="Usuarios recientes"
-          description="Vista read-only. Acciones destructivas y suplantacion quedan fuera de ADMIN-1."
+          description="Vista de sólo lectura. Acciones destructivas y suplantación quedan fuera de ADMIN-1."
         />
         <div className="assessment-table-wrap">
           <table className="assessment-table">
@@ -904,13 +944,13 @@ export default async function AdminConsolePage() {
                   <td>{user.role}</td>
                   <td><StatusPill status={user.status} /></td>
                   <td>{user.assessments}</td>
-                  <td>{user.plan}</td>
+                  <td>{formatStatusLabel(user.plan)}</td>
                   <td>{user.aiCalls}</td>
                   <td>{formatNumber(user.aiTokens)}</td>
                   <td>{formatCurrency(user.aiCost)}</td>
                   <td>{formatDate(user.lastAiUsage)}</td>
-                  <td>{user.entitlementPlan} / {user.entitlementStatus}</td>
-                  <td>{user.opportunityScore} - {user.commercialStatus}</td>
+                  <td>{formatStatusLabel(user.entitlementPlan)} / {formatStatusLabel(user.entitlementStatus)}</td>
+                  <td>{user.opportunityScore} - {formatStatusLabel(user.commercialStatus)}</td>
                   <td>{user.nextBestAction}</td>
                   <td>Ver usuario / Ver evaluaciones</td>
                 </tr>
@@ -922,11 +962,11 @@ export default async function AdminConsolePage() {
 
       <section className="assessment-section glass-card">
         <SectionTitle
-          id="assessments"
+          id="evaluaciones"
           icon={<Database size={18} />}
           label="Evaluaciones"
           title="Evaluaciones recientes"
-          description="Vista read-only para revisar estado, evidencia, contexto, PDF e IA."
+          description="Vista de sólo lectura para revisar estado, evidencia, contexto, PDF e IA."
         />
         <div className="assessment-table-wrap">
           <table className="assessment-table">
@@ -940,15 +980,15 @@ export default async function AdminConsolePage() {
                 <th>PDF</th>
                 <th>IA</th>
                 <th>Readiness</th>
-                <th>Confidence</th>
+                <th>Confianza</th>
                 <th>Llamadas IA</th>
                 <th>Tokens IA</th>
                 <th>Costo IA</th>
                 <th>Errores IA</th>
                 <th>Ultimo estado IA</th>
                 <th>Oportunidad</th>
-                <th>Tags</th>
-                <th>Proxima accion</th>
+                <th>Etiquetas</th>
+                <th>Próxima acción</th>
                 <th>Actualizado</th>
                 <th>Acciones</th>
               </tr>
@@ -958,7 +998,7 @@ export default async function AdminConsolePage() {
                 <tr key={assessment.id}>
                   <td>{assessment.title}</td>
                   <td>{assessment.clientLabel ?? assessment.ownerEmail}</td>
-                  <td>{assessment.status}</td>
+                  <td>{formatStatusLabel(assessment.status)}</td>
                   <td>{assessment.evidence}</td>
                   <td>{assessment.context}</td>
                   <td>{assessment.pdf}</td>
@@ -969,9 +1009,9 @@ export default async function AdminConsolePage() {
                   <td>{formatNumber(assessment.aiTokens)}</td>
                   <td>{formatCurrency(assessment.aiCost)}</td>
                   <td>{assessment.aiErrors}</td>
-                  <td>{assessment.lastAiStatus}</td>
-                  <td>{assessment.opportunityScore} - {assessment.commercialStatus}</td>
-                  <td>{assessment.opportunityTags.join(", ") || "Sin tags"}</td>
+                  <td>{formatStatusLabel(assessment.lastAiStatus)}</td>
+                  <td>{assessment.opportunityScore} - {formatStatusLabel(assessment.commercialStatus)}</td>
+                  <td>{assessment.opportunityTags.join(", ") || "Sin etiquetas"}</td>
                   <td>{assessment.nextBestAction}</td>
                   <td>{formatDate(assessment.updatedAt)}</td>
                   <td>
