@@ -6,12 +6,12 @@ Tagline:
 Infrastructure readiness before you migrate.
 
 Status:
-Controlled production launch active. Limited public beta is allowed only under controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; Hostinger logs, real QA cleanup/archive, authenticated browser QA, authenticated product-flow evidence and support/SLA remain pending. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke. The Antigravity post-landing UX/UI update was audited by Codex in HITO UX-AUDIT-1; local production-like serving, build, lint, typecheck and unauthenticated route smoke passed. PUBLIC-BETA-OPS-3 reconfirmed public route health and password recovery regression, but authenticated browser/product-flow replay and Hostinger logs still require credentialed/user-attested evidence.
+Controlled production launch active. Broader invited beta is approved for controlled, low-volume or invitation-only operating conditions. Full public launch is not approved yet; it still requires an explicit owner/commercial decision, public support/SLA, final pricing or checkout process, QA/demo archive/filter decision and final public launch checklist closure. AUTH-1 password recovery is operational in production by user-attested mailbox/token validation and regression smoke. The Antigravity post-landing UX/UI update was audited by Codex in HITO UX-AUDIT-1; local production-like serving, build, lint, typecheck and unauthenticated route smoke passed.
 
 Current manual:
-`docs/shiftreadiness-functional-operational-manual-v1-1-limited-public-beta.md`
+`docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
 
-The previous v1.0 Production Launch Edition manual is superseded by v1.1 and retained as historical controlled launch documentation.
+The previous v1.1 Limited Public Beta manual is superseded by v1.2 and retained as historical controlled launch documentation.
 
 PUBLIC-BETA-OPS-3A attempted to import manual Hostinger logs and authenticated browser QA evidence. No user/Claude evidence was provided in that hito, so full public launch remains blocked by logs, browser QA, product-flow replay and QA cleanup/archive.
 
@@ -60,6 +60,8 @@ QA-CLEANUP-ARCHIVE-1 reviewed QA/demo data without hard-delete: 25 QA/demo asses
 PUBLIC-LAUNCH-READINESS-2 completed final readiness review with user-attested authenticated user and admin smoke PASS. Public production routes are healthy, private/admin routes redirect unauthenticated users, Gemini/PDF/report preview are healthy in user flow, admin operational sections load, no secrets were visible, and settings are correct. Controlled beta and broader invited beta are approved; full public launch remains NO pending explicit owner/commercial launch decision.
 
 LAUNCH-DECISION-1 formally approves broader invited beta for 3 to 10 controlled customers/MSPs/consultants with manual entitlements, supervised support, Gemini enabled, PDF/report flow enabled, manual payments only and no mass traffic or public checkout. Full public launch remains NO pending owner/commercial decision, support/SLA, QA/demo filtering/archive and final public launch checklist.
+
+MANUAL-FINAL-v1.2 creates the final internal operational and functional manual for broader invited beta. It documents customer flow, admin flow, Gemini/PDF/report operations, runtime controls, entitlements, budgets, opportunities, incident handling, manual payments and full public launch criteria. The source of truth is `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`. Full public launch remains NO.
 
 ## Stack
 - Next.js App Router
@@ -180,6 +182,7 @@ Optional for future work:
 - `docs/hito-qa-cleanup-archive-1.md`
 - `docs/hito-public-launch-readiness-2.md`
 - `docs/hito-launch-decision-1-broader-invited-beta.md`
+- `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
 - `docs/hito-1-technical-foundation.md`
 - `docs/hito-1-1-stabilization-neon-auth-smoke-test.md`
 - `docs/hito-2-assessment-crud-manual-intake-cost-risk.md`
@@ -258,3 +261,4 @@ Optional for future work:
 - `docs/manuals-index.md`
 - `docs/public-beta-ops-3a-user-attested-browser-logs-evidence.md`
 - `docs/public-beta-ops-4-manual-browser-qa-logs-evidence.md`
+- `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`

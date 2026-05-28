@@ -230,6 +230,29 @@ Broader invited beta is approved under these operating conditions:
 
 Full public launch remains NO.
 
+## MANUAL-FINAL-v1.2
+
+Date: 2026-05-28.
+
+The current internal operating manual for broader invited beta is:
+
+- `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
+
+It consolidates:
+
+- customer onboarding and assessment operation;
+- context, upload, preview, PDF and Gemini Advisory rules;
+- Spanish admin console operation;
+- AI consumption, budgets, entitlements and opportunities;
+- runtime controls and enforcement;
+- incident handling and rollback;
+- manual pricing/payment operating rules;
+- full public launch criteria.
+
+DOCX export remains pending until a repo-safe generator/render verification path is available.
+
+Full public launch remains NO.
+
 ## Rollback / Pause
 
 If launch must be paused:

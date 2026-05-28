@@ -8,9 +8,19 @@ Production launched: SÍ, controlled launch.
 
 Public launch: NO.
 
+Broader invited beta: YES, approved for controlled/invitation-only usage.
+
+Current operating manual:
+
+- `docs/shiftreadiness-functional-operational-manual-v1-2-broader-invited-beta.md`
+
+The previous v1.1 manual remains historical documentation.
+
 ## Scope
 
 This decision authorizes a controlled production launch of ShiftReadiness for limited/manual usage, not a public mass-market launch.
+
+Broader invited beta allows 3 to 10 controlled customers, MSPs or consultants with manual entitlements, manual support, manual payments, Gemini enabled with fallback and no public checkout.
 
 ## Evidence
 
