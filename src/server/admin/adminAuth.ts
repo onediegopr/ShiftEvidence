@@ -4,10 +4,14 @@ import { auth } from "../../lib/auth";
 import { env } from "../../lib/env";
 import { upsertUserProfileFromSession } from "../user/userProfileService";
 
+function normalizeEmailForAdmin(email: string) {
+  return email.trim().toLowerCase();
+}
+
 function parseAdminEmails() {
   return new Set(
     env.ADMIN_EMAILS.split(",")
-      .map((email) => email.trim().toLowerCase())
+      .map(normalizeEmailForAdmin)
       .filter((email) => Boolean(email) && !email.includes("*")),
   );
 }
@@ -26,7 +30,7 @@ export function isAdminEmail(email: string | null | undefined) {
     return false;
   }
 
-  return adminEmails.has(email.trim().toLowerCase());
+  return adminEmails.has(normalizeEmailForAdmin(email));
 }
 
 export function isCurrentUserAdmin(email: string | null | undefined) {
