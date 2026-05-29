@@ -49,10 +49,12 @@ import {
   type MigrationContextQuestion,
 } from "../../../../server/assessments/migrationContextService";
 import {
+  computeAssessmentCompletionSummary,
   getAssessmentCompletionStatus,
   getMissingEvidenceSummary,
   getNextStepsSummary,
 } from "../../../../server/assessments/assessmentCompletionService";
+import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
 import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
   getEvidenceUploadStatus,
@@ -552,6 +554,7 @@ export default async function AssessmentDetailPage({
 
   const assessment = await getAssessment(params);
   const completion = getAssessmentCompletionStatus(assessment);
+  const completionSummary = computeAssessmentCompletionSummary(assessment);
   const preview = getPreliminaryCostRiskPreview(assessment);
   const migrationContext = getMigrationContextFromAssessment(assessment);
   const migrationContextCoverage = computeMigrationContextCoverage(migrationContext);
@@ -625,6 +628,8 @@ export default async function AssessmentDetailPage({
 
       {saved ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">Changes saved.</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+
+      <AssessmentCompletionCenter assessmentId={assessment.id} summary={completionSummary} />
 
       {/* Tabs Navigation */}
       <nav className="tabs-container" aria-label="Assessment tabs" style={{ marginTop: "1rem" }}>
@@ -1000,7 +1005,7 @@ export default async function AssessmentDetailPage({
             </form>
           </section>
 
-          <section className="assessment-section glass-card">
+          <section id="storage-readiness" className="assessment-section glass-card">
             <SectionTitle
               icon={<Database size={18} />}
               eyebrow="Storage Readiness"
@@ -1682,7 +1687,7 @@ export default async function AssessmentDetailPage({
             </div>
           </section>
 
-          <section className="assessment-section glass-card">
+          <section id="risk-overview" className="assessment-section glass-card">
             <SectionTitle
               icon={<ShieldCheck size={18} />}
               eyebrow="Risk overview"
