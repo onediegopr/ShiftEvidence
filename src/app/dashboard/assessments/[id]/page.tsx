@@ -884,7 +884,7 @@ export default async function AssessmentDetailPage({
               {renderStatusPill("Optional", "neutral")}
               {renderStatusPill("Amounts modeled in USD", "warning")}
               {renderStatusPill(
-                `Completion: ${statusLabel(licensingCompletionModule?.status ?? "not_started")}`,
+                `Progress: ${statusLabel(licensingCompletionModule?.status ?? "not_started")}`,
                 renderStatusTone(licensingCompletionModule?.status ?? "not_started"),
               )}
               {renderStatusPill(`Cost model: ${statusLabel(costRiskStatus)}`, renderStatusTone(costRiskStatus))}
@@ -901,7 +901,7 @@ export default async function AssessmentDetailPage({
               </div>
               <div className="assessment-optional-module-meta">
                 <span>Weight: {licensingCompletionModule?.weight ?? 15}%</span>
-                <span>Confidence: {licensingCompletionModule?.confidenceContribution ?? 0}%</span>
+                <span>Precision: {licensingCompletionModule?.confidenceContribution ?? 0}%</span>
                 <span>Decision: {statusLabel(licensingCostContext.decision)}</span>
               </div>
             </div>
@@ -1101,9 +1101,9 @@ export default async function AssessmentDetailPage({
             <div className="assessment-status-row">
               {renderStatusPill("Recommended", "good")}
               {renderStatusPill("Optional", "neutral")}
-              {renderStatusPill("Improves report confidence", "warning")}
+              {renderStatusPill("Improves context precision", "warning")}
               {renderStatusPill(
-                `Completion: ${statusLabel(storageCompletionModule?.status ?? "not_started")}`,
+                `Progress: ${statusLabel(storageCompletionModule?.status ?? "not_started")}`,
                 renderStatusTone(storageCompletionModule?.status ?? "not_started"),
               )}
               {renderStatusPill(
@@ -1122,7 +1122,7 @@ export default async function AssessmentDetailPage({
               </div>
               <div className="assessment-optional-module-meta">
                 <span>Weight: {storageCompletionModule?.weight ?? 15}%</span>
-                <span>Confidence: {storageCompletionModule?.confidenceContribution ?? 0}%</span>
+                <span>Precision: {storageCompletionModule?.confidenceContribution ?? 0}%</span>
                 <span>Decision: {statusLabel(storageAnalysisContext.decision)}</span>
               </div>
             </div>
@@ -1257,7 +1257,7 @@ export default async function AssessmentDetailPage({
             <div className="assessment-status-row">
               {renderStatusPill("Recommended", "good")}
               {renderStatusPill("Optional", "neutral")}
-              {renderStatusPill("Improves report confidence", "warning")}
+              {renderStatusPill("Improves context precision", "warning")}
               {renderStatusPill(`Coverage: ${migrationContextCoverage.overallPercent}%`, getContextStatusTone(migrationContextCoverage.status))}
               {renderStatusPill(`Status: ${statusLabel(migrationContextCoverage.status)}`, getContextStatusTone(migrationContextCoverage.status))}
             </div>
