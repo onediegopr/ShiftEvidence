@@ -122,7 +122,7 @@ export async function recordAiUsageEvent(params: {
         estimatedOutputTokens: outputTokens,
         estimatedTotalTokens: totalTokens,
         estimatedCostUsd,
-        errorCategory: normalizeNullableString(params.errorCategory),
+        errorCategory: normalizeNullableString(params.errorCategory)?.slice(0, 255) ?? null,
         fallbackUsed: params.fallbackUsed ?? false,
         metadataJson: sanitizeMetadata(params.metadataJson),
       },

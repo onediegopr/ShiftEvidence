@@ -879,10 +879,6 @@ function addLicensingCostExposureSection(doc: PDFKit.PDFDocument, input: PdfRepo
 
   if (!section.included) {
     callout(doc, "Licensing & Cost Exposure Analysis was not included or has not been generated for this assessment. Report generation is not blocked by this optional module.", "info");
-    h2(doc, "Assumptions");
-    bulletList(doc, section.assumptions, 6, "Licensing Assumptions continued");
-    h2(doc, "Disclaimer");
-    bulletList(doc, section.disclaimers, 4, "Licensing Disclaimer continued");
     return;
   }
 
@@ -1009,23 +1005,6 @@ function addLicensingCostExposureSection(doc: PDFKit.PDFDocument, input: PdfRepo
     "Missing Financial Evidence continued",
   );
 
-  h2(doc, "Assumptions");
-  bulletList(doc, section.assumptions, 10, "Licensing Assumptions continued");
-
-  h2(doc, "Pricing snapshot used");
-  bulletList(
-    doc,
-    section.pricingSnapshotUsed.length > 0
-      ? section.pricingSnapshotUsed.map((snapshot) =>
-          `${titleCase(snapshot.vendor)}: ${snapshot.sourceName ?? snapshot.snapshotId ?? "Approved snapshot"}; last checked: ${snapshot.lastCheckedAt ?? "not provided"}; status: ${snapshot.status ?? "approved"}${snapshot.notes ? `; ${snapshot.notes}` : ""}`,
-        )
-      : ["No approved pricing snapshot reference was persisted with this analysis."],
-    8,
-    "Pricing Snapshot Used continued",
-  );
-
-  h2(doc, "Disclaimer");
-  bulletList(doc, section.disclaimers, 6, "Licensing Disclaimer continued");
 }
 
 function addPageNumbers(doc: PDFKit.PDFDocument) {
@@ -1369,6 +1348,33 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     h2(doc, "Operating principle");
     paragraph(doc, "Missing backup evidence does not mean backups are absent. It means this assessment cannot verify restore readiness.");
     paragraph(doc, "Do not migrate critical workloads before pilot import, backup restore validation and rollback planning.");
+
+    const licSection = preview.licensingCostExposure;
+    if (licSection) {
+      if (licSection.assumptions && licSection.assumptions.length > 0) {
+        h2(doc, "Licensing & Cost Exposure Assumptions");
+        bulletList(doc, licSection.assumptions, 10, "Licensing Assumptions continued");
+      }
+
+      if (licSection.included) {
+        h2(doc, "Licensing Pricing Snapshots");
+        bulletList(
+          doc,
+          licSection.pricingSnapshotUsed.length > 0
+            ? licSection.pricingSnapshotUsed.map((snapshot) =>
+                `${titleCase(snapshot.vendor)}: ${snapshot.sourceName ?? snapshot.snapshotId ?? "Approved snapshot"}; last checked: ${snapshot.lastCheckedAt ?? "not provided"}; status: ${snapshot.status ?? "approved"}${snapshot.notes ? `; ${snapshot.notes}` : ""}`,
+              )
+            : ["No approved pricing snapshot reference was persisted with this analysis."],
+          8,
+          "Pricing Snapshot Used continued",
+        );
+      }
+
+      if (licSection.disclaimers && licSection.disclaimers.length > 0) {
+        h2(doc, "Licensing Disclaimer");
+        bulletList(doc, licSection.disclaimers, 6, "Licensing Disclaimer continued");
+      }
+    }
 
     addPageNumbers(doc);
     doc.end();

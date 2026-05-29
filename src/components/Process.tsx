@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Search,
   RefreshCw,
@@ -5,15 +6,10 @@ import {
   Rocket,
   BarChart3,
 } from "lucide-react";
-import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
-
 export default function Process() {
-  const vmwareLogoSrc = assetSrc(vmwareLogo);
-  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
-
   const steps = [
     {
       num: "01",
@@ -89,7 +85,7 @@ export default function Process() {
         <div className="pipeline">
           {/* Endpoint: VMware */}
           <div className="pipeline-endpoint vmware">
-            <img src={vmwareLogoSrc} alt="" className="pipeline-endpoint-logo" />
+            <Image src={vmwareLogo} alt="VMware Logo" width={32} height={32} className="pipeline-endpoint-logo" />
             VMware
           </div>
 
@@ -161,7 +157,7 @@ export default function Process() {
 
           {/* Endpoint: Proxmox */}
           <div className="pipeline-endpoint proxmox">
-            <img src={proxmoxLogoSrc} alt="" className="pipeline-endpoint-logo" />
+            <Image src={proxmoxLogo} alt="Proxmox Logo" width={32} height={32} className="pipeline-endpoint-logo" />
             Proxmox
           </div>
         </div>

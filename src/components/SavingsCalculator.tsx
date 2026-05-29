@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Percent,
   ChevronDown,
@@ -11,7 +12,6 @@ import {
   ArrowRight,
   Info,
 } from "lucide-react";
-import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -49,15 +49,11 @@ const PROXMOX_DEFAULTS: Record<
 };
 
 const CORES_OPTIONS = [16, 24, 32, 48, 64];
-const FX_FALLBACK_EUR_PER_USD = 1.16;
-const FX_FALLBACK_USD_PER_EUR = 1 / FX_FALLBACK_EUR_PER_USD;
+const FX_FALLBACK_USD_PER_EUR = 1.08;
 const FX_RATE_URL =
   "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD";
 
 export default function SavingsCalculator() {
-  const vmwareLogoSrc = assetSrc(vmwareLogo);
-  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
-
   // --- Environment ---
   const [servers, setServers] = useState(8);
   const [socketsPerServer, setSocketsPerServer] = useState(2);
@@ -190,7 +186,7 @@ export default function SavingsCalculator() {
         {/* ========== COMPARISON HEADER ========== */}
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
-            <img src={vmwareLogoSrc} alt="" className="cmp-logo-icon" />
+            <Image src={vmwareLogo} alt="VMware Logo" width={24} height={24} className="cmp-logo-icon" />
             <span className="cmp-header-title">Current VMware Environment</span>
             <span className="cmp-header-sub">Legacy Subscription Model</span>
           </div>
@@ -198,7 +194,7 @@ export default function SavingsCalculator() {
             <ArrowRight size={28} />
           </div>
           <div className="cmp-header-badge proxmox">
-            <img src={proxmoxLogoSrc} alt="" className="cmp-logo-icon" />
+            <Image src={proxmoxLogo} alt="Proxmox Logo" width={24} height={24} className="cmp-logo-icon" />
             <span className="cmp-header-title">Target Proxmox Environment</span>
             <span className="cmp-header-sub">Open Infrastructure Model</span>
           </div>
@@ -211,7 +207,7 @@ export default function SavingsCalculator() {
             {/* ---- VMware License Tier ---- */}
             <div className="slider-group">
               <span className="slider-label">
-                <img src={vmwareLogoSrc} alt="" className="cmp-label-logo" />
+                <Image src={vmwareLogo} alt="VMware Logo" width={18} height={18} className="cmp-label-logo" style={{ display: "inline-block", marginRight: "6px", verticalAlign: "middle" }} />
                 VMware License Tier
               </span>
               <div className="radio-group">
@@ -415,7 +411,7 @@ export default function SavingsCalculator() {
             {/* ---- Proxmox Subscription Tier ---- */}
             <div className="slider-group" style={{ marginBottom: "1.5rem" }}>
               <span className="slider-label">
-                <img src={proxmoxLogoSrc} alt="" className="cmp-label-logo" />
+                <Image src={proxmoxLogo} alt="Proxmox Logo" width={18} height={18} className="cmp-label-logo" style={{ display: "inline-block", marginRight: "6px", verticalAlign: "middle" }} />
                 Proxmox Subscription Tier
               </span>
               <div className="radio-group proxmox-radio-group">

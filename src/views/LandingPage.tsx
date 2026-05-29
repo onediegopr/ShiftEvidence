@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
 import Features from "../components/Features";
 import Process from "../components/Process";
 import Footer from "../components/Footer";
-import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 import {
@@ -176,8 +176,6 @@ const privacyNote =
 export default function LandingPage() {
   const [ctaEmail, setCtaEmail] = useState("");
   const [selectedEvaluationId, setSelectedEvaluationId] = useState<string | null>(null);
-  const vmwareLogoSrc = assetSrc(vmwareLogo);
-  const proxmoxLogoSrc = assetSrc(proxmoxLogo);
   const selectedEvaluation = industryEvaluations.find((evaluation) => evaluation.id === selectedEvaluationId);
 
   const handleOpenScanner = () => {
@@ -669,12 +667,12 @@ export default function LandingPage() {
               <div className="badge badge-cyan">FAQ</div>
               <div className="faq-brands">
                 <div className="faq-brand vmware">
-                  <img src={vmwareLogoSrc} alt="" className="faq-brand-logo" />
+                  <Image src={vmwareLogo} alt="VMware Logo" width={18} height={18} className="faq-brand-logo" />
                   VMware
                 </div>
                 <ArrowRight size={16} className="cta-arrow" />
                 <div className="faq-brand proxmox">
-                  <img src={proxmoxLogoSrc} alt="" className="faq-brand-logo" />
+                  <Image src={proxmoxLogo} alt="Proxmox Logo" width={18} height={18} className="faq-brand-logo" />
                   Proxmox
                 </div>
               </div>
@@ -724,12 +722,12 @@ export default function LandingPage() {
             <div className="glass-card cta-box">
               <div className="cta-brands">
                 <div className="cta-brand vmware">
-                  <img src={vmwareLogoSrc} alt="" className="cta-brand-logo" />
+                  <Image src={vmwareLogo} alt="VMware Logo" width={18} height={18} className="cta-brand-logo" />
                   VMware
                 </div>
                 <ArrowRight size={18} className="cta-arrow" />
                 <div className="cta-brand proxmox">
-                  <img src={proxmoxLogoSrc} alt="" className="cta-brand-logo" />
+                  <Image src={proxmoxLogo} alt="Proxmox Logo" width={18} height={18} className="cta-brand-logo" />
                   Proxmox
                 </div>
               </div>

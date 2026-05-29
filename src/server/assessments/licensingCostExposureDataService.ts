@@ -82,6 +82,7 @@ export function getLicensingAnalysisPreferencesFromAssessment(assessment: Assess
     renewalDate: typeof raw.renewalDate === "string" ? raw.renewalDate : null,
     hasContract: parseBoolean(raw.hasContract),
     hasRenewalQuote: parseBoolean(raw.hasRenewalQuote),
+    includeEscalation: parseBoolean(raw.includeEscalation),
     migrationInvestmentEstimateUsd: typeof raw.migrationInvestmentEstimateUsd === "number" ? raw.migrationInvestmentEstimateUsd : null,
     selectedProxmoxSupportScenario: parseSupportScenario(raw.selectedProxmoxSupportScenario),
     notes: typeof raw.notes === "string" ? raw.notes : existingContext.notes,
@@ -110,6 +111,7 @@ export function parseLicensingAnalysisPreferencesFormData(formData: FormData): L
     renewalDate: parseRenewalDate(formData.get("renewalDate")),
     hasContract: parseBoolean(formData.get("hasContract")),
     hasRenewalQuote: parseBoolean(formData.get("hasRenewalQuote")),
+    includeEscalation: parseBoolean(formData.get("includeEscalation")),
     migrationInvestmentEstimateUsd: parseOptionalUsd(
       formData.get("migrationInvestmentEstimateUsd"),
       "Migration investment estimate",
@@ -240,6 +242,7 @@ export async function buildLicensingAnalysisInput(assessment: AssessmentDetail):
     renewalDate: preferences.renewalDate,
     hasContract: preferences.hasContract,
     hasRenewalQuote: preferences.hasRenewalQuote,
+    includeEscalation: preferences.includeEscalation,
     migrationInvestmentEstimateUsd: preferences.migrationInvestmentEstimateUsd,
     selectedProxmoxSupportScenario: preferences.selectedProxmoxSupportScenario,
     includeProxmoxEstimate: licensingContext.includeProxmoxEstimate,

@@ -23,11 +23,13 @@ function clampScore(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
-function scenarioTotals(annualUsd: number | null) {
+function scenarioTotals(annualUsd: number | null, includeEscalation = false) {
+  const factor3Y = includeEscalation ? 1 + 1.1 + 1.21 : 3;
+  const factor5Y = includeEscalation ? 1 + 1.1 + 1.21 + 1.331 + 1.4641 : 5;
   return {
     annualUsd: roundCurrency(annualUsd),
-    threeYearUsd: annualUsd === null ? null : roundCurrency(annualUsd * 3),
-    fiveYearUsd: annualUsd === null ? null : roundCurrency(annualUsd * 5),
+    threeYearUsd: annualUsd === null ? null : roundCurrency(annualUsd * factor3Y),
+    fiveYearUsd: annualUsd === null ? null : roundCurrency(annualUsd * factor5Y),
   };
 }
 
@@ -110,13 +112,18 @@ function scenarioFromAnnual(params: {
   confidence: LicensingCostScenario["confidence"];
   assumptions: string[];
   warnings?: string[];
+  includeEscalation?: boolean;
 }): LicensingCostScenario {
+  const assumptions = [...params.assumptions];
+  if (params.includeEscalation && params.annualUsd !== null) {
+    assumptions.push("VMware 3-Year and 5-Year estimates include 10% YoY Broadcom price escalation.");
+  }
   return {
     label: params.label,
     source: params.source,
     confidence: params.confidence,
-    ...scenarioTotals(params.annualUsd),
-    assumptions: params.assumptions,
+    ...scenarioTotals(params.annualUsd, params.includeEscalation),
+    assumptions,
     warnings: params.warnings ?? [],
   };
 }
@@ -125,6 +132,7 @@ function scenariosFromSnapshots(params: {
   snapshots: ApprovedPricingSnapshot[];
   labelPrefix: string;
   counts: { hostCount: number | null; socketCount: number | null; coreCount: number | null };
+  includeEscalation?: boolean;
 }) {
   const pricedItems = params.snapshots
     .flatMap((snapshot) =>
@@ -156,6 +164,7 @@ function scenariosFromSnapshots(params: {
         `Snapshot source: ${entry.snapshot.sourceName}.`,
       ],
       warnings: entry.snapshot.lastCheckedAt ? [] : ["Approved snapshot has no last checked date."],
+      includeEscalation: params.includeEscalation,
     });
 
   return {
@@ -177,6 +186,7 @@ function buildVmwareScenarios(input: LicensingAnalysisInput) {
         "The engine does not replace customer contract data with benchmark pricing.",
       ],
       warnings: input.hasRenewalQuote ? [] : ["No renewal quote was marked as available."],
+      includeEscalation: input.includeEscalation,
     });
 
     return {
@@ -194,6 +204,7 @@ function buildVmwareScenarios(input: LicensingAnalysisInput) {
       socketCount: input.socketCount,
       coreCount: input.coreCount,
     },
+    includeEscalation: input.includeEscalation,
   });
 
   if (snapshotScenarios.mid) return snapshotScenarios;
@@ -207,6 +218,7 @@ function buildVmwareScenarios(input: LicensingAnalysisInput) {
       confidence: "unknown",
       assumptions: [],
       warnings: ["No customer cost or usable approved VMware/Broadcom pricing snapshot is available."],
+      includeEscalation: input.includeEscalation,
     }),
     high: null,
   };
@@ -267,8 +279,14 @@ function buildComparison(params: {
   const vmwareAnnual = bestScenarioValue(params.vmware.mid);
   const proxmoxAnnual = bestScenarioValue(params.proxmox.supported) ?? bestScenarioValue(params.proxmox.premium);
   const netDeltaAnnual = vmwareAnnual !== null && proxmoxAnnual !== null ? roundCurrency(vmwareAnnual - proxmoxAnnual) : null;
-  const netDeltaThreeYear = netDeltaAnnual !== null ? roundCurrency(netDeltaAnnual * 3) : null;
-  const netDeltaFiveYear = netDeltaAnnual !== null ? roundCurrency(netDeltaAnnual * 5) : null;
+
+  const vmware3Y = params.vmware.mid?.threeYearUsd ?? null;
+  const proxmox3Y = params.proxmox.supported?.threeYearUsd ?? params.proxmox.premium?.threeYearUsd ?? null;
+  const netDeltaThreeYear = vmware3Y !== null && proxmox3Y !== null ? roundCurrency(vmware3Y - proxmox3Y) : null;
+
+  const vmware5Y = params.vmware.mid?.fiveYearUsd ?? null;
+  const proxmox5Y = params.proxmox.supported?.fiveYearUsd ?? params.proxmox.premium?.fiveYearUsd ?? null;
+  const netDeltaFiveYear = vmware5Y !== null && proxmox5Y !== null ? roundCurrency(vmware5Y - proxmox5Y) : null;
   const grossSavingsPercent =
     vmwareAnnual && vmwareAnnual > 0 && netDeltaAnnual !== null
       ? Math.round((netDeltaAnnual / vmwareAnnual) * 1000) / 10
@@ -632,10 +650,12 @@ function buildCostOfStaying(params: {
   vmwareAnnual: number | null;
   comparison: LicensingComparisonResult;
 }) {
+  const threeYearRenewalUsd = params.comparison.vmwareMid?.threeYearUsd ?? (params.vmwareAnnual === null ? null : roundCurrency(params.vmwareAnnual * 3));
+  const fiveYearRenewalUsd = params.comparison.vmwareMid?.fiveYearUsd ?? (params.vmwareAnnual === null ? null : roundCurrency(params.vmwareAnnual * 5));
   return {
     annualRenewalUsd: roundCurrency(params.vmwareAnnual),
-    threeYearRenewalUsd: params.vmwareAnnual === null ? null : roundCurrency(params.vmwareAnnual * 3),
-    fiveYearRenewalUsd: params.vmwareAnnual === null ? null : roundCurrency(params.vmwareAnnual * 5),
+    threeYearRenewalUsd,
+    fiveYearRenewalUsd,
     opportunityLossThreeYearUsd:
       params.comparison.netDeltaThreeYear !== null && params.comparison.netDeltaThreeYear > 0
         ? params.comparison.netDeltaThreeYear
@@ -795,6 +815,7 @@ export function runLicensingCostExposureAnalysis(input: LicensingAnalysisInput):
       "This analysis is not a vendor quote.",
       input.mode === "actual_costs" ? "Customer-provided cost takes precedence over benchmark pricing." : null,
       input.mode === "broad_scenarios" ? "Broad scenarios are directional and low-confidence by design." : null,
+      input.includeEscalation ? "VMware 3-Year and 5-Year estimates include 10% YoY Broadcom price escalation." : null,
       "Storage cost modeling is still in development and is not included.",
     ].filter((item): item is string => Boolean(item)),
     pricingSnapshotRefs: snapshotRefs(input),

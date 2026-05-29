@@ -129,6 +129,7 @@ export type LicensingAnalysisPreferences = {
   renewalDate: string | null;
   hasContract: boolean;
   hasRenewalQuote: boolean;
+  includeEscalation: boolean;
   migrationInvestmentEstimateUsd: number | null;
   selectedProxmoxSupportScenario: "community" | "supported" | "premium" | "not_sure" | null;
   notes: string | null;
@@ -150,6 +151,7 @@ export type LicensingAnalysisInput = {
   renewalDate: string | null;
   hasContract: boolean;
   hasRenewalQuote: boolean;
+  includeEscalation: boolean;
   migrationInvestmentEstimateUsd: number | null;
   selectedProxmoxSupportScenario: LicensingAnalysisPreferences["selectedProxmoxSupportScenario"];
   includeProxmoxEstimate: "yes" | "no" | "not_sure" | null;

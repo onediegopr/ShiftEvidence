@@ -136,9 +136,10 @@ export async function checkRateLimit(params: {
 }): Promise<RateLimitResult> {
   const limiter = getLimiter(params.limiter);
   if (!limiter) {
+    const isProduction = process.env.NODE_ENV === "production";
     return {
-      allowed: true,
-      mode: "disabled",
+      allowed: !isProduction,
+      mode: isProduction ? "active" : "disabled",
       limiter: params.limiter,
     };
   }

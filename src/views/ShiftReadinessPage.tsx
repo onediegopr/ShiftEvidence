@@ -219,22 +219,22 @@ export default function ShiftReadinessPage() {
           <nav className="navbar-menu-desktop">
             <ul className="nav-links">
               <li>
-                <a href="#what-is" className="nav-link">
+                <a href="/shiftreadiness#what-is" className="nav-link">
                   Overview
                 </a>
               </li>
               <li>
-                <a href="#cost-risk" className="nav-link">
+                <a href="/shiftreadiness#cost-risk" className="nav-link">
                   Cost & Risk
                 </a>
               </li>
               <li>
-                <a href="#value-framing" className="nav-link">
+                <a href="/shiftreadiness#value-framing" className="nav-link">
                   Comparison
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="nav-link">
+                <a href="/shiftreadiness#pricing" className="nav-link">
                   Pricing
                 </a>
               </li>
@@ -271,7 +271,7 @@ export default function ShiftReadinessPage() {
               <a href="/sample-report" className="btn btn-secondary">
                 View sample report
               </a>
-              <a href="#pricing" className="btn btn-secondary">
+              <a href="/shiftreadiness#pricing" className="btn btn-secondary">
                 View plans and add-ons
               </a>
             </div>
@@ -799,7 +799,7 @@ export default function ShiftReadinessPage() {
                 Start Free Readiness Check
                 <ArrowRight size={18} />
               </a>
-              <a href="#pricing" className="btn btn-secondary">
+              <a href="/shiftreadiness#pricing" className="btn btn-secondary">
                 Compare plans
               </a>
             </div>

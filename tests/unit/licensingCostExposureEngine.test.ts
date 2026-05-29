@@ -52,6 +52,7 @@ function baseInput(overrides: Partial<LicensingAnalysisInput> = {}): LicensingAn
     renewalDate: new Date(Date.now() + 220 * 86_400_000).toISOString().slice(0, 10),
     hasContract: true,
     hasRenewalQuote: true,
+    includeEscalation: false,
     migrationInvestmentEstimateUsd: 45_000,
     selectedProxmoxSupportScenario: "supported",
     includeProxmoxEstimate: "yes",
@@ -178,5 +179,17 @@ describe("licensing cost exposure engine", () => {
 
     expect(confidence.score).toBe(0);
     expect(confidence.label).toBe("Low");
+  });
+
+  it("applies YoY escalation estimates to VMware scenario when enabled", () => {
+    const result = runLicensingCostExposureAnalysis(baseInput({ includeEscalation: true }));
+
+    const annualVmware = result.vmwareScenarios.mid?.annualUsd ?? 0;
+    const threeYearVmware = result.vmwareScenarios.mid?.threeYearUsd ?? 0;
+    const fiveYearVmware = result.vmwareScenarios.mid?.fiveYearUsd ?? 0;
+
+    expect(threeYearVmware).toBeCloseTo(annualVmware * 3.31, 2);
+    expect(fiveYearVmware).toBeCloseTo(annualVmware * 6.1051, 2);
+    expect(result.assumptions.some((item) => item.includes("VMware 3-Year and 5-Year estimates include 10% YoY Broadcom price escalation"))).toBe(true);
   });
 });
