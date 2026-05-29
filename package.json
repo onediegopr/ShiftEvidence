@@ -11,6 +11,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest",
+    "test:run": "vitest run",
     "typecheck": "tsc --noEmit",
     "prisma:validate": "prisma validate",
     "prisma:generate": "prisma generate",
@@ -55,6 +57,7 @@
     "globals": "^17.6.0",
     "prisma": "^6.19.3",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.59.2"
+    "typescript-eslint": "^8.59.2",
+    "vitest": "^4.1.7"
   }
 }

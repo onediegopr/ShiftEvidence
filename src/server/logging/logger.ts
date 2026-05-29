@@ -18,7 +18,7 @@ function truncateString(value: string, maxLength = MAX_STRING_LENGTH) {
   return `${value.slice(0, maxLength)}...[TRUNCATED]`;
 }
 
-function serializeError(error: Error) {
+export function serializeLogError(error: Error) {
   return {
     name: error.name,
     message: truncateString(error.message),
@@ -30,7 +30,7 @@ function serializeError(error: Error) {
 
 function sanitizeValue(value: unknown, depth: number, seen: WeakSet<object>): unknown {
   if (value instanceof Error) {
-    return serializeError(value);
+    return serializeLogError(value);
   }
 
   if (value === null || typeof value === "number" || typeof value === "boolean") {
@@ -92,7 +92,7 @@ function sanitizeValue(value: unknown, depth: number, seen: WeakSet<object>): un
   return sanitized;
 }
 
-function sanitizeMetadata(metadata: LogMetadata = {}) {
+export function sanitizeLogMetadata(metadata: LogMetadata = {}) {
   return sanitizeValue(metadata, 0, new WeakSet<object>()) as LogMetadata;
 }
 
@@ -101,7 +101,7 @@ function writeLog(level: LogLevel, event: string, metadata?: LogMetadata) {
     level,
     event,
     timestamp: new Date().toISOString(),
-    metadata: sanitizeMetadata(metadata),
+    metadata: sanitizeLogMetadata(metadata),
   };
 
   let line: string;

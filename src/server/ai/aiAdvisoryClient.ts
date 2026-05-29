@@ -217,7 +217,7 @@ function buildEmergencyAiInput(payload: AiAdvisoryContextPayload) {
   };
 }
 
-function buildSafeJsonInput(payload: AiAdvisoryContextPayload, maxInputChars: number) {
+export function buildSafeJsonInput(payload: AiAdvisoryContextPayload, maxInputChars: number) {
   const maxChars = Math.max(2, maxInputChars);
   const candidates: unknown[] = [
     payload,
@@ -289,7 +289,7 @@ function normalizeProviderJson(value: unknown, fallback: AiAdvisoryOutput): AiAd
   };
 }
 
-function parseJsonText(text: string): unknown | null {
+export function parseJsonText(text: string): unknown | null {
   try {
     const trimmed = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
     return JSON.parse(trimmed);

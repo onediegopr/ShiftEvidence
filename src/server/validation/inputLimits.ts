@@ -8,6 +8,7 @@ export const INPUT_LIMITS = {
   manualTechnicalContext: 9000,
   email: 320,
   url: 2048,
+  currency: 12,
 } as const;
 
 export function normalizeTextInput(value: unknown): string {
