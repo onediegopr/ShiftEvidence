@@ -6,6 +6,11 @@ import { findAssessmentForUser } from "../../../../../../server/assessments/asse
 import { safeRedirectError } from "../../../../../../server/assessments/formUtils";
 import { generatePdfReportForAssessment } from "../../../../../../server/reports/reportGenerationService";
 import type { PdfReportBrandingInput, PdfReportBrandLogo } from "../../../../../../server/reports/reportPdfRenderer";
+import {
+  buildRateLimitHeaders,
+  isRateLimitExceededError,
+  RATE_LIMIT_MESSAGE,
+} from "../../../../../../server/security/rateLimit";
 import { upsertUserProfileFromSession } from "../../../../../../server/user/userProfileService";
 import { getCommercialStatusForAssessment } from "../../../../../../server/unlocks/unlockRequestService";
 import { getPublicUrl } from "../../../../../../server/url/publicAppUrl";
@@ -129,6 +134,13 @@ export async function POST(
       status: 303,
     });
   } catch (error) {
+    if (isRateLimitExceededError(error)) {
+      return NextResponse.json(
+        { error: RATE_LIMIT_MESSAGE },
+        { status: 429, headers: buildRateLimitHeaders(error.result) },
+      );
+    }
+
     const message = error instanceof Error ? error.message : "Unable to generate the PDF preview.";
 
     return NextResponse.redirect(

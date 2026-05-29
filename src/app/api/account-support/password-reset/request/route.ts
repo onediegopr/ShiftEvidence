@@ -12,16 +12,46 @@ import {
   type PasswordRecoveryDeliveryMode,
 } from "../../../../../lib/account-recovery";
 import { prisma } from "../../../../../lib/prisma";
+import {
+  buildRateLimitHeaders,
+  checkRateLimit,
+  getClientIpFromHeaders,
+  RATE_LIMIT_MESSAGE,
+} from "../../../../../server/security/rateLimit";
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 export async function POST(request: Request) {
   try {
+    const ipLimit = await checkRateLimit({
+      limiter: "passwordResetRequestIp",
+      keyParts: ["ip", getClientIpFromHeaders(request.headers)],
+    });
+
+    if (!ipLimit.allowed) {
+      return NextResponse.json(
+        { ok: false, message: RATE_LIMIT_MESSAGE },
+        { status: 429, headers: buildRateLimitHeaders(ipLimit) },
+      );
+    }
+
     const body = (await request.json()) as { email?: unknown };
     const normalizedEmail = normalizeRecoveryEmail(String(body.email ?? ""));
 
     if (!isValidEmail(normalizedEmail)) {
       return NextResponse.json({ ok: true, message: PASSWORD_RESET_NEUTRAL_MESSAGE });
+    }
+
+    const emailLimit = await checkRateLimit({
+      limiter: "passwordResetRequestEmail",
+      keyParts: ["email", normalizedEmail],
+    });
+
+    if (!emailLimit.allowed) {
+      return NextResponse.json(
+        { ok: false, message: RATE_LIMIT_MESSAGE },
+        { status: 429, headers: buildRateLimitHeaders(emailLimit) },
+      );
     }
 
     const emailHash = hashRecoveryValue(normalizedEmail);

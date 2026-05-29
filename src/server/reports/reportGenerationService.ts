@@ -14,6 +14,7 @@ import {
   assertCanDownloadReport,
   assertCanGeneratePdf,
 } from "../admin/runtimeSettingsService";
+import { assertRateLimit } from "../security/rateLimit";
 import type { PdfReportBrandingInput } from "./reportPdfRenderer";
 
 function buildOriginalReportFilename(assessmentTitle: string, reportType: ReportType) {
@@ -103,6 +104,14 @@ export async function generatePdfReportForAssessment(params: {
 }) {
   const assessment = await ensureAssessmentOwnership(params);
   const reportType = params.reportType ?? ReportType.free_preview;
+  await assertRateLimit({
+    limiter: "reportGenerateAssessment",
+    keyParts: ["user", params.userId, "assessment", assessment.id],
+  });
+  await assertRateLimit({
+    limiter: "reportGenerateUser",
+    keyParts: ["user", params.userId],
+  });
   await assertCanGeneratePdf({
     userId: params.userId,
     assessmentId: assessment.id,

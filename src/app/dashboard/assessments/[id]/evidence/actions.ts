@@ -14,6 +14,7 @@ import {
 } from "../../../../../server/evidence/uploadValidation";
 import { importRvtoolsEvidence } from "../../../../../server/rvtools/rvtoolsImportService";
 import { safeRedirectError } from "../../../../../server/assessments/formUtils";
+import { assertRateLimit, getClientIpFromHeaders } from "../../../../../server/security/rateLimit";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -48,6 +49,16 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "evidence");
 
   try {
+    const requestHeaders = await headers();
+    await assertRateLimit({
+      limiter: "uploadEvidenceUser",
+      keyParts: ["user", session.user.id],
+    });
+    await assertRateLimit({
+      limiter: "uploadEvidenceIp",
+      keyParts: ["ip", getClientIpFromHeaders(requestHeaders)],
+    });
+
     const evidenceType = inferEvidenceTypeFromForm(formData.get("evidenceType"));
     const fileEntry = formData.get("file");
 
