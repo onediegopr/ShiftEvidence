@@ -193,6 +193,12 @@ Opcion recomendada: preparar PostgreSQL local o DB QA aislada.
 
 No usar `.env.local` para estos pasos mientras clasifique como `remote-managed`.
 
+## Operational Acceptance Decision
+
+The user decided not to continue with PostgreSQL/local QA setup for this module at this stage. COST-1 is accepted operationally based on completed implementation, unit tests, build, synthetic PDF smoke and non-authenticated route smoke.
+
+Authenticated DB-backed QA remains deferred and is not considered blocking for the current development flow. No production migration or deploy was performed.
+
 ## Riesgos pendientes
 
 - DB QA/local accesible pendiente.
