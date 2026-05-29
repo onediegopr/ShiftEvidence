@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { buildAdminPaginationMeta } from "../admin/adminPagination";
 import type { AiAdvisoryProvider } from "./aiAdvisoryTypes";
 
 export type AiUsageOperationType = "preview" | "pdf" | "synthetic_test" | "admin_test" | "retry" | "unknown";
@@ -161,8 +162,12 @@ export async function getAdminAiUsage(params?: {
   status?: string | null;
   userId?: string | null;
   assessmentId?: string | null;
+  limit?: number;
+  page?: number;
 }) {
   const since = getRangeStart(params?.range);
+  const limit = params?.limit ?? 500;
+  const page = params?.page && params.page > 0 ? params.page : 1;
   const where: Prisma.AiUsageEventWhereInput = {
     createdAt: { gte: since },
     provider: normalizeNullableString(params?.provider) ?? undefined,
@@ -171,11 +176,12 @@ export async function getAdminAiUsage(params?: {
     assessmentId: normalizeNullableString(params?.assessmentId) ?? undefined,
   };
 
-  const [events, calls24h, calls7d, calls30d] = await Promise.all([
+  const [eventRows, calls24h, calls7d, calls30d] = await Promise.all([
     prisma.aiUsageEvent.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      take: 500,
+      take: limit + 1,
+      skip: (page - 1) * limit,
       include: {
         user: { select: { email: true, name: true } },
         assessment: {
@@ -195,6 +201,8 @@ export async function getAdminAiUsage(params?: {
     prisma.aiUsageEvent.count({ where: { createdAt: { gte: getRangeStart("7d") } } }),
     prisma.aiUsageEvent.count({ where: { createdAt: { gte: getRangeStart("30d") } } }),
   ]);
+  const hasMore = eventRows.length > limit;
+  const events = eventRows.slice(0, limit);
 
   const totalCalls = events.length;
   const successCount = events.filter((event) => event.status === "success" || event.status === "mock").length;
@@ -352,6 +360,12 @@ export async function getAdminAiUsage(params?: {
         assessmentTitle: event.assessment?.title ?? null,
         userEmail: event.user?.email ?? null,
       })),
+    pagination: buildAdminPaginationMeta({
+      limit,
+      page,
+      returned: events.length,
+      hasMore,
+    }),
     alerts,
   };
 }

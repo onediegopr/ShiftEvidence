@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { getAdminAiUsage } from "../ai/aiUsageService";
 import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
+import { buildAdminPaginationMeta } from "./adminPagination";
 
 export type AiBudgetSettings = {
   monthlyBudgetUsd: number | null;
@@ -477,10 +478,16 @@ export async function updateCommercialOpportunityFromForm(params: {
   return opportunity;
 }
 
-export async function getAdvancedAuditEvents() {
-  return prisma.auditEvent.findMany({
+export async function getAdvancedAuditEventsPage(params?: {
+  limit?: number;
+  page?: number;
+}) {
+  const limit = params?.limit ?? 100;
+  const page = params?.page && params.page > 0 ? params.page : 1;
+  const rows = await prisma.auditEvent.findMany({
     orderBy: { createdAt: "desc" },
-    take: 100,
+    take: limit + 1,
+    skip: (page - 1) * limit,
     select: {
       id: true,
       eventType: true,
@@ -491,4 +498,24 @@ export async function getAdvancedAuditEvents() {
       assessment: { select: { title: true } },
     },
   });
+
+  const hasMore = rows.length > limit;
+  const events = rows.slice(0, limit);
+
+  return {
+    events,
+    pagination: buildAdminPaginationMeta({
+      limit,
+      page,
+      returned: events.length,
+      hasMore,
+    }),
+  };
+}
+
+export async function getAdvancedAuditEvents(params?: {
+  limit?: number;
+  page?: number;
+}) {
+  return (await getAdvancedAuditEventsPage(params)).events;
 }
