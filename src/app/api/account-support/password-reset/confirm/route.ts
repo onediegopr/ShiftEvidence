@@ -8,6 +8,9 @@ const INVALID_TOKEN_MESSAGE = "This reset link is invalid or has expired.";
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
 const RESET_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+const ACTIVE_RESET_STATUSES = ["pending", "email_sent", "manual_pending"];
+
+class InvalidResetTokenError extends Error {}
 
 export async function POST(request: Request) {
   try {
@@ -47,20 +50,23 @@ export async function POST(request: Request) {
       resetRequest.usedAt ||
       !resetRequest.expiresAt ||
       resetRequest.expiresAt < new Date() ||
-      resetRequest.status === "superseded"
+      !ACTIVE_RESET_STATUSES.includes(resetRequest.status)
     ) {
       return NextResponse.json({ ok: false, message: INVALID_TOKEN_MESSAGE }, { status: 400 });
     }
 
+    const userId = resetRequest.userId;
     const passwordHash = await hashPassword(password);
-    const existingAccount = await prisma.account.findFirst({
-      where: {
-        userId: resetRequest.userId,
-        providerId: "credential",
-      },
-    });
+    const completedAt = new Date();
 
     await prisma.$transaction(async (tx) => {
+      const existingAccount = await tx.account.findFirst({
+        where: {
+          userId,
+          providerId: "credential",
+        },
+      });
+
       if (existingAccount) {
         await tx.account.update({
           where: { id: existingAccount.id },
@@ -70,39 +76,50 @@ export async function POST(request: Request) {
         await tx.account.create({
           data: {
             id: crypto.randomUUID(),
-            accountId: resetRequest.userId!,
+            accountId: userId,
             providerId: "credential",
-            userId: resetRequest.userId!,
+            userId,
             password: passwordHash,
           },
         });
       }
 
-      await tx.passwordResetRequest.update({
-        where: { id: resetRequest.id },
+      const claimedResetRequest = await tx.passwordResetRequest.updateMany({
+        where: {
+          id: resetRequest.id,
+          userId,
+          tokenHash,
+          usedAt: null,
+          expiresAt: { gte: completedAt },
+          status: { in: ACTIVE_RESET_STATUSES },
+        },
         data: {
-          usedAt: new Date(),
+          usedAt: completedAt,
           status: "used",
         },
       });
 
+      if (claimedResetRequest.count !== 1) {
+        throw new InvalidResetTokenError();
+      }
+
       await tx.passwordResetRequest.updateMany({
         where: {
-          userId: resetRequest.userId,
+          userId,
           id: { not: resetRequest.id },
           usedAt: null,
-          status: { in: ["pending", "email_sent", "manual_pending"] },
+          status: { in: ACTIVE_RESET_STATUSES },
         },
         data: { status: "superseded" },
       });
 
       await tx.session.deleteMany({
-        where: { userId: resetRequest.userId! },
+        where: { userId },
       });
 
       await tx.auditEvent.create({
         data: {
-          userId: resetRequest.userId,
+          userId,
           eventType: "password_reset.completed",
           message: "Password reset completed.",
           metadataJson: {
@@ -113,7 +130,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true, message: "Password updated. You can sign in now." });
-  } catch {
+  } catch (error) {
+    if (error instanceof InvalidResetTokenError) {
+      return NextResponse.json({ ok: false, message: INVALID_TOKEN_MESSAGE }, { status: 400 });
+    }
+
     return NextResponse.json({ ok: false, message: "Unable to reset password." }, { status: 500 });
   }
 }
