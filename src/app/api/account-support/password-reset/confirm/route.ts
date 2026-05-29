@@ -16,6 +16,7 @@ const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
 const RESET_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 const ACTIVE_RESET_STATUSES = ["pending", "email_sent", "manual_pending"];
+const INVALID_REQUEST_BODY_MESSAGE = "Invalid request body.";
 
 class InvalidResetTokenError extends Error {}
 
@@ -33,10 +34,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = (await request.json()) as {
-      token?: unknown;
-      password?: unknown;
-    };
+    let parsedBody: unknown;
+
+    try {
+      parsedBody = await request.json();
+    } catch {
+      return NextResponse.json(
+        { ok: false, message: INVALID_REQUEST_BODY_MESSAGE },
+        { status: 400 },
+      );
+    }
+
+    const body =
+      typeof parsedBody === "object" && parsedBody !== null
+        ? (parsedBody as { token?: unknown; password?: unknown })
+        : {};
     const token = String(body.token ?? "");
     const password = String(body.password ?? "");
 
