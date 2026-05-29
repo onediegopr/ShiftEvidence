@@ -1,15 +1,22 @@
 import {
   Archive,
+  Brain,
   FileText,
   FolderOpen,
   RefreshCcw,
   ShieldAlert,
   Upload,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import type { buildAssessmentClientContextSummary } from "../../server/assessments/clientContextService";
 import { formatClientContextLimitLabel } from "../../server/assessments/clientContextPlanLimits";
+import type {
+  CustomerContextIntelligenceResult,
+  PriorityLevel,
+} from "../../server/assessments/clientContextIntelligenceTypes";
 import {
   classifyAdditionalEvidenceAction,
+  runClientContextAnalysisAction,
   saveClientContextDraftAction,
   setAdditionalEvidenceIncludedAction,
   skipClientContextAction,
@@ -51,11 +58,18 @@ function statusTone(status: string | null | undefined) {
     case "submitted":
     case "ready_for_analysis":
     case "analyzed":
+    case "completed":
       return "good";
     case "draft":
     case "analysis_pending":
+    case "pending":
+    case "stale":
+    case "ai_disabled":
+    case "budget_blocked":
+    case "plan_restricted":
       return "warning";
     case "analysis_failed":
+    case "failed":
       return "danger";
     default:
       return "neutral";
@@ -71,6 +85,69 @@ const classificationOptions = [
   ["unknown_needs_review", "Unknown / needs review"],
 ] as const;
 
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function readIntelligenceResult(summary: ClientContextSummary): CustomerContextIntelligenceResult | null {
+  const analysis = summary.analysis;
+  if (!analysis) {
+    return null;
+  }
+
+  return {
+    interpretedSummary: analysis.interpretedSummary ?? "",
+    businessPriorities: asArray(analysis.businessPrioritiesJson) as CustomerContextIntelligenceResult["businessPriorities"],
+    migrationConstraints: asArray(analysis.migrationConstraintsJson) as CustomerContextIntelligenceResult["migrationConstraints"],
+    criticalWorkloads: asArray(analysis.criticalWorkloadsJson) as CustomerContextIntelligenceResult["criticalWorkloads"],
+    customerReportedRisks: asArray(analysis.customerReportedRisksJson) as CustomerContextIntelligenceResult["customerReportedRisks"],
+    aiExtractedInsights: asArray(analysis.aiExtractedInsightsJson) as CustomerContextIntelligenceResult["aiExtractedInsights"],
+    contradictions: asArray(analysis.contradictionsJson) as CustomerContextIntelligenceResult["contradictions"],
+    validationItems: asArray(analysis.validationItemsJson) as CustomerContextIntelligenceResult["validationItems"],
+    reportImpact: asArray(analysis.reportImpactJson) as CustomerContextIntelligenceResult["reportImpact"],
+    nextQuestions: asArray(analysis.nextQuestionsJson) as CustomerContextIntelligenceResult["nextQuestions"],
+    contextCompletenessScore: analysis.contextCompletenessScore ?? 0,
+    businessContextConfidence:
+      (analysis.businessContextConfidence as CustomerContextIntelligenceResult["businessContextConfidence"] | null) ?? "low",
+    safetyFlags: asArray(analysis.safetyFlagsJson) as CustomerContextIntelligenceResult["safetyFlags"],
+  };
+}
+
+function priorityTone(priority: PriorityLevel | string | null | undefined) {
+  if (priority === "critical" || priority === "high") return "danger";
+  if (priority === "medium") return "warning";
+  return "neutral";
+}
+
+function SectionList<T>({
+  title,
+  empty,
+  items,
+  render,
+}: {
+  title: string;
+  empty: string;
+  items: T[];
+  render: (item: T, index: number) => ReactNode;
+}) {
+  return (
+    <article className="glass-card assessment-subcard">
+      <h3>{title}</h3>
+      {items.length === 0 ? (
+        <p className="assessment-inline-note">{empty}</p>
+      ) : (
+        <div className="assessment-accordion-list">
+          {items.slice(0, 6).map((item, index) => (
+            <div key={index} className="assessment-inline-note">
+              {render(item, index)}
+            </div>
+          ))}
+        </div>
+      )}
+    </article>
+  );
+}
+
 export function ClientContextAdditionalEvidencePanel({
   assessmentId,
   summary,
@@ -80,6 +157,8 @@ export function ClientContextAdditionalEvidencePanel({
 }) {
   const rawText = summary.context?.rawText ?? "";
   const contextStatus = summary.status;
+  const analysisStatus = summary.analysis?.status ?? "not_started";
+  const intelligence = readIntelligenceResult(summary);
   const limitPercent =
     summary.limits.maxWords > 0
       ? Math.min(100, Math.round((summary.wordCount / summary.limits.maxWords) * 100))
@@ -128,7 +207,9 @@ export function ClientContextAdditionalEvidencePanel({
         </div>
         <div className="assessment-optional-module-meta">
           <span>{formatClientContextLimitLabel(summary.limits)}</span>
-          <span>Deep AI analysis: coming next</span>
+          <span>
+            Deep AI analysis: {summary.limits.deepAnalysisEnabled ? "available for this plan" : "plan restricted"}
+          </span>
           <span>Last edited: {formatDate(summary.context?.lastEditedAt)}</span>
         </div>
       </div>
@@ -313,16 +394,171 @@ export function ClientContextAdditionalEvidencePanel({
         </div>
       )}
 
+      <div className="assessment-section-title assessment-section-title-compact">
+        <div className="assessment-section-eyebrow">
+          <Brain size={18} />
+          <span>Customer Context Intelligence</span>
+        </div>
+        <h3>Analyze customer-provided context</h3>
+        <p>
+          AI analysis summarizes and structures customer-provided context. It does not treat
+          the raw narrative as confirmed technical evidence.
+        </p>
+      </div>
+
       <div className="assessment-optional-module-panel">
         <ShieldAlert size={24} />
         <div>
-          <h3>Customer Context Intelligence is not running yet.</h3>
+          <h3>Status: {labelFromValue(analysisStatus)}</h3>
           <p>
-            Deep AI analysis, chunking, prompt-injection hardening, contradictions and next
-            questions are reserved for CONTEXT-2. Report and PDF integration are reserved for CONTEXT-3.
+            The analysis uses sanitized text chunks and additional evidence metadata only.
+            Raw client text is not printed in this result section and report/PDF integration remains reserved for CONTEXT-3.
           </p>
         </div>
+        <div className="assessment-optional-module-meta">
+          <span>Analysis version: {summary.analysis?.analysisVersion ?? "Not generated"}</span>
+          <span>Prompt version: {summary.analysis?.promptVersion ?? "Not generated"}</span>
+          <span>Generated: {formatDate(summary.analysis?.generatedAt)}</span>
+        </div>
       </div>
+
+      <form action={runClientContextAnalysisAction.bind(null, assessmentId)} className="assessment-inline-actions">
+        <button
+          type="submit"
+          className="btn btn-primary btn-glow"
+          disabled={!rawText.trim() || contextStatus === "skipped"}
+        >
+          {analysisStatus === "completed" ? "Re-run analysis" : "Analyze context"}
+          <Brain size={16} />
+        </button>
+        <span className="assessment-inline-note">
+          Client content may contain instructions; the engine treats it as data, never as instructions.
+        </span>
+      </form>
+
+      {intelligence ? (
+        <div className="assessment-preview-columns">
+          <article className="glass-card assessment-subcard">
+            <h3>Interpreted summary</h3>
+            <p>
+              {intelligence.interpretedSummary ||
+                "No interpreted summary is available yet. Submit context and run analysis when ready."}
+            </p>
+          </article>
+          <article className="glass-card assessment-subcard">
+            <h3>Business context confidence</h3>
+            <p className="assessment-metric-large">
+              {intelligence.contextCompletenessScore.toLocaleString("en-US")}%
+            </p>
+            <p className="assessment-inline-note">
+              Confidence: {labelFromValue(intelligence.businessContextConfidence)}. This is separate from technical evidence confidence.
+            </p>
+          </article>
+
+          <SectionList
+            title="Business priorities"
+            empty="No business priorities were extracted yet."
+            items={intelligence.businessPriorities}
+            render={(item) => (
+              <>
+                <strong>{item.priority}</strong>
+                <br />
+                {item.evidence}
+              </>
+            )}
+          />
+          <SectionList
+            title="Migration constraints"
+            empty="No migration constraints were extracted yet."
+            items={intelligence.migrationConstraints}
+            render={(item) => (
+              <>
+                <strong>{item.constraint}</strong>
+                <br />
+                {item.impact}
+              </>
+            )}
+          />
+          <SectionList
+            title="Critical workloads mentioned"
+            empty="No critical workloads were extracted yet."
+            items={intelligence.criticalWorkloads}
+            render={(item) => (
+              <>
+                <strong>{item.name}</strong>
+                <br />
+                {item.reason} {item.validationNeeded ? "Validation required." : ""}
+              </>
+            )}
+          />
+          <SectionList
+            title="Customer-reported risks"
+            empty="No customer-reported risks were extracted yet."
+            items={intelligence.customerReportedRisks}
+            render={(item) => (
+              <>
+                <span className={`assessment-chip assessment-chip-${priorityTone(item.severity)}`}>
+                  {labelFromValue(item.severity)}
+                </span>
+                <br />
+                <strong>{item.risk}</strong>
+                <br />
+                {item.rationale}
+              </>
+            )}
+          />
+          <SectionList
+            title="Contradictions / items to validate"
+            empty="No contradictions were detected yet."
+            items={intelligence.contradictions}
+            render={(item) => (
+              <>
+                <strong>{item.title}</strong>
+                <br />
+                {item.description}
+                <br />
+                {item.validationRecommendation}
+              </>
+            )}
+          />
+          <SectionList
+            title="Next questions"
+            empty="No next questions were generated yet."
+            items={intelligence.nextQuestions}
+            render={(item) => (
+              <>
+                <span className={`assessment-chip assessment-chip-${priorityTone(item.priority)}`}>
+                  {labelFromValue(item.priority)}
+                </span>
+                <br />
+                <strong>{item.question}</strong>
+                <br />
+                {item.reason}
+              </>
+            )}
+          />
+          <SectionList
+            title="Safety flags"
+            empty="No safety flags were recorded."
+            items={intelligence.safetyFlags}
+            render={(item) => (
+              <>
+                <span className={`assessment-chip assessment-chip-${priorityTone(item.severity)}`}>
+                  {labelFromValue(item.severity)}
+                </span>
+                <br />
+                <strong>{labelFromValue(item.flag)}</strong>
+                <br />
+                {item.explanation}
+              </>
+            )}
+          />
+        </div>
+      ) : (
+        <p className="assessment-empty-note">
+          Not analyzed yet. Submit client context, then run Customer Context Intelligence when ready.
+        </p>
+      )}
     </section>
   );
 }

@@ -200,10 +200,17 @@ describe("assessment completion model", () => {
           requiresSharedStorage: true,
         },
         clientContext: {
-          status: "ready_for_analysis",
+          status: "analyzed",
           wordCount: 120,
           characterCount: 850,
           lastEditedAt: now,
+          updatedAt: now,
+        },
+        clientContextAnalysis: {
+          status: "completed",
+          contextCompletenessScore: 80,
+          businessContextConfidence: "high",
+          generatedAt: now,
           updatedAt: now,
         },
         additionalEvidence: [],
@@ -283,7 +290,7 @@ describe("assessment completion model", () => {
     expect(summary.limitations.some((item) => item.includes("Storage Analysis"))).toBe(true);
   });
 
-  it("keeps client context optional and marks submitted context as complete", () => {
+  it("keeps client context optional and requires completed analysis for full credit", () => {
     const emptySummary = computeAssessmentCompletionSummary(parsedRvtoolsAssessment());
     const draftSummary = computeAssessmentCompletionSummary(
       parsedRvtoolsAssessment({
@@ -307,10 +314,27 @@ describe("assessment completion model", () => {
         },
       }),
     );
+    const completedSummary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        clientContext: {
+          status: "analyzed",
+          wordCount: 90,
+          characterCount: 620,
+          lastEditedAt: now,
+          updatedAt: now,
+        },
+        clientContextAnalysis: {
+          status: "completed",
+          generatedAt: now,
+          updatedAt: now,
+        },
+      }),
+    );
 
     expect(moduleByKey(emptySummary.modules, "client_context_intelligence").status).toBe("not_started");
     expect(moduleByKey(draftSummary.modules, "client_context_intelligence").status).toBe("partial");
-    expect(moduleByKey(submittedSummary.modules, "client_context_intelligence").status).toBe("complete");
+    expect(moduleByKey(submittedSummary.modules, "client_context_intelligence").status).toBe("partial");
+    expect(moduleByKey(completedSummary.modules, "client_context_intelligence").status).toBe("complete");
     expect(submittedSummary.canGenerateReport).toBe(true);
   });
 

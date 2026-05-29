@@ -55,8 +55,11 @@ describe("client context plan limits and validation", () => {
     const blueprint = resolveClientContextPlanLimits({ assessmentPlanLevel: "custom_blueprint" });
 
     expect(pro.maxWords).toBeGreaterThan(starter.maxWords);
+    expect(starter.deepAnalysisEnabled).toBe(false);
+    expect(pro.deepAnalysisEnabled).toBe(true);
     expect(blueprint.maxWords).toBe(50_000);
     expect(blueprint.maxFiles).toBeGreaterThan(pro.maxFiles);
+    expect(blueprint.deepAnalysisEnabled).toBe(true);
   });
 
   it("validates additional evidence purpose and classification allowlists", () => {

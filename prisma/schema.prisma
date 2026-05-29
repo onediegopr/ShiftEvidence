@@ -1115,6 +1115,9 @@ enum AssessmentClientContextAnalysisStatus {
   completed
   failed
   stale
+  ai_disabled
+  budget_blocked
+  plan_restricted
 }
 
 enum AssessmentAdditionalEvidencePurpose {

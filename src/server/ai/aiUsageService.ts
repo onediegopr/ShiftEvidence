@@ -4,7 +4,14 @@ import { buildAdminPaginationMeta } from "../admin/adminPagination";
 import { logger } from "../logging/logger";
 import type { AiAdvisoryProvider } from "./aiAdvisoryTypes";
 
-export type AiUsageOperationType = "preview" | "pdf" | "synthetic_test" | "admin_test" | "retry" | "unknown";
+export type AiUsageOperationType =
+  | "preview"
+  | "pdf"
+  | "synthetic_test"
+  | "admin_test"
+  | "retry"
+  | "client_context_analysis"
+  | "unknown";
 export type AiUsageStatus =
   | "success"
   | "error"

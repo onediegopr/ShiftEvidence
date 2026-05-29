@@ -15,6 +15,7 @@ import {
 } from "../../../../../server/assessments/clientContextService";
 import { safeRedirectError } from "../../../../../server/assessments/formUtils";
 import { ensureAssessmentOwnership } from "../../../../../server/assessments/assessmentService";
+import { runAssessmentClientContextAnalysis } from "../../../../../server/assessments/clientContextAiAnalysisService";
 import {
   validateAdditionalEvidenceExtension,
   validateAdditionalEvidenceFileLimit,
@@ -98,6 +99,24 @@ export async function skipClientContextAction(assessmentId: string) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to skip client context.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function runClientContextAnalysisAction(assessmentId: string) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+
+  try {
+    await runAssessmentClientContextAnalysis({
+      userId: session.user.id,
+      assessmentId,
+      force: true,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to analyze client context.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
   }
 

@@ -790,6 +790,7 @@ function detectClientContextModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
   const context = assessment.clientContext;
+  const analysis = assessment.clientContextAnalysis;
   const additionalEvidence = assessment.additionalEvidence ?? [];
   const activeAdditionalEvidenceCount = additionalEvidence.filter(
     (item) =>
@@ -817,18 +818,83 @@ function detectClientContextModule(
     };
   }
 
-  if (
-    context?.status === "ready_for_analysis" ||
-    context?.status === "submitted" ||
-    context?.status === "analyzed"
-  ) {
+  if (analysis?.status === "completed" || context?.status === "analyzed") {
     return {
       status: "complete",
       evidence: {
         count: evidenceCount,
         source: "client_context",
+        lastUpdatedAt: analysis?.generatedAt ?? lastUpdatedAt,
+      },
+    };
+  }
+
+  if (analysis?.status === "pending" || context?.status === "analysis_pending") {
+    return {
+      status: "in_progress",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
         lastUpdatedAt,
       },
+      limitationText:
+        "Customer Context Intelligence analysis is running. It remains optional and does not block report generation.",
+    };
+  }
+
+  if (analysis?.status === "failed" || context?.status === "analysis_failed") {
+    return {
+      status: "failed",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Customer Context Intelligence analysis failed and should be reviewed before using customer narrative as advisory input.",
+    };
+  }
+
+  if (analysis?.status === "stale") {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Client context changed after the last analysis. Re-run Customer Context Intelligence to refresh advisory context.",
+    };
+  }
+
+  if (
+    analysis?.status === "ai_disabled" ||
+    analysis?.status === "budget_blocked" ||
+    analysis?.status === "plan_restricted"
+  ) {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Customer Context Intelligence is limited by AI runtime, budget or plan settings. The module remains optional.",
+    };
+  }
+
+  if (context?.status === "ready_for_analysis" || context?.status === "submitted") {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Client context was submitted and is ready for Customer Context Intelligence analysis.",
     };
   }
 
@@ -842,19 +908,6 @@ function detectClientContextModule(
       },
       limitationText:
         "Client context exists as draft or received files, but it has not been submitted for future structured analysis.",
-    };
-  }
-
-  if (context?.status === "analysis_failed") {
-    return {
-      status: "failed",
-      evidence: {
-        count: evidenceCount,
-        source: "client_context",
-        lastUpdatedAt,
-      },
-      limitationText:
-        "Client context analysis failed and should be reviewed before using customer narrative as advisory input.",
     };
   }
 

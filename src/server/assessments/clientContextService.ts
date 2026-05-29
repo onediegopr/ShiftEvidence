@@ -2,6 +2,7 @@ import {
   AssessmentAdditionalEvidenceAnalysisStatus,
   AssessmentAdditionalEvidenceClassification,
   AssessmentAdditionalEvidencePurpose,
+  AssessmentClientContextAnalysisStatus,
   AssessmentClientContextStatus,
   Prisma,
 } from "@prisma/client";
@@ -42,6 +43,22 @@ function activeAdditionalEvidenceCount(additionalEvidence: AdditionalEvidenceLik
 
 function statusAfterDraftSave(wordCount: number): AssessmentClientContextStatus {
   return wordCount > 0 ? AssessmentClientContextStatus.draft : AssessmentClientContextStatus.not_provided;
+}
+
+function analysisStatusAfterContextChange(params: {
+  wordCount: number;
+  existingStatus?: string | null;
+  generatedAt?: Date | string | null;
+}) {
+  if (params.wordCount === 0) {
+    return AssessmentClientContextAnalysisStatus.not_started;
+  }
+
+  if (params.generatedAt || params.existingStatus === AssessmentClientContextAnalysisStatus.completed) {
+    return AssessmentClientContextAnalysisStatus.stale;
+  }
+
+  return AssessmentClientContextAnalysisStatus.not_started;
 }
 
 async function getLimitsForAssessment(params: {
@@ -104,6 +121,11 @@ export async function upsertAssessmentClientContextDraft(params: ActorParams & {
     allowEmpty: true,
   });
   const status = statusAfterDraftSave(validated.wordCount);
+  const analysisStatus = analysisStatusAfterContextChange({
+    wordCount: validated.wordCount,
+    existingStatus: assessment.clientContextAnalysis?.status,
+    generatedAt: assessment.clientContextAnalysis?.generatedAt,
+  });
   const now = new Date();
 
   return prisma.$transaction(async (tx) => {
@@ -140,14 +162,14 @@ export async function upsertAssessmentClientContextDraft(params: ActorParams & {
       where: { assessmentId: assessment.id },
       create: {
         assessmentId: assessment.id,
-        status: "not_started",
+        status: analysisStatus,
         safetyFlagsJson: json({
-          deepAnalysisImplemented: false,
+          deepAnalysisImplemented: true,
           rawTextNotForReport: true,
         }),
       },
       update: {
-        status: "not_started",
+        status: analysisStatus,
       },
     });
 
@@ -187,6 +209,11 @@ export async function submitAssessmentClientContext(params: ActorParams & {
     rawText: params.rawText,
     limits,
   });
+  const analysisStatus = analysisStatusAfterContextChange({
+    wordCount: validated.wordCount,
+    existingStatus: assessment.clientContextAnalysis?.status,
+    generatedAt: assessment.clientContextAnalysis?.generatedAt,
+  });
   const now = new Date();
 
   return prisma.$transaction(async (tx) => {
@@ -225,14 +252,14 @@ export async function submitAssessmentClientContext(params: ActorParams & {
       where: { assessmentId: assessment.id },
       create: {
         assessmentId: assessment.id,
-        status: "not_started",
+        status: analysisStatus,
         safetyFlagsJson: json({
-          deepAnalysisImplemented: false,
+          deepAnalysisImplemented: true,
           rawTextNotForReport: true,
         }),
       },
       update: {
-        status: "not_started",
+        status: analysisStatus,
       },
     });
 

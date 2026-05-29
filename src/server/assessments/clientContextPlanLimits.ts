@@ -37,7 +37,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     maxFiles: 3,
     maxFileSizeMb: 50,
     additionalEvidenceEnabled: true,
-    deepAnalysisEnabled: false,
+    deepAnalysisEnabled: true,
     pdfFullSectionEnabled: false,
   },
   pro: {
@@ -47,7 +47,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     maxFiles: 8,
     maxFileSizeMb: 50,
     additionalEvidenceEnabled: true,
-    deepAnalysisEnabled: false,
+    deepAnalysisEnabled: true,
     pdfFullSectionEnabled: false,
   },
   blueprint: {
@@ -57,7 +57,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     maxFiles: 20,
     maxFileSizeMb: 50,
     additionalEvidenceEnabled: true,
-    deepAnalysisEnabled: false,
+    deepAnalysisEnabled: true,
     pdfFullSectionEnabled: false,
   },
   partner: {
@@ -67,7 +67,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     maxFiles: 25,
     maxFileSizeMb: 50,
     additionalEvidenceEnabled: true,
-    deepAnalysisEnabled: false,
+    deepAnalysisEnabled: true,
     pdfFullSectionEnabled: false,
   },
 };
