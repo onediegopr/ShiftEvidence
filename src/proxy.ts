@@ -11,6 +11,9 @@ const staleChunkRedirects: Record<string, string> = {
   "/_next/static/chunks/03ns3bn3xpe7f.js": "/_next/static/chunks/0f25ba-.f91m9.js",
   "/_next/static/chunks/0alc6yffr8dxv.js": "/_next/static/chunks/0ytn8xa7gfscp.js",
   "/_next/static/chunks/0ni6xu0_390qc.js": "/_next/static/chunks/13sxrzw6sw_6..js",
+  "/_next/static/chunks/0xwf.9y8g2d_~.js": "/_next/static/chunks/120-x-v-kd93x.js",
+  "/_next/static/chunks/0r5tu.q7qbgz1.css": "/_next/static/chunks/0-v09yv9d6e.7.css",
+  "/_next/static/chunks/05_74ghocpq7_.js": "/_next/static/chunks/0rldy.jjb34_0.js",
 };
 
 export function proxy(request: NextRequest) {
