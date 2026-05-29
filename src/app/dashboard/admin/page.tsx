@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import {
   Activity,
   AlertTriangle,
+  BadgePercent,
   Bot,
   CheckCircle2,
   ClipboardList,
@@ -276,6 +277,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Estado del Sistema", "estado-sistema"],
     ["Usuarios", "usuarios"],
     ["Evaluaciones", "evaluaciones"],
+    ["Licenciamiento", "licenciamiento"],
     ["IA y Consumo", "ia-consumo"],
     ["Configuración Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
@@ -1230,6 +1232,83 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 Siguiente
               </Link>
             </div>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "licenciamiento" && (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            id="licenciamiento"
+            icon={<BadgePercent size={18} />}
+            label="Análisis de Licenciamiento"
+            title="Seguimiento de Licensing & Cost Exposure"
+            description="Revisión de configuraciones de licenciamiento, modos, fechas de renovación, disclaimers y notas cargadas por los clientes."
+          />
+          <div className="assessment-table-wrap">
+            <table className="assessment-table">
+              <thead>
+                <tr>
+                  <th>Evaluación</th>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                  <th>Modo de Análisis</th>
+                  <th>Confianza Financiera</th>
+                  <th>Calidad Ahorros</th>
+                  <th>Renovación</th>
+                  <th>Escalación YoY</th>
+                  <th>Inversión Migración</th>
+                  <th>Soporte Proxmox</th>
+                  <th>Contrato / Oferta</th>
+                  <th>Notas del cliente</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentAssessments.map((assessment) => {
+                  const lic = assessment.licensing;
+                  return (
+                    <tr key={assessment.id}>
+                      <td>{assessment.title}</td>
+                      <td>{assessment.clientLabel ?? assessment.ownerEmail}</td>
+                      <td>
+                        {lic ? (
+                          <span className={`assessment-chip assessment-chip-${lic.status === "ready" ? "good" : "warning"}`}>
+                            {formatStatusLabel(lic.status)}
+                          </span>
+                        ) : (
+                          <span className="assessment-chip assessment-chip-neutral">No incluido</span>
+                        )}
+                      </td>
+                      <td>{lic ? formatStatusLabel(lic.mode) : "-"}</td>
+                      <td>{lic && lic.financialConfidenceScore !== null ? `${lic.financialConfidenceScore}/100 (${lic.financialConfidenceLabel})` : "-"}</td>
+                      <td>{lic ? formatStatusLabel(lic.savingsQuality) : "-"}</td>
+                      <td>{lic?.renewalDate ? formatDate(lic.renewalDate) : "-"}</td>
+                      <td>{lic ? (lic.includeEscalation ? "Sí (10%)" : "No") : "-"}</td>
+                      <td>{lic && lic.migrationInvestment !== null ? formatCurrency(lic.migrationInvestment) : "-"}</td>
+                      <td>{lic ? formatStatusLabel(lic.proxmoxSupportScenario) : "-"}</td>
+                      <td>
+                        {lic ? (
+                          <span>
+                            {lic.hasContract ? "Contrato: Sí" : "Contrato: No"}
+                            <br />
+                            {lic.hasRenewalQuote ? "Oferta: Sí" : "Oferta: No"}
+                          </span>
+                        ) : "-"}
+                      </td>
+                      <td style={{ maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={lic?.notes ?? ""}>
+                        {lic?.notes ?? "-"}
+                      </td>
+                      <td>
+                        <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">Ver detalle</Link>
+                        {" / "}
+                        <Link href={`/dashboard/assessments/${assessment.id}/report`} className="dashboard-card-link">Ver reporte</Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </section>
       )}

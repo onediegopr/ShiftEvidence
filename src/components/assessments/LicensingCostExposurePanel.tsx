@@ -191,6 +191,10 @@ export function LicensingCostExposurePanel({
             <input type="checkbox" name="hasRenewalQuote" defaultChecked={preferences.hasRenewalQuote} />
             <span>I have a renewal quote</span>
           </label>
+          <label className="assessment-checkbox-row">
+            <input type="checkbox" name="includeEscalation" defaultChecked={preferences.includeEscalation} />
+            <span>Include 10% YoY Broadcom price escalation</span>
+          </label>
         </div>
         <label className="form-label assessment-form-span-2">
           Notes

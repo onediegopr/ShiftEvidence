@@ -228,6 +228,20 @@ export async function getAdminConsoleData(params?: {
             assumptionsJson: true,
           },
         },
+        licensingAnalysis: {
+          select: {
+            status: true,
+            mode: true,
+            financialConfidenceScore: true,
+            financialConfidenceLabel: true,
+            savingsQuality: true,
+            pricingFreshnessStatus: true,
+            assumptionsJson: true,
+            executiveRecommendation: true,
+            generatedAt: true,
+            updatedAt: true,
+          },
+        },
       },
     }),
     prisma.auditEvent.findMany({
@@ -422,6 +436,11 @@ export async function getAdminConsoleData(params?: {
       const usage = persistentUsageByAssessment.get(assessment.id);
       const opportunity = commercialOpportunities.find((item) => item.assessmentId === assessment.id);
 
+      const lic = assessment.licensingAnalysis;
+      const licAssumptions = typeof lic?.assumptionsJson === "object" && lic.assumptionsJson && !Array.isArray(lic.assumptionsJson)
+        ? (lic.assumptionsJson as Record<string, unknown>)
+        : null;
+
       return {
         id: assessment.id,
         title: assessment.title,
@@ -446,6 +465,25 @@ export async function getAdminConsoleData(params?: {
         confidence: assessment.assessmentScore?.confidenceScore ?? null,
         createdAt: assessment.createdAt,
         updatedAt: assessment.updatedAt,
+        licensing: lic
+          ? {
+              status: lic.status,
+              mode: lic.mode,
+              financialConfidenceScore: lic.financialConfidenceScore,
+              financialConfidenceLabel: lic.financialConfidenceLabel,
+              savingsQuality: lic.savingsQuality,
+              pricingFreshnessStatus: lic.pricingFreshnessStatus,
+              executiveRecommendation: lic.executiveRecommendation,
+              renewalDate: typeof licAssumptions?.renewalDate === "string" ? licAssumptions.renewalDate : null,
+              hasContract: Boolean(licAssumptions?.hasContract),
+              hasRenewalQuote: Boolean(licAssumptions?.hasRenewalQuote),
+              includeEscalation: Boolean(licAssumptions?.includeEscalation),
+              migrationInvestment: typeof licAssumptions?.migrationInvestmentEstimateUsd === "number" ? licAssumptions.migrationInvestmentEstimateUsd : null,
+              proxmoxSupportScenario: typeof licAssumptions?.selectedProxmoxSupportScenario === "string" ? licAssumptions.selectedProxmoxSupportScenario : null,
+              notes: typeof licAssumptions?.notes === "string" ? licAssumptions.notes : null,
+              updatedAt: lic.updatedAt,
+            }
+          : null,
       };
     }),
     recentAuditEvents,
