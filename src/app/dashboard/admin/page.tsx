@@ -278,6 +278,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Usuarios", "usuarios"],
     ["Evaluaciones", "evaluaciones"],
     ["Licenciamiento", "licenciamiento"],
+    ["Contexto y Evidencias", "contexto-evidencias"],
     ["IA y Consumo", "ia-consumo"],
     ["Configuración Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
@@ -1298,6 +1299,94 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       </td>
                       <td style={{ maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={lic?.notes ?? ""}>
                         {lic?.notes ?? "-"}
+                      </td>
+                      <td>
+                        <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">Ver detalle</Link>
+                        {" / "}
+                        <Link href={`/dashboard/assessments/${assessment.id}/report`} className="dashboard-card-link">Ver reporte</Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "contexto-evidencias" && (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            id="contexto-evidencias"
+            icon={<FileText size={18} />}
+            label="Contexto y Evidencias Adicionales"
+            title="Seguimiento de Client Context & Additional Evidence"
+            description="Revisión del contexto libre ingresado por el cliente, estado de análisis de IA y archivos de evidencia clasificados."
+          />
+          <div className="assessment-table-wrap">
+            <table className="assessment-table">
+              <thead>
+                <tr>
+                  <th>Evaluación</th>
+                  <th>Cliente/usuario</th>
+                  <th>Estado Contexto</th>
+                  <th>Largo Contexto</th>
+                  <th>Estado Análisis IA</th>
+                  <th>Resumen Interpretado</th>
+                  <th>Archivos Adicionales (Clasificación)</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentAssessments.map((assessment) => {
+                  const ctx = (assessment as any).clientContext;
+                  const files = (assessment as any).additionalEvidence || [];
+                  return (
+                    <tr key={assessment.id}>
+                      <td>{assessment.title}</td>
+                      <td>{assessment.clientLabel ?? assessment.ownerEmail}</td>
+                      <td>
+                        {ctx ? (
+                          <span className={`assessment-chip assessment-chip-${ctx.status === "submitted" ? "good" : ctx.status === "draft" ? "warning" : "neutral"}`}>
+                            {formatStatusLabel(ctx.status)}
+                          </span>
+                        ) : (
+                          <span className="assessment-chip assessment-chip-neutral">No provisto</span>
+                        )}
+                      </td>
+                      <td>
+                        {ctx && ctx.wordCount > 0 ? (
+                          <span>{ctx.wordCount} pal. / {ctx.characterCount} car.</span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td>
+                        {ctx ? (
+                          <span className={`assessment-chip assessment-chip-${ctx.analysisStatus === "completed" ? "good" : ctx.analysisStatus === "stale" ? "warning" : "neutral"}`}>
+                            {formatStatusLabel(ctx.analysisStatus)}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td style={{ maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={ctx?.interpretedSummary ?? ""}>
+                        {ctx?.interpretedSummary ?? "-"}
+                      </td>
+                      <td>
+                        {files.length > 0 ? (
+                          <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "11px", listStyleType: "disc" }}>
+                            {files.map((file: any) => (
+                              <li key={file.id} title={`Propósito: ${file.purpose || "Sin propósito"}. Estado parser: ${file.processingStatus}`}>
+                                <strong>{file.filename}</strong> ({Math.round(file.fileSize / 1024)} KB)
+                                <br />
+                                <span className="assessment-inline-note">Tipo: {formatStatusLabel(file.classification)}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <span className="assessment-inline-note">Sin archivos</span>
+                        )}
                       </td>
                       <td>
                         <Link href={`/dashboard/assessments/${assessment.id}`} className="dashboard-card-link">Ver detalle</Link>

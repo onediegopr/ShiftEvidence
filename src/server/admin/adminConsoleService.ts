@@ -242,6 +242,38 @@ export async function getAdminConsoleData(params?: {
             updatedAt: true,
           },
         },
+        clientContext: {
+          select: {
+            status: true,
+            wordCount: true,
+            characterCount: true,
+          },
+        },
+        clientContextAnalysis: {
+          select: {
+            status: true,
+            interpretedSummary: true,
+          },
+        },
+        additionalEvidence: {
+          where: {
+            evidenceFile: { deletedAt: null },
+          },
+          select: {
+            id: true,
+            classification: true,
+            purpose: true,
+            analysisStatus: true,
+            evidenceFile: {
+              select: {
+                id: true,
+                filename: true,
+                fileSize: true,
+                processingStatus: true,
+              },
+            },
+          },
+        },
       },
     }),
     prisma.auditEvent.findMany({
@@ -484,6 +516,24 @@ export async function getAdminConsoleData(params?: {
               updatedAt: lic.updatedAt,
             }
           : null,
+        clientContext: assessment.clientContext
+          ? {
+              status: assessment.clientContext.status,
+              wordCount: assessment.clientContext.wordCount,
+              characterCount: assessment.clientContext.characterCount,
+              analysisStatus: assessment.clientContextAnalysis?.status ?? "not_started",
+              interpretedSummary: assessment.clientContextAnalysis?.interpretedSummary ?? null,
+            }
+          : null,
+        additionalEvidence: (assessment.additionalEvidence ?? []).map((item) => ({
+          id: item.id,
+          classification: item.classification,
+          purpose: item.purpose,
+          analysisStatus: item.analysisStatus,
+          filename: item.evidenceFile.filename,
+          fileSize: item.evidenceFile.fileSize,
+          processingStatus: item.evidenceFile.processingStatus,
+        })),
       };
     }),
     recentAuditEvents,
