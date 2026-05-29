@@ -294,6 +294,7 @@ function addContentPage(doc: PDFKit.PDFDocument, section: string, title: string,
     });
   }
   doc.y = 92;
+  doc.x = MARGIN;
 }
 
 function ensureSpace(doc: PDFKit.PDFDocument, needed: number, title: string) {
@@ -316,10 +317,13 @@ function badge(doc: PDFKit.PDFDocument, text: string, tone: Tone, x = doc.x, y =
 
 function h2(doc: PDFKit.PDFDocument, text: string, note?: string) {
   doc.moveDown(0.2);
-  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(17).text(safeText(text));
+  doc.x = MARGIN;
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(17).text(safeText(text), MARGIN, doc.y, {
+    width: contentWidth(doc),
+  });
   if (note) {
     doc.moveDown(0.15);
-    doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(safeText(note), {
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(safeText(note), MARGIN, doc.y, {
       width: contentWidth(doc),
       lineGap: 2,
     });
@@ -328,7 +332,8 @@ function h2(doc: PDFKit.PDFDocument, text: string, note?: string) {
 }
 
 function paragraph(doc: PDFKit.PDFDocument, text: string, options?: PDFKit.Mixins.TextOptions) {
-  doc.fillColor(THEME.ink).font("Helvetica").fontSize(9.5).text(safeText(text), {
+  doc.x = MARGIN;
+  doc.fillColor(THEME.ink).font("Helvetica").fontSize(9.5).text(safeText(text), MARGIN, doc.y, {
     width: contentWidth(doc),
     lineGap: 2,
     ...options,
@@ -418,10 +423,10 @@ function twoColumnList(params: {
   doc.y = top + boxH + 20;
 }
 
-function bulletList(doc: PDFKit.PDFDocument, items: string[], maxItems = 10) {
+function bulletList(doc: PDFKit.PDFDocument, items: string[], maxItems = 10, continuationTitle = "List") {
   const visible = items.length > 0 ? items.slice(0, maxItems) : ["Not available in current evidence"];
   visible.forEach((item) => {
-    ensureSpace(doc, 32, "List");
+    ensureSpace(doc, 32, continuationTitle);
     doc.circle(MARGIN + 4, doc.y + 5, 2).fill(THEME.cyan);
     doc.fillColor(THEME.ink).font("Helvetica").fontSize(9.2).text(safeText(item), MARGIN + 16, doc.y, {
       width: contentWidth(doc) - 16,
@@ -563,8 +568,10 @@ function addCoverageSection(doc: PDFKit.PDFDocument, preview: ReportPreviewData)
   coverageTable(doc, coverage.rows);
   doc.moveDown(0.6);
 
+  ensureSpace(doc, 120, "Report Limitations continued");
   h2(doc, "Report Limitations");
-  bulletList(doc, coverage.limitations, 9);
+  bulletList(doc, coverage.limitations, 9, "Report Limitations continued");
+  ensureSpace(doc, 84, "Report Limitations continued");
   callout(doc, coverage.usdNote, "info");
 }
 
