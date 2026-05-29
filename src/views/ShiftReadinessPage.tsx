@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -185,7 +186,7 @@ export default function ShiftReadinessPage() {
     <main className="shiftreadiness-page">
       <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
         <div className="container navbar-container">
-          <a href="/" className="logo-container">
+          <Link href="/" className="logo-container">
             <svg
               width="40"
               height="40"
@@ -213,7 +214,7 @@ export default function ShiftReadinessPage() {
             </svg>
             <span>Shift Evidence</span>
             <span className="navbar-badge">ShiftReadiness</span>
-          </a>
+          </Link>
 
           <nav className="navbar-menu-desktop">
             <ul className="nav-links">
@@ -241,9 +242,9 @@ export default function ShiftReadinessPage() {
           </nav>
 
           <div className="navbar-actions">
-            <a href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
+            <Link href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
               Start Free Check
-            </a>
+            </Link>
           </div>
         </div>
       </header>

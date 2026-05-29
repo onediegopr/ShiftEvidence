@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -21,7 +22,7 @@ export default function Navbar() {
   return (
     <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
       <div className="container navbar-container">
-        <a href="/" className="logo-container">
+        <Link href="/" className="logo-container">
           <svg
             width="40"
             height="40"
@@ -48,37 +49,37 @@ export default function Navbar() {
             />
           </svg>
           <span>Shift Evidence</span>
-        </a>
+        </Link>
 
         <nav>
           <ul className="nav-links">
             <li>
-              <a href="/#savings" className="nav-link">
+              <Link href="/#savings" className="nav-link">
                 Savings Calculator
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/#features" className="nav-link">
+              <Link href="/#features" className="nav-link">
                 Core Features
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/#comparison" className="nav-link">
+              <Link href="/#comparison" className="nav-link">
                 VMware vs Proxmox
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/#process" className="nav-link">
+              <Link href="/#process" className="nav-link">
                 Migration Pipeline
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
 
         <div className="navbar-actions">
-          <a href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
+          <Link href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
             Start Free Check
-          </a>
+          </Link>
         </div>
       </div>
     </header>
