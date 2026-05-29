@@ -6,7 +6,7 @@ Date: 2026-05-28.
 
 Add and maintain a public landing credibility section for ShiftReadiness:
 
-- `What private assessments reveal`
+- `What our customers are saying`
 
 The section presents representative private evaluation examples by industry and decision type. It does not disclose customer names, company brands, locations or identifiable infrastructure details, and it must not be interpreted as verified customer reviews.
 

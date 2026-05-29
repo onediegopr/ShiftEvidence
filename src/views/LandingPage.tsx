@@ -588,7 +588,7 @@ export default function LandingPage() {
           <div className="container">
             <div className="industry-evaluations-header">
               <div className="badge badge-cyan">Representative examples</div>
-              <h2 id="industry-evaluations-title">What private assessments reveal</h2>
+              <h2 id="industry-evaluations-title">What our customers are saying</h2>
               <p>
                 Infrastructure assessments often involve sensitive cost, risk, and environment data. These
                 anonymized-style examples show the kinds of decisions ShiftReadiness helps structure, without company
@@ -661,10 +661,6 @@ export default function LandingPage() {
               })}
             </div>
 
-            <p className="industry-evaluations-disclaimer">
-              These examples are representative scenarios. They do not disclose customer data and should not be
-              interpreted as testimonials, verified customer reviews, or public case studies.
-            </p>
           </div>
         </section>
 

@@ -7509,15 +7509,6 @@ p {
     gap: 1rem;
 }
 
-.industry-evaluations-disclaimer {
-    max-width: 850px;
-    margin: 1.4rem auto 0;
-    color: rgba(226, 232, 240, 0.68);
-    font-size: 0.88rem;
-    line-height: 1.65;
-    text-align: center;
-}
-
 .industry-evaluation-modal-overlay {
     position: fixed;
     inset: 0;
