@@ -190,6 +190,8 @@ model Assessment {
   unlockRequests           UnlockRequest[]
 
   @@index([workspaceId])
+  @@index([workspaceId, archivedAt, updatedAt])
+  @@index([archivedAt, updatedAt])
   @@index([status])
 }
 
@@ -332,10 +334,12 @@ model EvidenceFile {
   riskFindings    RiskFinding[]
 
   @@index([assessmentId])
+  @@index([assessmentId, deletedAt, uploadedAt])
   @@index([workspaceId])
   @@index([uploadedByUserId])
   @@index([evidenceType])
   @@index([processingStatus])
+  @@index([processingStatus, deletedAt])
   @@index([deletedAt])
 }
 
@@ -522,6 +526,7 @@ model AuditEvent {
   @@index([workspaceId])
   @@index([assessmentId])
   @@index([userId])
+  @@index([createdAt])
 }
 
 model AiUsageEvent {
@@ -548,9 +553,13 @@ model AiUsageEvent {
 
   @@index([createdAt])
   @@index([userId])
+  @@index([userId, createdAt])
   @@index([assessmentId])
+  @@index([assessmentId, createdAt])
   @@index([provider])
+  @@index([provider, createdAt])
   @@index([status])
+  @@index([status, createdAt])
   @@index([operationType])
 }
 
@@ -654,10 +663,12 @@ model Report {
   generatedByUser  User?       @relation(fields: [generatedByUserId], references: [id], onDelete: SetNull)
 
   @@index([assessmentId])
+  @@index([assessmentId, deletedAt, createdAt])
   @@index([workspaceId])
   @@index([generatedByUserId])
   @@index([reportType])
   @@index([status])
+  @@index([status, deletedAt])
   @@index([deletedAt])
 }
 
