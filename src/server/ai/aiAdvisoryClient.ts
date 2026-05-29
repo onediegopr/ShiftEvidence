@@ -12,7 +12,6 @@ import { recordAiRuntimeEvent, type AiRuntimeErrorCategory } from "./aiRuntimeSt
 import { recordAiUsageEvent, type AiUsageOperationType } from "./aiUsageService";
 import { assertCanUseAi } from "../admin/runtimeSettingsService";
 
-type AiProviderJson = Omit<AiAdvisoryOutput, "providerStatus" | "generatedAt" | "provider" | "model">;
 
 function emptyOutput(config: AiAdvisoryConfig, providerStatus: AiAdvisoryProviderStatus): AiAdvisoryOutput {
   return {
@@ -38,7 +37,34 @@ function truncateJsonInput(payload: AiAdvisoryContextPayload, maxInputChars: num
     return json;
   }
 
-  return `${json.slice(0, maxInputChars)}...[TRUNCATED]`;
+  // Reduce large arrays first to stay within limit while keeping valid JSON
+  const reduced: AiAdvisoryContextPayload = {
+    ...payload,
+    riskFindings: payload.riskFindings.slice(0, 15),
+    manualMigrationContext: {
+      ...payload.manualMigrationContext,
+      answers: payload.manualMigrationContext.answers.slice(0, 20),
+    },
+  };
+  const reducedJson = JSON.stringify(reduced);
+  if (reducedJson.length <= maxInputChars) {
+    return reducedJson;
+  }
+
+  // Further reduce if still too large
+  const minimal: AiAdvisoryContextPayload = {
+    ...reduced,
+    riskFindings: reduced.riskFindings.slice(0, 5),
+    manualMigrationContext: {
+      ...reduced.manualMigrationContext,
+      answers: [],
+      coverage: {
+        ...reduced.manualMigrationContext.coverage,
+        sections: [],
+      },
+    },
+  };
+  return JSON.stringify(minimal);
 }
 
 function normalizeStringList(value: unknown, fallback: string[] = []) {
@@ -93,9 +119,13 @@ function normalizeProviderJson(value: unknown, fallback: AiAdvisoryOutput): AiAd
   };
 }
 
-function parseJsonText(text: string) {
-  const trimmed = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
-  return JSON.parse(trimmed) as AiProviderJson;
+function parseJsonText(text: string): unknown {
+  try {
+    const trimmed = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+    return JSON.parse(trimmed);
+  } catch {
+    return null;
+  }
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {

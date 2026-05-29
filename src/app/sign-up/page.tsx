@@ -67,8 +67,7 @@ export default function SignUpPage() {
   const [evidenceSource, setEvidenceSource] = useState<EvidenceSource>("none");
   const [fileName, setFileName] = useState<string>("");
   const [setupSubStep, setSetupSubStep] = useState(1);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [logType, setLogType] = useState<LogType[]>([]);
+  const [logs, setLogs] = useState<{ message: string; type: LogType }[]>([]);
 
   // User manual setup selections
   const [storageType, setStorageType] = useState("san");
@@ -135,7 +134,6 @@ export default function SignUpPage() {
   const startDiagnosticCheck = (source: EvidenceSource, uploadedName?: string) => {
     setCurrentStep("scanning");
     setLogs([]);
-    setLogType([]);
 
     const activeFileName = uploadedName || fileName || "rvtools_export.xlsx";
 
@@ -182,8 +180,7 @@ export default function SignUpPage() {
     const interval = setInterval(() => {
       if (currentLogIndex < mockLogs.length) {
         const nextLog = mockLogs[currentLogIndex];
-        setLogs((prev) => [...prev, nextLog.text]);
-        setLogType((prev) => [...prev, nextLog.type]);
+        setLogs((prev) => [...prev, { message: nextLog.text, type: nextLog.type }]);
         currentLogIndex++;
       } else {
         clearInterval(interval);
@@ -858,13 +855,13 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="console-box" style={{ textAlign: "left" }}>
-                  {logs.map((log, index) => (
+                  {logs.map(({ message, type }, index) => (
                     <div
                       key={index}
-                      className={`console-line ${logType[index] === "success" ? "success" : logType[index] === "warn" ? "warn" : ""}`}
+                      className={`console-line ${type === "success" ? "success" : type === "warn" ? "warn" : ""}`}
                     >
                       <span style={{ color: "#4b5563" }}>[{new Date().toLocaleTimeString()}] </span>
-                      <span>{log}</span>
+                      <span>{message}</span>
                     </div>
                   ))}
                   <div ref={consoleEndRef} />

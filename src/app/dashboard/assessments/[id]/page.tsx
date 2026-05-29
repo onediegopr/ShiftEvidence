@@ -290,7 +290,7 @@ function buildMatrixHref(params: {
   power?: string | null;
   tab?: string | null;
 }) {
-  const url = new URL(`/dashboard/assessments/${params.assessmentId}`, "http://localhost");
+  const url = new URL(`/dashboard/assessments/${params.assessmentId}`, process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
   if (params.risk && params.risk !== "all") {
     url.searchParams.set("risk", params.risk);
   }
