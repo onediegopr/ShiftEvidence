@@ -590,9 +590,8 @@ export default function LandingPage() {
               <div className="badge badge-cyan">Representative examples</div>
               <h2 id="industry-evaluations-title">What our customers are saying</h2>
               <p>
-                Infrastructure assessments often involve sensitive cost, risk, and environment data. These
-                anonymized-style examples show the kinds of decisions ShiftReadiness helps structure, without company
-                names or identifying details.
+                Private infrastructure assessments involve sensitive cost and risk data, so these examples are shown by
+                industry without company names or identifying details.
               </p>
             </div>
 

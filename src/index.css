@@ -7482,7 +7482,11 @@ p {
     position: relative;
     overflow: hidden;
     padding-top: 5rem;
-    padding-bottom: 5rem;
+    padding-bottom: 3.2rem;
+}
+
+.industry-evaluations-section + .faq-section {
+    padding-top: 3rem;
 }
 
 .industry-evaluations-header {
@@ -7651,7 +7655,11 @@ p {
 @media (max-width: 700px) {
     .industry-evaluations-section {
         padding-top: 4rem;
-        padding-bottom: 4rem;
+        padding-bottom: 2.75rem;
+    }
+
+    .industry-evaluations-section + .faq-section {
+        padding-top: 2.75rem;
     }
 
     .industry-evaluation-grid,
