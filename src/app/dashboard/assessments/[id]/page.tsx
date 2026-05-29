@@ -61,6 +61,7 @@ import {
   getNextStepsSummary,
 } from "../../../../server/assessments/assessmentCompletionService";
 import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
+import { LicensingCostExposurePanel } from "../../../../components/assessments/LicensingCostExposurePanel";
 import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
   getEvidenceUploadStatus,
@@ -98,6 +99,7 @@ import {
   getVmRiskMatrixRows,
 } from "../../../../server/risk/riskFindingService";
 import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
+import { buildAssessmentLicensingAnalysisSummary } from "../../../../server/assessments/licensingCostExposureService";
 
 type AssessmentDetailPageProps = {
   params: Promise<{
@@ -605,6 +607,7 @@ export default async function AssessmentDetailPage({
   const maxUploadSizeMb = Math.round(getMaxUploadSizeBytes() / 1024 / 1024);
   const evidenceFiles = assessment.evidenceFiles ?? [];
   const uploadPrerequisites = getEvidenceUploadPrerequisites(assessment);
+  const licensingAnalysisSummary = await buildAssessmentLicensingAnalysisSummary(assessment);
 
   const editDefaults = getEditBasicsDefaults(assessment);
 
@@ -1089,6 +1092,12 @@ export default async function AssessmentDetailPage({
               </div>
             </form>
           </section>
+
+          <LicensingCostExposurePanel
+            assessmentId={assessment.id}
+            summary={licensingAnalysisSummary}
+            canShowAdminPricingLink={false}
+          />
 
           <section id="storage-readiness" className="assessment-section glass-card">
             <SectionTitle

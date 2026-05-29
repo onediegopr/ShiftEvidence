@@ -173,6 +173,7 @@ model Assessment {
   infrastructureInput      AssessmentInfrastructureInput?
   costRiskAssumptions      CostRiskAssumptions?
   preliminaryResult        AssessmentPreliminaryResult?
+  licensingAnalysis        AssessmentLicensingAnalysis?
   storageReadinessInput    StorageReadinessInput?
   entitlements             AssessmentEntitlement[]
   evidenceFiles            EvidenceFile[]
@@ -269,6 +270,37 @@ model AssessmentPreliminaryResult {
   createdAt                DateTime   @default(now())
   updatedAt                DateTime   @updatedAt
   assessment               Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+model AssessmentLicensingAnalysis {
+  id                       String                            @id @default(cuid())
+  assessmentId             String                            @unique
+  status                   AssessmentLicensingAnalysisStatus  @default(not_included)
+  mode                     AssessmentLicensingAnalysisMode    @default(skipped)
+  currency                 String                            @default("USD")
+  financialConfidenceScore Int?
+  financialConfidenceLabel String?
+  savingsQuality           String?
+  pricingFreshnessStatus   String?
+  vmwareScenarioJson       Json?
+  proxmoxScenarioJson      Json?
+  comparisonJson           Json?
+  costOfStayingJson        Json?
+  contractTimingRiskJson   Json?
+  licensingTrapsJson       Json?
+  missingEvidenceJson      Json?
+  assumptionsJson          Json?
+  pricingSnapshotRefsJson  Json?
+  executiveRecommendation  String?
+  generatedAt              DateTime?
+  createdAt                DateTime                          @default(now())
+  updatedAt                DateTime                          @updatedAt
+  assessment               Assessment                        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([mode])
+  @@index([generatedAt])
 }
 
 model StorageReadinessInput {
@@ -959,6 +991,22 @@ enum UnlockRequestType {
   readiness_report_pro
   storage_addon
   technical_review
+}
+
+enum AssessmentLicensingAnalysisStatus {
+  not_included
+  needs_input
+  ready
+  completed
+  blocked
+  stale_pricing
+}
+
+enum AssessmentLicensingAnalysisMode {
+  actual_costs
+  estimated_from_environment
+  broad_scenarios
+  skipped
 }
 
 enum LicensingPricingVendor {

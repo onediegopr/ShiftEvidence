@@ -662,10 +662,12 @@ function detectStorageAnalysisModule(
 function detectLicensingCostExposureModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
+  const licensingAnalysis = assessment.licensingAnalysis;
   const costRiskStatus = getCostRiskStatus(assessment as AssessmentDetail);
   const assumptions = assessment.costRiskAssumptions;
   const licensingContext = getLicensingCostContextFromAssessment(assessment as AssessmentDetail);
   const evidenceCount = countMeaningfulValues([
+    licensingAnalysis?.financialConfidenceScore,
     assumptions?.vmwareLicenseModel,
     assumptions?.annualVmwareCost,
     assumptions?.estimatedProxmoxCost,
@@ -678,6 +680,65 @@ function detectLicensingCostExposureModule(
     return {
       status: "not_applicable",
       evidence: { count: evidenceCount, source: "licensing_context" },
+    };
+  }
+
+  if (licensingAnalysis?.mode === "skipped" || licensingAnalysis?.status === "not_included") {
+    return {
+      status: "skipped",
+      evidence: { count: evidenceCount, source: "licensing_analysis" },
+      limitationText:
+        "Licensing & Cost Exposure was skipped, so renewal exposure and savings should be treated as directional USD estimates.",
+    };
+  }
+
+  if (licensingAnalysis?.status === "completed") {
+    return {
+      status: "complete",
+      evidence: {
+        count: evidenceCount,
+        source: "licensing_analysis",
+        lastUpdatedAt: licensingAnalysis.generatedAt ?? licensingAnalysis.updatedAt,
+      },
+    };
+  }
+
+  if (licensingAnalysis?.status === "stale_pricing") {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "licensing_analysis",
+        lastUpdatedAt: licensingAnalysis.generatedAt ?? licensingAnalysis.updatedAt,
+      },
+      limitationText:
+        "Licensing analysis exists, but approved pricing snapshots may be stale and should be refreshed before financial decisions.",
+    };
+  }
+
+  if (licensingAnalysis?.status === "ready" || licensingAnalysis?.status === "needs_input") {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "licensing_analysis",
+        lastUpdatedAt: licensingAnalysis.updatedAt,
+      },
+      limitationText:
+        "Licensing analysis inputs exist, but financial exposure analysis is not complete yet.",
+    };
+  }
+
+  if (licensingAnalysis?.status === "blocked") {
+    return {
+      status: "blocked",
+      evidence: {
+        count: evidenceCount,
+        source: "licensing_analysis",
+        lastUpdatedAt: licensingAnalysis.updatedAt,
+      },
+      limitationText:
+        "Licensing analysis is blocked and should be rerun after reviewing inputs and approved pricing snapshots.",
     };
   }
 

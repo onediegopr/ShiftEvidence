@@ -19,6 +19,7 @@ export const assessmentDetailInclude = {
   costRiskAssumptions: true,
   infrastructureInput: true,
   preliminaryResult: true,
+  licensingAnalysis: true,
   storageReadinessInput: true,
   entitlements: true,
   evidenceFiles: {

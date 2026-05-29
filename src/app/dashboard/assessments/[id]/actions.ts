@@ -21,6 +21,11 @@ import {
   upsertPreliminaryResult,
 } from "../../../../server/assessments/costRiskService";
 import {
+  runAssessmentLicensingAnalysis,
+  skipAssessmentLicensingAnalysis,
+  upsertAssessmentLicensingPreferences,
+} from "../../../../server/assessments/licensingCostExposureService";
+import {
   parseMigrationContextFormData,
   saveMigrationContext,
 } from "../../../../server/assessments/migrationContextService";
@@ -253,7 +258,6 @@ export async function saveCostRiskAssumptionsAction(
           fieldName: "Risk tolerance",
           maxLength: INPUT_LIMITS.shortText,
         }),
-        assumptionsJson: null,
       },
     });
 
@@ -264,6 +268,69 @@ export async function saveCostRiskAssumptionsAction(
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save Cost / Risk assumptions.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function saveLicensingAnalysisPreferencesAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "basics");
+
+  try {
+    await upsertAssessmentLicensingPreferences({
+      userId: session.user.id,
+      assessmentId,
+      formData,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to save licensing analysis inputs.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "basics");
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function runLicensingAnalysisAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "basics");
+
+  try {
+    await upsertAssessmentLicensingPreferences({
+      userId: session.user.id,
+      assessmentId,
+      formData,
+    });
+    await runAssessmentLicensingAnalysis({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to run licensing analysis.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "basics");
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function skipLicensingAnalysisAction(assessmentId: string) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "basics");
+
+  try {
+    await skipAssessmentLicensingAnalysis({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to skip licensing analysis.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "basics");
   }
 
   redirect(redirectTarget);
