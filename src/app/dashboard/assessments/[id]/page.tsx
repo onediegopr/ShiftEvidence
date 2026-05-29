@@ -34,8 +34,14 @@ import {
   getInfrastructureInputSummary,
 } from "../../../../server/assessments/infrastructureInputService";
 import {
+  getLicensingCostContextFromAssessment,
   getCostRiskStatus,
   getPreliminaryCostRiskPreview,
+  getStorageAnalysisContextFromAssessment,
+  LICENSING_RENEWAL_TIMEFRAME_OPTIONS,
+  STORAGE_CONSTRAINT_OPTIONS,
+  STORAGE_CURRENT_TYPE_OPTIONS,
+  STORAGE_TARGET_PREFERENCE_OPTIONS,
 } from "../../../../server/assessments/costRiskService";
 import {
   computeMigrationContextCoverage,
@@ -72,9 +78,11 @@ import {
 } from "./risk/actions";
 import {
   archiveAssessmentAction,
+  saveLicensingCostContextAction,
   saveMigrationContextAction,
   saveCostRiskAssumptionsAction,
   saveInfrastructureInputAction,
+  saveStorageAnalysisContextAction,
   toggleStorageReadinessAction,
   updateAssessmentBasicsAction,
 } from "./actions";
@@ -564,6 +572,10 @@ export default async function AssessmentDetailPage({
   const missingEvidence = getMissingEvidenceSummary(assessment);
   const nextSteps = getNextStepsSummary(assessment);
   const costRiskStatus = getCostRiskStatus(assessment);
+  const storageAnalysisContext = getStorageAnalysisContextFromAssessment(assessment);
+  const licensingCostContext = getLicensingCostContextFromAssessment(assessment);
+  const storageCompletionModule = completionSummary.modules.find((module) => module.key === "storage_analysis");
+  const licensingCompletionModule = completionSummary.modules.find((module) => module.key === "licensing_cost_exposure");
   const error = resolvedSearchParams.error ? decodeURIComponent(resolvedSearchParams.error) : null;
   const saved = resolvedSearchParams.saved === "1";
   const storageStatus = assessment.storageReadinessEnabled
@@ -700,8 +712,8 @@ export default async function AssessmentDetailPage({
         <article className="glass-card assessment-summary-card">
           <Database size={22} />
           <span className="assessment-summary-label">Storage</span>
-          <strong>{storageStatus}</strong>
-          <p>{assessment.storageReadinessEnabled ? "Optional module selected" : "Optional module skipped"}</p>
+          <strong>{storageCompletionModule ? statusLabel(storageCompletionModule.status) : storageStatus}</strong>
+          <p>Optional module. Missing context lowers report precision, not report access.</p>
         </article>
         <article className="glass-card assessment-summary-card">
           <Activity size={22} />
@@ -858,29 +870,98 @@ export default async function AssessmentDetailPage({
           <section id="cost-risk-assumptions" className="assessment-section glass-card">
             <SectionTitle
               icon={<BadgePercent size={18} />}
-              eyebrow="Cost / Risk Assumptions"
-              title="Cost / Risk Engine assumptions"
-              description="Cost / Risk is preliminary and based on provided assumptions."
+              eyebrow="Optional module"
+              title="Licensing & Cost Exposure"
+              description="Optional cost context used to estimate VMware exposure and Proxmox subscription delta. All values should be entered in USD."
             />
 
             <div className="assessment-status-row">
-              {renderStatusPill(`State: ${statusLabel(costRiskStatus)}`, renderStatusTone(costRiskStatus))}
-              {renderStatusPill(`Currency: ${assessment.costRiskAssumptions?.currency ?? "USD"}`, "neutral")}
+              {renderStatusPill("Recommended", "good")}
+              {renderStatusPill("Optional", "neutral")}
+              {renderStatusPill("Amounts modeled in USD", "warning")}
+              {renderStatusPill(
+                `Completion: ${statusLabel(licensingCompletionModule?.status ?? "not_started")}`,
+                renderStatusTone(licensingCompletionModule?.status ?? "not_started"),
+              )}
+              {renderStatusPill(`Cost model: ${statusLabel(costRiskStatus)}`, renderStatusTone(costRiskStatus))}
               {renderStatusPill(`Years: ${assessment.costRiskAssumptions?.years ?? 3}`, "neutral")}
             </div>
 
-            <form action={saveCostRiskAssumptionsAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide">
+            <div className="assessment-optional-module-panel">
+              <div>
+                <h3>Cost context is optional.</h3>
+                <p>
+                  You can skip this section. The report will still be generated, but cost exposure
+                  and savings estimates may be less precise.
+                </p>
+              </div>
+              <div className="assessment-optional-module-meta">
+                <span>Weight: {licensingCompletionModule?.weight ?? 15}%</span>
+                <span>Confidence: {licensingCompletionModule?.confidenceContribution ?? 0}%</span>
+                <span>Decision: {statusLabel(licensingCostContext.decision)}</span>
+              </div>
+            </div>
+
+            <form action={saveLicensingCostContextAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide assessment-module-context-form">
               <input type="hidden" name="currentTab" value="basics" />
               <label className="form-label">
-                Currency
-                <input
-                  name="currency"
-                  className="form-input"
-                  type="text"
-                  maxLength={12}
-                  defaultValue={assessment.costRiskAssumptions?.currency ?? "USD"}
+                Module decision
+                <select name="licensingDecision" className="form-input" defaultValue={licensingCostContext.decision}>
+                  <option value="active">Complete or review now</option>
+                  <option value="skipped">Skip for now</option>
+                  <option value="not_applicable">Mark not applicable</option>
+                </select>
+              </label>
+              <label className="form-label">
+                VMware renewal timeframe
+                <select name="renewalTimeframe" className="form-input" defaultValue={licensingCostContext.renewalTimeframe ?? ""}>
+                  <option value="">Select timeframe</option>
+                  {LICENSING_RENEWAL_TIMEFRAME_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="form-label">
+                Include Proxmox subscription estimate
+                <select name="includeProxmoxEstimate" className="form-input" defaultValue={licensingCostContext.includeProxmoxEstimate ?? ""}>
+                  <option value="">Select preference</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                  <option value="not_sure">Not sure</option>
+                </select>
+              </label>
+              <label className="form-label assessment-form-span-2">
+                Licensing notes
+                <textarea
+                  name="licensingNotes"
+                  className="form-input assessment-textarea"
+                  maxLength={INPUT_LIMITS.manualTechnicalContext}
+                  defaultValue={licensingCostContext.notes ?? ""}
+                  placeholder="Optional renewal, procurement, subscription or budget context. Amounts are modeled in USD."
                 />
               </label>
+
+              <div className="assessment-inline-actions assessment-form-span-2">
+                <button type="submit" className="btn btn-primary btn-glow">
+                  Save licensing context
+                  <RefreshCcw size={16} />
+                </button>
+                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
+                  Continue later
+                </Link>
+                {completionSummary.canGenerateReport ? (
+                  <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-secondary">
+                    Generate report now
+                  </Link>
+                ) : null}
+              </div>
+            </form>
+
+            <form action={saveCostRiskAssumptionsAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide">
+              <input type="hidden" name="currentTab" value="basics" />
+              <input type="hidden" name="currency" value="USD" />
               <label className="form-label">
                 Years
                 <input
@@ -938,7 +1019,7 @@ export default async function AssessmentDetailPage({
                 />
               </label>
               <label className="form-label">
-                Annual VMware cost
+                Annual VMware cost (USD)
                 <input
                   name="annualVmwareCost"
                   className="form-input"
@@ -949,7 +1030,7 @@ export default async function AssessmentDetailPage({
                 />
               </label>
               <label className="form-label">
-                Estimated Proxmox cost
+                Estimated Proxmox subscription (USD)
                 <input
                   name="estimatedProxmoxCost"
                   className="form-input"
@@ -995,11 +1076,11 @@ export default async function AssessmentDetailPage({
 
               <div className="assessment-inline-actions assessment-form-span-2">
                 <button type="submit" className="btn btn-primary btn-glow">
-                  Save assumptions
+                  Save cost model
                   <RefreshCcw size={16} />
                 </button>
                 <span className="assessment-inline-note">
-                  Cost / Risk remains an included module.
+                  Amounts are modeled in USD. These inputs improve confidence but do not block report generation.
                 </span>
               </div>
             </form>
@@ -1008,24 +1089,120 @@ export default async function AssessmentDetailPage({
           <section id="storage-readiness" className="assessment-section glass-card">
             <SectionTitle
               icon={<Database size={18} />}
-              eyebrow="Storage Readiness"
-              title="Storage Destination Readiness is optional"
-              description="The core readiness assessment works without Storage Destination Readiness. Add it only when the target architecture needs deeper validation."
+              eyebrow="Optional module"
+              title="Storage Analysis"
+              description="Optional storage context that improves migration risk and target architecture recommendations."
             />
 
             <div className="assessment-status-row">
-              {renderStatusPill(`Status: ${storageStatus}`, renderStatusTone(assessment.storageReadinessStatus))}
+              {renderStatusPill("Recommended", "good")}
+              {renderStatusPill("Optional", "neutral")}
+              {renderStatusPill("Improves report confidence", "warning")}
               {renderStatusPill(
-                assessment.storageReadinessEnabled ? "Add-on enabled" : "Core assessment only",
+                `Completion: ${statusLabel(storageCompletionModule?.status ?? "not_started")}`,
+                renderStatusTone(storageCompletionModule?.status ?? "not_started"),
+              )}
+              {renderStatusPill(
+                assessment.storageReadinessEnabled ? "Storage readiness add-on enabled" : "Core report still available",
                 assessment.storageReadinessEnabled ? "good" : "neutral",
               )}
             </div>
 
+            <div className="assessment-optional-module-panel">
+              <div>
+                <h3>Storage context is optional.</h3>
+                <p>
+                  You can skip this section. The report will still be generated, but storage
+                  recommendations may be estimated from RVTools datastore evidence only.
+                </p>
+              </div>
+              <div className="assessment-optional-module-meta">
+                <span>Weight: {storageCompletionModule?.weight ?? 15}%</span>
+                <span>Confidence: {storageCompletionModule?.confidenceContribution ?? 0}%</span>
+                <span>Decision: {statusLabel(storageAnalysisContext.decision)}</span>
+              </div>
+            </div>
+
+            <form action={saveStorageAnalysisContextAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide assessment-module-context-form">
+              <input type="hidden" name="currentTab" value="basics" />
+              <label className="form-label">
+                Module decision
+                <select name="storageDecision" className="form-input" defaultValue={storageAnalysisContext.decision}>
+                  <option value="active">Complete or review now</option>
+                  <option value="skipped">Skip for now</option>
+                  <option value="not_applicable">Mark not applicable</option>
+                </select>
+              </label>
+              <label className="form-label">
+                Current storage type
+                <select name="currentStorageType" className="form-input" defaultValue={storageAnalysisContext.currentStorageType ?? ""}>
+                  <option value="">Select current storage</option>
+                  {STORAGE_CURRENT_TYPE_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="form-label">
+                Target storage preference
+                <select name="targetStoragePreference" className="form-input" defaultValue={storageAnalysisContext.targetStoragePreference ?? ""}>
+                  <option value="">Select target preference</option>
+                  {STORAGE_TARGET_PREFERENCE_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="form-label assessment-form-span-2">
+                Known storage constraints
+                <div className="assessment-checkbox-grid assessment-checkbox-grid-compact">
+                  {STORAGE_CONSTRAINT_OPTIONS.map((option) => (
+                    <label key={option} className="assessment-checkbox-row">
+                      <input
+                        type="checkbox"
+                        name="knownStorageConstraints"
+                        value={option}
+                        defaultChecked={storageAnalysisContext.knownConstraints.includes(option)}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <label className="form-label assessment-form-span-2">
+                Storage notes
+                <textarea
+                  name="storageNotes"
+                  className="form-input assessment-textarea"
+                  maxLength={INPUT_LIMITS.manualTechnicalContext}
+                  defaultValue={storageAnalysisContext.notes ?? ""}
+                  placeholder="Optional performance, capacity, replication, backup or vendor lock-in context."
+                />
+              </label>
+
+              <div className="assessment-inline-actions assessment-form-span-2">
+                <button type="submit" className="btn btn-primary btn-glow">
+                  Save storage context
+                  <RefreshCcw size={16} />
+                </button>
+                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
+                  Continue later
+                </Link>
+                {completionSummary.canGenerateReport ? (
+                  <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-secondary">
+                    Generate report now
+                  </Link>
+                ) : null}
+              </div>
+            </form>
+
             <div className="assessment-storage-grid">
               <div className="assessment-storage-copy">
                 <p>
-                  You can run the VMware → Proxmox assessment without storage analysis. Add Storage
-                  Destination Readiness only when you need a deeper view of the target architecture.
+                  Storage Destination Readiness remains optional. Enable it only when you need a
+                  deeper target architecture review beyond the lightweight context above.
                 </p>
                 {!assessment.storageReadinessEnabled ? (
                   <form action={toggleStorageReadinessAction.bind(null, assessment.id)}>
@@ -1053,8 +1230,9 @@ export default async function AssessmentDetailPage({
 
               <article className="glass-card assessment-subcard">
                 <h3>Current storage evidence</h3>
-                <p>Selected: {assessment.storageReadinessEnabled ? "yes" : "no"}</p>
-                <p>Module: {assessment.storageReadinessEnabled ? "selected" : "locked"}</p>
+                <p>Context decision: {statusLabel(storageAnalysisContext.decision)}</p>
+                <p>Selected add-on: {assessment.storageReadinessEnabled ? "yes" : "no"}</p>
+                <p>Module status: {storageCompletionModule ? statusLabel(storageCompletionModule.status) : storageStatus}</p>
                 <p>Entitlement: {assessment.storageReadinessEnabled ? "available" : "locked"}</p>
               </article>
             </div>

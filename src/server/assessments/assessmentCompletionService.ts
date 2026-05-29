@@ -1,5 +1,9 @@
 import { type AssessmentDetail } from "./assessmentService";
-import { getCostRiskStatus } from "./costRiskService";
+import {
+  getCostRiskStatus,
+  getLicensingCostContextFromAssessment,
+  getStorageAnalysisContextFromAssessment,
+} from "./costRiskService";
 import { buildInfrastructureStatus } from "./infrastructureInputService";
 import {
   computeMigrationContextCoverage,
@@ -580,6 +584,7 @@ function detectStorageAnalysisModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
   const storageInput = assessment.storageReadinessInput;
+  const storageContext = getStorageAnalysisContextFromAssessment(assessment as AssessmentDetail);
   const parsedDatastoreCount =
     (assessment.parsedDatastores?.length ?? 0) +
     (assessment.parsedInventorySummaries ?? []).reduce(
@@ -599,30 +604,48 @@ function detectStorageAnalysisModule(
     storageInput?.operationalComplexityTolerance,
     storageInput?.notes,
   ]);
-  const storageExplicitlySkipped =
-    assessment.storageReadinessEnabled === false ||
-    assessment.storageReadinessStatus === "not_selected";
+  const storageContextFieldCount = countMeaningfulValues([
+    storageContext.currentStorageType,
+    storageContext.targetStoragePreference,
+    storageContext.knownConstraints,
+    storageContext.notes,
+  ]);
+  const evidenceSource = storageContextFieldCount > 0 ? "storage_context" : "storage_readiness";
 
-  if (storageExplicitlySkipped) {
+  if (storageContext.decision === "not_applicable") {
+    return {
+      status: "not_applicable",
+      evidence: { count: parsedDatastoreCount, source: "storage_context" },
+    };
+  }
+
+  if (storageContext.decision === "skipped") {
     return {
       status: "skipped",
-      evidence: { count: parsedDatastoreCount, source: "storage_readiness" },
+      evidence: { count: parsedDatastoreCount, source: "storage_context" },
       limitationText:
-        "Storage readiness was not completed, so storage recommendations should be treated as estimates.",
+        "Storage Analysis was skipped, so storage recommendations should be treated as estimates from RVTools datastore evidence only.",
     };
   }
 
-  if (storageFieldCount >= 4 && parsedDatastoreCount > 0) {
+  const hasStorageContextCore =
+    Boolean(storageContext.currentStorageType) &&
+    Boolean(storageContext.targetStoragePreference) &&
+    (storageContext.knownConstraints.length > 0 ||
+      Boolean(storageContext.notes) ||
+      parsedDatastoreCount > 0);
+
+  if (hasStorageContextCore || (storageFieldCount >= 4 && parsedDatastoreCount > 0)) {
     return {
       status: "complete",
-      evidence: { count: parsedDatastoreCount, source: "storage_readiness" },
+      evidence: { count: parsedDatastoreCount, source: evidenceSource },
     };
   }
 
-  if (storageFieldCount > 0 || parsedDatastoreCount > 0) {
+  if (storageContextFieldCount > 0 || storageFieldCount > 0 || parsedDatastoreCount > 0) {
     return {
       status: "partial",
-      evidence: { count: parsedDatastoreCount, source: "storage_readiness" },
+      evidence: { count: parsedDatastoreCount, source: evidenceSource },
       limitationText:
         "Storage evidence exists, but target storage assumptions or operational constraints are incomplete.",
     };
@@ -641,25 +664,40 @@ function detectLicensingCostExposureModule(
 ): ModuleDetectionResult {
   const costRiskStatus = getCostRiskStatus(assessment as AssessmentDetail);
   const assumptions = assessment.costRiskAssumptions;
+  const licensingContext = getLicensingCostContextFromAssessment(assessment as AssessmentDetail);
   const evidenceCount = countMeaningfulValues([
     assumptions?.vmwareLicenseModel,
-    assumptions?.socketCount,
-    assumptions?.coreCount,
-    assumptions?.vmCount,
     assumptions?.annualVmwareCost,
     assumptions?.estimatedProxmoxCost,
-    assumptions?.currency,
-    assumptions?.years,
+    licensingContext.renewalTimeframe,
+    licensingContext.includeProxmoxEstimate,
+    licensingContext.notes,
   ]);
 
-  if (costRiskStatus === "complete") {
+  if (licensingContext.decision === "not_applicable") {
+    return {
+      status: "not_applicable",
+      evidence: { count: evidenceCount, source: "licensing_context" },
+    };
+  }
+
+  if (licensingContext.decision === "skipped") {
+    return {
+      status: "skipped",
+      evidence: { count: evidenceCount, source: "licensing_context" },
+      limitationText:
+        "Licensing & Cost Exposure was skipped, so renewal exposure and savings should be treated as directional USD estimates.",
+    };
+  }
+
+  if (costRiskStatus === "complete" || evidenceCount >= 4) {
     return {
       status: "complete",
       evidence: { count: evidenceCount, source: "cost_risk_assumptions" },
     };
   }
 
-  if (costRiskStatus === "partial") {
+  if (evidenceCount > 0) {
     return {
       status: "partial",
       evidence: { count: evidenceCount, source: "cost_risk_assumptions" },

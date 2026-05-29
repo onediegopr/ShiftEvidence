@@ -16,6 +16,67 @@ import {
 } from "./migrationContextService";
 import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
+export const STORAGE_CONTEXT_JSON_KEY = "storageContext";
+export const LICENSING_CONTEXT_JSON_KEY = "licensingContext";
+
+export const STORAGE_CURRENT_TYPE_OPTIONS = [
+  "vSAN",
+  "SAN",
+  "NAS/NFS",
+  "Local disks",
+  "Mixed",
+  "Unknown",
+] as const;
+
+export const STORAGE_TARGET_PREFERENCE_OPTIONS = [
+  "Proxmox + Ceph",
+  "Existing SAN/NAS",
+  "Local ZFS",
+  "Not decided",
+  "Not applicable",
+] as const;
+
+export const STORAGE_CONSTRAINT_OPTIONS = [
+  "Performance",
+  "Capacity",
+  "Replication",
+  "Backup",
+  "Vendor lock-in",
+  "Unknown",
+] as const;
+
+export const LICENSING_RENEWAL_TIMEFRAME_OPTIONS = [
+  "Already renewed",
+  "0-3 months",
+  "3-6 months",
+  "6-12 months",
+  "12+ months",
+  "No fixed renewal date",
+  "Unknown",
+] as const;
+
+export type OptionalAssessmentModuleDecision = "active" | "skipped" | "not_applicable";
+export type IncludeProxmoxEstimateDecision = "yes" | "no" | "not_sure";
+
+export type StorageAnalysisContext = {
+  version: 1;
+  decision: OptionalAssessmentModuleDecision;
+  currentStorageType: string | null;
+  targetStoragePreference: string | null;
+  knownConstraints: string[];
+  notes: string | null;
+  updatedAt: string | null;
+};
+
+export type LicensingCostExposureContext = {
+  version: 1;
+  decision: OptionalAssessmentModuleDecision;
+  renewalTimeframe: string | null;
+  includeProxmoxEstimate: IncludeProxmoxEstimateDecision | null;
+  notes: string | null;
+  updatedAt: string | null;
+};
+
 function toNumber(value: Prisma.Decimal | number | null | undefined) {
   if (value === null || value === undefined) {
     return null;
@@ -30,6 +91,149 @@ function decimalFromNumber(value: number | null | undefined) {
   }
 
   return new Prisma.Decimal(value);
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseDecision(value: unknown): OptionalAssessmentModuleDecision {
+  return value === "skipped" || value === "not_applicable" ? value : "active";
+}
+
+function parseIncludeProxmoxEstimate(value: unknown): IncludeProxmoxEstimateDecision | null {
+  return value === "yes" || value === "no" || value === "not_sure" ? value : null;
+}
+
+function parseOptionValue<T extends readonly string[]>(
+  value: unknown,
+  options: T,
+  fieldLabel: string,
+) {
+  const parsed = normalizeOptionalTextInput(value, fieldLabel, INPUT_LIMITS.shortText);
+
+  if (!parsed) {
+    return null;
+  }
+
+  if (!(options as readonly string[]).includes(parsed)) {
+    throw new Error(`${fieldLabel} is not supported.`);
+  }
+
+  return parsed;
+}
+
+function parseOptionList<T extends readonly string[]>(
+  values: unknown[],
+  options: T,
+  fieldLabel: string,
+) {
+  const parsedValues = values
+    .map((value) => parseOptionValue(value, options, fieldLabel))
+    .filter((value): value is string => Boolean(value));
+
+  return [...new Set(parsedValues)];
+}
+
+function normalizeStorageAnalysisContext(value: unknown): StorageAnalysisContext {
+  const raw = isPlainObject(value) ? value : {};
+  const rawConstraints = Array.isArray(raw.knownConstraints) ? raw.knownConstraints : [];
+
+  return {
+    version: 1,
+    decision: parseDecision(raw.decision),
+    currentStorageType: typeof raw.currentStorageType === "string" ? raw.currentStorageType : null,
+    targetStoragePreference: typeof raw.targetStoragePreference === "string" ? raw.targetStoragePreference : null,
+    knownConstraints: rawConstraints.filter((item): item is string => typeof item === "string"),
+    notes: typeof raw.notes === "string" ? raw.notes : null,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : null,
+  };
+}
+
+function normalizeLicensingCostContext(value: unknown): LicensingCostExposureContext {
+  const raw = isPlainObject(value) ? value : {};
+
+  return {
+    version: 1,
+    decision: parseDecision(raw.decision),
+    renewalTimeframe: typeof raw.renewalTimeframe === "string" ? raw.renewalTimeframe : null,
+    includeProxmoxEstimate: parseIncludeProxmoxEstimate(raw.includeProxmoxEstimate),
+    notes: typeof raw.notes === "string" ? raw.notes : null,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : null,
+  };
+}
+
+function buildAssumptionsJson(params: {
+  assessment: AssessmentDetail;
+  key: typeof STORAGE_CONTEXT_JSON_KEY | typeof LICENSING_CONTEXT_JSON_KEY;
+  value: StorageAnalysisContext | LicensingCostExposureContext;
+}) {
+  const existing = params.assessment.costRiskAssumptions?.assumptionsJson;
+  const root = isPlainObject(existing) ? existing : {};
+
+  return {
+    ...root,
+    [params.key]: params.value as unknown as Prisma.InputJsonValue,
+  } satisfies Prisma.InputJsonObject;
+}
+
+export function getStorageAnalysisContextFromAssessment(assessment: AssessmentDetail) {
+  const assumptionsJson = assessment.costRiskAssumptions?.assumptionsJson;
+  const root = isPlainObject(assumptionsJson) ? assumptionsJson : {};
+  return normalizeStorageAnalysisContext(root[STORAGE_CONTEXT_JSON_KEY]);
+}
+
+export function getLicensingCostContextFromAssessment(assessment: AssessmentDetail) {
+  const assumptionsJson = assessment.costRiskAssumptions?.assumptionsJson;
+  const root = isPlainObject(assumptionsJson) ? assumptionsJson : {};
+  return normalizeLicensingCostContext(root[LICENSING_CONTEXT_JSON_KEY]);
+}
+
+export function parseStorageAnalysisContextFormData(formData: FormData): StorageAnalysisContext {
+  return {
+    version: 1,
+    decision: parseDecision(formData.get("storageDecision")),
+    currentStorageType: parseOptionValue(
+      formData.get("currentStorageType"),
+      STORAGE_CURRENT_TYPE_OPTIONS,
+      "Current storage type",
+    ),
+    targetStoragePreference: parseOptionValue(
+      formData.get("targetStoragePreference"),
+      STORAGE_TARGET_PREFERENCE_OPTIONS,
+      "Target storage preference",
+    ),
+    knownConstraints: parseOptionList(
+      formData.getAll("knownStorageConstraints"),
+      STORAGE_CONSTRAINT_OPTIONS,
+      "Known storage constraint",
+    ),
+    notes: normalizeOptionalTextInput(
+      formData.get("storageNotes"),
+      "Storage notes",
+      INPUT_LIMITS.manualTechnicalContext,
+    ),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export function parseLicensingCostContextFormData(formData: FormData): LicensingCostExposureContext {
+  return {
+    version: 1,
+    decision: parseDecision(formData.get("licensingDecision")),
+    renewalTimeframe: parseOptionValue(
+      formData.get("renewalTimeframe"),
+      LICENSING_RENEWAL_TIMEFRAME_OPTIONS,
+      "VMware renewal timeframe",
+    ),
+    includeProxmoxEstimate: parseIncludeProxmoxEstimate(formData.get("includeProxmoxEstimate")),
+    notes: normalizeOptionalTextInput(
+      formData.get("licensingNotes"),
+      "Licensing notes",
+      INPUT_LIMITS.manualTechnicalContext,
+    ),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 export async function getCostRiskAssumptions(params: {
@@ -153,6 +357,97 @@ export async function upsertCostRiskAssumptions(params: {
   });
 
   return assumptions;
+}
+
+export async function saveStorageAnalysisContext(params: {
+  userId: string;
+  assessmentId: string;
+  context: StorageAnalysisContext;
+}) {
+  const assessment = await ensureAssessmentOwnership(params);
+  const assumptionsJson = buildAssumptionsJson({
+    assessment,
+    key: STORAGE_CONTEXT_JSON_KEY,
+    value: params.context,
+  });
+
+  const updated = await prisma.costRiskAssumptions.upsert({
+    where: {
+      assessmentId: assessment.id,
+    },
+    create: {
+      assessmentId: assessment.id,
+      currency: "USD",
+      years: 3,
+      assumptionsJson,
+    },
+    update: {
+      assumptionsJson,
+    },
+  });
+
+  await prisma.auditEvent.create({
+    data: {
+      userId: params.userId,
+      workspaceId: assessment.workspaceId,
+      assessmentId: assessment.id,
+      eventType: "storage_analysis_context_updated",
+      message: "Updated optional Storage Analysis context.",
+      metadataJson: {
+        decision: params.context.decision,
+        hasCurrentStorageType: Boolean(params.context.currentStorageType),
+        hasTargetStoragePreference: Boolean(params.context.targetStoragePreference),
+        knownConstraintCount: params.context.knownConstraints.length,
+      },
+    },
+  });
+
+  return updated;
+}
+
+export async function saveLicensingCostContext(params: {
+  userId: string;
+  assessmentId: string;
+  context: LicensingCostExposureContext;
+}) {
+  const assessment = await ensureAssessmentOwnership(params);
+  const assumptionsJson = buildAssumptionsJson({
+    assessment,
+    key: LICENSING_CONTEXT_JSON_KEY,
+    value: params.context,
+  });
+
+  const updated = await prisma.costRiskAssumptions.upsert({
+    where: {
+      assessmentId: assessment.id,
+    },
+    create: {
+      assessmentId: assessment.id,
+      currency: "USD",
+      years: 3,
+      assumptionsJson,
+    },
+    update: {
+      assumptionsJson,
+    },
+  });
+
+  await prisma.auditEvent.create({
+    data: {
+      userId: params.userId,
+      workspaceId: assessment.workspaceId,
+      assessmentId: assessment.id,
+      eventType: "licensing_cost_context_updated",
+      message: "Updated optional Licensing & Cost Exposure context.",
+      metadataJson: {
+        decision: params.context.decision,
+        renewalTimeframe: params.context.renewalTimeframe,
+        includeProxmoxEstimate: params.context.includeProxmoxEstimate,
+      },
+    },
+  });
+
+  return updated;
 }
 
 export function calculatePreliminaryCostRisk(params: {

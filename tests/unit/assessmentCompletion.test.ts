@@ -9,6 +9,7 @@ import {
   MIGRATION_CONTEXT_JSON_KEY,
   migrationContextQuestions,
 } from "../../src/server/assessments/migrationContextService";
+import { STORAGE_CONTEXT_JSON_KEY } from "../../src/server/assessments/costRiskService";
 
 const now = new Date("2026-05-29T12:00:00.000Z");
 
@@ -245,8 +246,21 @@ describe("assessment completion model", () => {
   it("treats skipped storage as non-blocking while reducing report confidence", () => {
     const summary = computeAssessmentCompletionSummary(
       parsedRvtoolsAssessment({
-        storageReadinessEnabled: false,
-        storageReadinessStatus: "not_selected",
+        costRiskAssumptions: {
+          currency: "USD",
+          years: 3,
+          assumptionsJson: {
+            [STORAGE_CONTEXT_JSON_KEY]: {
+              version: 1,
+              decision: "skipped",
+              currentStorageType: null,
+              targetStoragePreference: null,
+              knownConstraints: [],
+              notes: null,
+              updatedAt: now.toISOString(),
+            },
+          },
+        },
       }),
     );
 
@@ -255,7 +269,7 @@ describe("assessment completion model", () => {
     expect(summary.missingRecommended.some((module) => module.key === "storage_analysis")).toBe(
       true,
     );
-    expect(summary.limitations.some((item) => item.includes("Storage readiness"))).toBe(true);
+    expect(summary.limitations.some((item) => item.includes("Storage Analysis"))).toBe(true);
   });
 
   it("keeps percentages inside the 0 to 100 range", () => {

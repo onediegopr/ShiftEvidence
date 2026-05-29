@@ -3684,6 +3684,59 @@ p {
     font-size: 0.88rem;
 }
 
+.assessment-optional-module-panel {
+    align-items: center;
+    background:
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%),
+        rgba(15, 23, 42, 0.52);
+    border: 1px solid rgba(34, 211, 238, 0.14);
+    border-radius: 20px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 1rem;
+}
+
+.assessment-optional-module-panel h3 {
+    color: white;
+    font-size: 1.02rem;
+}
+
+.assessment-optional-module-panel p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-top: 0.35rem;
+    max-width: 820px;
+}
+
+.assessment-optional-module-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    justify-content: flex-end;
+}
+
+.assessment-optional-module-meta span {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.4rem 0.65rem;
+    text-transform: uppercase;
+}
+
+.assessment-module-context-form {
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+.assessment-checkbox-grid-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .assessment-evidence-grid {
     display: grid;
     grid-template-columns: 1fr 1.15fr;
@@ -4071,7 +4124,16 @@ p {
 }
 
 @media (max-width: 860px) {
-    .assessment-context-choice-panel {
+    .assessment-context-choice-panel,
+    .assessment-optional-module-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .assessment-optional-module-meta {
+        justify-content: flex-start;
+    }
+
+    .assessment-checkbox-grid-compact {
         grid-template-columns: 1fr;
     }
 }

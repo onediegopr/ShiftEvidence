@@ -13,6 +13,10 @@ import {
   upsertInfrastructureInput,
 } from "../../../../server/assessments/infrastructureInputService";
 import {
+  parseLicensingCostContextFormData,
+  parseStorageAnalysisContextFormData,
+  saveLicensingCostContext,
+  saveStorageAnalysisContext,
   upsertCostRiskAssumptions,
   upsertPreliminaryResult,
 } from "../../../../server/assessments/costRiskService";
@@ -265,6 +269,38 @@ export async function saveCostRiskAssumptionsAction(
   redirect(redirectTarget);
 }
 
+export async function saveLicensingCostContextAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "basics";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
+
+  try {
+    const context = parseLicensingCostContextFormData(formData);
+
+    await saveLicensingCostContext({
+      userId: session.user.id,
+      assessmentId,
+      context,
+    });
+
+    await upsertPreliminaryResult({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to save Licensing & Cost Exposure context.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
+  }
+
+  redirect(redirectTarget);
+}
+
 export async function saveMigrationContextAction(
   assessmentId: string,
   formData: FormData,
@@ -288,6 +324,38 @@ export async function saveMigrationContextAction(
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save migration context.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "context");
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function saveStorageAnalysisContextAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "basics";
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
+
+  try {
+    const context = parseStorageAnalysisContextFormData(formData);
+
+    await saveStorageAnalysisContext({
+      userId: session.user.id,
+      assessmentId,
+      context,
+    });
+
+    await upsertPreliminaryResult({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to save Storage Analysis context.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, currentTab);
   }
 
   redirect(redirectTarget);
