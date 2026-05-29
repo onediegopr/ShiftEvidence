@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   Archive,
   Brain,
@@ -148,6 +151,12 @@ function SectionList<T>({
   );
 }
 
+function countWords(text: string): number {
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return trimmed.split(/\s+/).length;
+}
+
 export function ClientContextAdditionalEvidencePanel({
   assessmentId,
   summary,
@@ -156,12 +165,21 @@ export function ClientContextAdditionalEvidencePanel({
   summary: ClientContextSummary;
 }) {
   const rawText = summary.context?.rawText ?? "";
+  const [text, setText] = useState(rawText);
+  
+  const currentWordCount = countWords(text);
+  const currentCharacterCount = text.length;
+  
+  const maxWords = summary.limits.maxWords;
+  const isWordLimitExceeded = maxWords > 0 && currentWordCount > maxWords;
+  
   const contextStatus = summary.status;
   const analysisStatus = summary.analysis?.status ?? "not_started";
   const intelligence = readIntelligenceResult(summary);
+  
   const limitPercent =
-    summary.limits.maxWords > 0
-      ? Math.min(100, Math.round((summary.wordCount / summary.limits.maxWords) * 100))
+    maxWords > 0
+      ? Math.min(100, Math.round((currentWordCount / maxWords) * 100))
       : 0;
   const nearLimit = limitPercent >= 80;
   const additionalEvidence = summary.additionalEvidence.filter(
@@ -188,8 +206,8 @@ export function ClientContextAdditionalEvidencePanel({
         </span>
         <span className="assessment-chip assessment-chip-neutral">Optional</span>
         <span className="assessment-chip assessment-chip-warning">Does not block report generation</span>
-        <span className="assessment-chip assessment-chip-neutral">
-          {summary.wordCount.toLocaleString("en-US")} / {summary.limits.maxWords.toLocaleString("en-US")} words
+        <span className={`assessment-chip assessment-chip-${isWordLimitExceeded ? "danger" : nearLimit ? "warning" : "neutral"}`}>
+          {currentWordCount.toLocaleString("en-US")} / {maxWords.toLocaleString("en-US")} words
         </span>
         <span className="assessment-chip assessment-chip-neutral">
           {summary.activeFiles} / {summary.limits.maxFiles} files
@@ -224,22 +242,27 @@ export function ClientContextAdditionalEvidencePanel({
             name="rawText"
             className="form-input assessment-textarea"
             maxLength={summary.limits.maxCharacters}
-            defaultValue={rawText}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             placeholder="Describe anything else we should know about your migration: business priorities, risks, deadlines, renewal pressure, critical workloads, internal constraints, unknowns or concerns."
             rows={12}
           />
+          {isWordLimitExceeded && (
+            <p className="assessment-inline-note text-danger" style={{ color: "#ef4444", fontWeight: "bold", marginTop: "0.5rem" }}>
+              ⚠️ Plan word limit of {maxWords.toLocaleString("en-US")} words exceeded (currently {currentWordCount.toLocaleString("en-US")} words). Please shorten your context.
+            </p>
+          )}
         </label>
 
         <div className="assessment-form-span-2 assessment-preview-columns">
           <article className="glass-card assessment-subcard">
             <h3>Plan limit</h3>
             <p>
-              {summary.wordCount.toLocaleString("en-US")} words and{" "}
-              {summary.characterCount.toLocaleString("en-US")} characters saved.
+              {currentWordCount.toLocaleString("en-US")} words and{" "}
+              {currentCharacterCount.toLocaleString("en-US")} characters.
             </p>
-            <p className={nearLimit ? "assessment-inline-note text-warning" : "assessment-inline-note"}>
-              {limitPercent}% of the current word limit used. If you need longer context or more files,
-              use a higher report plan.
+            <p className={isWordLimitExceeded ? "assessment-inline-note text-danger" : nearLimit ? "assessment-inline-note text-warning" : "assessment-inline-note"}>
+              {limitPercent}% of the current word limit used. {isWordLimitExceeded ? "You have exceeded the word limit for this plan. Please shorten the text or upgrade your plan." : "If you need longer context or more files, use a higher report plan."}
             </p>
           </article>
           <article className="glass-card assessment-subcard">
@@ -260,6 +283,7 @@ export function ClientContextAdditionalEvidencePanel({
             type="submit"
             formAction={submitClientContextAction.bind(null, assessmentId)}
             className="btn btn-primary btn-glow"
+            disabled={isWordLimitExceeded}
           >
             Submit context
             <FileText size={16} />

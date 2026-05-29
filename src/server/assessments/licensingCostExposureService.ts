@@ -62,6 +62,9 @@ export async function buildAssessmentLicensingAnalysisSummary(assessment: Assess
       hasParsedInventory: input.hasParsedInventory,
     },
     currentInput: input,
+    years: assessment.costRiskAssumptions?.years ?? 3,
+    vmwareLicenseModel: assessment.costRiskAssumptions?.vmwareLicenseModel ?? null,
+    riskTolerance: assessment.costRiskAssumptions?.riskTolerance ?? null,
   };
 }
 
@@ -102,12 +105,17 @@ export async function upsertAssessmentLicensingPreferences(params: ActorParams &
         assessmentId: assessment.id,
         annualVmwareCost: parsed.annualVmwareCostUsd === null ? null : new Prisma.Decimal(parsed.annualVmwareCostUsd),
         currency: "USD",
-        years: assessment.costRiskAssumptions?.years ?? 3,
+        years: parsed.years,
+        vmwareLicenseModel: parsed.vmwareLicenseModel,
+        riskTolerance: parsed.riskTolerance,
         assumptionsJson,
       },
       update: {
         annualVmwareCost: parsed.annualVmwareCostUsd === null ? null : new Prisma.Decimal(parsed.annualVmwareCostUsd),
         currency: "USD",
+        years: parsed.years,
+        vmwareLicenseModel: parsed.vmwareLicenseModel,
+        riskTolerance: parsed.riskTolerance,
         assumptionsJson,
       },
     });

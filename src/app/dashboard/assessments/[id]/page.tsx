@@ -34,11 +34,8 @@ import {
   getInfrastructureInputSummary,
 } from "../../../../server/assessments/infrastructureInputService";
 import {
-  getLicensingCostContextFromAssessment,
-  getCostRiskStatus,
   getPreliminaryCostRiskPreview,
   getStorageAnalysisContextFromAssessment,
-  LICENSING_RENEWAL_TIMEFRAME_OPTIONS,
   STORAGE_CONSTRAINT_OPTIONS,
   STORAGE_CURRENT_TYPE_OPTIONS,
   STORAGE_TARGET_PREFERENCE_OPTIONS,
@@ -75,14 +72,10 @@ import {
   getParsedInventorySnapshot,
 } from "../../../../server/rvtools/rvtoolsInventoryService";
 import { getCommercialStatusForAssessment } from "../../../../server/unlocks/unlockRequestService";
-import {
-  generateInventoryRiskAction,
-} from "./risk/actions";
+import { generateInventoryRiskAction } from "./risk/actions";
 import {
   archiveAssessmentAction,
-  saveLicensingCostContextAction,
   saveMigrationContextAction,
-  saveCostRiskAssumptionsAction,
   saveInfrastructureInputAction,
   saveStorageAnalysisContextAction,
   toggleStorageReadinessAction,
@@ -575,11 +568,8 @@ export default async function AssessmentDetailPage({
   const infraSummary = getInfrastructureInputSummary(assessment);
   const missingEvidence = getMissingEvidenceSummary(assessment);
   const nextSteps = getNextStepsSummary(assessment);
-  const costRiskStatus = getCostRiskStatus(assessment);
   const storageAnalysisContext = getStorageAnalysisContextFromAssessment(assessment);
-  const licensingCostContext = getLicensingCostContextFromAssessment(assessment);
   const storageCompletionModule = completionSummary.modules.find((module) => module.key === "storage_analysis");
-  const licensingCompletionModule = completionSummary.modules.find((module) => module.key === "licensing_cost_exposure");
   const clientContextCompletionModule = completionSummary.modules.find((module) => module.key === "client_context_intelligence");
   const error = resolvedSearchParams.error ? decodeURIComponent(resolvedSearchParams.error) : null;
   const saved = resolvedSearchParams.saved === "1";
@@ -611,7 +601,6 @@ export default async function AssessmentDetailPage({
   const evidenceFiles = assessment.evidenceFiles ?? [];
   const uploadPrerequisites = getEvidenceUploadPrerequisites(assessment);
   const licensingAnalysisSummary = await buildAssessmentLicensingAnalysisSummary(assessment);
-  const isLicensingActive = licensingAnalysisSummary.preferences.mode !== "skipped";
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -901,242 +890,6 @@ export default async function AssessmentDetailPage({
                 </button>
                 <span className="assessment-inline-note">
                   Status: {statusLabel(infraSummary.status)}
-                </span>
-              </div>
-            </form>
-          </section>
-
-          <section id="cost-risk-assumptions" className="assessment-section glass-card">
-            <SectionTitle
-              icon={<BadgePercent size={18} />}
-              eyebrow="Optional module"
-              title="Licensing & Cost Exposure"
-              description="Optional cost context used to estimate VMware exposure and Proxmox subscription delta. All values should be entered in USD."
-            />
-
-            <div className="assessment-status-row">
-              {renderStatusPill("Recommended", "good")}
-              {renderStatusPill("Optional", "neutral")}
-              {renderStatusPill("Amounts modeled in USD", "warning")}
-              {renderStatusPill(
-                `Progress: ${statusLabel(licensingCompletionModule?.status ?? "not_started")}`,
-                renderStatusTone(licensingCompletionModule?.status ?? "not_started"),
-              )}
-              {renderStatusPill(`Cost model: ${statusLabel(costRiskStatus)}`, renderStatusTone(costRiskStatus))}
-              {renderStatusPill(`Years: ${assessment.costRiskAssumptions?.years ?? 3}`, "neutral")}
-            </div>
-
-            <div className="assessment-optional-module-panel">
-              <div>
-                <h3>Cost context is optional.</h3>
-                <p>
-                  You can skip this section. The report will still be generated, but cost exposure
-                  and savings estimates may be less precise.
-                </p>
-              </div>
-              <div className="assessment-optional-module-meta">
-                <span>Weight: {licensingCompletionModule?.weight ?? 13}%</span>
-                <span>Precision: {licensingCompletionModule?.confidenceContribution ?? 0}%</span>
-                <span>Decision: {statusLabel(licensingCostContext.decision)}</span>
-              </div>
-            </div>
-
-            <form action={saveLicensingCostContextAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide assessment-module-context-form">
-              <input type="hidden" name="currentTab" value="basics" />
-              <label className="form-label">
-                Module decision
-                <select name="licensingDecision" className="form-input" defaultValue={licensingCostContext.decision}>
-                  <option value="active">Complete or review now</option>
-                  <option value="skipped">Skip for now</option>
-                  <option value="not_applicable">Mark not applicable</option>
-                </select>
-              </label>
-              <label className="form-label">
-                VMware renewal timeframe
-                <select name="renewalTimeframe" className="form-input" defaultValue={licensingCostContext.renewalTimeframe ?? ""}>
-                  <option value="">Select timeframe</option>
-                  {LICENSING_RENEWAL_TIMEFRAME_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="form-label">
-                Include Proxmox subscription estimate
-                <select name="includeProxmoxEstimate" className="form-input" defaultValue={licensingCostContext.includeProxmoxEstimate ?? ""}>
-                  <option value="">Select preference</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                  <option value="not_sure">Not sure</option>
-                </select>
-              </label>
-              <label className="form-label assessment-form-span-2">
-                Licensing notes
-                <textarea
-                  name="licensingNotes"
-                  className="form-input assessment-textarea"
-                  maxLength={INPUT_LIMITS.manualTechnicalContext}
-                  defaultValue={licensingCostContext.notes ?? ""}
-                  placeholder="Optional renewal, procurement, subscription or budget context. Amounts are modeled in USD."
-                />
-              </label>
-
-              <div className="assessment-inline-actions assessment-form-span-2">
-                <button type="submit" className="btn btn-primary btn-glow">
-                  Save licensing context
-                  <RefreshCcw size={16} />
-                </button>
-                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
-                  Continue later
-                </Link>
-                {completionSummary.canGenerateReport ? (
-                  <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-secondary">
-                    Generate report now
-                  </Link>
-                ) : null}
-              </div>
-            </form>
-
-            <form action={saveCostRiskAssumptionsAction.bind(null, assessment.id)} className="assessment-form-grid assessment-form-grid-wide">
-              <input type="hidden" name="currentTab" value="basics" />
-              <input type="hidden" name="currency" value="USD" />
-              <label className="form-label">
-                Years
-                <input
-                  name="years"
-                  className="form-input"
-                  type="number"
-                  min="1"
-                  max="10"
-                  step="1"
-                  defaultValue={assessment.costRiskAssumptions?.years ?? 3}
-                />
-              </label>
-              <label className="form-label">
-                VMware license model
-                <input
-                  name="vmwareLicenseModel"
-                  className="form-input"
-                  type="text"
-                  maxLength={INPUT_LIMITS.shortText}
-                  defaultValue={assessment.costRiskAssumptions?.vmwareLicenseModel ?? ""}
-                  placeholder="Example: subscription, perpetual, bundle"
-                />
-              </label>
-              <label className="form-label">
-                VM count
-                <input
-                  name="vmCount"
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  step="1"
-                  defaultValue={assessment.costRiskAssumptions?.vmCount ?? assessment.infrastructureInput?.vmCount ?? ""}
-                />
-              </label>
-              <label className="form-label">
-                Socket count
-                <input
-                  name="socketCount"
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  step="1"
-                  defaultValue={assessment.costRiskAssumptions?.socketCount ?? assessment.infrastructureInput?.socketCount ?? ""}
-                />
-              </label>
-              <label className="form-label">
-                Core count
-                <input
-                  name="coreCount"
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  step="1"
-                  defaultValue={assessment.costRiskAssumptions?.coreCount ?? assessment.infrastructureInput?.coreCount ?? ""}
-                />
-              </label>
-              {isLicensingActive ? (
-                <>
-                  <input
-                    type="hidden"
-                    name="annualVmwareCost"
-                    value={assessment.costRiskAssumptions?.annualVmwareCost ? Number(assessment.costRiskAssumptions.annualVmwareCost) : ""}
-                  />
-                  <input
-                    type="hidden"
-                    name="estimatedProxmoxCost"
-                    value={assessment.costRiskAssumptions?.estimatedProxmoxCost ? Number(assessment.costRiskAssumptions.estimatedProxmoxCost) : ""}
-                  />
-                </>
-              ) : (
-                <>
-                  <label className="form-label">
-                    Annual VMware cost (USD)
-                    <input
-                      name="annualVmwareCost"
-                      className="form-input"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      defaultValue={assessment.costRiskAssumptions?.annualVmwareCost ? Number(assessment.costRiskAssumptions.annualVmwareCost) : ""}
-                    />
-                  </label>
-                  <label className="form-label">
-                    Estimated Proxmox subscription (USD)
-                    <input
-                      name="estimatedProxmoxCost"
-                      className="form-input"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      defaultValue={assessment.costRiskAssumptions?.estimatedProxmoxCost ? Number(assessment.costRiskAssumptions.estimatedProxmoxCost) : ""}
-                    />
-                  </label>
-                </>
-              )}
-              <label className="form-label">
-                Migration complexity
-                <input
-                  name="migrationComplexity"
-                  className="form-input"
-                  type="text"
-                  maxLength={INPUT_LIMITS.shortText}
-                  defaultValue={assessment.costRiskAssumptions?.migrationComplexity ?? ""}
-                  placeholder="Low / medium / high"
-                />
-              </label>
-              <label className="form-label">
-                Business criticality
-                <input
-                  name="businessCriticality"
-                  className="form-input"
-                  type="text"
-                  maxLength={INPUT_LIMITS.shortText}
-                  defaultValue={assessment.costRiskAssumptions?.businessCriticality ?? ""}
-                  placeholder="Low / medium / high"
-                />
-              </label>
-              <label className="form-label">
-                Risk tolerance
-                <input
-                  name="riskTolerance"
-                  className="form-input"
-                  type="text"
-                  maxLength={INPUT_LIMITS.shortText}
-                  defaultValue={assessment.costRiskAssumptions?.riskTolerance ?? ""}
-                  placeholder="Conservative / balanced / aggressive"
-                />
-              </label>
-
-              <div className="assessment-inline-actions assessment-form-span-2">
-                <button type="submit" className="btn btn-primary btn-glow">
-                  Save cost model
-                  <RefreshCcw size={16} />
-                </button>
-                <span className="assessment-inline-note">
-                  Amounts are modeled in USD. These inputs improve confidence but do not block report generation.
                 </span>
               </div>
             </form>

@@ -1339,8 +1339,8 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               </thead>
               <tbody>
                 {data.recentAssessments.map((assessment) => {
-                  const ctx = (assessment as any).clientContext;
-                  const files = (assessment as any).additionalEvidence || [];
+                  const ctx = assessment.clientContext;
+                  const files = assessment.additionalEvidence || [];
                   return (
                     <tr key={assessment.id}>
                       <td>{assessment.title}</td>
@@ -1376,7 +1376,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       <td>
                         {files.length > 0 ? (
                           <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "11px", listStyleType: "disc" }}>
-                            {files.map((file: any) => (
+                            {files.map((file) => (
                               <li key={file.id} title={`Propósito: ${file.purpose || "Sin propósito"}. Estado parser: ${file.processingStatus}`}>
                                 <strong>{file.filename}</strong> ({Math.round(file.fileSize / 1024)} KB)
                                 <br />

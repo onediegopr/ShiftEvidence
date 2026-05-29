@@ -92,6 +92,9 @@ export function getLicensingAnalysisPreferencesFromAssessment(assessment: Assess
 
 export function parseLicensingAnalysisPreferencesFormData(formData: FormData): LicensingAnalysisPreferences & {
   annualVmwareCostUsd: number | null;
+  years: number;
+  vmwareLicenseModel: string | null;
+  riskTolerance: string | null;
 } {
   const currency = normalizeOptionalTextInput(formData.get("currency"), "Currency", INPUT_LIMITS.currency) ?? "USD";
   if (currency.toUpperCase() !== "USD") {
@@ -104,6 +107,26 @@ export function parseLicensingAnalysisPreferencesFormData(formData: FormData): L
     INPUT_LIMITS.manualTechnicalContext,
   );
   assertNoThirdPartyLicensingText(notes, "Licensing analysis notes");
+
+  const yearsVal = formData.get("years");
+  const years = yearsVal !== null && yearsVal !== "" ? Number(yearsVal) : 3;
+  if (!Number.isInteger(years) || years < 1 || years > 10) {
+    throw new Error("Years must be an integer between 1 and 10.");
+  }
+
+  const vmwareLicenseModel = normalizeOptionalTextInput(
+    formData.get("vmwareLicenseModel"),
+    "VMware license model",
+    INPUT_LIMITS.shortText,
+  );
+  assertNoThirdPartyLicensingText(vmwareLicenseModel, "VMware license model");
+
+  const riskTolerance = normalizeOptionalTextInput(
+    formData.get("riskTolerance"),
+    "Risk tolerance",
+    INPUT_LIMITS.shortText,
+  );
+  assertNoThirdPartyLicensingText(riskTolerance, "Risk tolerance");
 
   return {
     version: 1,
@@ -120,6 +143,9 @@ export function parseLicensingAnalysisPreferencesFormData(formData: FormData): L
     notes,
     updatedAt: new Date().toISOString(),
     annualVmwareCostUsd: parseOptionalUsd(formData.get("annualVmwareCostUsd"), "Annual VMware/Broadcom cost"),
+    years,
+    vmwareLicenseModel,
+    riskTolerance,
   };
 }
 

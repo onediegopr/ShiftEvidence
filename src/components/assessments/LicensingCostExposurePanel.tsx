@@ -182,6 +182,40 @@ export function LicensingCostExposurePanel({
             <option value="not_sure">Not sure yet</option>
           </select>
         </label>
+        <label className="form-label">
+          Years
+          <input
+            name="years"
+            className="form-input"
+            type="number"
+            min="1"
+            max="10"
+            step="1"
+            defaultValue={summary.years}
+          />
+        </label>
+        <label className="form-label">
+          VMware license model
+          <input
+            name="vmwareLicenseModel"
+            className="form-input"
+            type="text"
+            maxLength={100}
+            defaultValue={summary.vmwareLicenseModel ?? ""}
+            placeholder="Example: subscription, perpetual, bundle"
+          />
+        </label>
+        <label className="form-label">
+          Risk tolerance
+          <input
+            name="riskTolerance"
+            className="form-input"
+            type="text"
+            maxLength={100}
+            defaultValue={summary.riskTolerance ?? ""}
+            placeholder="Conservative / balanced / aggressive"
+          />
+        </label>
         <div className="assessment-checkbox-grid">
           <label className="assessment-checkbox-row">
             <input type="checkbox" name="hasContract" defaultChecked={preferences.hasContract} />
