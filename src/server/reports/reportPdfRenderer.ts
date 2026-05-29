@@ -446,8 +446,17 @@ function shouldIncludeAiAdvisory(preview: ReportPreviewData) {
 }
 
 function keyValueTable(doc: PDFKit.PDFDocument, rows: Array<[string, string]>) {
-  const rowH = 24;
   rows.forEach(([key, value], index) => {
+    doc.font("Helvetica-Bold").fontSize(8.8);
+    const keyHeight = doc.heightOfString(safeText(key), { width: 150 });
+
+    doc.font("Helvetica").fontSize(8.8);
+    const valueHeight = doc.heightOfString(safeText(value), { width: contentWidth(doc) - 190 });
+
+    const textHeight = Math.max(keyHeight, valueHeight);
+    const paddingY = 8;
+    const rowH = Math.max(24, textHeight + paddingY);
+
     ensureSpace(doc, rowH + 8, "Table");
     const y = doc.y;
     if (index % 2 === 0) {

@@ -231,49 +231,60 @@ export async function runAssessmentLicensingAnalysis(params: ActorParams & {
   try {
     const result = runLicensingCostExposureAnalysis({ ...input, mode });
 
-    const saved = await prisma.assessmentLicensingAnalysis.upsert({
-      where: { assessmentId: assessment.id },
-      create: {
-        assessmentId: assessment.id,
-        status: result.status,
-        mode: result.mode,
-        currency: "USD",
-        financialConfidenceScore: result.financialConfidenceScore,
-        financialConfidenceLabel: result.financialConfidenceLabel,
-        savingsQuality: result.savingsQuality.value,
-        pricingFreshnessStatus: result.pricingFreshnessStatus,
-        vmwareScenarioJson: json(result.vmwareScenarios),
-        proxmoxScenarioJson: json(result.proxmoxScenarios),
-        comparisonJson: json(result.comparison),
-        costOfStayingJson: json(result.costOfStaying),
-        contractTimingRiskJson: json(result.contractTimingRisk),
-        licensingTrapsJson: json(result.licensingTraps),
-        missingEvidenceJson: json(result.missingEvidence),
-        assumptionsJson: json(result.assumptions),
-        pricingSnapshotRefsJson: json(result.pricingSnapshotRefs),
-        executiveRecommendation: executiveRecommendationText(result),
-        generatedAt: new Date(),
-      },
-      update: {
-        status: result.status,
-        mode: result.mode,
-        currency: "USD",
-        financialConfidenceScore: result.financialConfidenceScore,
-        financialConfidenceLabel: result.financialConfidenceLabel,
-        savingsQuality: result.savingsQuality.value,
-        pricingFreshnessStatus: result.pricingFreshnessStatus,
-        vmwareScenarioJson: json(result.vmwareScenarios),
-        proxmoxScenarioJson: json(result.proxmoxScenarios),
-        comparisonJson: json(result.comparison),
-        costOfStayingJson: json(result.costOfStaying),
-        contractTimingRiskJson: json(result.contractTimingRisk),
-        licensingTrapsJson: json(result.licensingTraps),
-        missingEvidenceJson: json(result.missingEvidence),
-        assumptionsJson: json(result.assumptions),
-        pricingSnapshotRefsJson: json(result.pricingSnapshotRefs),
-        executiveRecommendation: executiveRecommendationText(result),
-        generatedAt: new Date(),
-      },
+    const proxmoxAnnual = result.comparison.proxmoxSupported?.annualUsd ?? result.comparison.proxmoxPremium?.annualUsd ?? result.comparison.proxmoxCommunity?.annualUsd ?? null;
+
+    const saved = await prisma.$transaction(async (tx) => {
+      await tx.costRiskAssumptions.update({
+        where: { assessmentId: assessment.id },
+        data: {
+          estimatedProxmoxCost: proxmoxAnnual !== null ? new Prisma.Decimal(proxmoxAnnual) : null,
+        },
+      });
+
+      return tx.assessmentLicensingAnalysis.upsert({
+        where: { assessmentId: assessment.id },
+        create: {
+          assessmentId: assessment.id,
+          status: result.status,
+          mode: result.mode,
+          currency: "USD",
+          financialConfidenceScore: result.financialConfidenceScore,
+          financialConfidenceLabel: result.financialConfidenceLabel,
+          savingsQuality: result.savingsQuality.value,
+          pricingFreshnessStatus: result.pricingFreshnessStatus,
+          vmwareScenarioJson: json(result.vmwareScenarios),
+          proxmoxScenarioJson: json(result.proxmoxScenarios),
+          comparisonJson: json(result.comparison),
+          costOfStayingJson: json(result.costOfStaying),
+          contractTimingRiskJson: json(result.contractTimingRisk),
+          licensingTrapsJson: json(result.licensingTraps),
+          missingEvidenceJson: json(result.missingEvidence),
+          assumptionsJson: json(result.assumptions),
+          pricingSnapshotRefsJson: json(result.pricingSnapshotRefs),
+          executiveRecommendation: executiveRecommendationText(result),
+          generatedAt: new Date(),
+        },
+        update: {
+          status: result.status,
+          mode: result.mode,
+          currency: "USD",
+          financialConfidenceScore: result.financialConfidenceScore,
+          financialConfidenceLabel: result.financialConfidenceLabel,
+          savingsQuality: result.savingsQuality.value,
+          pricingFreshnessStatus: result.pricingFreshnessStatus,
+          vmwareScenarioJson: json(result.vmwareScenarios),
+          proxmoxScenarioJson: json(result.proxmoxScenarios),
+          comparisonJson: json(result.comparison),
+          costOfStayingJson: json(result.costOfStaying),
+          contractTimingRiskJson: json(result.contractTimingRisk),
+          licensingTrapsJson: json(result.licensingTraps),
+          missingEvidenceJson: json(result.missingEvidence),
+          assumptionsJson: json(result.assumptions),
+          pricingSnapshotRefsJson: json(result.pricingSnapshotRefs),
+          executiveRecommendation: executiveRecommendationText(result),
+          generatedAt: new Date(),
+        },
+      });
     });
 
     await prisma.auditEvent.create({

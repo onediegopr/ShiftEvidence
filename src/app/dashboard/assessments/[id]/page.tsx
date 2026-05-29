@@ -608,9 +608,13 @@ export default async function AssessmentDetailPage({
   const evidenceFiles = assessment.evidenceFiles ?? [];
   const uploadPrerequisites = getEvidenceUploadPrerequisites(assessment);
   const licensingAnalysisSummary = await buildAssessmentLicensingAnalysisSummary(assessment);
+  const isLicensingActive = licensingAnalysisSummary.preferences.mode !== "skipped";
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const isAdmin = session ? isAdminEmail(session.user.email) : false;
 
   const editDefaults = getEditBasicsDefaults(assessment);
-
   const totalPrereqs = uploadPrerequisites.missingPrerequisites.length;
   const isUploadUnlocked = uploadPrerequisites.canUploadEvidence;
   const hasInventory = parsedInventory?.summary !== undefined && parsedInventory?.summary !== null;
@@ -1025,28 +1029,45 @@ export default async function AssessmentDetailPage({
                   defaultValue={assessment.costRiskAssumptions?.coreCount ?? assessment.infrastructureInput?.coreCount ?? ""}
                 />
               </label>
-              <label className="form-label">
-                Annual VMware cost (USD)
-                <input
-                  name="annualVmwareCost"
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  defaultValue={assessment.costRiskAssumptions?.annualVmwareCost ? Number(assessment.costRiskAssumptions.annualVmwareCost) : ""}
-                />
-              </label>
-              <label className="form-label">
-                Estimated Proxmox subscription (USD)
-                <input
-                  name="estimatedProxmoxCost"
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  defaultValue={assessment.costRiskAssumptions?.estimatedProxmoxCost ? Number(assessment.costRiskAssumptions.estimatedProxmoxCost) : ""}
-                />
-              </label>
+              {isLicensingActive ? (
+                <>
+                  <input
+                    type="hidden"
+                    name="annualVmwareCost"
+                    value={assessment.costRiskAssumptions?.annualVmwareCost ? Number(assessment.costRiskAssumptions.annualVmwareCost) : ""}
+                  />
+                  <input
+                    type="hidden"
+                    name="estimatedProxmoxCost"
+                    value={assessment.costRiskAssumptions?.estimatedProxmoxCost ? Number(assessment.costRiskAssumptions.estimatedProxmoxCost) : ""}
+                  />
+                </>
+              ) : (
+                <>
+                  <label className="form-label">
+                    Annual VMware cost (USD)
+                    <input
+                      name="annualVmwareCost"
+                      className="form-input"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={assessment.costRiskAssumptions?.annualVmwareCost ? Number(assessment.costRiskAssumptions.annualVmwareCost) : ""}
+                    />
+                  </label>
+                  <label className="form-label">
+                    Estimated Proxmox subscription (USD)
+                    <input
+                      name="estimatedProxmoxCost"
+                      className="form-input"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={assessment.costRiskAssumptions?.estimatedProxmoxCost ? Number(assessment.costRiskAssumptions.estimatedProxmoxCost) : ""}
+                    />
+                  </label>
+                </>
+              )}
               <label className="form-label">
                 Migration complexity
                 <input
@@ -1096,7 +1117,7 @@ export default async function AssessmentDetailPage({
           <LicensingCostExposurePanel
             assessmentId={assessment.id}
             summary={licensingAnalysisSummary}
-            canShowAdminPricingLink={false}
+            canShowAdminPricingLink={isAdmin}
           />
 
           <section id="storage-readiness" className="assessment-section glass-card">
