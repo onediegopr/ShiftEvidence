@@ -27,6 +27,7 @@ import {
 type AssessmentCompletionCenterProps = {
   assessmentId: string;
   summary: AssessmentCompletionSummary;
+  showModulesGrid?: boolean;
 };
 
 function StatusIcon({ status }: { status: AssessmentModuleStatus }) {
@@ -79,6 +80,32 @@ function ModuleCard({
   const tone = getCompletionStatusTone(completionModule.status);
   const href = getCompletionModuleHref(assessmentId, completionModule.key);
 
+  const isCompact = completionModule.status === "complete" || completionModule.status === "not_applicable";
+
+  if (isCompact) {
+    return (
+      <article className={`completion-module-card completion-module-card-compact completion-module-card-${tone}`} style={{ minHeight: "auto", padding: "0.75rem 1rem" }}>
+        <div className="completion-module-card-top" style={{ alignItems: "center", width: "100%", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div className={`completion-module-status-icon completion-module-status-icon-${tone}`} style={{ width: "1.75rem", height: "1.75rem", borderRadius: "8px" }}>
+              <StatusIcon status={completionModule.status} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "normal" }}>{completionModule.label}</h3>
+              <span className={`assessment-chip assessment-chip-${tone}`} style={{ fontSize: "0.7rem", padding: "0.05rem 0.35rem", display: "inline-block", marginTop: "0.15rem" }}>
+                {getCompletionStatusLabel(completionModule.status)}
+              </span>
+            </div>
+          </div>
+          <Link href={href} className="completion-module-action-compact" style={{ color: "#22d3ee", fontSize: "0.82rem", display: "inline-flex", alignItems: "center", gap: "0.25rem", textDecoration: "none" }}>
+            <span>Edit</span>
+            <ArrowRight size={12} aria-hidden="true" />
+          </Link>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className={`completion-module-card completion-module-card-${tone}`}>
       <div className="completion-module-card-top">
@@ -119,6 +146,7 @@ function ModuleCard({
 export function AssessmentCompletionCenter({
   assessmentId,
   summary,
+  showModulesGrid = true,
 }: AssessmentCompletionCenterProps) {
   const primaryHref = getCompletionPrimaryCtaHref(assessmentId, summary);
   const notice = getCompletionCenterNotice(summary);
@@ -161,16 +189,16 @@ export function AssessmentCompletionCenter({
         <div className="completion-center-metrics">
           <MetricCard
             icon={<Gauge size={20} aria-hidden="true" />}
-            label="Completion"
+            label="Assessment Progress"
             value={`${summary.completionPercent}%`}
             text="Operational progress across assessment modules."
             tone={summary.completionPercent >= 70 ? "good" : "warning"}
           />
           <MetricCard
             icon={<TrendingUp size={20} aria-hidden="true" />}
-            label="Report Confidence"
+            label="Context Precision"
             value={`${summary.reportConfidencePercent}%`}
-            text="Estimated confidence based on available evidence and context."
+            text="Estimated precision based on available evidence and context."
             tone={summary.reportConfidencePercent >= 70 ? "good" : "warning"}
           />
           <MetricCard
@@ -191,15 +219,17 @@ export function AssessmentCompletionCenter({
           <p>{notice}</p>
         </div>
 
-        <div className="completion-module-grid">
-          {summary.modules.map((completionModule) => (
-            <ModuleCard
-              key={completionModule.key}
-              assessmentId={assessmentId}
-              completionModule={completionModule}
-            />
-          ))}
-        </div>
+        {showModulesGrid && (
+          <div className="completion-module-grid">
+            {summary.modules.map((completionModule) => (
+              <ModuleCard
+                key={completionModule.key}
+                assessmentId={assessmentId}
+                completionModule={completionModule}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -9,8 +9,9 @@ function normalizeEmailForAdmin(email: string) {
 }
 
 function parseAdminEmails() {
+  const emailsStr = env?.ADMIN_EMAILS || "";
   return new Set(
-    env.ADMIN_EMAILS.split(",")
+    emailsStr.split(",")
       .map(normalizeEmailForAdmin)
       .filter((email) => Boolean(email) && !email.includes("*")),
   );

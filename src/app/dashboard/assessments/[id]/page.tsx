@@ -641,7 +641,11 @@ export default async function AssessmentDetailPage({
       {saved ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">Changes saved.</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
 
-      <AssessmentCompletionCenter assessmentId={assessment.id} summary={completionSummary} />
+      <AssessmentCompletionCenter
+        assessmentId={assessment.id}
+        summary={completionSummary}
+        showModulesGrid={activeTab === "basics"}
+      />
 
       {/* Tabs Navigation */}
       <nav className="tabs-container" aria-label="Assessment tabs" style={{ marginTop: "1rem" }}>
