@@ -81,6 +81,17 @@ export const reportSectionConfigs: ReportSectionConfig[] = [
     planLabel: "Free Preview",
   },
   {
+    key: "licensing_cost_exposure",
+    title: "Licensing & Cost Exposure Analysis",
+    description: "Financial exposure, pricing evidence and VMware/Broadcom vs Proxmox scenario quality.",
+    visibleInFree: true,
+    requirement: "readiness_report",
+    whatYouGet: "A report-ready view of financial confidence, savings quality, pricing freshness, missing evidence and cost exposure findings.",
+    whyItMatters: "Technical readiness and financial confidence are separate; leadership needs both before using savings as a decision driver.",
+    ctaLabel: "Unlock full licensing analysis",
+    planLabel: "Readiness Report",
+  },
+  {
     key: "top_findings",
     title: "Top Findings",
     description: "The most important risk signals currently available.",

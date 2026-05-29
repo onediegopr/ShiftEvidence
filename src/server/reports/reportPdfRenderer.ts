@@ -753,6 +753,272 @@ function waveTable(doc: PDFKit.PDFDocument, rows: string[][]) {
   });
 }
 
+function shouldRenderFullLicensingSection(input: PdfReportRenderInput) {
+  return input.reportTypeLabel !== "PDF Preview";
+}
+
+function getLicensingStatusTone(value: string | null | undefined): Tone {
+  switch (value) {
+    case "completed":
+    case "fresh":
+    case "high":
+      return "good";
+    case "ready":
+    case "needs_input":
+    case "stale_pricing":
+    case "stale":
+    case "medium":
+    case "limited":
+      return "warning";
+    case "blocked":
+    case "low":
+      return "danger";
+    default:
+      return "neutral";
+  }
+}
+
+function scenarioRows(label: string, scenario: ReportPreviewData["licensingCostExposure"]["vmwareScenario"]) {
+  if (!scenario) {
+    return [
+      [`${label} scenario`, "Not enough approved pricing evidence to calculate a reliable scenario."],
+    ] satisfies Array<[string, string]>;
+  }
+
+  return [
+    [`${label} source`, `${scenario.label} (${titleCase(scenario.source)})`],
+    [`${label} annual`, money(scenario.annualUsd)],
+    [`${label} 3-year`, money(scenario.threeYearUsd)],
+    [`${label} 5-year`, money(scenario.fiveYearUsd)],
+    [`${label} confidence`, titleCase(scenario.confidence)],
+  ] satisfies Array<[string, string]>;
+}
+
+function licensingComparisonTable(doc: PDFKit.PDFDocument, preview: ReportPreviewData) {
+  const section = preview.licensingCostExposure;
+  const vmware = section.vmwareScenario;
+  const proxmox = section.proxmoxScenario;
+  const comparison = section.comparison;
+
+  if (!vmware || !proxmox || !comparison) {
+    callout(doc, "Not enough approved pricing evidence to calculate a reliable comparison.", "warning");
+    return;
+  }
+
+  const rows = [
+    ["Year 1", money(vmware.annualUsd), money(proxmox.annualUsd), money(comparison.annualDeltaUsd)],
+    ["Year 3", money(vmware.threeYearUsd), money(proxmox.threeYearUsd), money(comparison.threeYearDeltaUsd)],
+    ["Year 5", money(vmware.fiveYearUsd), money(proxmox.fiveYearUsd), money(comparison.fiveYearDeltaUsd)],
+  ];
+  const headers = ["Horizon", "VMware/Broadcom", "Proxmox", "Difference"];
+  const widths = [88, 150, 142, 142];
+  const startX = MARGIN;
+  const headerY = doc.y;
+
+  doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
+  let x = startX + 8;
+  headers.forEach((header, index) => {
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+      width: widths[index],
+    });
+    x += widths[index];
+  });
+  doc.y = headerY + 30;
+
+  rows.forEach((row, index) => {
+    ensureSpace(doc, 38, "Licensing & Cost Exposure Analysis");
+    const y = doc.y;
+    if (index % 2 === 0) {
+      doc.rect(startX, y - 4, contentWidth(doc), 32).fill("#f8fafc");
+    }
+    x = startX + 8;
+    row.forEach((cell, cellIndex) => {
+      doc.fillColor(cellIndex === 0 ? THEME.slate : THEME.ink)
+        .font(cellIndex === 0 ? "Helvetica-Bold" : "Helvetica")
+        .fontSize(8.6)
+        .text(safeText(cell), x, y + 3, {
+          width: widths[cellIndex] - 10,
+          height: 20,
+        });
+      x += widths[cellIndex];
+    });
+    doc.y = y + 34;
+  });
+  doc.moveDown(0.5);
+}
+
+function addLicensingCostExposureSection(doc: PDFKit.PDFDocument, input: PdfReportRenderInput) {
+  const section = input.reportPreview.licensingCostExposure;
+  const fullSection = shouldRenderFullLicensingSection(input);
+
+  if (!fullSection && !section.included) {
+    return;
+  }
+
+  addContentPage(
+    doc,
+    fullSection ? "Section 4A" : "Preview",
+    "Licensing & Cost Exposure Analysis",
+    fullSection ? "Financial exposure, evidence quality and pricing caveats" : "Financial teaser for the full report",
+  );
+
+  paragraph(
+    doc,
+    "This section compares VMware/Broadcom renewal exposure against Proxmox subscription scenarios using customer-provided data, approved pricing snapshots and assessment evidence. It is not a vendor quote.",
+  );
+  doc.moveDown(0.8);
+
+  if (!section.included) {
+    callout(doc, "Licensing & Cost Exposure Analysis was not included or has not been generated for this assessment. Report generation is not blocked by this optional module.", "info");
+    h2(doc, "Assumptions");
+    bulletList(doc, section.assumptions, 6, "Licensing Assumptions continued");
+    h2(doc, "Disclaimer");
+    bulletList(doc, section.disclaimers, 4, "Licensing Disclaimer continued");
+    return;
+  }
+
+  const cardY = doc.y;
+  metricCard({
+    doc,
+    x: MARGIN,
+    y: cardY,
+    w: 122,
+    h: 86,
+    label: "Status",
+    value: titleCase(section.status),
+    note: `Mode: ${titleCase(section.mode ?? "unknown")}`,
+    tone: getLicensingStatusTone(section.status),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 130,
+    y: cardY,
+    w: 126,
+    h: 86,
+    label: "Financial confidence",
+    value: section.financialConfidenceScore !== null ? `${section.financialConfidenceScore}/100` : "Not scored",
+    note: section.financialConfidenceLabel ?? "Not calculated",
+    tone: getScoreTone(section.financialConfidenceScore),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 264,
+    y: cardY,
+    w: 116,
+    h: 86,
+    label: "Savings quality",
+    value: titleCase(section.savingsQuality ?? "unknown"),
+    note: "Financial evidence quality",
+    tone: getLicensingStatusTone(section.savingsQuality),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 388,
+    y: cardY,
+    w: 120,
+    h: 86,
+    label: "Timing risk",
+    value: section.contractTimingRisk?.label ?? "Unknown",
+    note: section.contractTimingRisk?.daysToRenewal !== null && section.contractTimingRisk?.daysToRenewal !== undefined
+      ? `${section.contractTimingRisk.daysToRenewal} days to renewal`
+      : "Renewal date missing",
+    tone: getSeverityTone(section.contractTimingRisk?.severity),
+  });
+  doc.y = cardY + 110;
+
+  if (!fullSection) {
+    h2(doc, "Financial summary");
+    keyValueTable(doc, [
+      ["Pricing freshness", titleCase(section.pricingFreshnessStatus ?? "unknown")],
+      ["Annual delta", money(section.comparison?.annualDeltaUsd)],
+      ["3-year delta", money(section.comparison?.threeYearDeltaUsd)],
+      ["Executive recommendation", section.executiveRecommendation?.title ?? "Run the full analysis before using financial conclusions."],
+    ]);
+    callout(doc, "Full Licensing & Cost Exposure detail is reserved for the full readiness report. The preview does not expose the complete financial section.", "info");
+    return;
+  }
+
+  h2(doc, "Executive recommendation");
+  keyValueTable(doc, [
+    ["Recommendation", section.executiveRecommendation?.title ?? "No recommendation generated"],
+    ["Rationale", section.executiveRecommendation?.description ?? "Run the analysis to generate an executive recommendation."],
+    ["Pricing freshness", titleCase(section.pricingFreshnessStatus ?? "unknown")],
+    ["Currency", "USD"],
+  ]);
+
+  h2(doc, "VMware/Broadcom exposure");
+  keyValueTable(doc, scenarioRows("VMware/Broadcom", section.vmwareScenario));
+  if (section.vmwareScenario?.warnings.length) {
+    bulletList(doc, section.vmwareScenario.warnings, 4, "VMware/Broadcom warnings continued");
+  }
+
+  h2(doc, "Proxmox scenario");
+  keyValueTable(doc, scenarioRows("Proxmox", section.proxmoxScenario));
+  if (section.proxmoxScenario?.warnings.length) {
+    bulletList(doc, section.proxmoxScenario.warnings, 4, "Proxmox warnings continued");
+  }
+
+  h2(doc, "1 / 3 / 5-year comparison");
+  licensingComparisonTable(doc, input.reportPreview);
+  if (section.comparison?.notes.length) {
+    bulletList(doc, section.comparison.notes, 5, "Comparison notes continued");
+  }
+
+  h2(doc, "Cost of staying");
+  keyValueTable(doc, [
+    ["Summary", section.costOfStaying?.summary ?? "Cost of staying was not quantified from available evidence."],
+    ["Annual renewal exposure", money(section.costOfStaying?.annualUsd)],
+    ["3-year renewal exposure", money(section.costOfStaying?.threeYearUsd)],
+    ["5-year renewal exposure", money(section.costOfStaying?.fiveYearUsd)],
+    ["Potential 3-year opportunity loss", money(section.costOfStaying?.opportunityLossThreeYearUsd)],
+  ]);
+
+  h2(doc, "Contract timing risk");
+  keyValueTable(doc, [
+    ["Severity", section.contractTimingRisk?.label ?? "Unknown"],
+    ["Days to renewal", section.contractTimingRisk?.daysToRenewal === null || section.contractTimingRisk?.daysToRenewal === undefined ? "Unknown" : number(section.contractTimingRisk.daysToRenewal)],
+    ["Recommendation", section.contractTimingRisk?.recommendation ?? "Collect renewal date before using timing as a decision factor."],
+  ]);
+
+  h2(doc, "Cost exposure findings");
+  bulletList(
+    doc,
+    section.licensingTraps.length > 0
+      ? section.licensingTraps.map((trap) => `${titleCase(trap.severity)}: ${trap.title}. ${trap.description}${trap.recommendation ? ` Recommendation: ${trap.recommendation}` : ""}`)
+      : ["No major cost exposure findings were persisted."],
+    7,
+    "Cost Exposure Findings continued",
+  );
+
+  h2(doc, "Missing financial evidence");
+  bulletList(
+    doc,
+    section.missingEvidence.length > 0
+      ? section.missingEvidence.map((item) => `${item.label}: ${item.impact} Recommendation: ${item.recommendation}`)
+      : ["No major financial evidence gaps were persisted."],
+    8,
+    "Missing Financial Evidence continued",
+  );
+
+  h2(doc, "Assumptions");
+  bulletList(doc, section.assumptions, 10, "Licensing Assumptions continued");
+
+  h2(doc, "Pricing snapshot used");
+  bulletList(
+    doc,
+    section.pricingSnapshotUsed.length > 0
+      ? section.pricingSnapshotUsed.map((snapshot) =>
+          `${titleCase(snapshot.vendor)}: ${snapshot.sourceName ?? snapshot.snapshotId ?? "Approved snapshot"}; last checked: ${snapshot.lastCheckedAt ?? "not provided"}; status: ${snapshot.status ?? "approved"}${snapshot.notes ? `; ${snapshot.notes}` : ""}`,
+        )
+      : ["No approved pricing snapshot reference was persisted with this analysis."],
+    8,
+    "Pricing Snapshot Used continued",
+  );
+
+  h2(doc, "Disclaimer");
+  bulletList(doc, section.disclaimers, 6, "Licensing Disclaimer continued");
+}
+
 function addPageNumbers(doc: PDFKit.PDFDocument) {
   const range = doc.bufferedPageRange();
   for (let i = range.start; i < range.start + range.count; i += 1) {
@@ -1020,6 +1286,8 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       ["Finding counts", `Critical: ${preview.findingCounts.critical}, High: ${preview.findingCounts.high}, Medium: ${preview.findingCounts.medium}, Low: ${preview.findingCounts.low}`],
     ]);
     callout(doc, "Readiness and confidence are separate. A workload can look technically simple while still requiring business validation.", "warning");
+
+    addLicensingCostExposureSection(doc, input);
 
     addContentPage(doc, "Section 5", "Top Findings", "Confirmed and probable risk signals");
     if (preview.topFindings.length === 0) {

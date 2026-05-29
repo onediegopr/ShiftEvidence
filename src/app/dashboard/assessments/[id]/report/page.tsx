@@ -151,6 +151,9 @@ function renderStatusTone(value: string) {
     case "unlocked":
     case "moderate":
     case "generated":
+    case "completed":
+    case "fresh":
+    case "high":
     case "fulfilled":
     case "strong":
       return "good" as const;
@@ -164,10 +167,17 @@ function renderStatusTone(value: string) {
     case "limited":
     case "limited_with_warnings":
     case "missing":
+    case "needs_input":
+    case "ready":
+    case "stale":
+    case "stale_pricing":
+    case "medium":
       return "warning" as const;
     case "rejected":
       return "danger" as const;
     case "failed":
+    case "blocked":
+    case "low":
       return "danger" as const;
     case "deleted":
     case "cancelled":
@@ -784,6 +794,106 @@ export default async function ReportPreviewPage({
           {renderStatusPill(`Risk: ${statusLabel(report.costRiskPreview.riskLevel ?? "low")}`, renderStatusTone(report.costRiskPreview.riskLevel ?? "low"))}
           {renderStatusPill(`Cost / Risk: ${statusLabel(report.costRiskStatus)}`, renderStatusTone(report.costRiskStatus))}
         </div>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          icon={<BadgePercent size={18} />}
+          eyebrow="Licensing analysis"
+          title="Licensing & Cost Exposure Analysis"
+          description="A report-ready summary of VMware/Broadcom renewal exposure versus Proxmox subscription scenarios."
+        />
+        <div className="assessment-status-row">
+          {renderStatusPill(`Status: ${statusLabel(report.licensingCostExposure.status)}`, renderStatusTone(report.licensingCostExposure.status))}
+          {renderStatusPill(`Mode: ${statusLabel(report.licensingCostExposure.mode ?? "not_included")}`, renderStatusTone(report.licensingCostExposure.mode ?? "not_included"))}
+          {renderStatusPill(`Currency: ${report.licensingCostExposure.currency}`, "neutral")}
+          {renderStatusPill(`Pricing: ${statusLabel(report.licensingCostExposure.pricingFreshnessStatus ?? "unknown")}`, renderStatusTone(report.licensingCostExposure.pricingFreshnessStatus ?? "unknown"))}
+        </div>
+        {!report.licensingCostExposure.included ? (
+          <p className="assessment-empty-note">
+            Licensing analysis is not included or has not been generated for this assessment. The PDF will continue to
+            generate normally without treating this optional module as a blocker.
+          </p>
+        ) : (
+          <>
+            <div className="assessment-preview-grid report-preview-grid">
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Financial confidence</span>
+                <strong>
+                  {report.licensingCostExposure.financialConfidenceScore !== null
+                    ? `${report.licensingCostExposure.financialConfidenceScore}/100`
+                    : "-"}
+                </strong>
+                <p>{report.licensingCostExposure.financialConfidenceLabel ?? "Not calculated"}</p>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Savings quality</span>
+                <strong>{statusLabel(report.licensingCostExposure.savingsQuality ?? "unknown")}</strong>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Contract timing</span>
+                <strong>{report.licensingCostExposure.contractTimingRisk?.label ?? "Unknown"}</strong>
+                <p>{report.licensingCostExposure.contractTimingRisk?.daysToRenewal ?? "Unknown"} days to renewal</p>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">3-year delta</span>
+                <strong>{formatMoney(report.licensingCostExposure.comparison?.threeYearDeltaUsd ?? null)}</strong>
+              </article>
+            </div>
+            {report.licensingCostExposure.executiveRecommendation ? (
+              <div className="report-finding-note">
+                <strong>{report.licensingCostExposure.executiveRecommendation.title}</strong>
+                <p>{report.licensingCostExposure.executiveRecommendation.description}</p>
+              </div>
+            ) : null}
+            <div className="assessment-preview-columns">
+              <article className="glass-card assessment-subcard">
+                <h3>Cost exposure findings</h3>
+                {report.licensingCostExposure.licensingTraps.length === 0 ? (
+                  <p>No major cost exposure findings were persisted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.licensingCostExposure.licensingTraps.slice(0, 4).map((trap) => (
+                      <li key={`${trap.severity}-${trap.title}`}>
+                        <strong>{statusLabel(trap.severity)}:</strong> {trap.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Missing financial evidence</h3>
+                {report.licensingCostExposure.missingEvidence.length === 0 ? (
+                  <p>No major financial evidence gaps were persisted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.licensingCostExposure.missingEvidence.slice(0, 5).map((item) => (
+                      <li key={item.label}>{item.label}: {item.impact}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Pricing snapshots</h3>
+                {report.licensingCostExposure.pricingSnapshotUsed.length === 0 ? (
+                  <p>No approved pricing snapshot reference was persisted with this analysis.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.licensingCostExposure.pricingSnapshotUsed.slice(0, 4).map((snapshot) => (
+                      <li key={`${snapshot.vendor}-${snapshot.snapshotId ?? snapshot.sourceName}`}>
+                        {statusLabel(snapshot.vendor)}: {snapshot.sourceName ?? snapshot.snapshotId ?? "Approved snapshot"}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            </div>
+          </>
+        )}
+        <p className="assessment-table-note">
+          This is not a vendor quote. Final pricing must be validated with the customer&apos;s vendor, reseller or
+          procurement channel. Storage cost modeling is still in development and is not included.
+        </p>
       </section>
 
       <section className="assessment-section glass-card">

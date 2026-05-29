@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AssessmentCompletionModule, AssessmentCompletionSummary } from "../../src/server/assessments/assessmentCompletionService";
 import { buildAssessmentCoverageSection } from "../../src/server/reports/reportCoverageSection";
+import { buildLicensingCostExposureReportSection } from "../../src/server/reports/reportLicensingCostExposureSection";
 import { renderPdfReportBuffer } from "../../src/server/reports/reportPdfRenderer";
 import type { ReportPreviewData } from "../../src/server/reports/reportPreviewService";
 
@@ -118,6 +119,7 @@ function makeReportPreview(): ReportPreviewData {
       recommendations: ["Validate target storage architecture.", "Confirm USD renewal exposure."],
     },
     costRiskStatus: "Available",
+    licensingCostExposure: buildLicensingCostExposureReportSection(null),
     readinessScore: 78,
     confidenceScore: 72,
     recommendedDecision: "Proceed with pilot",
@@ -182,5 +184,119 @@ describe("PDF report renderer", () => {
 
     expect(buffer.subarray(0, 4).toString("utf8")).toBe("%PDF");
     expect(buffer.length).toBeGreaterThan(20_000);
+  });
+
+  it("renders a full licensing cost exposure section without throwing", async () => {
+    const preview = makeReportPreview();
+    preview.licensingCostExposure = {
+      included: true,
+      status: "completed",
+      mode: "actual_costs",
+      currency: "USD",
+      financialConfidenceScore: 82,
+      financialConfidenceLabel: "High",
+      savingsQuality: "high",
+      pricingFreshnessStatus: "fresh",
+      executiveRecommendation: {
+        title: "Proceed to financial review",
+        description: "Evidence is strong enough for procurement validation.",
+      },
+      vmwareScenario: {
+        label: "VMware/Broadcom customer renewal",
+        source: "customer_provided",
+        confidence: "high",
+        annualUsd: 100000,
+        threeYearUsd: 300000,
+        fiveYearUsd: 500000,
+        assumptions: ["Customer-provided VMware/Broadcom renewal quote was used."],
+        warnings: [],
+      },
+      proxmoxScenario: {
+        label: "Proxmox supported subscription",
+        source: "approved_pricing_snapshot",
+        confidence: "medium",
+        annualUsd: 28000,
+        threeYearUsd: 84000,
+        fiveYearUsd: 140000,
+        assumptions: ["Approved Proxmox snapshot was used."],
+        warnings: ["Validate support tier with reseller."],
+      },
+      comparison: {
+        annualDeltaUsd: 72000,
+        threeYearDeltaUsd: 216000,
+        fiveYearDeltaUsd: 360000,
+        grossSavingsPercent: 72,
+        paybackMonths: 9,
+        notes: ["Migration investment is included."],
+      },
+      costOfStaying: {
+        summary: "Cost of staying uses the selected VMware/Broadcom annual scenario.",
+        annualUsd: 100000,
+        threeYearUsd: 300000,
+        fiveYearUsd: 500000,
+        opportunityLossThreeYearUsd: 216000,
+        risks: ["Delay can compress renewal negotiation windows."],
+      },
+      contractTimingRisk: {
+        label: "High",
+        severity: "high",
+        daysToRenewal: 120,
+        recommendation: "Validate renewal quote and supported Proxmox scenario immediately.",
+      },
+      licensingTraps: Array.from({ length: 8 }, (_, index) => ({
+        severity: index % 2 === 0 ? "high" : "medium",
+        title: `Potential exposure ${index + 1}`,
+        description: "Long licensing trap text should wrap safely without clipping in the PDF renderer.",
+        recommendation: "Validate the assumption before executive presentation.",
+      })),
+      missingEvidence: Array.from({ length: 9 }, (_, index) => ({
+        label: `Missing evidence ${index + 1}`,
+        impact: "Financial confidence may be limited.",
+        recommendation: "Collect this evidence before final financial review.",
+      })),
+      assumptions: [
+        "All values are modeled in USD.",
+        "Approved snapshots only.",
+        "No third-party licensing is included.",
+        "Storage cost modeling is still in development and is not included.",
+      ],
+      pricingSnapshotUsed: [
+        {
+          vendor: "vmware",
+          snapshotId: "snap-vmware",
+          sourceName: "Manual VMware QA snapshot",
+          lastCheckedAt: "2026-05-20T00:00:00.000Z",
+          status: "approved",
+          notes: "Items: 1",
+        },
+        {
+          vendor: "proxmox",
+          snapshotId: "snap-proxmox",
+          sourceName: "Manual Proxmox QA snapshot",
+          lastCheckedAt: "2026-05-20T00:00:00.000Z",
+          status: "approved",
+          notes: "Items: 1",
+        },
+      ],
+      disclaimers: [
+        "This is not a vendor quote.",
+        "Taxes, local fees, reseller discounts and third-party software licensing are not included unless explicitly provided.",
+        "Storage cost modeling is still in development and is not included in this analysis.",
+      ],
+      warnings: [],
+    };
+
+    const buffer = await renderPdfReportBuffer({
+      assessmentTitle: "COST-1C PDF Synthetic Smoke",
+      clientLabel: null,
+      workspaceName: "Local QA",
+      reportTypeLabel: "Readiness Report",
+      generatedAt: new Date("2026-05-29T00:00:00Z"),
+      generatedByLabel: "COST-1C local smoke",
+      reportPreview: preview,
+    });
+
+    expect(buffer.subarray(0, 4).toString("utf8")).toBe("%PDF");
+    expect(buffer.length).toBeGreaterThan(24_000);
   });
 });

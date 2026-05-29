@@ -37,6 +37,10 @@ import {
   buildAssessmentCoverageSection,
   type ReportCoverageSectionData,
 } from "./reportCoverageSection";
+import {
+  buildLicensingCostExposureReportSection,
+  type LicensingCostExposureReportSection,
+} from "./reportLicensingCostExposureSection";
 
 type ReportPreviewStatus = "available" | "partial" | "locked";
 
@@ -77,6 +81,7 @@ export type ReportPreviewData = {
   sourceLabel: string;
   costRiskPreview: ReturnType<typeof getPreliminaryCostRiskPreview>;
   costRiskStatus: string;
+  licensingCostExposure: LicensingCostExposureReportSection;
   readinessScore: number | null;
   confidenceScore: number | null;
   recommendedDecision: string;
@@ -259,6 +264,52 @@ export function buildCostRiskSummary(assessment: AssessmentDetail) {
     riskLevel: preview.riskLevel,
     readinessLabel: preview.readinessLabel,
     missingEvidence: preview.missingEvidence,
+  };
+}
+
+function getLicensingCoverageLimitations(section: LicensingCostExposureReportSection) {
+  if (!section.included) {
+    return [];
+  }
+
+  const limitations = [
+    "Financial confidence is separate from technical evidence confidence. A technically strong assessment may still have limited financial confidence if no VMware contract, renewal quote or approved pricing snapshot was available.",
+  ];
+
+  if ((section.financialConfidenceScore ?? 0) < 60) {
+    limitations.push("Licensing analysis has limited financial confidence; treat savings as directional until missing financial evidence is collected.");
+  }
+
+  if (section.pricingFreshnessStatus === "stale") {
+    limitations.push("Pricing snapshot freshness is stale; refresh and re-approve pricing before executive financial decisions.");
+  }
+
+  if (section.pricingSnapshotUsed.length === 0) {
+    limitations.push("No approved pricing snapshot reference was persisted with the licensing analysis.");
+  }
+
+  if (section.missingEvidence.length > 0) {
+    limitations.push(`Missing financial evidence remains open: ${section.missingEvidence.slice(0, 3).map((item) => item.label).join(", ")}.`);
+  }
+
+  return limitations;
+}
+
+function mergeCoverageWithLicensingContext(
+  coverage: ReportCoverageSectionData,
+  section: LicensingCostExposureReportSection,
+): ReportCoverageSectionData {
+  const licensingLimitations = getLicensingCoverageLimitations(section);
+  if (licensingLimitations.length === 0) {
+    return coverage;
+  }
+
+  return {
+    ...coverage,
+    limitations: coverage.hasLimitations
+      ? [...coverage.limitations, ...licensingLimitations]
+      : licensingLimitations,
+    hasLimitations: true,
   };
 }
 
@@ -508,6 +559,11 @@ export async function getReportPreviewData(
 
   const reportPreviewStatus = completion.reportPreviewStatus as ReportPreviewStatus;
   const costRiskStatus = getCostRiskStatus(assessment);
+  const licensingCostExposure = buildLicensingCostExposureReportSection(assessment.licensingAnalysis ?? null);
+  const assessmentCoverage = mergeCoverageWithLicensingContext(
+    buildAssessmentCoverageSection(completionSummary),
+    licensingCostExposure,
+  );
   const fullReportStatus = commercialStatus.hasFullReportUnlocked ? "unlocked" : "locked";
   const reportCards = [
     {
@@ -566,12 +622,13 @@ export async function getReportPreviewData(
     commercialStatus,
     completionScore: completion.completionScore,
     completionStatus: completion.completionStatus,
-    assessmentCoverage: buildAssessmentCoverageSection(completionSummary),
+    assessmentCoverage,
     evidenceConfidence: completion.evidenceConfidence,
     evidenceConfidenceLabel: getEvidenceConfidenceLabel(completion.evidenceConfidence),
     sourceLabel: preview.dataSourceLabel ?? context.sourceLabel,
     costRiskPreview: preview,
     costRiskStatus,
+    licensingCostExposure,
     readinessScore,
     confidenceScore,
     recommendedDecision,
