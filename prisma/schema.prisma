@@ -574,6 +574,91 @@ model SystemSetting {
   @@index([updatedByUserId])
 }
 
+model LicensingPricingSnapshot {
+  id                 String                         @id @default(cuid())
+  vendor             LicensingPricingVendor
+  status             LicensingPricingSnapshotStatus @default(draft)
+  currency           String                         @default("USD")
+  sourceName         String
+  sourceUrl          String?
+  sourceType         LicensingPricingSourceType     @default(placeholder)
+  lastCheckedAt      DateTime?
+  effectiveDate      DateTime?
+  approvedAt         DateTime?
+  approvedByUserId   String?
+  rejectedAt         DateTime?
+  rejectedByUserId   String?
+  rejectionReason    String?
+  notesInternal      String?
+  metadataJson       Json?
+  createdAt          DateTime                       @default(now())
+  updatedAt          DateTime                       @updatedAt
+  items              LicensingPricingSnapshotItem[]
+  changeLogs         LicensingPricingChangeLog[]
+
+  @@index([vendor, status])
+  @@index([status, updatedAt])
+  @@index([lastCheckedAt])
+  @@index([approvedAt])
+}
+
+model LicensingPricingSnapshotItem {
+  id              String                 @id @default(cuid())
+  snapshotId      String
+  vendor          LicensingPricingVendor
+  productName     String
+  edition         String?
+  sku             String?
+  metric          LicensingPricingMetric
+  unitPriceUsd    Decimal?               @db.Decimal(14, 2)
+  minUnits        Int?
+  termMonths      Int?
+  assumptionsJson Json?
+  sourceNote      String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  snapshot        LicensingPricingSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@index([snapshotId])
+  @@index([vendor])
+  @@index([productName])
+}
+
+model LicensingPricingRefreshRun {
+  id                         String                         @id @default(cuid())
+  status                     LicensingPricingRefreshStatus  @default(running)
+  triggeredByUserId          String?
+  startedAt                  DateTime                       @default(now())
+  completedAt                DateTime?
+  summary                    String?
+  detailsJson                Json?
+  createdDraftSnapshotsCount Int                            @default(0)
+  errorsCount                Int                            @default(0)
+  createdAt                  DateTime                       @default(now())
+
+  @@index([status, createdAt])
+  @@index([triggeredByUserId])
+}
+
+model LicensingPricingChangeLog {
+  id                String                    @id @default(cuid())
+  snapshotId        String?
+  entityType        String
+  entityId          String?
+  action            String
+  previousJson      Json?
+  nextJson          Json?
+  source            String
+  performedByUserId String?
+  createdAt         DateTime                  @default(now())
+  snapshot          LicensingPricingSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+
+  @@index([snapshotId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@index([performedByUserId])
+}
+
 model UserEntitlement {
   id                 String    @id @default(cuid())
   userId             String
@@ -874,4 +959,43 @@ enum UnlockRequestType {
   readiness_report_pro
   storage_addon
   technical_review
+}
+
+enum LicensingPricingVendor {
+  vmware
+  proxmox
+}
+
+enum LicensingPricingSnapshotStatus {
+  draft
+  pending_review
+  approved
+  rejected
+  archived
+}
+
+enum LicensingPricingSourceType {
+  official
+  manual_admin
+  market_estimate
+  placeholder
+}
+
+enum LicensingPricingMetric {
+  core
+  socket
+  host
+  node
+  year
+  subscription
+  manual
+  rule
+}
+
+enum LicensingPricingRefreshStatus {
+  running
+  completed
+  completed_with_warnings
+  failed
+  no_changes
 }

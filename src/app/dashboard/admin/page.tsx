@@ -297,6 +297,10 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <p className="assessment-inline-note">Sesión admin: {session.user.email}</p>
         </div>
         <div className="dashboard-hero-actions">
+          <Link href="/dashboard/admin/pricing" className="btn btn-secondary">
+            <Gauge size={16} />
+            Inteligencia de Precios
+          </Link>
           <Link href="/dashboard/admin/unlock-requests" className="btn btn-secondary">
             <ClipboardList size={16} />
             Solicitudes de desbloqueo
