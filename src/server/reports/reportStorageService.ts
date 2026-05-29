@@ -2,8 +2,11 @@ import { createHash, randomBytes } from "crypto";
 import { mkdir, readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 import { sanitizeOriginalFilename } from "../evidence/uploadValidation";
-
-const DEFAULT_STORAGE_ROOT = "storage";
+import {
+  assertAbsolutePathInsideStorageRoot,
+  getStorageRoot,
+  resolveInsideStorageRoot,
+} from "../evidence/localStorageService";
 
 function sanitizeSegment(value: string) {
   const trimmed = value.trim();
@@ -25,13 +28,7 @@ function sanitizeTitle(value: string) {
 }
 
 export function getReportStorageRoot() {
-  const configuredRoot = process.env.HOSTINGER_STORAGE_ROOT?.trim();
-
-  if (configuredRoot && path.isAbsolute(configuredRoot)) {
-    return path.normalize(configuredRoot);
-  }
-
-  return path.join(/*turbopackIgnore: true*/ process.cwd(), DEFAULT_STORAGE_ROOT);
+  return getStorageRoot();
 }
 
 function ensureDirectoryExists(directoryPath: string) {
@@ -42,7 +39,8 @@ function ensureDirectoryExists(directoryPath: string) {
 
 function toRelativePath(absolutePath: string) {
   const root = getReportStorageRoot();
-  const relative = path.relative(root, absolutePath);
+  const containedPath = assertAbsolutePathInsideStorageRoot(absolutePath, "Invalid report path.");
+  const relative = path.relative(root, containedPath);
   return relative.split(path.sep).join("/");
 }
 
@@ -52,23 +50,16 @@ export function buildReportStorageDirectory(params: {
   assessmentId: string;
   reportType: string;
 }) {
-  const root = getReportStorageRoot();
-  const userSegment = sanitizeSegment(params.userId);
-  const workspaceSegment = sanitizeSegment(params.workspaceId);
-  const assessmentSegment = sanitizeSegment(params.assessmentId);
-  const reportSegment = sanitizeSegment(params.reportType);
-
-  return path.join(
-    root,
+  return resolveInsideStorageRoot(path.join(
     "users",
-    userSegment,
+    sanitizeSegment(params.userId),
     "workspaces",
-    workspaceSegment,
+    sanitizeSegment(params.workspaceId),
     "assessments",
-    assessmentSegment,
+    sanitizeSegment(params.assessmentId),
     "reports",
-    reportSegment,
-  );
+    sanitizeSegment(params.reportType),
+  ), "Invalid report path.");
 }
 
 export function buildSafeReportFilename(params: {
@@ -112,7 +103,7 @@ export function prepareReportFileLocation(params: {
     assessmentTitle: params.assessmentTitle,
     extension: params.extension ?? ".pdf",
   });
-  const absolutePath = path.join(directoryPath, storedFilename);
+  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename), "Invalid report path.");
 
   return {
     directoryPath,
@@ -150,7 +141,7 @@ export async function writeReportFile(params: {
       assessmentTitle: params.assessmentTitle,
       extension: ".pdf",
     });
-  const absolutePath = path.join(directoryPath, storedFilename);
+  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename), "Invalid report path.");
 
   await writeFile(absolutePath, params.buffer);
 
@@ -165,16 +156,7 @@ export async function writeReportFile(params: {
 }
 
 export function resolveReportAbsolutePath(relativePath: string) {
-  const root = getReportStorageRoot();
-  const normalizedRelativePath = relativePath.replaceAll("/", path.sep);
-  const absolutePath = path.resolve(root, normalizedRelativePath);
-  const rootWithSeparator = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
-
-  if (absolutePath !== root && !absolutePath.startsWith(rootWithSeparator)) {
-    throw new Error("Invalid report path.");
-  }
-
-  return absolutePath;
+  return resolveInsideStorageRoot(relativePath, "Invalid report path.");
 }
 
 export async function readReportFile(relativePath: string) {

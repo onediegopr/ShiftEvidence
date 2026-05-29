@@ -19,10 +19,10 @@ export function getStorageRoot() {
   const configuredRoot = process.env.HOSTINGER_STORAGE_ROOT?.trim();
 
   if (configuredRoot && path.isAbsolute(configuredRoot)) {
-    return path.normalize(configuredRoot);
+    return path.resolve(configuredRoot);
   }
 
-  return path.join(/*turbopackIgnore: true*/ process.cwd(), DEFAULT_STORAGE_ROOT);
+  return path.resolve(/*turbopackIgnore: true*/ process.cwd(), DEFAULT_STORAGE_ROOT);
 }
 
 async function ensureDirectoryExists(directoryPath: string) {
@@ -33,8 +33,40 @@ async function ensureDirectoryExists(directoryPath: string) {
 
 function toRelativePath(absolutePath: string) {
   const root = getStorageRoot();
-  const relative = path.relative(root, absolutePath);
+  const containedPath = assertAbsolutePathInsideStorageRoot(absolutePath);
+  const relative = path.relative(root, containedPath);
   return relative.split(path.sep).join("/");
+}
+
+function assertInsideStorageRoot(storageRoot: string, absolutePath: string, errorMessage: string) {
+  const resolvedRoot = path.resolve(storageRoot);
+  const resolvedTarget = path.resolve(absolutePath);
+  const rootWithSeparator = resolvedRoot.endsWith(path.sep) ? resolvedRoot : `${resolvedRoot}${path.sep}`;
+
+  if (resolvedTarget !== resolvedRoot && !resolvedTarget.startsWith(rootWithSeparator)) {
+    throw new Error(errorMessage);
+  }
+
+  return resolvedTarget;
+}
+
+export function assertAbsolutePathInsideStorageRoot(absolutePath: string, errorMessage = "Invalid storage path.") {
+  return assertInsideStorageRoot(getStorageRoot(), absolutePath, errorMessage);
+}
+
+export function resolveInsideStorageRoot(relativePath: string, errorMessage = "Invalid storage path.") {
+  if (path.isAbsolute(relativePath)) {
+    throw new Error(errorMessage);
+  }
+
+  const normalizedRelativePath = relativePath.replaceAll("/", path.sep);
+
+  if (path.isAbsolute(normalizedRelativePath)) {
+    throw new Error(errorMessage);
+  }
+
+  const root = getStorageRoot();
+  return assertInsideStorageRoot(root, path.resolve(root, normalizedRelativePath), errorMessage);
 }
 
 function buildAssessmentUploadDirectory(params: {
@@ -43,23 +75,16 @@ function buildAssessmentUploadDirectory(params: {
   assessmentId: string;
   evidenceType: string;
 }) {
-  const root = getStorageRoot();
-  const userSegment = sanitizeSegment(params.userId);
-  const workspaceSegment = sanitizeSegment(params.workspaceId);
-  const assessmentSegment = sanitizeSegment(params.assessmentId);
-  const evidenceSegment = sanitizeSegment(params.evidenceType);
-
-  return path.join(
-    root,
+  return resolveInsideStorageRoot(path.join(
     "users",
-    userSegment,
+    sanitizeSegment(params.userId),
     "workspaces",
-    workspaceSegment,
+    sanitizeSegment(params.workspaceId),
     "assessments",
-    assessmentSegment,
+    sanitizeSegment(params.assessmentId),
     "uploads",
-    evidenceSegment,
-  );
+    sanitizeSegment(params.evidenceType),
+  ));
 }
 
 export function buildSafeStoredFilename(params: {
@@ -114,7 +139,7 @@ export async function writeUploadedFile(params: {
     originalFilename: params.originalFilename,
     extension: params.extension,
   });
-  const absolutePath = path.join(directoryPath, storedFilename);
+  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename));
 
   await writeFile(absolutePath, params.buffer);
 
@@ -129,16 +154,7 @@ export async function writeUploadedFile(params: {
 }
 
 export function resolveEvidenceAbsolutePath(relativePath: string) {
-  const root = getStorageRoot();
-  const normalizedRelativePath = relativePath.replaceAll("/", path.sep);
-  const absolutePath = path.resolve(root, normalizedRelativePath);
-  const rootWithSeparator = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
-
-  if (absolutePath !== root && !absolutePath.startsWith(rootWithSeparator)) {
-    throw new Error("Invalid evidence path.");
-  }
-
-  return absolutePath;
+  return resolveInsideStorageRoot(relativePath, "Invalid evidence path.");
 }
 
 export async function readEvidenceFile(relativePath: string) {
