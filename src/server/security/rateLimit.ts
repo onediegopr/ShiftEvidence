@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { logger } from "../logging/logger";
 
 export type RateLimitName =
   | "passwordResetRequestIp"
@@ -86,7 +87,9 @@ function getRedisClient() {
     redis = null;
     if (!missingUpstashWarningEmitted) {
       missingUpstashWarningEmitted = true;
-      console.warn("Rate limiting is disabled because Upstash Redis environment variables are not configured.");
+      logger.warn("rate_limit_misconfigured", {
+        reason: "missing_upstash_env",
+      });
     }
     return redis;
   }
@@ -143,10 +146,13 @@ export async function checkRateLimit(params: {
   let result: Awaited<ReturnType<Ratelimit["limit"]>>;
   try {
     result = await limiter.limit(buildHashedKey(params.keyParts));
-  } catch {
+  } catch (error) {
     if (!rateLimitFailureWarningEmitted) {
       rateLimitFailureWarningEmitted = true;
-      console.warn("Rate limiting check failed. Allowing request to preserve availability.");
+      logger.warn("rate_limit_check_failed", {
+        limiter: params.limiter,
+        error,
+      });
     }
 
     return {

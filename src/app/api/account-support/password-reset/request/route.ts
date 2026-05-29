@@ -18,6 +18,7 @@ import {
   getClientIpFromHeaders,
   RATE_LIMIT_MESSAGE,
 } from "../../../../../server/security/rateLimit";
+import { logger } from "../../../../../server/logging/logger";
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -121,7 +122,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true, message: PASSWORD_RESET_NEUTRAL_MESSAGE });
-  } catch {
+  } catch (error) {
+    logger.warn("password_reset_request_failed", {
+      error,
+    });
     return NextResponse.json({ ok: true, message: PASSWORD_RESET_NEUTRAL_MESSAGE });
   }
 }

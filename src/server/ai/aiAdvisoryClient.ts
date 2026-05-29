@@ -11,6 +11,7 @@ import type {
 import { recordAiRuntimeEvent, type AiRuntimeErrorCategory } from "./aiRuntimeStatus";
 import { recordAiUsageEvent, type AiUsageOperationType } from "./aiUsageService";
 import { assertCanUseAi } from "../admin/runtimeSettingsService";
+import { logger } from "../logging/logger";
 
 
 type AiInputReductionStrategy = "moderate" | "strong" | "minimal" | "emergency";
@@ -725,6 +726,17 @@ export async function generateAiAdvisoryFromPayload(
   } catch (error) {
     const errorCategory = getErrorCategory(error);
     const status = errorCategory === "timeout" ? "timeout" : "error";
+    logger.warn("ai_advisory_provider_failed", {
+      assessmentId: safeAssessmentId,
+      userId: options.userId ?? null,
+      provider: config.provider,
+      model: config.model,
+      operationType,
+      status,
+      errorCategory,
+      durationMs: Date.now() - startedAt,
+      error,
+    });
     recordAiRuntimeEvent({
       eventType: errorCategory === "timeout" ? "ai_advisory_timeout" : "ai_advisory_failed",
       provider: config.provider,

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { buildAdminPaginationMeta } from "../admin/adminPagination";
+import { logger } from "../logging/logger";
 import type { AiAdvisoryProvider } from "./aiAdvisoryTypes";
 
 export type AiUsageOperationType = "preview" | "pdf" | "synthetic_test" | "admin_test" | "retry" | "unknown";
@@ -127,7 +128,15 @@ export async function recordAiUsageEvent(params: {
       },
     });
   } catch (error) {
-    console.warn("AI usage event persistence failed.", error instanceof Error ? error.message : "Unknown error");
+    logger.warn("ai_usage_event_persistence_failed", {
+      assessmentId: params.assessmentId ?? null,
+      userId: params.userId ?? null,
+      provider: params.provider,
+      model: params.model,
+      operationType: params.operationType ?? "unknown",
+      status: params.status,
+      error,
+    });
   }
 }
 

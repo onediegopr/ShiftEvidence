@@ -9,6 +9,7 @@ import {
   getClientIpFromHeaders,
   RATE_LIMIT_MESSAGE,
 } from "../../../../../server/security/rateLimit";
+import { logger } from "../../../../../server/logging/logger";
 
 const INVALID_TOKEN_MESSAGE = "This reset link is invalid or has expired.";
 const PASSWORD_MIN_LENGTH = 8;
@@ -166,6 +167,10 @@ export async function POST(request: Request) {
     if (error instanceof InvalidResetTokenError) {
       return NextResponse.json({ ok: false, message: INVALID_TOKEN_MESSAGE }, { status: 400 });
     }
+
+    logger.warn("password_reset_confirm_failed", {
+      error,
+    });
 
     return NextResponse.json({ ok: false, message: "Unable to reset password." }, { status: 500 });
   }

@@ -14,6 +14,7 @@ import {
   assertCanDownloadReport,
   assertCanGeneratePdf,
 } from "../admin/runtimeSettingsService";
+import { logger } from "../logging/logger";
 import { assertRateLimit } from "../security/rateLimit";
 import type { PdfReportBrandingInput } from "./reportPdfRenderer";
 
@@ -242,11 +243,26 @@ export async function generatePdfReportForAssessment(params: {
   } catch (error) {
     try {
       await deletePhysicalReportIfExists(fileLocation.relativePath);
-    } catch {
-      // Ignore cleanup errors for failed preview generation.
+    } catch (cleanupError) {
+      logger.warn("report_generation_cleanup_failed", {
+        reportId: report.id,
+        assessmentId: assessment.id,
+        workspaceId: assessment.workspaceId,
+        reportType,
+        error: cleanupError,
+      });
     }
 
     const message = error instanceof Error ? error.message : "Unable to generate the PDF preview.";
+
+    logger.error("report_generation_failed", {
+      reportId: report.id,
+      assessmentId: assessment.id,
+      workspaceId: assessment.workspaceId,
+      userId: params.userId,
+      reportType,
+      error,
+    });
 
     await prisma.report.update({
       where: {
@@ -330,7 +346,13 @@ export async function softDeleteReport(params: {
     try {
       await deletePhysicalReportIfExists(deleted.relativePath);
     } catch (error) {
-      console.warn("Failed to remove physical report after soft delete.", error);
+      logger.warn("report_physical_cleanup_failed", {
+        reportId: deleted.id,
+        assessmentId: deleted.assessmentId,
+        workspaceId: deleted.workspaceId,
+        reportType: deleted.reportType,
+        error,
+      });
     }
 
     return deleted;

@@ -5,6 +5,7 @@ import { safeRedirectError } from "../../../../../../../server/assessments/formU
 import { softDeleteReport } from "../../../../../../../server/reports/reportGenerationService";
 import { upsertUserProfileFromSession } from "../../../../../../../server/user/userProfileService";
 import { getPublicUrl } from "../../../../../../../server/url/publicAppUrl";
+import { logger } from "../../../../../../../server/logging/logger";
 
 export const runtime = "nodejs";
 
@@ -45,6 +46,12 @@ export async function POST(
       status: 303,
     });
   } catch (error) {
+    logger.warn("report_delete_failed", {
+      userId: session.user.id,
+      assessmentId,
+      reportId,
+      error,
+    });
     const message = error instanceof Error ? error.message : "Unable to delete the report preview.";
 
     return NextResponse.redirect(

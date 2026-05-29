@@ -15,6 +15,7 @@ import {
 import { importRvtoolsEvidence } from "../../../../../server/rvtools/rvtoolsImportService";
 import { safeRedirectError } from "../../../../../server/assessments/formUtils";
 import { assertRateLimit, getClientIpFromHeaders } from "../../../../../server/security/rateLimit";
+import { logger } from "../../../../../server/logging/logger";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -106,6 +107,11 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
       throw error;
     }
   } catch (error) {
+    logger.warn("evidence_upload_failed", {
+      userId: session.user.id,
+      assessmentId,
+      error,
+    });
     const message = error instanceof Error ? error.message : "Unable to upload evidence.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "evidence");
   }
@@ -127,9 +133,20 @@ export async function deleteEvidenceAction(assessmentId: string, evidenceFileId:
     try {
       await deletePhysicalFileIfExists(deleted.relativePath);
     } catch (error) {
-      console.warn("Failed to remove physical evidence file after soft delete.", error);
+      logger.warn("evidence_file_cleanup_failed", {
+        userId: session.user.id,
+        assessmentId,
+        evidenceFileId,
+        error,
+      });
     }
   } catch (error) {
+    logger.warn("evidence_delete_failed", {
+      userId: session.user.id,
+      assessmentId,
+      evidenceFileId,
+      error,
+    });
     const message = error instanceof Error ? error.message : "Unable to delete evidence.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "evidence");
   }

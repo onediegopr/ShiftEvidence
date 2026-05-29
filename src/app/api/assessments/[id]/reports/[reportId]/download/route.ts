@@ -8,6 +8,7 @@ import { readReportFile } from "../../../../../../../server/reports/reportStorag
 import { prisma } from "../../../../../../../lib/prisma";
 import { getPublicUrl } from "../../../../../../../server/url/publicAppUrl";
 import { OperationalBlockError } from "../../../../../../../server/admin/runtimeSettingsService";
+import { logger } from "../../../../../../../server/logging/logger";
 
 export const runtime = "nodejs";
 
@@ -86,6 +87,12 @@ export async function GET(
       },
     });
   } catch (error) {
+    logger.warn("report_download_failed", {
+      userId: session.user.id,
+      assessmentId,
+      reportId,
+      error,
+    });
     const message = error instanceof Error ? error.message : "Unable to download the report.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
