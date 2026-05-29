@@ -787,6 +787,233 @@ function getLicensingStatusTone(value: string | null | undefined): Tone {
   }
 }
 
+function shouldRenderFullCustomerContextSection(input: PdfReportRenderInput) {
+  return input.reportTypeLabel !== "PDF Preview";
+}
+
+function getCustomerContextStatusTone(value: string | null | undefined): Tone {
+  switch (value) {
+    case "completed":
+    case "high":
+      return "good";
+    case "pending":
+    case "stale":
+    case "ai_disabled":
+    case "budget_blocked":
+    case "plan_restricted":
+    case "medium":
+    case "limited":
+      return "warning";
+    case "failed":
+    case "low":
+      return "danger";
+    default:
+      return "neutral";
+  }
+}
+
+function boolLabel(value: boolean | null | undefined) {
+  if (value === true) {
+    return "Yes";
+  }
+
+  if (value === false) {
+    return "No";
+  }
+
+  return "Unknown";
+}
+
+function addCustomerContextIntelligenceSection(doc: PDFKit.PDFDocument, input: PdfReportRenderInput) {
+  const section = input.reportPreview.customerContextIntelligence;
+  const fullSection = shouldRenderFullCustomerContextSection(input);
+
+  if (!fullSection && !section.included) {
+    return;
+  }
+
+  addContentPage(
+    doc,
+    fullSection ? "Section 2D" : "Preview",
+    "Customer Context Intelligence",
+    fullSection ? "Structured interpretation of customer-provided context" : "Customer context teaser for the full report",
+  );
+
+  paragraph(
+    doc,
+    "This section summarizes customer-provided context in a structured form. It reflects what the customer described and what the AI interpreted from that context. It should be validated against technical evidence before making migration decisions.",
+  );
+  doc.moveDown(0.8);
+
+  if (!section.included) {
+    callout(doc, "No client context analysis was included. Report generation is not blocked by this optional module.", "info");
+    return;
+  }
+
+  const cardY = doc.y;
+  metricCard({
+    doc,
+    x: MARGIN,
+    y: cardY,
+    w: 122,
+    h: 86,
+    label: "Analysis status",
+    value: titleCase(section.status),
+    note: "Optional context layer",
+    tone: getCustomerContextStatusTone(section.status),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 130,
+    y: cardY,
+    w: 126,
+    h: 86,
+    label: "Context completeness",
+    value: section.contextCompletenessScore !== null ? `${section.contextCompletenessScore}/100` : "Not scored",
+    note: "Business context quality",
+    tone: getScoreTone(section.contextCompletenessScore),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 264,
+    y: cardY,
+    w: 116,
+    h: 86,
+    label: "Business confidence",
+    value: titleCase(section.businessContextConfidence ?? "unknown"),
+    note: "Not technical evidence",
+    tone: getCustomerContextStatusTone(section.businessContextConfidence),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 388,
+    y: cardY,
+    w: 120,
+    h: 86,
+    label: "Generated",
+    value: section.generatedAt ? dateLabel(new Date(section.generatedAt)) : "Not generated",
+    note: section.modelUsed ? `Model: ${section.modelUsed}` : "No model metadata",
+    tone: section.generatedAt ? "neutral" : "warning",
+  });
+  doc.y = cardY + 110;
+
+  h2(doc, "Context Provided - Interpreted Summary");
+  paragraph(doc, section.interpretedSummary ?? "Client context was submitted but no interpreted summary was persisted.");
+  doc.moveDown(0.8);
+
+  if (!fullSection) {
+    h2(doc, "Preview highlights");
+    bulletList(
+      doc,
+      [
+        ...section.businessPriorities.slice(0, 3).map((item) => `${item.priority}: ${item.evidence ?? "Customer-reported priority."}`),
+        ...section.validationItems.slice(0, 2).map((item) => `Validate: ${item.item}`),
+      ],
+      5,
+      "Customer Context Preview continued",
+    );
+    callout(doc, "Full Customer Context Intelligence detail is reserved for the full readiness report. Raw client narrative is not reproduced.", "info");
+    return;
+  }
+
+  h2(doc, "Business priorities");
+  bulletList(
+    doc,
+    section.businessPriorities.length > 0
+      ? section.businessPriorities.map((item) => `${item.priority}. Evidence: ${item.evidence ?? "Customer-reported context."} Confidence: ${titleCase(item.confidence)}. Source: ${titleCase(item.source)}.`)
+      : ["No business priorities were extracted from the persisted analysis."],
+    7,
+    "Business Priorities continued",
+  );
+
+  h2(doc, "Migration constraints");
+  bulletList(
+    doc,
+    section.migrationConstraints.length > 0
+      ? section.migrationConstraints.map((item) => `${titleCase(item.type)}: ${item.constraint}. Impact: ${item.impact ?? "Validate impact with the customer."} Source: ${titleCase(item.source)}.`)
+      : ["No migration constraints were extracted from the persisted analysis."],
+    7,
+    "Migration Constraints continued",
+  );
+
+  h2(doc, "Critical workloads mentioned");
+  if (section.criticalWorkloads.length === 0) {
+    callout(doc, "No critical workloads were extracted from the customer context analysis.", "info");
+  } else {
+    keyValueTable(
+      doc,
+      section.criticalWorkloads.slice(0, 8).map((item) => [
+        item.name,
+        `${item.reason ?? "No reason persisted."} Validation needed: ${boolLabel(item.validationNeeded)}. Source: ${titleCase(item.source)}.`,
+      ]),
+    );
+  }
+
+  h2(doc, "Customer-reported risks");
+  bulletList(
+    doc,
+    section.customerReportedRisks.length > 0
+      ? section.customerReportedRisks.map((item) => `${titleCase(item.severity)}: ${item.risk}. ${item.rationale ?? "No rationale persisted."} Validation needed: ${boolLabel(item.validationNeeded)}.`)
+      : ["No customer-reported risks were extracted from the persisted analysis."],
+    7,
+    "Customer-Reported Risks continued",
+  );
+
+  h2(doc, "Contradictions / Items to validate");
+  bulletList(
+    doc,
+    [
+      ...section.contradictions.map((item) => `${item.title}: ${item.description} Recommended validation: ${item.validationRecommendation ?? "Validate with structured evidence."}`),
+      ...section.validationItems.map((item) => `${titleCase(item.priority)} priority: ${item.item}. ${item.whyItMatters ?? "Validation is required before using this context operationally."}${item.recommendedOwner ? ` Owner: ${item.recommendedOwner}.` : ""}`),
+    ],
+    10,
+    "Context Validation Items continued",
+  );
+
+  h2(doc, "Impact on assessment");
+  bulletList(
+    doc,
+    section.reportImpact.length > 0
+      ? section.reportImpact.map((item) => `${titleCase(item.area)}: ${item.impact} Score impact: ${boolLabel(item.shouldAffectScore)}. ${item.note ?? "Treat as advisory unless validated."}`)
+      : ["No specific report impact items were extracted from the persisted analysis."],
+    6,
+    "Context Impact continued",
+  );
+
+  h2(doc, "Next questions");
+  bulletList(
+    doc,
+    section.nextQuestions.length > 0
+      ? section.nextQuestions.map((item) => `${titleCase(item.priority)} priority: ${item.question}${item.reason ? ` Reason: ${item.reason}` : ""}`)
+      : ["No next questions were extracted from the persisted analysis."],
+    8,
+    "Customer Context Next Questions continued",
+  );
+
+  h2(doc, "Additional evidence summary");
+  bulletList(
+    doc,
+    section.additionalEvidenceSummary.length > 0
+      ? section.additionalEvidenceSummary.map((item) => `${item.filename ?? "Unnamed file"}: ${titleCase(item.classification)}; status: ${titleCase(item.analysisStatus)}; included: ${boolLabel(item.included)}.`)
+      : ["No additional evidence metadata was linked to Customer Context Intelligence."],
+    8,
+    "Additional Evidence Summary continued",
+  );
+
+  if (section.safetyFlags.length > 0) {
+    h2(doc, "Context handling notes");
+    bulletList(
+      doc,
+      section.safetyFlags.map((item) => `${titleCase(item.severity)}: ${item.flag}. ${item.explanation ?? "Review as context-handling metadata."}`),
+      6,
+      "Context Handling Notes continued",
+    );
+  }
+
+  h2(doc, "Disclaimers");
+  bulletList(doc, section.disclaimers, 6, "Customer Context Disclaimer continued");
+}
+
 function scenarioRows(label: string, scenario: ReportPreviewData["licensingCostExposure"]["vmwareScenario"]) {
   if (!scenario) {
     return [
@@ -1224,6 +1451,8 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       bulletList(doc, preview.aiAdvisory.limitations, 5);
     }
 
+    addCustomerContextIntelligenceSection(doc, input);
+
     addContentPage(doc, "Section 3", "Environment Summary", "Inventory basis and environment scope");
     h2(doc, "Measured environment", "Counts use parsed evidence when available, then manual input as fallback.");
     const cardY = doc.y;
@@ -1348,6 +1577,19 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     h2(doc, "Operating principle");
     paragraph(doc, "Missing backup evidence does not mean backups are absent. It means this assessment cannot verify restore readiness.");
     paragraph(doc, "Do not migrate critical workloads before pilot import, backup restore validation and rollback planning.");
+
+    const customerContextSection = preview.customerContextIntelligence;
+    if (customerContextSection) {
+      if (customerContextSection.assumptions && customerContextSection.assumptions.length > 0) {
+        h2(doc, "Customer Context Intelligence Assumptions");
+        bulletList(doc, customerContextSection.assumptions, 8, "Customer Context Assumptions continued");
+      }
+
+      if (customerContextSection.disclaimers && customerContextSection.disclaimers.length > 0) {
+        h2(doc, "Customer Context Intelligence Disclaimer");
+        bulletList(doc, customerContextSection.disclaimers, 6, "Customer Context Disclaimer continued");
+      }
+    }
 
     const licSection = preview.licensingCostExposure;
     if (licSection) {

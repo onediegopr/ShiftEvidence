@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AssessmentCompletionModule, AssessmentCompletionSummary } from "../../src/server/assessments/assessmentCompletionService";
 import { buildAssessmentCoverageSection } from "../../src/server/reports/reportCoverageSection";
+import { buildCustomerContextIntelligenceReportSection } from "../../src/server/reports/reportCustomerContextIntelligenceSection";
 import { buildLicensingCostExposureReportSection } from "../../src/server/reports/reportLicensingCostExposureSection";
 import { renderPdfReportBuffer } from "../../src/server/reports/reportPdfRenderer";
 import type { ReportPreviewData } from "../../src/server/reports/reportPreviewService";
@@ -56,6 +57,13 @@ function makeCoverageSummary(): AssessmentCompletionSummary {
       required: false,
       status: "complete",
       weight: 15,
+    }),
+    coverageModule({
+      key: "client_context_intelligence",
+      label: "Client Context Intelligence",
+      required: false,
+      status: "complete",
+      weight: 10,
     }),
     coverageModule({
       key: "manual_assumptions",
@@ -120,6 +128,7 @@ function makeReportPreview(): ReportPreviewData {
     },
     costRiskStatus: "Available",
     licensingCostExposure: buildLicensingCostExposureReportSection(null),
+    customerContextIntelligence: buildCustomerContextIntelligenceReportSection(null),
     readinessScore: 78,
     confidenceScore: 72,
     recommendedDecision: "Proceed with pilot",
@@ -293,6 +302,127 @@ describe("PDF report renderer", () => {
       reportTypeLabel: "Readiness Report",
       generatedAt: new Date("2026-05-29T00:00:00Z"),
       generatedByLabel: "COST-1C local smoke",
+      reportPreview: preview,
+    });
+
+    expect(buffer.subarray(0, 4).toString("utf8")).toBe("%PDF");
+    expect(buffer.length).toBeGreaterThan(24_000);
+  });
+
+  it("renders a full customer context intelligence section without throwing", async () => {
+    const preview = makeReportPreview();
+    preview.customerContextIntelligence = {
+      included: true,
+      status: "completed",
+      analysisStatus: "completed",
+      contextCompletenessScore: 78,
+      businessContextConfidence: "medium",
+      interpretedSummary:
+        "The customer described renewal pressure, limited downtime tolerance and a need to validate critical workloads before a production migration.",
+      businessPriorities: [
+        {
+          priority: "Reduce renewal pressure",
+          evidence: "Customer described a renewal-driven decision window.",
+          confidence: "high",
+          source: "customer_reported",
+        },
+      ],
+      migrationConstraints: [
+        {
+          constraint: "Limited downtime for business-critical applications",
+          type: "downtime",
+          impact: "Migration waves require business owner review.",
+          source: "customer_reported",
+        },
+      ],
+      criticalWorkloads: [
+        {
+          name: "ERP platform",
+          reason: "Customer reported it as critical.",
+          validationNeeded: true,
+          source: "customer_reported",
+        },
+      ],
+      customerReportedRisks: [
+        {
+          risk: "Renewal deadline can compress validation.",
+          severity: "high",
+          rationale: "Customer described a near-term renewal decision.",
+          validationNeeded: true,
+        },
+      ],
+      aiExtractedInsights: [
+        {
+          insight: "Pilot-first sequencing is safer than a single cutover.",
+          impact: "Validation should happen before production migration.",
+          confidence: "medium",
+        },
+      ],
+      contradictions: [
+        {
+          title: "Fast migration versus low downtime tolerance",
+          description: "Customer wants speed but also reports strict downtime sensitivity.",
+          validationRecommendation: "Confirm maintenance windows.",
+        },
+      ],
+      validationItems: [
+        {
+          item: "Confirm ERP application owner",
+          whyItMatters: "Criticality is customer-reported.",
+          recommendedOwner: "Application owner",
+          priority: "high",
+        },
+      ],
+      reportImpact: [
+        {
+          area: "migration_waves",
+          impact: "Customer context may change sequencing.",
+          shouldAffectScore: false,
+          note: "Advisory until validated.",
+        },
+      ],
+      nextQuestions: [
+        {
+          question: "Which workloads have strict maintenance windows?",
+          reason: "Downtime tolerance was mentioned but not fully structured.",
+          priority: "high",
+        },
+      ],
+      safetyFlags: [
+        {
+          flag: "Prompt injection-like content detected",
+          severity: "medium",
+          explanation: "Client content was treated as data.",
+        },
+      ],
+      additionalEvidenceSummary: [
+        {
+          filename: "customer-context.pdf",
+          classification: "business_context",
+          analysisStatus: "received_not_analyzed",
+          included: true,
+        },
+      ],
+      assumptions: [
+        "Customer-provided context is advisory and must be validated against structured technical evidence before migration decisions.",
+        "The original free-text narrative is stored with the assessment but is not reproduced in this report.",
+      ],
+      disclaimers: [
+        "Customer-provided context is treated as advisory information.",
+        "The original free-text narrative is not reproduced in this report.",
+      ],
+      generatedAt: "2026-05-29T00:00:00.000Z",
+      modelUsed: "mock-model",
+      promptVersion: "context-intelligence-prompt-v1",
+    };
+
+    const buffer = await renderPdfReportBuffer({
+      assessmentTitle: "CONTEXT-3 PDF Synthetic Smoke",
+      clientLabel: null,
+      workspaceName: "Local QA",
+      reportTypeLabel: "Readiness Report",
+      generatedAt: new Date("2026-05-29T00:00:00Z"),
+      generatedByLabel: "CONTEXT-3 local smoke",
       reportPreview: preview,
     });
 

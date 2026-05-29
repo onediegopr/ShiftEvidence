@@ -92,6 +92,17 @@ export const reportSectionConfigs: ReportSectionConfig[] = [
     planLabel: "Readiness Report",
   },
   {
+    key: "customer_context_intelligence",
+    title: "Customer Context Intelligence",
+    description: "Structured interpretation of client-provided business context, constraints, risks and validation questions.",
+    visibleInFree: true,
+    requirement: "readiness_report",
+    whatYouGet: "Interpreted context summary, business priorities, constraints, customer-reported risks, validation items and next questions without printing the raw client narrative.",
+    whyItMatters: "Customer narrative can change migration planning, but it must stay separate from confirmed technical evidence.",
+    ctaLabel: "Unlock context intelligence",
+    planLabel: "Readiness Report",
+  },
+  {
     key: "top_findings",
     title: "Top Findings",
     description: "The most important risk signals currently available.",

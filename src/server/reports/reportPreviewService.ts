@@ -41,6 +41,10 @@ import {
   buildLicensingCostExposureReportSection,
   type LicensingCostExposureReportSection,
 } from "./reportLicensingCostExposureSection";
+import {
+  buildCustomerContextIntelligenceReportSection,
+  type CustomerContextIntelligenceReportSection,
+} from "./reportCustomerContextIntelligenceSection";
 
 type ReportPreviewStatus = "available" | "partial" | "locked";
 
@@ -82,6 +86,7 @@ export type ReportPreviewData = {
   costRiskPreview: ReturnType<typeof getPreliminaryCostRiskPreview>;
   costRiskStatus: string;
   licensingCostExposure: LicensingCostExposureReportSection;
+  customerContextIntelligence: CustomerContextIntelligenceReportSection;
   readinessScore: number | null;
   confidenceScore: number | null;
   recommendedDecision: string;
@@ -309,6 +314,53 @@ function mergeCoverageWithLicensingContext(
     limitations: coverage.hasLimitations
       ? [...coverage.limitations, ...licensingLimitations]
       : licensingLimitations,
+    hasLimitations: true,
+  };
+}
+
+function getCustomerContextCoverageLimitations(section: CustomerContextIntelligenceReportSection) {
+  if (!section.included) {
+    return [];
+  }
+
+  const limitations = [
+    "Customer context improves business and migration context, but it is not treated as confirmed technical evidence unless validated by structured sources.",
+    "Business context confidence is separate from technical evidence confidence.",
+  ];
+
+  if (section.status === "stale") {
+    limitations.push("Customer context changed after the last analysis and should be re-analyzed before executive use.");
+  }
+
+  if (section.status === "failed" || section.status === "ai_disabled" || section.status === "budget_blocked" || section.status === "plan_restricted") {
+    limitations.push("Customer Context Intelligence did not complete; report output is limited to safe fallback context.");
+  }
+
+  if ((section.contextCompletenessScore ?? 100) < 60) {
+    limitations.push("Customer context completeness is limited; collect additional business priorities, constraints, workload notes and validation owners.");
+  }
+
+  if (section.validationItems.length > 0) {
+    limitations.push(`Customer context includes validation items: ${section.validationItems.slice(0, 3).map((item) => item.item).join(", ")}.`);
+  }
+
+  return limitations;
+}
+
+function mergeCoverageWithCustomerContext(
+  coverage: ReportCoverageSectionData,
+  section: CustomerContextIntelligenceReportSection,
+): ReportCoverageSectionData {
+  const customerContextLimitations = getCustomerContextCoverageLimitations(section);
+  if (customerContextLimitations.length === 0) {
+    return coverage;
+  }
+
+  return {
+    ...coverage,
+    limitations: coverage.hasLimitations
+      ? [...coverage.limitations, ...customerContextLimitations]
+      : customerContextLimitations,
     hasLimitations: true,
   };
 }
@@ -560,9 +612,18 @@ export async function getReportPreviewData(
   const reportPreviewStatus = completion.reportPreviewStatus as ReportPreviewStatus;
   const costRiskStatus = getCostRiskStatus(assessment);
   const licensingCostExposure = buildLicensingCostExposureReportSection(assessment.licensingAnalysis ?? null);
-  const assessmentCoverage = mergeCoverageWithLicensingContext(
-    buildAssessmentCoverageSection(completionSummary),
-    licensingCostExposure,
+  const customerContextIntelligence = buildCustomerContextIntelligenceReportSection(
+    assessment.clientContextAnalysis ?? null,
+    {
+      additionalEvidence: assessment.additionalEvidence ?? [],
+    },
+  );
+  const assessmentCoverage = mergeCoverageWithCustomerContext(
+    mergeCoverageWithLicensingContext(
+      buildAssessmentCoverageSection(completionSummary),
+      licensingCostExposure,
+    ),
+    customerContextIntelligence,
   );
   const fullReportStatus = commercialStatus.hasFullReportUnlocked ? "unlocked" : "locked";
   const reportCards = [
@@ -629,6 +690,7 @@ export async function getReportPreviewData(
     costRiskPreview: preview,
     costRiskStatus,
     licensingCostExposure,
+    customerContextIntelligence,
     readinessScore,
     confidenceScore,
     recommendedDecision,

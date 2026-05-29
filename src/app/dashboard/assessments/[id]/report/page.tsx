@@ -172,6 +172,9 @@ function renderStatusTone(value: string) {
     case "stale":
     case "stale_pricing":
     case "medium":
+    case "ai_disabled":
+    case "budget_blocked":
+    case "plan_restricted":
       return "warning" as const;
     case "rejected":
       return "danger" as const;
@@ -718,6 +721,88 @@ export default async function ReportPreviewPage({
           </p>
         </section>
       ) : null}
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          icon={<PanelTop size={18} />}
+          eyebrow="Client context"
+          title="Customer Context Intelligence"
+          description="Structured interpretation of customer-provided context. The raw free-text narrative is not printed in the report."
+        />
+        <div className="assessment-status-row">
+          {renderStatusPill(`Status: ${statusLabel(report.customerContextIntelligence.status)}`, renderStatusTone(report.customerContextIntelligence.status))}
+          {renderStatusPill(
+            `Context completeness: ${
+              report.customerContextIntelligence.contextCompletenessScore !== null
+                ? `${report.customerContextIntelligence.contextCompletenessScore}/100`
+                : "not scored"
+            }`,
+            renderStatusTone(report.customerContextIntelligence.businessContextConfidence ?? "unknown"),
+          )}
+          {renderStatusPill(`Business confidence: ${statusLabel(report.customerContextIntelligence.businessContextConfidence ?? "unknown")}`, renderStatusTone(report.customerContextIntelligence.businessContextConfidence ?? "unknown"))}
+        </div>
+        {!report.customerContextIntelligence.included ? (
+          <p className="assessment-empty-note">
+            Customer Context Intelligence is not included or has not been analyzed for this assessment. Report generation
+            continues normally because this module is optional.
+          </p>
+        ) : (
+          <>
+            <div className="report-finding-note">
+              <strong>Context Provided - Interpreted Summary</strong>
+              <p>{report.customerContextIntelligence.interpretedSummary ?? "No interpreted summary was persisted."}</p>
+            </div>
+            <div className="assessment-preview-columns">
+              <article className="glass-card assessment-subcard">
+                <h3>Business priorities</h3>
+                {report.customerContextIntelligence.businessPriorities.length === 0 ? (
+                  <p>No business priorities were extracted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.customerContextIntelligence.businessPriorities.slice(0, 5).map((item) => (
+                      <li key={`${item.priority}-${item.confidence ?? "unknown"}`}>
+                        <strong>{item.priority}</strong>
+                        {item.confidence ? ` (${statusLabel(item.confidence)})` : ""}: {item.evidence ?? "Customer-reported priority."}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Validation items</h3>
+                {report.customerContextIntelligence.validationItems.length === 0 ? (
+                  <p>No validation items were extracted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.customerContextIntelligence.validationItems.slice(0, 5).map((item) => (
+                      <li key={item.item}>
+                        <strong>{statusLabel(item.priority ?? "medium")}:</strong> {item.item}
+                        {item.whyItMatters ? ` - ${item.whyItMatters}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Next questions</h3>
+                {report.customerContextIntelligence.nextQuestions.length === 0 ? (
+                  <p>No next questions were extracted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.customerContextIntelligence.nextQuestions.slice(0, 5).map((item) => (
+                      <li key={item.question}>{item.question}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            </div>
+          </>
+        )}
+        <p className="assessment-table-note">
+          Customer-provided context is advisory. It may contain assumptions or unverified claims and must be validated
+          against RVTools, backup exports, Proxmox target validation or other structured sources.
+        </p>
+      </section>
 
       <section className="assessment-section glass-card">
         <SectionTitle
