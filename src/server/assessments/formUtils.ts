@@ -1,13 +1,32 @@
-export function parseOptionalString(value: FormDataEntryValue | null) {
-  if (typeof value !== "string") {
-    return null;
+import {
+  normalizeOptionalTextInput,
+  normalizeRequiredTextInput,
+  normalizeTextInput,
+} from "../validation/inputLimits";
+
+type TextParseOptions = {
+  fieldName?: string;
+  maxLength?: number;
+};
+
+export function parseOptionalString(value: FormDataEntryValue | null, options: TextParseOptions = {}) {
+  if (typeof options.maxLength === "number") {
+    return normalizeOptionalTextInput(value, options.fieldName ?? "Value", options.maxLength);
   }
 
-  const trimmed = value.trim();
+  const trimmed = normalizeTextInput(value);
   return trimmed.length > 0 ? trimmed : null;
 }
 
-export function parseRequiredString(value: FormDataEntryValue | null, fieldName: string) {
+export function parseRequiredString(
+  value: FormDataEntryValue | null,
+  fieldName: string,
+  options: Omit<TextParseOptions, "fieldName"> = {},
+) {
+  if (typeof options.maxLength === "number") {
+    return normalizeRequiredTextInput(value, fieldName, options.maxLength);
+  }
+
   const parsed = parseOptionalString(value);
 
   if (!parsed) {

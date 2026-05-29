@@ -6,6 +6,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ensureAssessmentOwnership, type AssessmentDetail } from "../assessments/assessmentService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 import { grantEntitlementsForUnlockType, mapUnlockTypeToEntitlements, type UnlockType } from "./entitlementService";
 
 export type UnlockRequestAdminRecord = Prisma.UnlockRequestGetPayload<{
@@ -265,6 +266,8 @@ export async function createUnlockRequest(params: {
   contactEmail?: string | null;
   notes?: string | null;
 }) {
+  const contactEmail = normalizeOptionalTextInput(params.contactEmail, "Contact email", INPUT_LIMITS.email);
+  const notes = normalizeOptionalTextInput(params.notes, "Unlock request notes", INPUT_LIMITS.notes);
   const assessment = await ensureAssessmentOwnership({
     userId: params.userId,
     assessmentId: params.assessmentId,
@@ -324,8 +327,8 @@ export async function createUnlockRequest(params: {
         status: "pending",
         amountCents: config.defaultAmountCents,
         currency: "USD",
-        contactEmail: params.contactEmail ?? null,
-        notes: params.notes ?? null,
+        contactEmail,
+        notes,
       },
     });
 
@@ -363,6 +366,7 @@ async function updateUnlockRequestStatus(params: {
   status: UnlockRequestStatus;
   adminNotes?: string | null;
 }) {
+  const adminNotes = normalizeOptionalTextInput(params.adminNotes, "Admin notes", INPUT_LIMITS.notes);
   const current = await getUnlockRequestForAdmin(params.unlockRequestId);
 
   if (!current) {
@@ -391,7 +395,7 @@ async function updateUnlockRequestStatus(params: {
     },
     data: {
       status: params.status,
-      adminNotes: params.adminNotes ?? current.adminNotes,
+      adminNotes: adminNotes ?? current.adminNotes,
       approvedAt:
         params.status === "approved"
           ? current.approvedAt ?? new Date()

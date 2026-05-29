@@ -277,6 +277,7 @@ export default function SignUpPage() {
                       type="text"
                       placeholder="e.g. Jane Doe"
                       required
+                      maxLength={288}
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       className="form-input"
@@ -305,6 +306,7 @@ export default function SignUpPage() {
                       type="email"
                       placeholder="name@company.com"
                       required
+                      maxLength={320}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="form-input"
@@ -340,6 +342,7 @@ export default function SignUpPage() {
                         type="text"
                         placeholder="Enterprise Inc."
                         required
+                        maxLength={216}
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         className="form-input"

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { getAdminAiUsage } from "../ai/aiUsageService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 export type AiBudgetSettings = {
   monthlyBudgetUsd: number | null;
@@ -33,8 +34,18 @@ function booleanFromForm(value: unknown) {
   return value === "on" || value === "true" || value === true;
 }
 
-function safeString(value: unknown, fallback = "") {
-  return typeof value === "string" ? value.trim().slice(0, 500) : fallback;
+function safeString(
+  value: unknown,
+  fallback = "",
+  options: { fieldName?: string; maxLength?: number } = {},
+) {
+  const parsed = normalizeOptionalTextInput(
+    value,
+    options.fieldName ?? "Value",
+    options.maxLength ?? INPUT_LIMITS.shortText,
+  );
+
+  return parsed ?? fallback;
 }
 
 function safeJson(value: unknown): Prisma.InputJsonValue | undefined {
@@ -212,7 +223,10 @@ export async function upsertUserEntitlementFromForm(params: {
       maxPdfReports: numberOrNull(params.formData.get("maxPdfReports")),
       aiEnabled: booleanFromForm(params.formData.get("aiEnabled")),
       fullReportEnabled: booleanFromForm(params.formData.get("fullReportEnabled")),
-      notesInternal: safeString(params.formData.get("notesInternal")) || null,
+      notesInternal: safeString(params.formData.get("notesInternal"), "", {
+        fieldName: "Internal notes",
+        maxLength: INPUT_LIMITS.notes,
+      }) || null,
       createdByUserId: params.actorUserId,
     },
   });
@@ -402,9 +416,18 @@ export async function updateCommercialOpportunityFromForm(params: {
   const assessmentId = safeString(params.formData.get("assessmentId"));
   const userId = safeString(params.formData.get("userId"));
   const status = safeString(params.formData.get("status"), "needs_follow_up");
-  const notesInternal = safeString(params.formData.get("notesInternal")) || null;
-  const nextBestAction = safeString(params.formData.get("nextBestAction")) || "Hacer seguimiento comercial";
-  const suggestedPlan = safeString(params.formData.get("suggestedPlan")) || null;
+  const notesInternal = safeString(params.formData.get("notesInternal"), "", {
+    fieldName: "Internal notes",
+    maxLength: INPUT_LIMITS.notes,
+  }) || null;
+  const nextBestAction = safeString(params.formData.get("nextBestAction"), "", {
+    fieldName: "Next best action",
+    maxLength: INPUT_LIMITS.description,
+  }) || "Hacer seguimiento comercial";
+  const suggestedPlan = safeString(params.formData.get("suggestedPlan"), "", {
+    fieldName: "Suggested plan",
+    maxLength: INPUT_LIMITS.shortText,
+  }) || null;
   const score = Number(params.formData.get("score"));
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.min(100, Math.round(score))) : 50;
 

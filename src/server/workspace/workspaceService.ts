@@ -1,10 +1,14 @@
 import { prisma } from "../../lib/prisma";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 export async function ensureDefaultWorkspace(params: {
   userId: string;
   companyName?: string | null;
   userDisplayName?: string | null;
 }) {
+  const companyName = normalizeOptionalTextInput(params.companyName, "Company name", INPUT_LIMITS.companyName);
+  const userDisplayName = normalizeOptionalTextInput(params.userDisplayName, "User display name", INPUT_LIMITS.companyName);
+
   const existing = await prisma.workspace.findFirst({
     where: {
       ownerUserId: params.userId,
@@ -23,7 +27,7 @@ export async function ensureDefaultWorkspace(params: {
       data: {
         ownerUserId: params.userId,
         name: "Default Readiness Workspace",
-        companyName: params.companyName ?? params.userDisplayName ?? null,
+        companyName: companyName ?? userDisplayName,
         plan: "free",
         billingStatus: "none",
         members: {

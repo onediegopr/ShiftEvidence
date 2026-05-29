@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import type { AssessmentDetail } from "./assessmentService";
 import { ensureAssessmentOwnership } from "./assessmentService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 export const MIGRATION_CONTEXT_JSON_KEY = "migrationContext";
 
@@ -474,8 +475,16 @@ export function getMigrationContextMissingEvidence(coverage: MigrationContextCov
   return missing.map((item) => `${item} was not provided or was marked unknown/skipped.`);
 }
 
-function parseSingleContextValue(value: FormDataEntryValue | null) {
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+function parseSingleContextValue(value: FormDataEntryValue | null, question: MigrationContextQuestion) {
+  const maxLength = question.type === "text" ? INPUT_LIMITS.manualTechnicalContext : INPUT_LIMITS.shortText;
+  return normalizeOptionalTextInput(value, question.label, maxLength);
+}
+
+function parseMultiContextValues(formData: FormData, question: MigrationContextQuestion) {
+  return formData
+    .getAll(`context.${question.id}.value`)
+    .map((entry) => normalizeOptionalTextInput(entry, question.label, INPUT_LIMITS.shortText))
+    .filter((entry): entry is string => Boolean(entry));
 }
 
 export function parseMigrationContextFormData(formData: FormData): MigrationContextData {
@@ -490,12 +499,8 @@ export function parseMigrationContextFormData(formData: FormData): MigrationCont
         : "skipped";
 
     const value: string | string[] | null = question.type === "multi"
-      ? formData
-        .getAll(`context.${question.id}.value`)
-        .filter((entry): entry is string => typeof entry === "string")
-        .map((entry) => entry.trim())
-        .filter(Boolean)
-      : parseSingleContextValue(formData.get(`context.${question.id}.value`));
+      ? parseMultiContextValues(formData, question)
+      : parseSingleContextValue(formData.get(`context.${question.id}.value`), question);
 
     const effectiveStatus = status === "answered" && (!value || (Array.isArray(value) && value.length === 0))
       ? "skipped"

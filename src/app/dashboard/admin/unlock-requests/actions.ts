@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import { parseOptionalString, safeRedirectError } from "../../../../server/assessments/formUtils";
+import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 import {
   approveUnlockRequest,
   cancelUnlockRequest,
@@ -34,7 +35,10 @@ export async function approveUnlockRequestAction(unlockRequestId: string, formDa
   let redirectTarget = getAdminRedirectPath("saved=1");
 
   try {
-    const adminNotes = parseOptionalString(formData.get("adminNotes"));
+    const adminNotes = parseOptionalString(formData.get("adminNotes"), {
+      fieldName: "Admin notes",
+      maxLength: INPUT_LIMITS.notes,
+    });
     await approveUnlockRequest({
       adminUserId: session.user.id,
       unlockRequestId,
@@ -53,7 +57,10 @@ export async function fulfillUnlockRequestAction(unlockRequestId: string, formDa
   let redirectTarget = getAdminRedirectPath("saved=1");
 
   try {
-    const adminNotes = parseOptionalString(formData.get("adminNotes"));
+    const adminNotes = parseOptionalString(formData.get("adminNotes"), {
+      fieldName: "Admin notes",
+      maxLength: INPUT_LIMITS.notes,
+    });
     await fulfillUnlockRequest({
       adminUserId: session.user.id,
       unlockRequestId,
@@ -72,7 +79,10 @@ export async function rejectUnlockRequestAction(unlockRequestId: string, formDat
   let redirectTarget = getAdminRedirectPath("saved=1");
 
   try {
-    const adminNotes = parseOptionalString(formData.get("adminNotes"));
+    const adminNotes = parseOptionalString(formData.get("adminNotes"), {
+      fieldName: "Admin notes",
+      maxLength: INPUT_LIMITS.notes,
+    });
     await rejectUnlockRequest({
       adminUserId: session.user.id,
       unlockRequestId,
@@ -91,7 +101,10 @@ export async function cancelUnlockRequestAction(unlockRequestId: string, formDat
   let redirectTarget = getAdminRedirectPath("saved=1");
 
   try {
-    const adminNotes = parseOptionalString(formData.get("adminNotes"));
+    const adminNotes = parseOptionalString(formData.get("adminNotes"), {
+      fieldName: "Admin notes",
+      maxLength: INPUT_LIMITS.notes,
+    });
     await cancelUnlockRequest({
       adminUserId: session.user.id,
       unlockRequestId,

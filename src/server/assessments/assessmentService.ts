@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ensureDefaultWorkspace } from "../workspace/workspaceService";
 import { assertCanCreateAssessment } from "../admin/runtimeSettingsService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 export const assessmentDetailInclude = {
   workspace: {
@@ -133,11 +134,6 @@ export type AssessmentListItem = Prisma.AssessmentGetPayload<{
   };
 }>;
 
-function normalizeText(value: string | null | undefined) {
-  const trimmed = value?.trim() ?? "";
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 function parseAssessmentId(assessmentId: string) {
   const trimmed = assessmentId.trim();
   if (!trimmed) {
@@ -240,8 +236,9 @@ export async function createAssessment(params: {
   storageReadinessEnabled: boolean;
 }) {
   const workspaceId = params.workspaceId ?? (await ensureDefaultWorkspace({ userId: params.userId })).id;
-  const title = normalizeText(params.title) ?? "VMware to Proxmox readiness assessment";
-  const clientLabel = normalizeText(params.clientLabel);
+  const title = normalizeOptionalTextInput(params.title, "Assessment title", INPUT_LIMITS.assessmentTitle)
+    ?? "VMware to Proxmox readiness assessment";
+  const clientLabel = normalizeOptionalTextInput(params.clientLabel, "Client / company label", INPUT_LIMITS.companyName);
 
   await assertCanCreateAssessment({
     userId: params.userId,
@@ -343,8 +340,8 @@ export async function updateAssessmentBasics(params: {
     assessmentId: params.assessmentId,
   });
 
-  const title = normalizeText(params.title) ?? assessment.title;
-  const clientLabel = normalizeText(params.clientLabel);
+  const title = normalizeOptionalTextInput(params.title, "Assessment title", INPUT_LIMITS.assessmentTitle) ?? assessment.title;
+  const clientLabel = normalizeOptionalTextInput(params.clientLabel, "Client / company label", INPUT_LIMITS.companyName);
 
   return prisma.$transaction(async (tx) => {
     const updatedAssessment = await tx.assessment.update({

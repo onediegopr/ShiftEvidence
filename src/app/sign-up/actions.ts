@@ -12,6 +12,7 @@ import {
   type MigrationContextData,
 } from "../../server/assessments/migrationContextService";
 import { upsertPreliminaryResult } from "../../server/assessments/costRiskService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../../server/validation/inputLimits";
 
 export async function createOnboardingAssessmentAction(params: {
   company: string;
@@ -41,7 +42,7 @@ export async function createOnboardingAssessmentAction(params: {
     userDisplayName: session.user.name,
   });
 
-  const companyLabel = params.company?.trim() || "My Company";
+  const companyLabel = normalizeOptionalTextInput(params.company, "Company name", INPUT_LIMITS.companyName) ?? "My Company";
   const title = `${companyLabel} VMware Exit Audit`;
 
   const assessment = await createAssessment({

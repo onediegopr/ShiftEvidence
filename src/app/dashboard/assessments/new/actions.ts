@@ -12,6 +12,7 @@ import {
   parseRequiredString,
   safeRedirectError,
 } from "../../../../server/assessments/formUtils";
+import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 
 export async function createAssessmentAction(formData: FormData) {
   const session = await auth.api.getSession({
@@ -25,8 +26,13 @@ export async function createAssessmentAction(formData: FormData) {
   let redirectTarget: string;
 
   try {
-    const title = parseRequiredString(formData.get("title"), "Assessment title");
-    const clientLabel = parseOptionalString(formData.get("clientLabel"));
+    const title = parseRequiredString(formData.get("title"), "Assessment title", {
+      maxLength: INPUT_LIMITS.assessmentTitle,
+    });
+    const clientLabel = parseOptionalString(formData.get("clientLabel"), {
+      fieldName: "Client / company label",
+      maxLength: INPUT_LIMITS.companyName,
+    });
     const storageReadinessEnabled = parseBooleanField(formData.get("storageReadinessEnabled"));
 
     await upsertUserProfileFromSession({

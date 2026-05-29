@@ -9,6 +9,7 @@ import type { PdfReportBrandingInput, PdfReportBrandLogo } from "../../../../../
 import { upsertUserProfileFromSession } from "../../../../../../server/user/userProfileService";
 import { getCommercialStatusForAssessment } from "../../../../../../server/unlocks/unlockRequestService";
 import { getPublicUrl } from "../../../../../../server/url/publicAppUrl";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../../../../../../server/validation/inputLimits";
 
 export const runtime = "nodejs";
 const MAX_LOGO_BYTES = 1024 * 1024;
@@ -16,10 +17,6 @@ const MAX_LOGO_BYTES = 1024 * 1024;
 function getReportUrl(assessmentId: string, query?: string) {
   const suffix = query ? `?${query}` : "";
   return getPublicUrl(`/dashboard/assessments/${assessmentId}/report${suffix}`);
-}
-
-function optionalText(value: FormDataEntryValue | null) {
-  return typeof value === "string" && value.trim() ? value.trim().slice(0, 90) : null;
 }
 
 function inferLogoMime(buffer: Buffer): PdfReportBrandLogo["mimeType"] | null {
@@ -64,8 +61,8 @@ async function parseReportBranding(request: Request): Promise<PdfReportBrandingI
 
   const formData = await request.formData();
   const audience = formData.get("reportAudience") === "client" ? "client" : "own_company";
-  const companyName = optionalText(formData.get("companyName"));
-  const clientName = optionalText(formData.get("clientName"));
+  const companyName = normalizeOptionalTextInput(formData.get("companyName"), "Company name", INPUT_LIMITS.companyName);
+  const clientName = normalizeOptionalTextInput(formData.get("clientName"), "Client name", INPUT_LIMITS.companyName);
   const companyLogo = await parseLogo(formData.get("companyLogo"), "Company logo");
   const clientLogo = audience === "client" ? await parseLogo(formData.get("clientLogo"), "Client logo") : null;
 

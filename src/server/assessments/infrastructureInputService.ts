@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { ensureAssessmentOwnership, type AssessmentDetail } from "./assessmentService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 export type InfrastructureCompleteness = "missing" | "partial" | "complete";
 
@@ -95,6 +96,7 @@ export async function upsertInfrastructureInput(params: {
   const largeVmCount = params.input.largeVmCount ?? null;
   const poweredOffVmCount = params.input.poweredOffVmCount ?? null;
   const vmCount = params.input.vmCount ?? null;
+  const notes = normalizeOptionalTextInput(params.input.notes, "Infrastructure notes", INPUT_LIMITS.notes);
 
   if (criticalWorkloadCount !== null && vmCount !== null && criticalWorkloadCount > vmCount) {
     throw new Error("Critical workload count cannot exceed VM count.");
@@ -126,7 +128,7 @@ export async function upsertInfrastructureInput(params: {
       criticalWorkloadCount,
       largeVmCount,
       poweredOffVmCount,
-      notes: params.input.notes ?? null,
+      notes,
     },
     update: {
       vmCount,
@@ -141,7 +143,7 @@ export async function upsertInfrastructureInput(params: {
       criticalWorkloadCount,
       largeVmCount,
       poweredOffVmCount,
-      notes: params.input.notes ?? null,
+      notes,
     },
   });
 

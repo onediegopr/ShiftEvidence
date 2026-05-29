@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, Minus } from "lucide-react";
 import { createAssessmentAction } from "./actions";
+import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 
 type NewAssessmentPageProps = {
   searchParams?: {
@@ -34,6 +35,7 @@ export default function NewAssessmentPage({ searchParams }: NewAssessmentPagePro
                 name="title"
                 className="form-input"
                 type="text"
+                maxLength={INPUT_LIMITS.assessmentTitle}
                 placeholder="Example: EMEA VMware exit review"
               />
             </label>
@@ -44,6 +46,7 @@ export default function NewAssessmentPage({ searchParams }: NewAssessmentPagePro
                 name="clientLabel"
                 className="form-input"
                 type="text"
+                maxLength={INPUT_LIMITS.companyName}
                 placeholder="Optional enterprise or client label"
               />
             </label>

@@ -14,6 +14,7 @@ import {
   getMigrationContextFromAssessment,
   getMigrationContextMissingEvidence,
 } from "./migrationContextService";
+import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
 function toNumber(value: Prisma.Decimal | number | null | undefined) {
   if (value === null || value === undefined) {
@@ -71,6 +72,23 @@ export async function upsertCostRiskAssumptions(params: {
   const socketCount = params.input.socketCount ?? null;
   const coreCount = params.input.coreCount ?? null;
   const vmCount = params.input.vmCount ?? null;
+  const vmwareLicenseModel = normalizeOptionalTextInput(
+    params.input.vmwareLicenseModel,
+    "VMware license model",
+    INPUT_LIMITS.shortText,
+  );
+  const currency = normalizeOptionalTextInput(params.input.currency, "Currency", 12) ?? "USD";
+  const migrationComplexity = normalizeOptionalTextInput(
+    params.input.migrationComplexity,
+    "Migration complexity",
+    INPUT_LIMITS.shortText,
+  );
+  const businessCriticality = normalizeOptionalTextInput(
+    params.input.businessCriticality,
+    "Business criticality",
+    INPUT_LIMITS.shortText,
+  );
+  const riskTolerance = normalizeOptionalTextInput(params.input.riskTolerance, "Risk tolerance", INPUT_LIMITS.shortText);
 
   for (const [label, value] of [
     ["Socket count", socketCount],
@@ -90,31 +108,31 @@ export async function upsertCostRiskAssumptions(params: {
     },
     create: {
       assessmentId: assessment.id,
-      vmwareLicenseModel: params.input.vmwareLicenseModel?.trim() || null,
+      vmwareLicenseModel,
       socketCount,
       coreCount,
       vmCount,
       annualVmwareCost: decimalFromNumber(params.input.annualVmwareCost),
       estimatedProxmoxCost: decimalFromNumber(params.input.estimatedProxmoxCost),
-      currency: params.input.currency?.trim() || "USD",
+      currency,
       years,
-      migrationComplexity: params.input.migrationComplexity?.trim() || null,
-      businessCriticality: params.input.businessCriticality?.trim() || null,
-      riskTolerance: params.input.riskTolerance?.trim() || null,
+      migrationComplexity,
+      businessCriticality,
+      riskTolerance,
       assumptionsJson: params.input.assumptionsJson ?? undefined,
     },
     update: {
-      vmwareLicenseModel: params.input.vmwareLicenseModel?.trim() || null,
+      vmwareLicenseModel,
       socketCount,
       coreCount,
       vmCount,
       annualVmwareCost: decimalFromNumber(params.input.annualVmwareCost),
       estimatedProxmoxCost: decimalFromNumber(params.input.estimatedProxmoxCost),
-      currency: params.input.currency?.trim() || "USD",
+      currency,
       years,
-      migrationComplexity: params.input.migrationComplexity?.trim() || null,
-      businessCriticality: params.input.businessCriticality?.trim() || null,
-      riskTolerance: params.input.riskTolerance?.trim() || null,
+      migrationComplexity,
+      businessCriticality,
+      riskTolerance,
       assumptionsJson: params.input.assumptionsJson ?? undefined,
     },
   });

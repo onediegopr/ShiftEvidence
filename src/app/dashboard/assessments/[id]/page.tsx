@@ -87,6 +87,7 @@ import {
   getVisibleFindingsForFreePlan,
   getVmRiskMatrixRows,
 } from "../../../../server/risk/riskFindingService";
+import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 
 type AssessmentDetailPageProps = {
   params: Promise<{
@@ -438,6 +439,7 @@ function MigrationContextField({
         <textarea
           name={`context.${question.id}.value`}
           className="form-input assessment-textarea"
+          maxLength={INPUT_LIMITS.manualTechnicalContext}
           defaultValue={typeof answer.value === "string" ? answer.value : ""}
           placeholder={question.placeholder ?? "Optional context"}
         />
@@ -734,6 +736,7 @@ export default async function AssessmentDetailPage({
                   name="title"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.assessmentTitle}
                   defaultValue={editDefaults.title}
                 />
               </label>
@@ -743,6 +746,7 @@ export default async function AssessmentDetailPage({
                   name="clientLabel"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.companyName}
                   defaultValue={editDefaults.clientLabel}
                   placeholder="Optional enterprise or client label"
                 />
@@ -828,6 +832,7 @@ export default async function AssessmentDetailPage({
                 <textarea
                   name="notes"
                   className="form-input assessment-textarea"
+                  maxLength={INPUT_LIMITS.notes}
                   defaultValue={assessment.infrastructureInput?.notes ?? ""}
                   placeholder="Optional intake notes, assumptions or constraints."
                 />
@@ -867,6 +872,7 @@ export default async function AssessmentDetailPage({
                   name="currency"
                   className="form-input"
                   type="text"
+                  maxLength={12}
                   defaultValue={assessment.costRiskAssumptions?.currency ?? "USD"}
                 />
               </label>
@@ -888,6 +894,7 @@ export default async function AssessmentDetailPage({
                   name="vmwareLicenseModel"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.shortText}
                   defaultValue={assessment.costRiskAssumptions?.vmwareLicenseModel ?? ""}
                   placeholder="Example: subscription, perpetual, bundle"
                 />
@@ -953,6 +960,7 @@ export default async function AssessmentDetailPage({
                   name="migrationComplexity"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.shortText}
                   defaultValue={assessment.costRiskAssumptions?.migrationComplexity ?? ""}
                   placeholder="Low / medium / high"
                 />
@@ -963,6 +971,7 @@ export default async function AssessmentDetailPage({
                   name="businessCriticality"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.shortText}
                   defaultValue={assessment.costRiskAssumptions?.businessCriticality ?? ""}
                   placeholder="Low / medium / high"
                 />
@@ -973,6 +982,7 @@ export default async function AssessmentDetailPage({
                   name="riskTolerance"
                   className="form-input"
                   type="text"
+                  maxLength={INPUT_LIMITS.shortText}
                   defaultValue={assessment.costRiskAssumptions?.riskTolerance ?? ""}
                   placeholder="Conservative / balanced / aggressive"
                 />

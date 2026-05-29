@@ -497,7 +497,7 @@ export default async function ReportPreviewPage({
           <div className="report-branding-fields">
             <label>
               <span>Your company / partner name</span>
-              <input type="text" name="companyName" maxLength={90} placeholder="Example: Partner Infrastructure Group" />
+              <input type="text" name="companyName" maxLength={216} placeholder="Example: Partner Infrastructure Group" />
             </label>
             <label>
               <span>Your company / partner logo</span>
@@ -505,7 +505,7 @@ export default async function ReportPreviewPage({
             </label>
             <label>
               <span>End client name</span>
-              <input type="text" name="clientName" maxLength={90} defaultValue={assessment.clientLabel ?? ""} placeholder="Optional for client-facing reports" />
+              <input type="text" name="clientName" maxLength={216} defaultValue={assessment.clientLabel ?? ""} placeholder="Optional for client-facing reports" />
             </label>
             <label>
               <span>End client logo</span>

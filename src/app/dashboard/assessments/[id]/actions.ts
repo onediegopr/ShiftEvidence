@@ -27,6 +27,7 @@ import {
   parseRequiredString,
   safeRedirectError,
 } from "../../../../server/assessments/formUtils";
+import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -61,12 +62,20 @@ export async function updateAssessmentBasicsAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "basics";
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
-    const title = parseRequiredString(formData.get("title"), "Assessment title");
-    const clientLabel = parseOptionalString(formData.get("clientLabel"));
+    const title = parseRequiredString(formData.get("title"), "Assessment title", {
+      maxLength: INPUT_LIMITS.assessmentTitle,
+    });
+    const clientLabel = parseOptionalString(formData.get("clientLabel"), {
+      fieldName: "Client / company label",
+      maxLength: INPUT_LIMITS.companyName,
+    });
 
     await updateAssessmentBasics({
       userId: session.user.id,
@@ -88,7 +97,10 @@ export async function saveInfrastructureInputAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "basics";
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
@@ -153,7 +165,10 @@ export async function saveInfrastructureInputAction(
           integer: true,
           min: 0,
         }),
-        notes: parseOptionalString(formData.get("notes")),
+        notes: parseOptionalString(formData.get("notes"), {
+          fieldName: "Infrastructure notes",
+          maxLength: INPUT_LIMITS.notes,
+        }),
       },
     });
 
@@ -174,7 +189,10 @@ export async function saveCostRiskAssumptionsAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "basics";
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "basics";
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {
@@ -182,7 +200,10 @@ export async function saveCostRiskAssumptionsAction(
       userId: session.user.id,
       assessmentId,
       input: {
-        vmwareLicenseModel: parseOptionalString(formData.get("vmwareLicenseModel")),
+        vmwareLicenseModel: parseOptionalString(formData.get("vmwareLicenseModel"), {
+          fieldName: "VMware license model",
+          maxLength: INPUT_LIMITS.shortText,
+        }),
         socketCount: parseOptionalNumber(formData.get("socketCount"), {
           fieldName: "Socket count",
           integer: true,
@@ -206,16 +227,28 @@ export async function saveCostRiskAssumptionsAction(
           fieldName: "Estimated Proxmox cost",
           min: 0,
         }),
-        currency: parseOptionalString(formData.get("currency")) ?? "USD",
+        currency: parseOptionalString(formData.get("currency"), {
+          fieldName: "Currency",
+          maxLength: 12,
+        }) ?? "USD",
         years: parseOptionalNumber(formData.get("years"), {
           fieldName: "Years",
           integer: true,
           min: 1,
           max: 10,
         }),
-        migrationComplexity: parseOptionalString(formData.get("migrationComplexity")),
-        businessCriticality: parseOptionalString(formData.get("businessCriticality")),
-        riskTolerance: parseOptionalString(formData.get("riskTolerance")),
+        migrationComplexity: parseOptionalString(formData.get("migrationComplexity"), {
+          fieldName: "Migration complexity",
+          maxLength: INPUT_LIMITS.shortText,
+        }),
+        businessCriticality: parseOptionalString(formData.get("businessCriticality"), {
+          fieldName: "Business criticality",
+          maxLength: INPUT_LIMITS.shortText,
+        }),
+        riskTolerance: parseOptionalString(formData.get("riskTolerance"), {
+          fieldName: "Risk tolerance",
+          maxLength: INPUT_LIMITS.shortText,
+        }),
         assumptionsJson: null,
       },
     });
@@ -265,7 +298,10 @@ export async function toggleStorageReadinessAction(
   formData: FormData,
 ) {
   const session = await requireSession();
-  const currentTab = parseOptionalString(formData.get("currentTab")) ?? "evidence";
+  const currentTab = parseOptionalString(formData.get("currentTab"), {
+    fieldName: "Current tab",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? "evidence";
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", currentTab);
 
   try {

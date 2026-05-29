@@ -9,6 +9,7 @@ import { parseOptionalString, parseRequiredString, safeRedirectError } from "../
 import { upsertUserProfileFromSession } from "../../../../../server/user/userProfileService";
 import { createUnlockRequest, getCommercialStatusForAssessment } from "../../../../../server/unlocks/unlockRequestService";
 import { trackReportUpgradeIntent } from "../../../../../server/reports/upgradeEventService";
+import { INPUT_LIMITS } from "../../../../../server/validation/inputLimits";
 import {
   generatePdfReportForAssessment,
   softDeleteReport,
@@ -109,9 +110,16 @@ export async function requestUnlockAction(assessmentId: string, formData: FormDa
   let redirectTarget: string;
 
   try {
-    const triggerType = parseRequiredString(formData.get("triggerType"), "Upgrade trigger");
-    const message = parseRequiredString(formData.get("message"), "Upgrade message");
-    const notes = parseOptionalString(formData.get("notes"));
+    const triggerType = parseRequiredString(formData.get("triggerType"), "Upgrade trigger", {
+      maxLength: INPUT_LIMITS.shortText,
+    });
+    const message = parseRequiredString(formData.get("message"), "Upgrade message", {
+      maxLength: INPUT_LIMITS.description,
+    });
+    const notes = parseOptionalString(formData.get("notes"), {
+      fieldName: "Upgrade notes",
+      maxLength: INPUT_LIMITS.notes,
+    });
 
     await trackReportUpgradeIntent({
       userId: session.user.id,
@@ -153,8 +161,12 @@ export async function trackReportUpgradeIntentAction(
   let redirectTarget = getReportRedirectPath(assessmentId, "upgrade=1");
 
   try {
-    const triggerType = parseRequiredString(formData.get("triggerType"), "Upgrade trigger");
-    const message = parseRequiredString(formData.get("message"), "Upgrade message");
+    const triggerType = parseRequiredString(formData.get("triggerType"), "Upgrade trigger", {
+      maxLength: INPUT_LIMITS.shortText,
+    });
+    const message = parseRequiredString(formData.get("message"), "Upgrade message", {
+      maxLength: INPUT_LIMITS.description,
+    });
 
     await trackReportUpgradeIntent({
       userId: session.user.id,
