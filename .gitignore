@@ -13,6 +13,7 @@ dist-ssr
 .next
 storage
 uploads
+.qa-storage/
 qa-artifacts/
 .tmp
 *.tmp
