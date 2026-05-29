@@ -13,6 +13,28 @@ import { recordAiUsageEvent, type AiUsageOperationType } from "./aiUsageService"
 import { assertCanUseAi } from "../admin/runtimeSettingsService";
 
 
+type AiInputReductionStrategy = "moderate" | "strong" | "minimal" | "emergency";
+
+type AiInputReductionMetadata = {
+  truncated: boolean;
+  strategy: AiInputReductionStrategy;
+  originalCounts: {
+    riskFindings: number;
+    manualAnswers: number;
+    coverageSections: number;
+    importantContext: number;
+    missingContext: number;
+    evidenceReceived: number;
+    evidenceMissing: number;
+    mismatchWarnings: number;
+  };
+  severityCounts: Record<string, number>;
+};
+
+type ReducedAiAdvisoryContextPayload = AiAdvisoryContextPayload & {
+  inputReduction?: AiInputReductionMetadata;
+};
+
 function emptyOutput(config: AiAdvisoryConfig, providerStatus: AiAdvisoryProviderStatus): AiAdvisoryOutput {
   return {
     executiveSummaryNotes: [],
@@ -31,40 +53,187 @@ function emptyOutput(config: AiAdvisoryConfig, providerStatus: AiAdvisoryProvide
   };
 }
 
-function truncateJsonInput(payload: AiAdvisoryContextPayload, maxInputChars: number) {
-  const json = JSON.stringify(payload);
-  if (json.length <= maxInputChars) {
-    return json;
+function truncateTextForAiInput(value: string | null, maxChars: number) {
+  if (!value || value.length <= maxChars) {
+    return value;
   }
 
-  // Reduce large arrays first to stay within limit while keeping valid JSON
-  const reduced: AiAdvisoryContextPayload = {
-    ...payload,
-    riskFindings: payload.riskFindings.slice(0, 15),
-    manualMigrationContext: {
-      ...payload.manualMigrationContext,
-      answers: payload.manualMigrationContext.answers.slice(0, 20),
+  return `${value.slice(0, maxChars)}...`;
+}
+
+function getInputReductionMetadata(
+  payload: AiAdvisoryContextPayload,
+  strategy: AiInputReductionStrategy,
+): AiInputReductionMetadata {
+  const severityCounts = payload.riskFindings.reduce<Record<string, number>>((counts, finding) => {
+    counts[finding.severity] = (counts[finding.severity] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  return {
+    truncated: true,
+    strategy,
+    originalCounts: {
+      riskFindings: payload.riskFindings.length,
+      manualAnswers: payload.manualMigrationContext.answers.length,
+      coverageSections: payload.manualMigrationContext.coverage.sections.length,
+      importantContext: payload.manualMigrationContext.importantContext.length,
+      missingContext: payload.manualMigrationContext.missingContext.length,
+      evidenceReceived: payload.evidenceReceived.length,
+      evidenceMissing: payload.evidenceMissing.length,
+      mismatchWarnings: payload.assumptions.mismatchWarnings.length,
     },
+    severityCounts,
   };
-  const reducedJson = JSON.stringify(reduced);
-  if (reducedJson.length <= maxInputChars) {
-    return reducedJson;
+}
+
+function compactRiskFindings(payload: AiAdvisoryContextPayload, count: number, textLimit: number) {
+  return payload.riskFindings.slice(0, count).map((finding) => ({
+    ...finding,
+    entityName: truncateTextForAiInput(finding.entityName, 80),
+    title: truncateTextForAiInput(finding.title, textLimit) ?? "",
+    description: truncateTextForAiInput(finding.description, textLimit) ?? "",
+    recommendation: truncateTextForAiInput(finding.recommendation, textLimit),
+  }));
+}
+
+function compactManualAnswers(payload: AiAdvisoryContextPayload, count: number, textLimit: number) {
+  return payload.manualMigrationContext.answers.slice(0, count).map((answer) => ({
+    ...answer,
+    question: truncateTextForAiInput(answer.question, 140) ?? "",
+    value: Array.isArray(answer.value)
+      ? answer.value.slice(0, 4).map((item) => truncateTextForAiInput(item, textLimit) ?? "")
+      : truncateTextForAiInput(answer.value, textLimit),
+  }));
+}
+
+function reduceAiInputPayload(
+  payload: AiAdvisoryContextPayload,
+  strategy: Exclude<AiInputReductionStrategy, "emergency">,
+): ReducedAiAdvisoryContextPayload {
+  if (strategy === "moderate") {
+    return {
+      ...payload,
+      inputReduction: getInputReductionMetadata(payload, strategy),
+      riskFindings: compactRiskFindings(payload, 15, 320),
+      manualMigrationContext: {
+        ...payload.manualMigrationContext,
+        coverage: {
+          ...payload.manualMigrationContext.coverage,
+          missingKeyContext: payload.manualMigrationContext.coverage.missingKeyContext.slice(0, 12),
+          sections: payload.manualMigrationContext.coverage.sections.slice(0, 10).map((section) => ({
+            ...section,
+            missing: section.missing.slice(0, 8),
+          })),
+        },
+        importantContext: payload.manualMigrationContext.importantContext.slice(0, 14),
+        missingContext: payload.manualMigrationContext.missingContext.slice(0, 14),
+        answers: compactManualAnswers(payload, 20, 220),
+      },
+      assumptions: {
+        ...payload.assumptions,
+        mismatchWarnings: payload.assumptions.mismatchWarnings.slice(0, 8),
+      },
+      evidenceReceived: payload.evidenceReceived.slice(0, 10),
+      evidenceMissing: payload.evidenceMissing.slice(0, 14),
+    };
   }
 
-  // Further reduce if still too large
-  const minimal: AiAdvisoryContextPayload = {
-    ...reduced,
-    riskFindings: reduced.riskFindings.slice(0, 5),
+  if (strategy === "strong") {
+    return {
+      ...payload,
+      inputReduction: getInputReductionMetadata(payload, strategy),
+      riskFindings: compactRiskFindings(payload, 7, 180),
+      manualMigrationContext: {
+        ...payload.manualMigrationContext,
+        coverage: {
+          ...payload.manualMigrationContext.coverage,
+          missingKeyContext: payload.manualMigrationContext.coverage.missingKeyContext.slice(0, 6),
+          sections: payload.manualMigrationContext.coverage.sections.slice(0, 4).map((section) => ({
+            ...section,
+            missing: section.missing.slice(0, 4),
+          })),
+        },
+        importantContext: payload.manualMigrationContext.importantContext.slice(0, 6),
+        missingContext: payload.manualMigrationContext.missingContext.slice(0, 8),
+        answers: compactManualAnswers(payload, 5, 120),
+      },
+      assumptions: {
+        ...payload.assumptions,
+        mismatchWarnings: payload.assumptions.mismatchWarnings.slice(0, 4),
+      },
+      evidenceReceived: payload.evidenceReceived.slice(0, 4),
+      evidenceMissing: payload.evidenceMissing.slice(0, 8),
+      excluded: payload.excluded.slice(0, 5),
+    };
+  }
+
+  return {
+    ...payload,
+    inputReduction: getInputReductionMetadata(payload, strategy),
+    riskFindings: compactRiskFindings(payload, 3, 120),
     manualMigrationContext: {
-      ...reduced.manualMigrationContext,
-      answers: [],
       coverage: {
-        ...reduced.manualMigrationContext.coverage,
+        overallPercent: payload.manualMigrationContext.coverage.overallPercent,
+        status: payload.manualMigrationContext.coverage.status,
+        missingKeyContext: payload.manualMigrationContext.coverage.missingKeyContext.slice(0, 4),
         sections: [],
+      },
+      statusCounts: payload.manualMigrationContext.statusCounts,
+      importantContext: payload.manualMigrationContext.importantContext.slice(0, 3),
+      missingContext: payload.manualMigrationContext.missingContext.slice(0, 5),
+      answers: [],
+    },
+    assumptions: {
+      ...payload.assumptions,
+      mismatchWarnings: payload.assumptions.mismatchWarnings.slice(0, 2),
+    },
+    evidenceReceived: payload.evidenceReceived.slice(0, 2),
+    evidenceMissing: payload.evidenceMissing.slice(0, 5),
+    excluded: [
+      "raw files",
+      "secrets",
+      "tokens",
+      "storage paths",
+    ],
+  };
+}
+
+function buildEmergencyAiInput(payload: AiAdvisoryContextPayload) {
+  return {
+    assessment: payload.assessment,
+    rvtoolsSummary: payload.rvtoolsSummary,
+    scores: payload.scores,
+    inputReduction: getInputReductionMetadata(payload, "emergency"),
+    riskSummary: {
+      topFindings: compactRiskFindings(payload, 2, 80),
+      evidenceMissing: payload.evidenceMissing.slice(0, 3),
+      contextCoverage: {
+        overallPercent: payload.manualMigrationContext.coverage.overallPercent,
+        status: payload.manualMigrationContext.coverage.status,
       },
     },
   };
-  return JSON.stringify(minimal);
+}
+
+function buildSafeJsonInput(payload: AiAdvisoryContextPayload, maxInputChars: number) {
+  const maxChars = Math.max(2, maxInputChars);
+  const candidates: unknown[] = [
+    payload,
+    reduceAiInputPayload(payload, "moderate"),
+    reduceAiInputPayload(payload, "strong"),
+    reduceAiInputPayload(payload, "minimal"),
+    buildEmergencyAiInput(payload),
+  ];
+
+  for (const candidate of candidates) {
+    const json = JSON.stringify(candidate);
+    if (json.length <= maxChars) {
+      return json;
+    }
+  }
+
+  return "{}";
 }
 
 function normalizeStringList(value: unknown, fallback: string[] = []) {
@@ -119,13 +288,22 @@ function normalizeProviderJson(value: unknown, fallback: AiAdvisoryOutput): AiAd
   };
 }
 
-function parseJsonText(text: string): unknown {
+function parseJsonText(text: string): unknown | null {
   try {
     const trimmed = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
     return JSON.parse(trimmed);
   } catch {
     return null;
   }
+}
+
+function parseProviderJsonText(text: string) {
+  const parsed = parseJsonText(text);
+  if (parsed === null) {
+    throw new Error("AI advisory invalid JSON response.");
+  }
+
+  return parsed;
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {
@@ -255,7 +433,7 @@ async function callGeminiProvider(params: {
     throw new Error("Gemini advisory response was empty.");
   }
 
-  return normalizeProviderJson(parseJsonText(text), params.fallback);
+  return normalizeProviderJson(parseProviderJsonText(text), params.fallback);
 }
 
 async function callOpenAiProvider(params: {
@@ -338,7 +516,7 @@ async function callOpenAiProvider(params: {
     throw new Error("OpenAI advisory response was empty.");
   }
 
-  return normalizeProviderJson(parseJsonText(text), params.fallback);
+  return normalizeProviderJson(parseProviderJsonText(text), params.fallback);
 }
 
 export async function generateAiAdvisoryFromPayload(
@@ -351,7 +529,7 @@ export async function generateAiAdvisoryFromPayload(
 ): Promise<AiAdvisoryOutput> {
   const config = await getEffectiveAiAdvisoryConfig();
   const startedAt = Date.now();
-  const inputJson = truncateJsonInput(payload, config.maxInputChars);
+  const inputJson = buildSafeJsonInput(payload, config.maxInputChars);
   const operationType = options.operationType ?? "unknown";
 
   recordAiRuntimeEvent({
