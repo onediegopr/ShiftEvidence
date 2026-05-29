@@ -41,6 +41,9 @@ describe("assessment completion presentation helpers", () => {
     expect(getCompletionModuleHref("assessment-1", "storage_analysis")).toBe(
       "/dashboard/assessments/assessment-1?tab=basics#storage-readiness",
     );
+    expect(getCompletionModuleHref("assessment-1", "client_context_intelligence")).toBe(
+      "/dashboard/assessments/assessment-1?tab=client-context#client-context-additional-evidence",
+    );
     expect(getCompletionModuleHref("assessment-1", "report_generation")).toBe(
       "/dashboard/assessments/assessment-1/report",
     );

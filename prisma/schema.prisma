@@ -175,8 +175,11 @@ model Assessment {
   preliminaryResult        AssessmentPreliminaryResult?
   licensingAnalysis        AssessmentLicensingAnalysis?
   storageReadinessInput    StorageReadinessInput?
+  clientContext            AssessmentClientContext?
+  clientContextAnalysis    AssessmentClientContextAnalysis?
   entitlements             AssessmentEntitlement[]
   evidenceFiles            EvidenceFile[]
+  additionalEvidence       AssessmentAdditionalEvidence[]
   parsedVMs                ParsedVM[]
   parsedHosts              ParsedHost[]
   parsedDatastores         ParsedDatastore[]
@@ -303,6 +306,85 @@ model AssessmentLicensingAnalysis {
   @@index([generatedAt])
 }
 
+model AssessmentClientContext {
+  id                String                         @id @default(cuid())
+  assessmentId      String                         @unique
+  rawText           String?                        @db.Text
+  wordCount         Int                            @default(0)
+  characterCount    Int                            @default(0)
+  status            AssessmentClientContextStatus  @default(not_provided)
+  sourceType        AssessmentClientContextSourceType @default(customer_free_text)
+  planLimitWords    Int?
+  planLimitFiles    Int?
+  truncated         Boolean                        @default(false)
+  submittedByUserId String?
+  submittedAt       DateTime?
+  lastEditedAt      DateTime?
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+  assessment        Assessment                     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([submittedByUserId])
+}
+
+model AssessmentClientContextAnalysis {
+  id                         String                              @id @default(cuid())
+  assessmentId               String                              @unique
+  status                     AssessmentClientContextAnalysisStatus @default(not_started)
+  interpretedSummary         String?                             @db.Text
+  businessPrioritiesJson     Json?
+  migrationConstraintsJson   Json?
+  criticalWorkloadsJson      Json?
+  customerReportedRisksJson  Json?
+  aiExtractedInsightsJson    Json?
+  contradictionsJson         Json?
+  validationItemsJson        Json?
+  reportImpactJson           Json?
+  nextQuestionsJson          Json?
+  contextCompletenessScore   Int?
+  businessContextConfidence  String?
+  analysisVersion            String?
+  promptVersion              String?
+  modelUsed                  String?
+  safetyFlagsJson            Json?
+  generatedAt                DateTime?
+  createdAt                  DateTime                            @default(now())
+  updatedAt                  DateTime                            @updatedAt
+  assessment                 Assessment                          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([generatedAt])
+}
+
+model AssessmentAdditionalEvidence {
+  id                        String                                     @id @default(cuid())
+  assessmentId              String
+  evidenceFileId            String
+  purpose                   AssessmentAdditionalEvidencePurpose         @default(client_context)
+  classification            AssessmentAdditionalEvidenceClassification  @default(unknown_needs_review)
+  analysisStatus            AssessmentAdditionalEvidenceAnalysisStatus   @default(received_not_analyzed)
+  aiSummary                 String?                                    @db.Text
+  includedInContextAnalysis Boolean                                    @default(true)
+  planRestricted            Boolean                                    @default(false)
+  notes                     String?                                    @db.Text
+  createdAt                 DateTime                                  @default(now())
+  updatedAt                 DateTime                                  @updatedAt
+  assessment                Assessment                                @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile              EvidenceFile                              @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, evidenceFileId])
+  @@index([assessmentId])
+  @@index([evidenceFileId])
+  @@index([purpose])
+  @@index([classification])
+  @@index([analysisStatus])
+  @@index([includedInContextAnalysis])
+}
+
 model StorageReadinessInput {
   id                         String   @id @default(cuid())
   assessmentId               String   @unique
@@ -363,6 +445,7 @@ model EvidenceFile {
   parsedDatastores ParsedDatastore[]
   parsedSnapshots ParsedSnapshot[]
   parsedInventorySummary ParsedInventorySummary?
+  additionalEvidenceRecords AssessmentAdditionalEvidence[]
   riskFindings    RiskFinding[]
 
   @@index([assessmentId])
@@ -1007,6 +1090,58 @@ enum AssessmentLicensingAnalysisMode {
   estimated_from_environment
   broad_scenarios
   skipped
+}
+
+enum AssessmentClientContextStatus {
+  not_provided
+  draft
+  submitted
+  ready_for_analysis
+  analysis_pending
+  analyzed
+  analysis_failed
+  skipped
+}
+
+enum AssessmentClientContextSourceType {
+  customer_free_text
+  internal_note
+  imported
+}
+
+enum AssessmentClientContextAnalysisStatus {
+  not_started
+  pending
+  completed
+  failed
+  stale
+}
+
+enum AssessmentAdditionalEvidencePurpose {
+  client_context
+  business_context
+  technical_evidence
+  financial_evidence
+  architecture_diagram
+  contract_renewal_evidence
+  unknown_needs_review
+}
+
+enum AssessmentAdditionalEvidenceClassification {
+  business_context
+  technical_evidence
+  financial_evidence
+  architecture_diagram
+  contract_renewal_evidence
+  unknown_needs_review
+}
+
+enum AssessmentAdditionalEvidenceAnalysisStatus {
+  received_not_analyzed
+  queued
+  summarized
+  failed
+  excluded
 }
 
 enum LicensingPricingVendor {

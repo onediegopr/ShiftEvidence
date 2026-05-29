@@ -72,6 +72,8 @@ function getCompletedModuleImpact(module: AssessmentCompletionModule) {
       return "Storage context is available for architecture recommendations.";
     case "licensing_cost_exposure":
       return "USD cost exposure is included in the report assumptions.";
+    case "client_context_intelligence":
+      return "Customer-provided context is available as advisory input and must be validated against technical evidence.";
     case "manual_assumptions":
       return "Manual constraints and assumptions are documented.";
     case "ai_advisory":

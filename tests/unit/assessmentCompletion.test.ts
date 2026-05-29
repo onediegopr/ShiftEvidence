@@ -46,6 +46,9 @@ function baseAssessment(overrides: Record<string, unknown> = {}) {
     storageReadinessEnabled: null,
     storageReadinessStatus: null,
     storageReadinessInput: null,
+    clientContext: null,
+    clientContextAnalysis: null,
+    additionalEvidence: [],
     ...overrides,
   });
 }
@@ -196,6 +199,14 @@ describe("assessment completion model", () => {
           requiresHa: true,
           requiresSharedStorage: true,
         },
+        clientContext: {
+          status: "ready_for_analysis",
+          wordCount: 120,
+          characterCount: 850,
+          lastEditedAt: now,
+          updatedAt: now,
+        },
+        additionalEvidence: [],
         aiUsageEvents: [{ status: "success", createdAt: now, updatedAt: now }],
         reports: [
           {
@@ -270,6 +281,37 @@ describe("assessment completion model", () => {
       true,
     );
     expect(summary.limitations.some((item) => item.includes("Storage Analysis"))).toBe(true);
+  });
+
+  it("keeps client context optional and marks submitted context as complete", () => {
+    const emptySummary = computeAssessmentCompletionSummary(parsedRvtoolsAssessment());
+    const draftSummary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        clientContext: {
+          status: "draft",
+          wordCount: 40,
+          characterCount: 260,
+          lastEditedAt: now,
+          updatedAt: now,
+        },
+      }),
+    );
+    const submittedSummary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        clientContext: {
+          status: "ready_for_analysis",
+          wordCount: 90,
+          characterCount: 620,
+          lastEditedAt: now,
+          updatedAt: now,
+        },
+      }),
+    );
+
+    expect(moduleByKey(emptySummary.modules, "client_context_intelligence").status).toBe("not_started");
+    expect(moduleByKey(draftSummary.modules, "client_context_intelligence").status).toBe("partial");
+    expect(moduleByKey(submittedSummary.modules, "client_context_intelligence").status).toBe("complete");
+    expect(submittedSummary.canGenerateReport).toBe(true);
   });
 
   it("keeps percentages inside the 0 to 100 range", () => {

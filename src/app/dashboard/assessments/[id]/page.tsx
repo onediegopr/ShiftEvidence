@@ -61,6 +61,7 @@ import {
   getNextStepsSummary,
 } from "../../../../server/assessments/assessmentCompletionService";
 import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
+import { ClientContextAdditionalEvidencePanel } from "../../../../components/assessments/ClientContextAdditionalEvidencePanel";
 import { LicensingCostExposurePanel } from "../../../../components/assessments/LicensingCostExposurePanel";
 import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
@@ -100,6 +101,7 @@ import {
 } from "../../../../server/risk/riskFindingService";
 import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 import { buildAssessmentLicensingAnalysisSummary } from "../../../../server/assessments/licensingCostExposureService";
+import { buildAssessmentClientContextSummary } from "../../../../server/assessments/clientContextService";
 
 type AssessmentDetailPageProps = {
   params: Promise<{
@@ -578,6 +580,7 @@ export default async function AssessmentDetailPage({
   const licensingCostContext = getLicensingCostContextFromAssessment(assessment);
   const storageCompletionModule = completionSummary.modules.find((module) => module.key === "storage_analysis");
   const licensingCompletionModule = completionSummary.modules.find((module) => module.key === "licensing_cost_exposure");
+  const clientContextCompletionModule = completionSummary.modules.find((module) => module.key === "client_context_intelligence");
   const error = resolvedSearchParams.error ? decodeURIComponent(resolvedSearchParams.error) : null;
   const saved = resolvedSearchParams.saved === "1";
   const storageStatus = assessment.storageReadinessEnabled
@@ -613,6 +616,21 @@ export default async function AssessmentDetailPage({
     headers: await headers(),
   });
   const isAdmin = session ? isAdminEmail(session.user.email) : false;
+  const clientContextSummary = session
+    ? await buildAssessmentClientContextSummary({
+        userId: session.user.id,
+        assessment,
+      })
+    : null;
+  const clientContextStatus = clientContextSummary?.status ?? "not_provided";
+  const clientContextDotColor =
+    clientContextStatus === "ready_for_analysis" ||
+    clientContextStatus === "submitted" ||
+    clientContextStatus === "analyzed"
+      ? "#10b981"
+      : clientContextStatus === "draft" || clientContextStatus === "analysis_pending"
+        ? "#f59e0b"
+        : "#475569";
 
   const editDefaults = getEditBasicsDefaults(assessment);
   const totalPrereqs = uploadPrerequisites.missingPrerequisites.length;
@@ -685,6 +703,16 @@ export default async function AssessmentDetailPage({
           Migration Context
         </Link>
         <Link
+          href={`/dashboard/assessments/${assessment.id}?tab=client-context`}
+          className={`tab-btn ${activeTab === "client-context" ? "active" : ""}`}
+        >
+          <span
+            className="tab-progress-dot"
+            style={{ background: clientContextDotColor }}
+          ></span>
+          Client Context
+        </Link>
+        <Link
           href={`/dashboard/assessments/${assessment.id}?tab=inventory`}
           className={`tab-btn ${activeTab === "inventory" ? "active" : ""}`}
         >
@@ -741,8 +769,8 @@ export default async function AssessmentDetailPage({
         <article className="glass-card assessment-summary-card">
           <CircleAlert size={22} />
           <span className="assessment-summary-label">Context</span>
-          <strong>{migrationContextCoverage.overallPercent}%</strong>
-          <p>{statusLabel(migrationContextCoverage.status)}</p>
+          <strong>{clientContextCompletionModule ? statusLabel(clientContextCompletionModule.status) : `${migrationContextCoverage.overallPercent}%`}</strong>
+          <p>Migration: {statusLabel(migrationContextCoverage.status)}</p>
         </article>
       </section>
 
@@ -907,7 +935,7 @@ export default async function AssessmentDetailPage({
                 </p>
               </div>
               <div className="assessment-optional-module-meta">
-                <span>Weight: {licensingCompletionModule?.weight ?? 15}%</span>
+                <span>Weight: {licensingCompletionModule?.weight ?? 13}%</span>
                 <span>Precision: {licensingCompletionModule?.confidenceContribution ?? 0}%</span>
                 <span>Decision: {statusLabel(licensingCostContext.decision)}</span>
               </div>
@@ -1151,7 +1179,7 @@ export default async function AssessmentDetailPage({
                 </p>
               </div>
               <div className="assessment-optional-module-meta">
-                <span>Weight: {storageCompletionModule?.weight ?? 15}%</span>
+                <span>Weight: {storageCompletionModule?.weight ?? 13}%</span>
                 <span>Precision: {storageCompletionModule?.confidenceContribution ?? 0}%</span>
                 <span>Decision: {statusLabel(storageAnalysisContext.decision)}</span>
               </div>
@@ -1460,6 +1488,13 @@ export default async function AssessmentDetailPage({
           </section>
         </>
       )}
+
+      {activeTab === "client-context" && clientContextSummary ? (
+        <ClientContextAdditionalEvidencePanel
+          assessmentId={assessment.id}
+          summary={clientContextSummary}
+        />
+      ) : null}
 
       {activeTab === "evidence" && (
         <section id="evidence-upload" className="assessment-section glass-card">

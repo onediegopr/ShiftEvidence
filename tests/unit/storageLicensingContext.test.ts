@@ -51,6 +51,9 @@ function baseAssessment(overrides: Record<string, unknown> = {}) {
     storageReadinessEnabled: false,
     storageReadinessStatus: "not_selected",
     storageReadinessInput: null,
+    clientContext: null,
+    clientContextAnalysis: null,
+    additionalEvidence: [],
     ...overrides,
   });
 }

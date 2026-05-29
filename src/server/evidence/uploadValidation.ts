@@ -9,7 +9,7 @@ const evidenceTypeExtensions: Record<EvidenceType, string[]> = {
   proxmox: [".xlsx", ".xls", ".csv"],
   network: [".xlsx", ".xls", ".csv"],
   cmdb: [".xlsx", ".xls", ".csv"],
-  other: [".csv", ".txt", ".xlsx", ".xls"],
+  other: [".csv", ".txt", ".xlsx", ".xls", ".pdf", ".docx", ".png", ".jpg", ".jpeg"],
 };
 
 const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
@@ -55,6 +55,10 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "text/csv",
     "application/csv",
     "text/plain",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/png",
+    "image/jpeg",
     "application/octet-stream",
   ],
 };

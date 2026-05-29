@@ -21,6 +21,8 @@ export const assessmentDetailInclude = {
   preliminaryResult: true,
   licensingAnalysis: true,
   storageReadinessInput: true,
+  clientContext: true,
+  clientContextAnalysis: true,
   entitlements: true,
   evidenceFiles: {
     orderBy: [
@@ -29,6 +31,16 @@ export const assessmentDetailInclude = {
       },
       {
         uploadedAt: "desc",
+      },
+    ],
+  },
+  additionalEvidence: {
+    include: {
+      evidenceFile: true,
+    },
+    orderBy: [
+      {
+        createdAt: "desc",
       },
     ],
   },

@@ -24,6 +24,7 @@ export type AssessmentModuleKey =
   | "migration_questions"
   | "storage_analysis"
   | "licensing_cost_exposure"
+  | "client_context_intelligence"
   | "manual_assumptions"
   | "ai_advisory"
   | "report_generation";
@@ -124,7 +125,7 @@ export const assessmentCompletionModuleCatalog = [
     label: "Storage Analysis",
     description: "Current and target storage context across SAN, NAS, vSAN, Ceph or ZFS.",
     required: false,
-    weight: 15,
+    weight: 13,
     actionLabel: "Add storage context",
     impactIfMissing:
       "Storage recommendations remain estimated and require manual validation.",
@@ -134,17 +135,27 @@ export const assessmentCompletionModuleCatalog = [
     label: "Licensing & Cost Exposure",
     description: "VMware and Proxmox cost inputs, renewal exposure and modeled savings.",
     required: false,
-    weight: 15,
+    weight: 13,
     actionLabel: "Add cost assumptions",
     impactIfMissing:
       "Financial exposure and savings should be treated as directional only.",
+  },
+  {
+    key: "client_context_intelligence",
+    label: "Client Context & Additional Evidence",
+    description: "Customer-provided free-text context and additional evidence classified for future analysis.",
+    required: false,
+    weight: 5,
+    actionLabel: "Add client context",
+    impactIfMissing:
+      "Customer narrative, internal constraints and additional evidence are not yet available for advisory context.",
   },
   {
     key: "manual_assumptions",
     label: "Manual Assumptions",
     description: "Constraints, deadlines, budget, criticality and manual technical notes.",
     required: false,
-    weight: 5,
+    weight: 4,
     actionLabel: "Add assumptions",
     impactIfMissing:
       "Manual constraints and exceptions may be underrepresented in the report.",
@@ -775,6 +786,89 @@ function detectLicensingCostExposureModule(
   };
 }
 
+function detectClientContextModule(
+  assessment: AssessmentCompletionAssessmentInput,
+): ModuleDetectionResult {
+  const context = assessment.clientContext;
+  const additionalEvidence = assessment.additionalEvidence ?? [];
+  const activeAdditionalEvidenceCount = additionalEvidence.filter(
+    (item) =>
+      item.evidenceFile.deletedAt === null &&
+      item.evidenceFile.processingStatus !== "deleted" &&
+      item.analysisStatus !== "excluded" &&
+      item.includedInContextAnalysis,
+  ).length;
+  const evidenceCount = (context?.wordCount ?? 0) + activeAdditionalEvidenceCount;
+  const lastUpdatedAt = getLatestDate([
+    context?.lastEditedAt ?? context?.updatedAt ?? null,
+    ...additionalEvidence.map((item) => item.updatedAt ?? item.createdAt),
+  ]);
+
+  if (context?.status === "skipped") {
+    return {
+      status: "skipped",
+      evidence: {
+        count: activeAdditionalEvidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Client Context & Additional Evidence was skipped; customer narrative will not inform advisory context.",
+    };
+  }
+
+  if (
+    context?.status === "ready_for_analysis" ||
+    context?.status === "submitted" ||
+    context?.status === "analyzed"
+  ) {
+    return {
+      status: "complete",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+    };
+  }
+
+  if (context?.status === "draft" || activeAdditionalEvidenceCount > 0) {
+    return {
+      status: "partial",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Client context exists as draft or received files, but it has not been submitted for future structured analysis.",
+    };
+  }
+
+  if (context?.status === "analysis_failed") {
+    return {
+      status: "failed",
+      evidence: {
+        count: evidenceCount,
+        source: "client_context",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Client context analysis failed and should be reviewed before using customer narrative as advisory input.",
+    };
+  }
+
+  return {
+    status: "not_started",
+    evidence: {
+      count: 0,
+      source: "client_context",
+    },
+    limitationText:
+      "Client context is optional, but missing narrative may leave business priorities and constraints underrepresented.",
+  };
+}
+
 function detectManualAssumptionsModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
@@ -939,6 +1033,8 @@ function detectModule(
       return detectStorageAnalysisModule(context.assessment);
     case "licensing_cost_exposure":
       return detectLicensingCostExposureModule(context.assessment);
+    case "client_context_intelligence":
+      return detectClientContextModule(context.assessment);
     case "manual_assumptions":
       return detectManualAssumptionsModule(context.assessment);
     case "ai_advisory":
