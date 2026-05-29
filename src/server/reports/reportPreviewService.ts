@@ -1,5 +1,9 @@
 import type { AssessmentDetail } from "../assessments/assessmentService";
-import { getAssessmentCompletionStatus, getMissingEvidenceSummary } from "../assessments/assessmentCompletionService";
+import {
+  computeAssessmentCompletionSummary,
+  getAssessmentCompletionStatus,
+  getMissingEvidenceSummary,
+} from "../assessments/assessmentCompletionService";
 import { getCostRiskStatus, getPreliminaryCostRiskPreview } from "../assessments/costRiskService";
 import { buildInventoryDrivenCostRiskContext } from "../risk/riskContext";
 import {
@@ -29,6 +33,10 @@ import {
   type ReportSectionConfig,
   type ReportSectionAccess,
 } from "./reportSections";
+import {
+  buildAssessmentCoverageSection,
+  type ReportCoverageSectionData,
+} from "./reportCoverageSection";
 
 type ReportPreviewStatus = "available" | "partial" | "locked";
 
@@ -63,6 +71,7 @@ export type ReportPreviewData = {
   commercialStatus: ReturnType<typeof getCommercialStatusForAssessment>;
   completionScore: number;
   completionStatus: string;
+  assessmentCoverage: ReportCoverageSectionData;
   evidenceConfidence: string;
   evidenceConfidenceLabel: string;
   sourceLabel: string;
@@ -462,6 +471,7 @@ export async function getReportPreviewData(
   } = {},
 ): Promise<ReportPreviewData> {
   const completion = getAssessmentCompletionStatus(assessment);
+  const completionSummary = computeAssessmentCompletionSummary(assessment);
   const preview = getPreliminaryCostRiskPreview(assessment);
   const context = buildInventoryDrivenCostRiskContext(assessment);
   const parsed = context.parsedInventory;
@@ -556,6 +566,7 @@ export async function getReportPreviewData(
     commercialStatus,
     completionScore: completion.completionScore,
     completionStatus: completion.completionStatus,
+    assessmentCoverage: buildAssessmentCoverageSection(completionSummary),
     evidenceConfidence: completion.evidenceConfidence,
     evidenceConfidenceLabel: getEvidenceConfidenceLabel(completion.evidenceConfidence),
     sourceLabel: preview.dataSourceLabel ?? context.sourceLabel,

@@ -1,6 +1,7 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import type { ReportPreviewData } from "./reportPreviewService";
+import type { ReportCoverageRow } from "./reportCoverageSection";
 
 export type PdfReportRenderInput = {
   assessmentTitle: string;
@@ -458,6 +459,115 @@ function keyValueTable(doc: PDFKit.PDFDocument, rows: Array<[string, string]>) {
   doc.moveDown(0.5);
 }
 
+function coverageTable(doc: PDFKit.PDFDocument, rows: ReportCoverageRow[]) {
+  const headers = ["Area", "Status", "Required", "Impact"];
+  const widths = [126, 76, 72, 248];
+  const startX = MARGIN;
+  const headerY = doc.y;
+
+  doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
+  let x = startX + 8;
+  headers.forEach((header, index) => {
+    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+      width: widths[index],
+    });
+    x += widths[index];
+  });
+  doc.y = headerY + 30;
+
+  rows.forEach((row, index) => {
+    ensureSpace(doc, 56, "Assessment Coverage & Assumptions");
+    const y = doc.y;
+    if (index % 2 === 0) {
+      doc.rect(startX, y - 4, contentWidth(doc), 50).fill("#f8fafc");
+    }
+
+    x = startX + 8;
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8.2).text(safeText(row.area), x, y, {
+      width: widths[0] - 10,
+      height: 38,
+      lineGap: 1,
+    });
+    x += widths[0];
+    badge(doc, row.status, row.tone, x, y - 1);
+    x += widths[1];
+    doc.fillColor(THEME.slate).font("Helvetica-Bold").fontSize(8).text(safeText(row.required), x, y + 2, {
+      width: widths[2] - 8,
+      height: 20,
+    });
+    x += widths[2];
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(7.7).text(safeText(row.impact), x, y, {
+      width: widths[3] - 12,
+      height: 40,
+      lineGap: 1,
+    });
+    doc.y = y + 52;
+  });
+}
+
+function addCoverageSection(doc: PDFKit.PDFDocument, preview: ReportPreviewData) {
+  const coverage = preview.assessmentCoverage;
+
+  addContentPage(doc, "Section 2A", coverage.title, "Evidence coverage, assumptions and limitations");
+  paragraph(doc, coverage.intro);
+  doc.moveDown(0.8);
+
+  const cardY = doc.y;
+  metricCard({
+    doc,
+    x: MARGIN,
+    y: cardY,
+    w: 120,
+    h: 82,
+    label: "Completion",
+    value: `${coverage.completionPercent}%`,
+    note: "Assessment module progress",
+    tone: getScoreTone(coverage.completionPercent),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 132,
+    y: cardY,
+    w: 136,
+    h: 82,
+    label: "Report confidence",
+    value: `${coverage.reportConfidencePercent}%`,
+    note: "Evidence and context strength",
+    tone: getScoreTone(coverage.reportConfidencePercent),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 280,
+    y: cardY,
+    w: 108,
+    h: 82,
+    label: "Required",
+    value: coverage.requiredModulesLabel,
+    note: "Required module status",
+    tone: coverage.requiredModulesLabel === "Complete" ? "good" : "warning",
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 400,
+    y: cardY,
+    w: 108,
+    h: 82,
+    label: "Report",
+    value: coverage.reportGenerationLabel,
+    note: "Generation status",
+    tone: coverage.reportGenerationLabel === "Generated" ? "good" : "neutral",
+  });
+  doc.y = cardY + 108;
+
+  h2(doc, "Module coverage");
+  coverageTable(doc, coverage.rows);
+  doc.moveDown(0.6);
+
+  h2(doc, "Report Limitations");
+  bulletList(doc, coverage.limitations, 9);
+  callout(doc, coverage.usdNote, "info");
+}
+
 function findingCard(doc: PDFKit.PDFDocument, finding: ReportPreviewData["topFindings"][number]) {
   ensureSpace(doc, 96, "Top Findings");
   const y = doc.y;
@@ -813,7 +923,9 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       rightItems: preview.evidenceOverview.missing,
     });
 
-    addContentPage(doc, "Section 2A", "Migration Context Summary", "Human project context and confidence impact");
+    addCoverageSection(doc, preview);
+
+    addContentPage(doc, "Section 2B", "Migration Context Summary", "Human project context and confidence impact");
     h2(doc, "Context coverage", "Missing context is treated as evidence gap, not a hard error.");
     keyValueTable(doc, [
       ["Overall coverage", `${preview.migrationContext.coverage.overallPercent}%`],
@@ -827,7 +939,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     bulletList(doc, preview.migrationContext.missingContext, 8);
 
     if (shouldIncludeAiAdvisory(preview)) {
-      addContentPage(doc, "Section 2B", "AI Advisory Notes", "Optional sanitized advisory guidance");
+      addContentPage(doc, "Section 2C", "AI Advisory Notes", "Optional sanitized advisory guidance");
       callout(doc, "AI advisory is optional. It does not replace deterministic readiness, confidence or internal risk findings.", "info");
       keyValueTable(doc, [
         ["Provider status", titleCase(preview.aiAdvisory.providerStatus)],
