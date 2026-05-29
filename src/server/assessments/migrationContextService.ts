@@ -62,20 +62,68 @@ const unknownOptions = ["Unknown", "I don't know yet", "Not defined"];
 export const migrationContextSections: MigrationContextSection[] = [
   {
     id: "quick_context",
-    title: "Quick Context",
+    title: "Quick Questions",
     group: "quick",
-    description: "Fast context that improves report confidence without blocking progress.",
+    description: "Fast optional context that improves report precision without blocking progress.",
     questions: [
       q("main_migration_objective", "Main migration objective", "single", [
-        "Reduce VMware/Broadcom licensing cost",
-        "Replace VMware before renewal",
-        "Modernize infrastructure",
-        "Improve DR/backup posture",
-        "Consolidate datacenter",
+        "Reduce VMware licensing cost",
         "Evaluate Proxmox feasibility",
-        "Already decided to migrate",
+        "Prepare executive decision",
+        "Plan migration roadmap",
         "Other",
       ], 5, true),
+      q("target_timeline", "Expected migration timeline", "single", [
+        "Urgent: 0-3 months",
+        "Short term: 3-6 months",
+        "Medium term: 6-12 months",
+        "Exploratory / no fixed date",
+      ], 4, true),
+      q("preferred_target_platform", "Preferred target platform", "single", [
+        "Proxmox standalone",
+        "Proxmox + Ceph",
+        "Proxmox + existing SAN/NAS",
+        "Not decided yet",
+      ], 4, true),
+      q("environment_criticality", "Environment criticality", "single", [
+        "Production critical",
+        "Mixed production/test",
+        "Mostly non-critical",
+        "Unknown",
+      ], 4, true),
+      q("include_cost_licensing_analysis", "Include cost/licensing analysis", "single", [
+        "Yes",
+        "No",
+        "Not now",
+      ], 3),
+      q("include_storage_readiness", "Include storage readiness", "single", [
+        "Yes",
+        "No",
+        "Not sure",
+      ], 3),
+      textQ("additional_context", "Additional context", "Optional context for decision makers, constraints or known risks.", 3),
+    ],
+  },
+  {
+    id: "decision_context",
+    title: "Business / Decision Context",
+    group: "advanced",
+    description: "Audience, decision support and report preferences for executive narrative quality.",
+    questions: [
+      q("report_audience", "Who is the report for?", "multi", [
+        "Technical team",
+        "CIO/CTO",
+        "Finance/procurement",
+        "Board/executive team",
+        "MSP/internal consultant",
+      ], 4, true),
+      q("decision_support", "What decision should this report support?", "multi", [
+        "Whether to migrate",
+        "How urgent the migration is",
+        "Budget justification",
+        "Risk assessment",
+        "Architecture planning",
+      ], 4, true),
       q("project_stage", "Project stage", "single", [
         "Initial exploration",
         "Technical evaluation",
@@ -84,15 +132,7 @@ export const migrationContextSections: MigrationContextSection[] = [
         "Proxmox production target exists",
         "Pilot already started",
         "Urgent due to license/renewal deadline",
-      ], 5, true),
-      q("target_timeline", "Target timeline", "single", [
-        "No fixed date",
-        "0-30 days",
-        "1-3 months",
-        "3-6 months",
-        "6+ months",
-        "Unknown",
-      ], 4, true),
+      ], 3),
       q("expected_outcome", "Expected outcome from assessment", "multi", [
         "Validate feasibility",
         "Identify migration risks",
@@ -101,8 +141,16 @@ export const migrationContextSections: MigrationContextSection[] = [
         "Prepare executive decision",
         "Prepare technical migration plan",
         "Compare scenarios",
-      ], 4, true),
-      textQ("main_concern", "Main concern", "What is the biggest risk or concern in this migration?", 3, true),
+      ], 3),
+      q("report_style", "Report style", "single", [
+        "Executive",
+        "Technical",
+        "Mixed",
+      ], 2),
+      q("report_language", "Report language", "single", [
+        "English",
+        "Not decided yet",
+      ], 1),
     ],
   },
   {

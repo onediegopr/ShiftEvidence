@@ -4014,6 +4014,35 @@ p {
     gap: 1rem;
 }
 
+.assessment-context-intro {
+    border-color: rgba(16, 185, 129, 0.16);
+    background:
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.08), transparent 32%),
+        rgba(13, 18, 36, 0.66);
+}
+
+.assessment-context-choice-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.1rem;
+    border: 1px solid rgba(34, 211, 238, 0.14);
+    border-radius: 20px;
+    background: rgba(34, 211, 238, 0.045);
+}
+
+.assessment-context-choice-panel h3 {
+    color: white;
+    font-size: 1.05rem;
+}
+
+.assessment-context-choice-panel p {
+    margin-top: 0.35rem;
+    max-width: 760px;
+    color: var(--text-muted);
+}
+
 .assessment-accordion-list {
     display: grid;
     gap: 1rem;
@@ -4035,6 +4064,16 @@ p {
 .assessment-context-summary small {
     color: var(--text-muted);
     font-size: 0.85rem;
+}
+
+.assessment-context-summary::-webkit-details-marker {
+    display: none;
+}
+
+@media (max-width: 860px) {
+    .assessment-context-choice-panel {
+        grid-template-columns: 1fr;
+    }
 }
 
 .assessment-checkbox-grid {

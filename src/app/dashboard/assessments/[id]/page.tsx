@@ -1064,18 +1064,48 @@ export default async function AssessmentDetailPage({
 
       {activeTab === "context" && (
         <>
-          <section className="assessment-section glass-card">
+          <section className="assessment-section glass-card assessment-context-intro">
             <SectionTitle
               icon={<CircleAlert size={18} />}
-              eyebrow="Adaptive Context"
-              title="Migration context intake"
-              description="Answer what you know now. Missing context will be reflected as evidence gaps, not treated as an error."
+              eyebrow="Optional module"
+              title="Migration Questions"
+              description="Optional context that improves report precision and executive recommendations. You can skip this and generate the report from RVTools inventory alone."
             />
 
             <div className="assessment-status-row">
+              {renderStatusPill("Recommended", "good")}
+              {renderStatusPill("Optional", "neutral")}
+              {renderStatusPill("Improves report confidence", "warning")}
               {renderStatusPill(`Coverage: ${migrationContextCoverage.overallPercent}%`, getContextStatusTone(migrationContextCoverage.status))}
               {renderStatusPill(`Status: ${statusLabel(migrationContextCoverage.status)}`, getContextStatusTone(migrationContextCoverage.status))}
-              {renderStatusPill("Incomplete context accepted", "neutral")}
+            </div>
+
+            <div className="assessment-context-choice-panel">
+              <div>
+                <h3>You can continue without answering these questions.</h3>
+                <p>
+                  The report will still be generated when RVTools inventory is ready, but business
+                  context, executive narrative and recommendations may be less precise.
+                </p>
+              </div>
+              <div className="assessment-inline-actions">
+                <a href="#quick-migration-questions" className="btn btn-primary btn-glow">
+                  Answer quick questions
+                  <ArrowRight size={16} />
+                </a>
+                {completionSummary.canGenerateReport ? (
+                  <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-secondary">
+                    Generate report now
+                  </Link>
+                ) : (
+                  <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence#evidence-upload`} className="btn btn-secondary">
+                    Upload RVTools first
+                  </Link>
+                )}
+                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
+                  Continue later
+                </Link>
+              </div>
             </div>
 
             <div className="assessment-preview-columns">
@@ -1108,12 +1138,12 @@ export default async function AssessmentDetailPage({
           </section>
 
           <form action={saveMigrationContextAction.bind(null, assessment.id)} className="assessment-context-form">
-            <section className="assessment-section glass-card">
+            <section id="quick-migration-questions" className="assessment-section glass-card">
               <SectionTitle
                 icon={<ShieldCheck size={18} />}
-                eyebrow="Quick Context"
+                eyebrow="Quick Questions"
                 title="Fast inputs with high report value"
-                description="These answers help the report understand objective, timeline, expected outcome and main concern."
+                description="Seven optional questions that improve precision without blocking evidence upload, report preview or PDF generation."
               />
               <div className="assessment-form-grid assessment-form-grid-wide">
                 {migrationContextSections
@@ -1129,19 +1159,29 @@ export default async function AssessmentDetailPage({
               </div>
               <div className="assessment-inline-actions">
                 <button type="submit" className="btn btn-primary btn-glow">
-                  Save quick context
+                  Save context
                   <RefreshCcw size={16} />
                 </button>
-                <span className="assessment-inline-note">You can complete this later.</span>
+                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
+                  Continue later
+                </Link>
+                {completionSummary.canGenerateReport ? (
+                  <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-secondary">
+                    Generate report now
+                  </Link>
+                ) : null}
+                <span className="assessment-inline-note">
+                  Save what you know. Unknown, skipped and not applicable answers are accepted.
+                </span>
               </div>
             </section>
 
-            <section className="assessment-section glass-card">
+            <section id="advanced-migration-context" className="assessment-section glass-card">
               <SectionTitle
                 icon={<Layers3 size={18} />}
                 eyebrow="Advanced Context"
                 title="Migration constraints and human evidence"
-                description="Advanced context is optional. It improves confidence, missing evidence and future AI advisory quality."
+                description="Advanced context stays secondary. Add it when you need stronger executive narrative, constraints, compliance context or wave-planning evidence."
               />
               <div className="assessment-accordion-list">
                 {migrationContextSections
@@ -1179,8 +1219,11 @@ export default async function AssessmentDetailPage({
                   Save all context
                   <RefreshCcw size={16} />
                 </button>
+                <Link href={`/dashboard/assessments/${assessment.id}?tab=evidence`} className="btn btn-secondary">
+                  Continue later
+                </Link>
                 <span className="assessment-inline-note">
-                  Advanced context does not block evidence upload.
+                  Advanced context does not block evidence upload or report generation.
                 </span>
               </div>
             </section>
