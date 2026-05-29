@@ -212,7 +212,7 @@ export function LicensingCostExposurePanel({
             <RefreshCcw size={16} />
           </button>
           <button type="submit" className="btn btn-primary btn-glow" formAction={runLicensingAnalysisAction.bind(null, assessmentId)}>
-            Run analysis
+            Run financial analysis
             <DollarSign size={16} />
           </button>
           <button type="submit" className="btn btn-secondary" formAction={skipLicensingAnalysisAction.bind(null, assessmentId)}>
@@ -229,7 +229,8 @@ export function LicensingCostExposurePanel({
       <div className="assessment-table-note">
         This is not a vendor quote. Estimates are based on customer-provided data, approved pricing snapshots and
         assessment evidence. Final pricing must be validated with the customer&apos;s vendor, reseller or procurement channel.
-        Storage cost modeling is still in development and is not included in this analysis.
+        Financial confidence is separate from technical evidence confidence. Storage cost modeling is still in development
+        and is not included in this analysis.
       </div>
 
       {analysis ? (

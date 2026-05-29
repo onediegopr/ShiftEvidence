@@ -201,8 +201,8 @@ export function ClientContextAdditionalEvidencePanel({
           <h3>Context is advisory until validated.</h3>
           <p>
             Raw text is stored for this assessment, but it is not printed directly in reports or PDFs.
-            A future Customer Context Intelligence engine will convert it into a structured summary,
-            priorities, risks, contradictions and next questions.
+            Customer Context Intelligence converts it into a structured interpretation with priorities,
+            risks, contradictions and next questions when analysis is available.
           </p>
         </div>
         <div className="assessment-optional-module-meta">
@@ -284,7 +284,7 @@ export function ClientContextAdditionalEvidencePanel({
         </div>
         <h3>Attach supporting context files</h3>
         <p>
-          Files are received and classified only. PDF/DOCX/images are not deeply parsed in CONTEXT-1.
+          Files are received and classified only. PDF, DOCX and image contents are not deeply parsed yet.
         </p>
       </div>
 
@@ -383,7 +383,7 @@ export function ClientContextAdditionalEvidencePanel({
                 className="assessment-inline-actions"
               >
                 <button type="submit" className="btn btn-secondary">
-                  {item.includedInContextAnalysis ? "Exclude from future analysis" : "Include in future analysis"}
+                  {item.includedInContextAnalysis ? "Exclude from context analysis" : "Include in context analysis"}
                 </button>
                 <span className="assessment-inline-note">
                   Classification: {labelFromValue(item.classification)}
@@ -412,7 +412,7 @@ export function ClientContextAdditionalEvidencePanel({
           <h3>Status: {labelFromValue(analysisStatus)}</h3>
           <p>
             The analysis uses sanitized text chunks and additional evidence metadata only.
-            Raw client text is not printed in this result section and report/PDF integration remains reserved for CONTEXT-3.
+            Reports use the structured interpretation; raw client text and file contents stay out of report/PDF output.
           </p>
         </div>
         <div className="assessment-optional-module-meta">

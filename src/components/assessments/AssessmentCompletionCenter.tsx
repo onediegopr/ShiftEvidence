@@ -123,10 +123,10 @@ function ModuleCard({
           {getCompletionStatusLabel(completionModule.status)}
         </span>
         <span className="assessment-chip assessment-chip-neutral">
-          {completionModule.required ? "Required" : "Recommended"}
+          {completionModule.required ? "Required" : "Optional"}
         </span>
         <span className="assessment-chip assessment-chip-neutral">
-          Weight {completionModule.weight}
+          Precision weight {completionModule.weight}
         </span>
       </div>
 
@@ -167,7 +167,7 @@ export function AssessmentCompletionCenter({
             <h2 id="assessment-completion-title">Assessment Completion Center</h2>
             <p>
               Build a stronger migration readiness report by completing optional modules.
-              RVTools inventory is required; the rest improves precision.
+              RVTools inventory is required; optional modules improve financial, business and planning precision.
             </p>
           </div>
           <div className="completion-center-actions">
@@ -196,9 +196,9 @@ export function AssessmentCompletionCenter({
           />
           <MetricCard
             icon={<TrendingUp size={20} aria-hidden="true" />}
-            label="Context Precision"
+            label="Report Precision"
             value={`${summary.reportConfidencePercent}%`}
-            text="Estimated precision based on available evidence and context."
+            text="Estimated precision from evidence, financial inputs and customer context."
             tone={summary.reportConfidencePercent >= 70 ? "good" : "warning"}
           />
           <MetricCard

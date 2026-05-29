@@ -1232,6 +1232,18 @@ function addLicensingCostExposureSection(doc: PDFKit.PDFDocument, input: PdfRepo
     "Missing Financial Evidence continued",
   );
 
+  h2(doc, "Pricing snapshot used");
+  bulletList(
+    doc,
+    section.pricingSnapshotUsed.length > 0
+      ? section.pricingSnapshotUsed.map((snapshot) =>
+          `${titleCase(snapshot.vendor)}: ${snapshot.sourceName ?? snapshot.snapshotId ?? "Approved snapshot"}; last checked: ${snapshot.lastCheckedAt ?? "not provided"}; status: ${snapshot.status ?? "approved"}.`,
+        )
+      : ["No approved pricing snapshot reference was persisted with this analysis."],
+    6,
+    "Pricing Snapshot Used continued",
+  );
+
 }
 
 function addPageNumbers(doc: PDFKit.PDFDocument) {

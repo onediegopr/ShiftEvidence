@@ -143,7 +143,7 @@ export const assessmentCompletionModuleCatalog = [
   {
     key: "client_context_intelligence",
     label: "Client Context & Additional Evidence",
-    description: "Customer-provided free-text context and additional evidence classified for future analysis.",
+    description: "Customer-provided context and additional evidence for structured advisory analysis.",
     required: false,
     weight: 5,
     actionLabel: "Add client context",

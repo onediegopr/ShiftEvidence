@@ -3233,6 +3233,7 @@ p {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    max-width: 100%;
     padding: 0.4rem 0.75rem;
     border-radius: 9999px;
     border: 1px solid;
@@ -3240,6 +3241,7 @@ p {
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
 .assessment-chip-neutral {
@@ -4266,6 +4268,10 @@ p {
 
 .report-metric-card {
     justify-content: flex-start;
+}
+
+.report-metric-card .assessment-chip {
+    align-self: flex-start;
 }
 
 .report-metric-card strong {

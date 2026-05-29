@@ -310,7 +310,7 @@ function ReportMetricCard({
       <span className="assessment-preview-label">{label}</span>
       <strong>{value}</strong>
       <p>{note}</p>
-      <span className={`assessment-chip assessment-chip-${tone}`}>{label}</span>
+      <span className={`assessment-chip assessment-chip-${tone}`}>{value}</span>
     </article>
   );
 }
