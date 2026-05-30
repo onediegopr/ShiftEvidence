@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import {
+  AlertTriangle,
   Archive,
+  Brain,
   Database,
   FileText,
+  Gauge,
   HardDrive,
   RefreshCcw,
   ShieldAlert,
   Upload,
 } from "lucide-react";
 import type { buildAssessmentStorageDestinationReadinessSummary } from "../../server/assessments/storageDestinationReadinessService";
+import type { StorageContextIntelligenceResult } from "../../server/assessments/storageContextIntelligenceTypes";
 import { formatStorageReadinessLimitLabel } from "../../server/assessments/storageReadinessPlanLimits";
 import {
+  runStorageContextAnalysisAction,
   saveStorageContextDraftAction,
   saveStorageReadinessDraftAction,
   skipStorageReadinessAction,
@@ -156,6 +161,32 @@ function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function asStorageContextIntelligenceResult(
+  value: unknown,
+): StorageContextIntelligenceResult | null {
+  if (!isRecord(value) || typeof value.interpretedStorageSummary !== "string") {
+    return null;
+  }
+
+  return value as unknown as StorageContextIntelligenceResult;
+}
+
+function formatScore(value: number | null | undefined) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "Not scored";
+  }
+
+  return `${Math.max(0, Math.min(100, Math.round(value)))}/100`;
+}
+
+function topItems<T>(items: T[] | null | undefined, count = 5) {
+  return Array.isArray(items) ? items.slice(0, count) : [];
+}
+
 export function StorageDestinationReadinessPanel({
   assessmentId,
   summary,
@@ -177,6 +208,18 @@ export function StorageDestinationReadinessPanel({
     (item) =>
       item.evidenceFile.deletedAt === null && item.evidenceFile.processingStatus !== "deleted",
   );
+  const storageIntelligence = asStorageContextIntelligenceResult(
+    summary.analysis?.recommendationsJson,
+  );
+  const analysisStatus = summary.analysis?.status ?? "not_started";
+  const canRunAnalysis =
+    summary.status !== "skipped" &&
+    (summary.parsedDatastoreCount > 0 ||
+      summary.activeFiles > 0 ||
+      summary.wordCount > 0 ||
+      Boolean(summary.readiness?.currentStorageType) ||
+      Boolean(summary.readiness?.targetStoragePreference));
+  const isAnalyzing = analysisStatus === "pending" || summary.status === "analysis_pending";
 
   return (
     <section id="storage-destination-readiness" className="assessment-section glass-card">
@@ -547,6 +590,245 @@ export function StorageDestinationReadinessPanel({
 
       <div className="assessment-section-title assessment-section-title-compact">
         <div className="assessment-section-eyebrow">
+          <Brain size={18} />
+          <span>Storage Context Intelligence</span>
+        </div>
+        <h3>Analyze storage context and evidence metadata</h3>
+        <p>
+          AI analysis summarizes storage-specific context and calculates preliminary agnostic
+          storage scores. It does not treat customer preference as confirmed technical evidence.
+        </p>
+      </div>
+
+      <div className="assessment-optional-module-panel">
+        <Gauge size={24} />
+        <div>
+          <h3>{labelFromValue(analysisStatus)}</h3>
+          <p>
+            This analysis is advisory context, not confirmed technical evidence. Ceph final
+            suitability is deferred to the dedicated Ceph readiness engine.
+          </p>
+        </div>
+        <div className="assessment-optional-module-meta">
+          <span>Storage completeness: {formatScore(storageIntelligence?.scores.storageCompletenessScore)}</span>
+          <span>
+            Evidence confidence:{" "}
+            {formatScore(
+              storageIntelligence?.scores.storageEvidenceConfidence ??
+                summary.analysis?.storageEvidenceConfidence,
+            )}
+          </span>
+          <span>
+            Destination readiness:{" "}
+            {formatScore(
+              storageIntelligence?.scores.storageDestinationReadiness ??
+                summary.analysis?.storageReadinessScore,
+            )}
+          </span>
+        </div>
+      </div>
+
+      <form action={runStorageContextAnalysisAction.bind(null, assessmentId)} className="assessment-inline-actions">
+        <button
+          type="submit"
+          className="btn btn-primary btn-glow"
+          disabled={!canRunAnalysis || isAnalyzing}
+        >
+          {analysisStatus === "completed" || analysisStatus === "stale"
+            ? "Re-run storage analysis"
+            : "Analyze storage context"}
+          <Brain size={16} />
+        </button>
+        <span className="assessment-inline-note">
+          {canRunAnalysis
+            ? "Uses structured inputs, sanitized storage context, RVTools storage signals and storage evidence metadata only."
+            : "Add storage inputs, context, RVTools datastore evidence or storage evidence before analysis."}
+        </span>
+      </form>
+
+      {analysisStatus === "failed" ? (
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow">
+            <AlertTriangle size={16} />
+            <span>Analysis failed</span>
+          </div>
+          <p>
+            Storage Context Intelligence failed safely. Existing storage inputs were preserved and
+            the module remains optional.
+          </p>
+        </article>
+      ) : null}
+
+      {["ai_disabled", "budget_blocked", "plan_restricted"].includes(analysisStatus) ? (
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow">
+            <ShieldAlert size={16} />
+            <span>Analysis limited</span>
+          </div>
+          <p>
+            AI storage analysis is unavailable for the current runtime, budget or plan. The
+            deterministic storage inputs remain available and do not block report generation.
+          </p>
+        </article>
+      ) : null}
+
+      {analysisStatus === "stale" ? (
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow">
+            <RefreshCcw size={16} />
+            <span>Stale analysis</span>
+          </div>
+          <p>
+            Storage inputs changed after the last analysis. Re-run Storage Context Intelligence
+            before relying on advisory output.
+          </p>
+        </article>
+      ) : null}
+
+      {storageIntelligence ? (
+        <div className="assessment-accordion-list">
+          <article className="glass-card assessment-subcard">
+            <h3>Interpreted Storage Summary</h3>
+            <p>{storageIntelligence.interpretedStorageSummary}</p>
+            <div className="assessment-status-row">
+              <span className="assessment-chip assessment-chip-neutral">
+                Context confidence: {labelFromValue(storageIntelligence.confidenceLabels.storageContextConfidence)}
+              </span>
+              <span className="assessment-chip assessment-chip-neutral">
+                Evidence confidence:{" "}
+                {labelFromValue(storageIntelligence.confidenceLabels.storageEvidenceConfidenceLabel)}
+              </span>
+              <span className="assessment-chip assessment-chip-warning">
+                Migration risk: {formatScore(storageIntelligence.scores.storageMigrationRisk)}
+              </span>
+              {storageIntelligence.scores.preliminaryCephConfidence !== null ? (
+                <span className="assessment-chip assessment-chip-warning">
+                  Preliminary Ceph confidence:{" "}
+                  {formatScore(storageIntelligence.scores.preliminaryCephConfidence)}
+                </span>
+              ) : null}
+            </div>
+          </article>
+
+          <div className="assessment-preview-columns">
+            <article className="glass-card assessment-subcard">
+              <h3>Destination Options</h3>
+              {topItems(storageIntelligence.destinationOptions).length === 0 ? (
+                <p className="assessment-empty-note">No destination options were extracted yet.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(storageIntelligence.destinationOptions).map((item, index) => (
+                    <li key={`${item.option}-${index}`}>
+                      <strong>{labelFromValue(item.option)}</strong>: {labelFromValue(item.suitability)} -{" "}
+                      {item.rationale}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Ceph Signals</h3>
+              <p>{storageIntelligence.cephSignals.signalSummary}</p>
+              <p className="assessment-inline-note">
+                Final decision deferred:{" "}
+                {storageIntelligence.cephSignals.finalDecisionDeferred ? "Yes" : "No"}
+              </p>
+              {storageIntelligence.cephSignals.riskSignals.length > 0 ? (
+                <ul className="assessment-bullet-list">
+                  {topItems(storageIntelligence.cephSignals.riskSignals).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </article>
+          </div>
+
+          <div className="assessment-preview-columns">
+            <article className="glass-card assessment-subcard">
+              <h3>Missing Evidence</h3>
+              {topItems(storageIntelligence.missingEvidence, 6).length === 0 ? (
+                <p className="assessment-empty-note">No missing storage evidence items were extracted.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(storageIntelligence.missingEvidence, 6).map((item) => (
+                    <li key={item.item}>
+                      <strong>{item.item}</strong>: {item.whyItMatters}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Next Questions</h3>
+              {topItems(storageIntelligence.nextQuestions, 6).length === 0 ? (
+                <p className="assessment-empty-note">No follow-up questions were extracted.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(storageIntelligence.nextQuestions, 6).map((item) => (
+                    <li key={item.question}>
+                      <strong>{labelFromValue(item.priority)}</strong>: {item.question}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          </div>
+
+          {storageIntelligence.storageConstraints.length > 0 ||
+          storageIntelligence.operationalReadinessSignals.length > 0 ||
+          storageIntelligence.contradictions.length > 0 ? (
+            <div className="assessment-preview-columns">
+              <article className="glass-card assessment-subcard">
+                <h3>Constraints & Operations</h3>
+                <ul className="assessment-bullet-list">
+                  {topItems(storageIntelligence.storageConstraints, 4).map((item) => (
+                    <li key={item.constraint}>
+                      <strong>{item.constraint}</strong>: {item.impact}
+                    </li>
+                  ))}
+                  {topItems(storageIntelligence.operationalReadinessSignals, 4).map((item) => (
+                    <li key={item.signal}>
+                      <strong>{item.signal}</strong>: {item.impact}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Contradictions / Validate</h3>
+                {topItems(storageIntelligence.contradictions, 4).length === 0 ? (
+                  <p className="assessment-empty-note">
+                    No contradictions were extracted, but missing evidence should still be validated.
+                  </p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {topItems(storageIntelligence.contradictions, 4).map((item) => (
+                      <li key={item.title}>
+                        <strong>{item.title}</strong>: {item.validationRecommendation}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            </div>
+          ) : null}
+
+          {storageIntelligence.safetyFlags.length > 0 ? (
+            <article className="glass-card assessment-subcard">
+              <h3>Safety Notes</h3>
+              <ul className="assessment-bullet-list">
+                {topItems(storageIntelligence.safetyFlags, 5).map((item) => (
+                  <li key={item.flag}>
+                    <strong>{labelFromValue(item.severity)}</strong>: {item.explanation}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="assessment-section-title assessment-section-title-compact">
+        <div className="assessment-section-eyebrow">
           <Upload size={18} />
           <span>Storage Additional Evidence</span>
         </div>
@@ -691,10 +973,10 @@ export function StorageDestinationReadinessPanel({
           </ul>
         </article>
         <article className="glass-card assessment-subcard">
-          <h3>STORAGE-1 boundaries</h3>
+          <h3>Storage module boundaries</h3>
           <p>
-            This foundation captures storage inputs and metadata only. AI analysis, Ceph suitability,
-            report/PDF rendering, collector ingestion and storage cost modeling remain future work.
+            Storage Context Intelligence is advisory. Final Ceph suitability, report/PDF rendering,
+            collector ingestion and storage cost modeling remain future work.
           </p>
         </article>
       </div>

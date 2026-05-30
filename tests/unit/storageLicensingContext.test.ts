@@ -300,7 +300,7 @@ describe("optional storage and licensing module UX model", () => {
     expect(summary.canGenerateReport).toBe(true);
   });
 
-  it("marks submitted Storage Destination Readiness complete without blocking report generation", () => {
+  it("marks submitted Storage Destination Readiness ready without blocking report generation", () => {
     const summary = computeAssessmentCompletionSummary(
       parsedRvtoolsAssessment({
         storageDestinationReadiness: {
@@ -366,7 +366,7 @@ describe("optional storage and licensing module UX model", () => {
 
     const storageModule = moduleByKey(summary.modules, "storage_analysis");
 
-    expect(storageModule.status).toBe("complete");
+    expect(storageModule.status).toBe("partial");
     expect(storageModule.limitationText).toContain("Ceph suitability is not calculated");
     expect(summary.canGenerateReport).toBe(true);
   });

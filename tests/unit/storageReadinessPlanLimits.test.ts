@@ -14,13 +14,13 @@ describe("storage readiness plan limits", () => {
     expect(limits.aiStorageAnalysisEnabled).toBe(false);
   });
 
-  it("expands limits for Blueprint without enabling AI in STORAGE-1", () => {
+  it("expands limits and enables AI for paid storage analysis plans", () => {
     const limits = getStorageReadinessPlanLimits("blueprint");
 
     expect(limits.maxStorageContextWords).toBe(40_000);
     expect(limits.maxStorageEvidenceFiles).toBe(15);
     expect(limits.cephDeepDiveEnabled).toBe(true);
-    expect(limits.aiStorageAnalysisEnabled).toBe(false);
+    expect(limits.aiStorageAnalysisEnabled).toBe(true);
   });
 
   it("normalizes workspace and entitlement aliases", () => {

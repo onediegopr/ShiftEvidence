@@ -683,13 +683,71 @@ function detectStorageAnalysisModule(
   }
 
   if (
+    assessment.storageAnalysis?.status === "pending" ||
+    destinationReadiness?.status === "analysis_pending"
+  ) {
+    return {
+      status: "in_progress",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt: getLatestDate([
+          destinationReadiness?.updatedAt,
+          storageFreeContext?.submittedAt ?? storageFreeContext?.updatedAt,
+          ...storageEvidence.map((item) => item.updatedAt ?? item.createdAt),
+        ]),
+      },
+      limitationText:
+        "Storage Context Intelligence analysis is running. Storage remains optional and does not block report generation.",
+    };
+  }
+
+  if (assessment.storageAnalysis?.status === "stale" || destinationReadiness?.status === "stale") {
+    return {
+      status: "partial",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt: getLatestDate([
+          destinationReadiness?.updatedAt,
+          storageFreeContext?.lastEditedAt ?? storageFreeContext?.updatedAt,
+          ...storageEvidence.map((item) => item.updatedAt ?? item.createdAt),
+        ]),
+      },
+      limitationText:
+        "Storage inputs changed after the last analysis. Re-run Storage Context Intelligence before relying on storage advisory output.",
+    };
+  }
+
+  if (
+    assessment.storageAnalysis?.status === "ai_disabled" ||
+    assessment.storageAnalysis?.status === "budget_blocked" ||
+    assessment.storageAnalysis?.status === "plan_restricted"
+  ) {
+    return {
+      status: "partial",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt: getLatestDate([
+          destinationReadiness?.updatedAt,
+          storageFreeContext?.submittedAt ?? storageFreeContext?.updatedAt,
+          ...storageEvidence.map((item) => item.updatedAt ?? item.createdAt),
+        ]),
+      },
+      limitationText:
+        "Storage Context Intelligence is limited by AI runtime, budget or plan settings. The module remains optional and non-blocking.",
+    };
+  }
+
+  if (
     destinationReadiness?.status === "submitted" ||
     destinationReadiness?.status === "ready_for_analysis" ||
     storageFreeContext?.status === "submitted" ||
     storageFreeContext?.status === "ready_for_analysis"
   ) {
     return {
-      status: "complete",
+      status: "partial",
       evidence: {
         count: parsedDatastoreCount + activeStorageEvidenceCount,
         source: evidenceSource,

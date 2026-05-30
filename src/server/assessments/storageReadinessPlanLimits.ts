@@ -38,7 +38,7 @@ const PLAN_LIMITS: Record<
     maxStorageEvidenceFiles: 3,
     maxFileSizeMb: 50,
     cephDeepDiveEnabled: false,
-    aiStorageAnalysisEnabled: false,
+    aiStorageAnalysisEnabled: true,
   },
   pro: {
     label: "Readiness Report Pro",
@@ -47,7 +47,7 @@ const PLAN_LIMITS: Record<
     maxStorageEvidenceFiles: 5,
     maxFileSizeMb: 50,
     cephDeepDiveEnabled: false,
-    aiStorageAnalysisEnabled: false,
+    aiStorageAnalysisEnabled: true,
   },
   blueprint: {
     label: "Blueprint",
@@ -56,7 +56,7 @@ const PLAN_LIMITS: Record<
     maxStorageEvidenceFiles: 15,
     maxFileSizeMb: 50,
     cephDeepDiveEnabled: true,
-    aiStorageAnalysisEnabled: false,
+    aiStorageAnalysisEnabled: true,
   },
   partner: {
     label: "Partner / MSP",
@@ -65,7 +65,7 @@ const PLAN_LIMITS: Record<
     maxStorageEvidenceFiles: 25,
     maxFileSizeMb: 50,
     cephDeepDiveEnabled: true,
-    aiStorageAnalysisEnabled: false,
+    aiStorageAnalysisEnabled: true,
   },
 };
 

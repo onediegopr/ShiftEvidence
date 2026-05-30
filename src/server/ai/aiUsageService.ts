@@ -11,6 +11,7 @@ export type AiUsageOperationType =
   | "admin_test"
   | "retry"
   | "client_context_analysis"
+  | "storage_context_analysis"
   | "unknown";
 export type AiUsageStatus =
   | "success"

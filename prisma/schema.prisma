@@ -1329,6 +1329,9 @@ enum AssessmentStorageAnalysisStatus {
   completed
   failed
   stale
+  ai_disabled
+  budget_blocked
+  plan_restricted
 }
 
 enum LicensingPricingVendor {
