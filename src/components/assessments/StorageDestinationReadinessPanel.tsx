@@ -9,14 +9,19 @@ import {
   FileText,
   Gauge,
   HardDrive,
+  ListChecks,
+  Network,
   RefreshCcw,
+  Server,
   ShieldAlert,
   Upload,
 } from "lucide-react";
 import type { buildAssessmentStorageDestinationReadinessSummary } from "../../server/assessments/storageDestinationReadinessService";
+import type { CephReadinessResult } from "../../server/assessments/cephReadinessTypes";
 import type { StorageContextIntelligenceResult } from "../../server/assessments/storageContextIntelligenceTypes";
 import { formatStorageReadinessLimitLabel } from "../../server/assessments/storageReadinessPlanLimits";
 import {
+  runCephReadinessAnalysisAction,
   runStorageContextAnalysisAction,
   saveStorageContextDraftAction,
   saveStorageReadinessDraftAction,
@@ -113,13 +118,19 @@ function statusTone(status: string | null | undefined) {
     case "ready_for_analysis":
     case "analyzed":
     case "completed":
+    case "ceph_applies":
+    case "ceph_does_not_apply":
       return "good";
     case "draft":
     case "analysis_pending":
     case "pending":
     case "stale":
+    case "ceph_conditional":
+    case "ceph_overkill":
+    case "not_enough_evidence":
       return "warning";
     case "failed":
+    case "ceph_underdesigned":
       return "danger";
     default:
       return "neutral";
@@ -175,6 +186,14 @@ function asStorageContextIntelligenceResult(
   return value as unknown as StorageContextIntelligenceResult;
 }
 
+function asCephReadinessResult(value: unknown): CephReadinessResult | null {
+  if (!isRecord(value) || typeof value.status !== "string" || typeof value.summary !== "string") {
+    return null;
+  }
+
+  return value as unknown as CephReadinessResult;
+}
+
 function formatScore(value: number | null | undefined) {
   if (typeof value !== "number" || Number.isNaN(value)) {
     return "Not scored";
@@ -208,10 +227,16 @@ export function StorageDestinationReadinessPanel({
     (item) =>
       item.evidenceFile.deletedAt === null && item.evidenceFile.processingStatus !== "deleted",
   );
-  const storageIntelligence = asStorageContextIntelligenceResult(
-    summary.analysis?.recommendationsJson,
+  const analysisRecommendationsJson = summary.analysis?.recommendationsJson;
+  const storageIntelligence = asStorageContextIntelligenceResult(analysisRecommendationsJson);
+  const cephReadiness = asCephReadinessResult(
+    isRecord(analysisRecommendationsJson) ? analysisRecommendationsJson.cephReadiness : null,
   );
   const analysisStatus = summary.analysis?.status ?? "not_started";
+  const cephRequested =
+    summary.readiness?.targetStoragePreference === "ceph" ||
+    Boolean(storageIntelligence?.cephSignals.customerInterested) ||
+    Boolean(cephReadiness);
   const canRunAnalysis =
     summary.status !== "skipped" &&
     (summary.parsedDatastoreCount > 0 ||
@@ -220,6 +245,12 @@ export function StorageDestinationReadinessPanel({
       Boolean(summary.readiness?.currentStorageType) ||
       Boolean(summary.readiness?.targetStoragePreference));
   const isAnalyzing = analysisStatus === "pending" || summary.status === "analysis_pending";
+  const canRunCephEvaluation =
+    summary.status !== "skipped" &&
+    (cephRequested ||
+      Boolean(summary.readiness?.targetStoragePreference) ||
+      summary.parsedDatastoreCount > 0 ||
+      summary.activeFiles > 0);
 
   return (
     <section id="storage-destination-readiness" className="assessment-section glass-card">
@@ -255,7 +286,8 @@ export function StorageDestinationReadinessPanel({
           <h3>Storage is evaluated conservatively.</h3>
           <p>
             Customer-provided storage context is advisory until validated with technical evidence.
-            Ceph interest is captured here, but Ceph suitability is not calculated in STORAGE-1.
+            Ceph interest is captured here and evaluated separately; it is never treated as the
+            default storage recommendation.
           </p>
         </div>
         <div className="assessment-optional-module-meta">
@@ -427,8 +459,8 @@ export function StorageDestinationReadinessPanel({
           </div>
           <h3>Ceph is captured as an input, not a recommendation.</h3>
           <p>
-            Ceph will be evaluated as a suitability decision later. STORAGE-1 does not calculate
-            whether Ceph applies, does not apply, is overkill or is underdesigned.
+            Ceph is evaluated as a suitability decision, not assumed as the default target.
+            These inputs feed the deterministic Ceph readiness engine below.
           </p>
         </div>
 
@@ -606,7 +638,7 @@ export function StorageDestinationReadinessPanel({
           <h3>{labelFromValue(analysisStatus)}</h3>
           <p>
             This analysis is advisory context, not confirmed technical evidence. Ceph final
-            suitability is deferred to the dedicated Ceph readiness engine.
+            suitability is handled by the dedicated Ceph readiness engine below.
           </p>
         </div>
         <div className="assessment-optional-module-meta">
@@ -829,13 +861,174 @@ export function StorageDestinationReadinessPanel({
 
       <div className="assessment-section-title assessment-section-title-compact">
         <div className="assessment-section-eyebrow">
+          <Server size={18} />
+          <span>Ceph Suitability & Operations Readiness</span>
+        </div>
+        <h3>Evaluate whether Ceph is defensible for this destination.</h3>
+        <p>
+          This deterministic engine evaluates Ceph as a rule-based suitability decision. It does not
+          call AI, install Ceph or treat customer preference as a technical recommendation.
+        </p>
+      </div>
+
+      <div className="assessment-optional-module-panel">
+        <Network size={24} />
+        <div>
+          <h3>{cephReadiness ? labelFromValue(cephReadiness.status) : "Not evaluated"}</h3>
+          <p>
+            Ceph is not recommended by default. Suitability depends on hardware, network, failure
+            domains, backup and operational readiness.
+          </p>
+        </div>
+        <div className="assessment-optional-module-meta">
+          <span>Suitability: {formatScore(cephReadiness?.cephSuitabilityScore)}</span>
+          <span>Operations: {formatScore(cephReadiness?.cephOperationsReadinessScore)}</span>
+          <span>Evidence confidence: {formatScore(cephReadiness?.cephEvidenceConfidenceScore)}</span>
+        </div>
+      </div>
+
+      {!cephRequested ? (
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow">
+            <ShieldAlert size={16} />
+            <span>Ceph not selected</span>
+          </div>
+          <p>
+            Ceph has not been selected as a target preference. You can still evaluate it if Ceph is
+            being considered for the destination architecture.
+          </p>
+        </article>
+      ) : null}
+
+      <form action={runCephReadinessAnalysisAction.bind(null, assessmentId)} className="assessment-inline-actions">
+        <button
+          type="submit"
+          className="btn btn-primary btn-glow"
+          disabled={!canRunCephEvaluation}
+        >
+          {cephReadiness ? "Re-run Ceph evaluation" : "Evaluate Ceph suitability"}
+          <Server size={16} />
+        </button>
+        <span className="assessment-inline-note">
+          Uses structured storage inputs, RVTools storage signals, Storage Context Intelligence
+          signals and storage evidence metadata only.
+        </span>
+      </form>
+
+      {cephReadiness ? (
+        <div className="assessment-accordion-list">
+          <article className="glass-card assessment-subcard">
+            <div className="assessment-inventory-table-head">
+              <div>
+                <h3>{cephReadiness.summary}</h3>
+                <p className="assessment-inline-note">
+                  Recommended next step: {labelFromValue(cephReadiness.recommendedNextStep)}
+                </p>
+              </div>
+              <span className={`assessment-chip assessment-chip-${statusTone(cephReadiness.status)}`}>
+                {labelFromValue(cephReadiness.status)}
+              </span>
+            </div>
+            <div className="assessment-status-row">
+              <span className="assessment-chip assessment-chip-neutral">
+                Capacity fit: {formatScore(cephReadiness.capacityFitScore)}
+              </span>
+              <span className="assessment-chip assessment-chip-neutral">
+                Network: {formatScore(cephReadiness.networkReadinessScore)}
+              </span>
+              <span className="assessment-chip assessment-chip-neutral">
+                Failure domains: {formatScore(cephReadiness.failureDomainReadinessScore)}
+              </span>
+              <span className="assessment-chip assessment-chip-neutral">
+                Backup: {formatScore(cephReadiness.backupReadinessScore)}
+              </span>
+              <span className="assessment-chip assessment-chip-neutral">
+                Skills: {formatScore(cephReadiness.operationalSkillsScore)}
+              </span>
+            </div>
+          </article>
+
+          <div className="assessment-preview-columns">
+            <article className="glass-card assessment-subcard">
+              <div className="assessment-section-eyebrow">
+                <ListChecks size={16} />
+                <span>Findings</span>
+              </div>
+              {topItems(cephReadiness.findings, 6).length === 0 ? (
+                <p className="assessment-empty-note">No Ceph findings were generated.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(cephReadiness.findings, 6).map((item) => (
+                    <li key={`${item.category}-${item.title}`}>
+                      <strong>{labelFromValue(item.severity)}:</strong> {item.title} -{" "}
+                      {item.recommendation}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Required Remediations</h3>
+              {topItems(cephReadiness.remediations, 6).length === 0 ? (
+                <p className="assessment-empty-note">No Ceph remediations were generated.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(cephReadiness.remediations, 6).map((item) => (
+                    <li key={item.action}>
+                      <strong>{labelFromValue(item.priority)}</strong>: {item.action}
+                      {item.requiredBeforeCeph ? " Required before Ceph." : ""}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          </div>
+
+          <div className="assessment-preview-columns">
+            <article className="glass-card assessment-subcard">
+              <h3>Missing Evidence</h3>
+              {topItems(cephReadiness.missingEvidence, 6).length === 0 ? (
+                <p className="assessment-empty-note">No Ceph-specific missing evidence was identified.</p>
+              ) : (
+                <ul className="assessment-bullet-list">
+                  {topItems(cephReadiness.missingEvidence, 6).map((item) => (
+                    <li key={item.item}>
+                      <strong>{item.item}</strong>: {item.whyItMatters}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+            <article className="glass-card assessment-subcard">
+              <h3>Decision Rationale</h3>
+              <ul className="assessment-bullet-list">
+                {topItems(cephReadiness.decisionRationale, 6).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+
+          <article className="glass-card assessment-subcard">
+            <h3>Ceph Evaluation Boundaries</h3>
+            <p>
+              This assessment does not install or validate a live Ceph cluster. It does not
+              guarantee capacity, performance or zero downtime. Final production design should be
+              validated with target hardware, network, failure-domain and backup evidence.
+            </p>
+          </article>
+        </div>
+      ) : null}
+
+      <div className="assessment-section-title assessment-section-title-compact">
+        <div className="assessment-section-eyebrow">
           <Upload size={18} />
           <span>Storage Additional Evidence</span>
         </div>
         <h3>Attach storage-specific files</h3>
         <p>
           Files are stored and classified as metadata only. No OCR, PDF/DOCX extraction, Ceph CLI
-          ingestion or binary processing is implemented in STORAGE-1.
+          ingestion or binary processing is implemented in this module.
         </p>
       </div>
 
@@ -976,7 +1169,7 @@ export function StorageDestinationReadinessPanel({
           <h3>Storage module boundaries</h3>
           <p>
             Storage Context Intelligence is advisory. Final Ceph suitability, report/PDF rendering,
-            collector ingestion and storage cost modeling remain future work.
+            collector ingestion and storage cost modeling remain separate concerns.
           </p>
         </article>
       </div>

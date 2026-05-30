@@ -454,6 +454,24 @@ function countMeaningfulValues(values: unknown[]) {
   return values.filter(hasMeaningfulValue).length;
 }
 
+function getCephReadinessStatusFromRecommendations(value: unknown) {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return null;
+  }
+
+  const cephReadiness = (value as { cephReadiness?: unknown }).cephReadiness;
+  if (
+    typeof cephReadiness !== "object" ||
+    cephReadiness === null ||
+    Array.isArray(cephReadiness)
+  ) {
+    return null;
+  }
+
+  const status = (cephReadiness as { status?: unknown }).status;
+  return typeof status === "string" ? status : null;
+}
+
 function detectRvtoolsInventoryModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
@@ -654,6 +672,12 @@ function detectStorageAnalysisModule(
       : storageContextFieldCount > 0
         ? "storage_context"
         : "storage_readiness";
+  const cephReadinessStatus = getCephReadinessStatusFromRecommendations(
+    assessment.storageAnalysis?.recommendationsJson,
+  );
+  const cephRequested =
+    destinationReadiness?.targetStoragePreference === "ceph" ||
+    Boolean(cephReadinessStatus);
 
   if (destinationReadiness?.status === "skipped" || storageFreeContext?.status === "skipped") {
     return {
@@ -664,11 +688,57 @@ function detectStorageAnalysisModule(
     };
   }
 
+  if (cephReadinessStatus && cephReadinessStatus !== "not_enough_evidence") {
+    return {
+      status: "complete",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt:
+          assessment.storageAnalysis?.generatedAt ??
+          destinationReadiness?.updatedAt ??
+          storageFreeContext?.updatedAt,
+      },
+    };
+  }
+
+  if (cephReadinessStatus === "not_enough_evidence") {
+    return {
+      status: "partial",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt:
+          assessment.storageAnalysis?.generatedAt ??
+          destinationReadiness?.updatedAt ??
+          storageFreeContext?.updatedAt,
+      },
+      limitationText:
+        "Ceph readiness was evaluated, but critical storage evidence is missing. The finding is useful and does not block report generation.",
+    };
+  }
+
   if (
     assessment.storageAnalysis?.status === "completed" ||
     destinationReadiness?.status === "analyzed" ||
     storageFreeContext?.status === "analyzed"
   ) {
+    if (cephRequested && !cephReadinessStatus) {
+      return {
+        status: "partial",
+        evidence: {
+          count: parsedDatastoreCount + activeStorageEvidenceCount,
+          source: evidenceSource,
+          lastUpdatedAt:
+            assessment.storageAnalysis?.generatedAt ??
+            destinationReadiness?.updatedAt ??
+            storageFreeContext?.updatedAt,
+        },
+        limitationText:
+          "Storage Context Intelligence is complete, but Ceph was requested and deterministic Ceph suitability has not been evaluated yet.",
+      };
+    }
+
     return {
       status: "complete",
       evidence: {
@@ -758,7 +828,9 @@ function detectStorageAnalysisModule(
         ]),
       },
       limitationText:
-        "Storage Destination Readiness is submitted as advisory context. Ceph suitability is not calculated until a later module.",
+        cephRequested
+          ? "Storage Destination Readiness is submitted as advisory context. Run deterministic Ceph suitability before relying on Ceph as a destination option."
+          : "Storage Destination Readiness is submitted as advisory context. Run Storage Context Intelligence for richer storage recommendations.",
     };
   }
 

@@ -367,8 +367,114 @@ describe("optional storage and licensing module UX model", () => {
     const storageModule = moduleByKey(summary.modules, "storage_analysis");
 
     expect(storageModule.status).toBe("partial");
-    expect(storageModule.limitationText).toContain("Ceph suitability is not calculated");
+    expect(storageModule.limitationText).toContain("Run deterministic Ceph suitability");
     expect(summary.canGenerateReport).toBe(true);
+  });
+
+  it("keeps Ceph-requested storage partial until deterministic Ceph evaluation runs", () => {
+    const summary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        storageDestinationReadiness: {
+          id: "storage-destination-1",
+          assessmentId: "assessment-1",
+          status: "submitted",
+          mode: "ceph_candidate",
+          currentStorageType: "vsan",
+          targetStoragePreference: "ceph",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageAnalysis: {
+          id: "storage-analysis-1",
+          assessmentId: "assessment-1",
+          status: "completed",
+          storageReadinessScore: 70,
+          storageEvidenceConfidence: 70,
+          cephSuitabilityStatus: "deferred_storage_2",
+          interpretedSummary: "Ceph was mentioned by the customer.",
+          missingEvidenceJson: [],
+          recommendationsJson: {
+            interpretedStorageSummary: "Ceph was mentioned by the customer.",
+          },
+          analysisVersion: "storage-context-intelligence-v1",
+          generatedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageEvidence: [],
+      }),
+    );
+
+    const storageModule = moduleByKey(summary.modules, "storage_analysis");
+
+    expect(storageModule.status).toBe("partial");
+    expect(storageModule.limitationText).toContain("Ceph was requested");
+    expect(summary.canGenerateReport).toBe(true);
+  });
+
+  it("marks completed Ceph evaluation as complete and not enough evidence as partial", () => {
+    const completeSummary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        storageDestinationReadiness: {
+          id: "storage-destination-1",
+          assessmentId: "assessment-1",
+          status: "submitted",
+          targetStoragePreference: "ceph",
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageAnalysis: {
+          id: "storage-analysis-1",
+          assessmentId: "assessment-1",
+          status: "completed",
+          cephSuitabilityStatus: "ceph_conditional",
+          recommendationsJson: {
+            cephReadiness: {
+              status: "ceph_conditional",
+              summary: "Ceph may apply conditionally.",
+            },
+          },
+          generatedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageEvidence: [],
+      }),
+    );
+    const limitedSummary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        storageDestinationReadiness: {
+          id: "storage-destination-1",
+          assessmentId: "assessment-1",
+          status: "submitted",
+          targetStoragePreference: "ceph",
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageAnalysis: {
+          id: "storage-analysis-1",
+          assessmentId: "assessment-1",
+          status: "completed",
+          cephSuitabilityStatus: "not_enough_evidence",
+          recommendationsJson: {
+            cephReadiness: {
+              status: "not_enough_evidence",
+              summary: "More Ceph evidence is needed.",
+            },
+          },
+          generatedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageEvidence: [],
+      }),
+    );
+
+    expect(moduleByKey(completeSummary.modules, "storage_analysis").status).toBe("complete");
+    expect(moduleByKey(limitedSummary.modules, "storage_analysis").status).toBe("partial");
+    expect(limitedSummary.canGenerateReport).toBe(true);
   });
 
   it("keeps skipped Storage Destination Readiness optional", () => {

@@ -7,6 +7,7 @@ import { auth } from "../../../../../lib/auth";
 import { assertCanUploadEvidence } from "../../../../../server/assessments/assessmentUploadPrerequisites";
 import { ensureAssessmentOwnership } from "../../../../../server/assessments/assessmentService";
 import { safeRedirectError } from "../../../../../server/assessments/formUtils";
+import { runCephReadinessAnalysis } from "../../../../../server/assessments/cephSuitabilityEngine";
 import { runStorageContextAnalysis } from "../../../../../server/assessments/storageContextAiAnalysisService";
 import {
   classifyStorageEvidence,
@@ -321,6 +322,24 @@ export async function runStorageContextAnalysisAction(assessmentId: string) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unable to run Storage Context Intelligence.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function runCephReadinessAnalysisAction(assessmentId: string) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
+
+  try {
+    await runCephReadinessAnalysis({
+      userId: session.user.id,
+      assessmentId,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to run Ceph readiness evaluation.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
   }
 
