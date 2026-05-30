@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   Brain,
   Lock,
@@ -41,6 +41,10 @@ function messageTone(status: SeniorAdvisorMessageView["status"]) {
   return "neutral";
 }
 
+function formatStatus(status: SeniorAdvisorMessageView["status"]) {
+  return status.replace(/_/g, " ");
+}
+
 function createLocalUserMessage(content: string): SeniorAdvisorMessageView {
   return {
     id: `local-user-${Date.now()}`,
@@ -65,8 +69,21 @@ export function SeniorMigrationAdvisorPanel({
   const [message, setMessage] = useState("");
   const [feedback, setFeedback] = useState<string | null>(initialState.lockedReason);
   const [isPending, startTransition] = useTransition();
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const maxChars = usage.enabled ? 6_000 : 0;
   const canSend = usage.enabled && !usage.exhausted && message.trim().length > 0 && !isPending;
+  const disabledReason = !usage.enabled
+    ? "Senior Migration Advisor is available on paid assessment plans."
+    : usage.exhausted
+      ? "Advisor credits are exhausted for this assessment."
+      : null;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages.length, isPending]);
 
   function sendMessage(value: string) {
     const trimmed = value.trim();
@@ -118,18 +135,22 @@ export function SeniorMigrationAdvisorPanel({
 
       <div className="senior-advisor-usage-strip">
         <div>
+          <span>Messages remaining</span>
+          <strong>{usage.enabled ? usage.messagesRemaining : 0}</strong>
+        </div>
+        <div>
           <span>Advisor credits</span>
           <strong>
             {usage.messagesUsed} / {usage.messageLimit} used
           </strong>
         </div>
         <div>
-          <span>Usage</span>
+          <span>Usage level</span>
           <strong>{usage.percentUsed}%</strong>
         </div>
         <div>
-          <span>Warning</span>
-          <strong>80%</strong>
+          <span>Billing</span>
+          <strong>Not active</strong>
         </div>
         <div className="senior-advisor-credit-actions">
           <button
@@ -146,11 +167,11 @@ export function SeniorMigrationAdvisorPanel({
         </div>
       </div>
 
-      <details className="glass-card senior-advisor-help" open={!usage.enabled}>
+      <details className="senior-advisor-help">
         <summary>
           <span>
             <ShieldAlert size={16} />
-            What can I ask?
+            What can the Senior Advisor do?
           </span>
           <small>Evidence-based advisory, not migration approval.</small>
         </summary>
@@ -180,7 +201,7 @@ export function SeniorMigrationAdvisorPanel({
         </div>
       </details>
 
-      <article className="glass-card senior-advisor-prompts">
+      <article className="senior-advisor-prompts">
         <div className="assessment-section-eyebrow">
           <MessageSquare size={16} />
           <span>Suggested prompts</span>
@@ -200,12 +221,19 @@ export function SeniorMigrationAdvisorPanel({
         </div>
       </article>
 
-      <div className="glass-card senior-advisor-console">
-        <div className="senior-advisor-chat-scroll">
+      <div className="senior-advisor-console">
+        <div
+          className="senior-advisor-chat-scroll"
+          aria-live="polite"
+          aria-label="Senior Advisor conversation"
+        >
           {messages.length === 0 ? (
             <div className="senior-advisor-empty-state">
               <MessageSquare size={20} />
-              <p>No advisor messages yet. Ask a question about this assessment to start.</p>
+              <div>
+                <strong>Start with the current assessment evidence.</strong>
+                <p>Ask what is missing, which risks matter most, or what to complete next.</p>
+              </div>
             </div>
           ) : (
             messages.map((item) => (
@@ -216,16 +244,18 @@ export function SeniorMigrationAdvisorPanel({
                 <div className="senior-advisor-message-head">
                   <div>
                     <h3>{item.role === "assistant" ? "Senior Migration Advisor" : "You"}</h3>
-                    <p>
-                      {formatDate(item.createdAt)}
-                      {item.model ? ` - ${item.model}` : ""}
-                    </p>
+                    <p>{formatDate(item.createdAt)}</p>
                   </div>
                   <span className={`assessment-chip assessment-chip-${messageTone(item.status)}`}>
-                    {item.status}
+                    {formatStatus(item.status)}
                   </span>
                 </div>
                 <p className="senior-advisor-message-body">{item.content}</p>
+                {item.role === "assistant" && (item.provider || item.model) ? (
+                  <p className="senior-advisor-message-meta">
+                    {[item.provider, item.model].filter(Boolean).join(" / ")}
+                  </p>
+                ) : null}
                 {item.safetyFlags.length > 0 ? (
                   <div className="assessment-status-row">
                     {item.safetyFlags.map((flag) => (
@@ -238,6 +268,13 @@ export function SeniorMigrationAdvisorPanel({
               </article>
             ))
           )}
+          {isPending ? (
+            <div className="senior-advisor-pending">
+              <span />
+              Senior Migration Advisor is reviewing the assessment context...
+            </div>
+          ) : null}
+          <div ref={messagesEndRef} />
         </div>
 
         {feedback ? (
@@ -268,9 +305,11 @@ export function SeniorMigrationAdvisorPanel({
           </label>
           <div className="senior-advisor-composer-footer">
             <span className="assessment-inline-note">
-              {usage.enabled
+              {disabledReason
+                ? disabledReason
+                : usage.enabled
                 ? `${message.length.toLocaleString("en-US")} characters. Do not paste passwords, tokens or raw file contents.`
-                : "Senior Migration Advisor is available on paid assessment plans."}
+                : ""}
             </span>
             <button type="submit" className="btn btn-primary btn-glow" disabled={!canSend}>
               {isPending ? "Sending..." : "Send"}

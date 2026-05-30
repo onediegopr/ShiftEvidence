@@ -4104,19 +4104,25 @@ p {
 }
 
 .senior-advisor-shell {
-    gap: 1rem;
-    max-width: 1040px;
+    gap: 0.8rem;
+    max-width: 980px;
+    padding: clamp(1rem, 2vw, 1.35rem);
 }
 
 .senior-advisor-header {
     align-items: flex-start;
     display: grid;
-    gap: 1rem;
+    gap: 0.85rem;
     grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.senior-advisor-title h2 {
+    font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+}
+
 .senior-advisor-title p {
-    max-width: 720px;
+    max-width: 680px;
+    font-size: 0.94rem;
 }
 
 .senior-advisor-status-panel {
@@ -4130,11 +4136,11 @@ p {
 .senior-advisor-usage-strip {
     align-items: center;
     display: grid;
-    gap: 0.7rem;
-    grid-template-columns: repeat(3, minmax(0, 0.75fr)) minmax(220px, 1.15fr);
-    padding: 0.75rem;
+    gap: 0.55rem;
+    grid-template-columns: repeat(4, minmax(0, 0.75fr)) minmax(220px, 1.2fr);
+    padding: 0.65rem;
     border: 1px solid rgba(34, 211, 238, 0.13);
-    border-radius: 18px;
+    border-radius: 14px;
     background:
         linear-gradient(135deg, rgba(34, 211, 238, 0.08), transparent 34%),
         rgba(3, 7, 18, 0.26);
@@ -4155,7 +4161,7 @@ p {
 
 .senior-advisor-usage-strip strong {
     color: white;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .senior-advisor-credit-actions {
@@ -4167,7 +4173,10 @@ p {
 
 .senior-advisor-help {
     margin: 0;
-    padding: 0.85rem 1rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(3, 7, 18, 0.22);
 }
 
 .senior-advisor-help summary {
@@ -4197,16 +4206,19 @@ p {
 
 .senior-advisor-help-grid {
     display: grid;
-    gap: 1rem;
+    gap: 0.85rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 0.9rem;
+    margin-top: 0.8rem;
 }
 
 .senior-advisor-prompts {
     display: grid;
-    gap: 0.75rem;
+    gap: 0.65rem;
     margin: 0;
-    padding: 1rem;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.018);
 }
 
 .senior-advisor-prompt-grid {
@@ -4224,7 +4236,8 @@ p {
     font: inherit;
     font-size: 0.84rem;
     font-weight: 700;
-    padding: 0.45rem 0.7rem;
+    line-height: 1.25;
+    padding: 0.42rem 0.68rem;
     transition:
         border-color 0.2s ease,
         background 0.2s ease,
@@ -4244,18 +4257,26 @@ p {
 
 .senior-advisor-console {
     display: grid;
-    gap: 0.85rem;
+    gap: 0;
     margin: 0;
-    padding: 0.9rem;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.52), rgba(3, 7, 18, 0.52)),
+        rgba(3, 7, 18, 0.36);
+    overflow: hidden;
 }
 
 .senior-advisor-chat-scroll {
     display: grid;
     gap: 0.75rem;
     max-height: 520px;
-    min-height: 180px;
+    min-height: 240px;
     overflow-y: auto;
-    padding-right: 0.25rem;
+    overscroll-behavior: contain;
+    padding: 0.9rem;
+    scroll-padding-bottom: 1rem;
 }
 
 .senior-advisor-empty-state {
@@ -4266,17 +4287,29 @@ p {
     display: flex;
     gap: 0.65rem;
     justify-content: center;
-    min-height: 150px;
+    min-height: 180px;
     padding: 1rem;
     text-align: center;
 }
 
+.senior-advisor-empty-state strong {
+    color: white;
+    display: block;
+    font-size: 0.94rem;
+    margin-bottom: 0.15rem;
+}
+
+.senior-advisor-empty-state p {
+    font-size: 0.86rem;
+}
+
 .senior-advisor-message {
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
+    border-radius: 16px;
     display: grid;
-    gap: 0.65rem;
-    padding: 0.9rem;
+    gap: 0.55rem;
+    padding: 0.85rem;
+    width: min(100%, 780px);
 }
 
 .senior-advisor-message-assistant {
@@ -4286,8 +4319,11 @@ p {
 }
 
 .senior-advisor-message-user {
-    background: rgba(255, 255, 255, 0.035);
-    margin-left: clamp(0rem, 8vw, 5rem);
+    justify-self: end;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.075), transparent 42%),
+        rgba(255, 255, 255, 0.035);
+    margin-left: clamp(0rem, 12vw, 8rem);
 }
 
 .senior-advisor-message-head {
@@ -4298,43 +4334,86 @@ p {
 }
 
 .senior-advisor-message-head h3 {
-    font-size: 0.95rem;
+    color: white;
+    font-size: 0.9rem;
 }
 
 .senior-advisor-message-head p {
     color: var(--text-dark);
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     margin-top: 0.1rem;
+}
+
+.senior-advisor-message-head .assessment-chip {
+    border-radius: 999px;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    padding: 0.18rem 0.46rem;
+    text-transform: capitalize;
 }
 
 .senior-advisor-message-body {
     color: var(--text-secondary);
-    font-size: 0.94rem;
-    line-height: 1.65;
+    font-size: 0.92rem;
+    line-height: 1.6;
     white-space: pre-wrap;
+}
+
+.senior-advisor-message-meta {
+    color: var(--text-dark);
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+.senior-advisor-pending {
+    align-items: center;
+    color: var(--text-muted);
+    display: inline-flex;
+    font-size: 0.82rem;
+    gap: 0.55rem;
+    padding: 0.35rem 0.1rem;
+}
+
+.senior-advisor-pending span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: #22d3ee;
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.75);
+    animation: badgePulse 1.8s infinite;
 }
 
 .senior-advisor-feedback {
     border: 1px solid rgba(245, 158, 11, 0.16);
-    border-radius: 18px;
+    border-radius: 14px;
     background: rgba(245, 158, 11, 0.06);
     display: grid;
     gap: 0.5rem;
-    padding: 0.85rem;
+    margin: 0 0.9rem 0.9rem;
+    padding: 0.75rem;
+}
+
+.senior-advisor-feedback p {
+    font-size: 0.88rem;
 }
 
 .senior-advisor-composer {
+    position: sticky;
+    bottom: 0;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    background: rgba(3, 7, 18, 0.34);
+    border-width: 1px 0 0;
+    border-radius: 0;
+    background: rgba(3, 7, 18, 0.9);
+    backdrop-filter: blur(14px);
     display: grid;
-    gap: 0.75rem;
-    padding: 0.9rem;
+    gap: 0.65rem;
+    padding: 0.85rem 0.9rem 0.9rem;
 }
 
 .senior-advisor-textarea {
-    min-height: 104px;
-    max-height: 180px;
+    min-height: 82px;
+    max-height: 140px;
+    resize: vertical;
 }
 
 .senior-advisor-composer-footer {
@@ -5934,6 +6013,14 @@ p {
     .senior-advisor-credit-actions .btn,
     .senior-advisor-composer-footer .btn {
         width: 100%;
+    }
+    .senior-advisor-chat-scroll {
+        max-height: 420px;
+        min-height: 220px;
+    }
+    .senior-advisor-prompt-chip,
+    .senior-advisor-message-body {
+        overflow-wrap: anywhere;
     }
     .senior-advisor-message-user {
         margin-left: 0;
