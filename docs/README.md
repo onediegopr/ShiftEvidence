@@ -98,6 +98,18 @@ Read these to understand:
 - [Entitlements / Unlock Flow](./entitlements-unlock-flow-v1.md)
 - [ADVISOR-1 - Senior Migration Advisor Basic Chat + Usage Limits](./hito-advisor-1-senior-migration-advisor-basic-chat-usage-limits.md)
 
+## Senior Migration Advisor
+
+- [Advisor audit / release readiness trace](./hito-advisor-release-readiness-1-controlled-migration-plan.md)
+- [Advisor v1 implementation](./hito-advisor-1-senior-migration-advisor-basic-chat-usage-limits.md)
+- [Advisor release readiness](./hito-advisor-release-readiness-1-controlled-migration-plan.md)
+- [Advisor release apply](./hito-advisor-release-apply-1-neon-mcp-senior-advisor-migration.md)
+- [Provider simplification](./hito-ai-provider-simplify-1-gemini-primary-opencode-go-fallback.md)
+- [Provider final config smoke](./hito-ai-provider-config-2b-align-gemini-runtime-model-final-advisor-smoke.md)
+- [Advisor UX provider polish](./hito-advisor-ux-provider-1-compact-ui-provider-response-fix.md)
+- [Advisor chat UX polish](./hito-advisor-ux-chat-2-chat-layout-premium-ui-polish.md)
+- [Advisor v1 operational closure](./hito-advisor-v1-close-1-senior-migration-advisor-operational-closure.md)
+
 ## Hostinger / Production Ops
 
 - [Hostinger Deployment Runbook](./hostinger-deployment-runbook-v1.md)
