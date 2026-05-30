@@ -25,8 +25,11 @@ export type AiRuntimeStatus = {
   estado: "operativo" | "degradado" | "desactivado" | "error" | "desconocido";
   proveedor: AiAdvisoryProvider;
   modelo: string | null;
+  proveedorFallback: AiAdvisoryProvider | null;
+  modeloFallback: string | null;
   iaActiva: boolean;
   geminiConfigurado: boolean;
+  opencodeGoConfigurado: boolean;
   openaiConfigurado: boolean;
   fallbackDisponible: boolean;
   ultimoEstado: AiRuntimeLastStatus;
@@ -87,7 +90,7 @@ function getEstado(params: {
     return "desactivado" as const;
   }
 
-  if (params.provider === "gemini" || params.provider === "openai") {
+  if (params.provider === "gemini" || params.provider === "opencode_go" || params.provider === "openai") {
     if (!params.hasProviderKey) {
       return "degradado" as const;
     }
@@ -134,9 +137,18 @@ export async function getAiRuntimeStatus(): Promise<AiRuntimeStatus> {
         )
       : null;
   const geminiConfigured = Boolean(getAiAdvisoryProviderKey("gemini"));
+  const opencodeGoConfigured = Boolean(getAiAdvisoryProviderKey("opencode_go"));
   const openaiConfigured = Boolean(getAiAdvisoryProviderKey("openai"));
   const hasProviderKey =
-    config.provider === "gemini" ? geminiConfigured : config.provider === "openai" ? openaiConfigured : true;
+    config.provider === "gemini"
+      ? geminiConfigured
+      : config.provider === "opencode_go"
+        ? opencodeGoConfigured
+        : config.provider === "openai"
+          ? openaiConfigured
+          : true;
+  const fallbackAvailable =
+    config.fallbackProvider === "opencode_go" ? opencodeGoConfigured : config.fallbackProvider === "mock";
 
   return {
     estado: getEstado({
@@ -147,10 +159,13 @@ export async function getAiRuntimeStatus(): Promise<AiRuntimeStatus> {
     }),
     proveedor: config.provider,
     modelo: config.model,
+    proveedorFallback: config.fallbackProvider,
+    modeloFallback: config.fallbackModel,
     iaActiva: config.enabled && config.provider !== "none" && config.provider !== "disabled",
     geminiConfigurado: geminiConfigured,
+    opencodeGoConfigurado: opencodeGoConfigured,
     openaiConfigurado: openaiConfigured,
-    fallbackDisponible: true,
+    fallbackDisponible: Boolean(fallbackAvailable),
     ultimoEstado: last?.status ?? "unknown",
     ultimoError: last?.errorCategory ?? "none",
     ultimoChequeo: last?.createdAt ?? null,

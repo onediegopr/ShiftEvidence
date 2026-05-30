@@ -3,12 +3,16 @@ import {
   buildSeniorAdvisorProviderFallbackMessage,
   buildSeniorAdvisorProviderHttpError,
   describeSeniorAdvisorGeminiResponseShape,
+  describeSeniorAdvisorOpenCodeGoResponseShape,
   extractSeniorAdvisorGeminiText,
+  extractSeniorAdvisorOpenCodeGoText,
   getSeniorAdvisorGeminiModelCandidates,
   getSeniorAdvisorProviderErrorMetadata,
   SeniorAdvisorProviderError,
 } from "../../src/server/advisor/seniorAdvisorProviderHandling";
 import { SENIOR_ADVISOR_OPERATION_TYPE } from "../../src/server/advisor/seniorAdvisorTypes";
+import { AI_RUNTIME_MODE_OPTIONS } from "../../src/server/admin/runtimeSettingsService";
+import { getAiAdvisoryConfig, getAiAdvisoryProviderKey } from "../../src/server/ai/aiAdvisoryConfig";
 
 describe("senior advisor service contract", () => {
   it("uses a dedicated AI usage operation type", () => {
@@ -159,6 +163,69 @@ describe("senior advisor service contract", () => {
       expect(error).toBeInstanceOf(SeniorAdvisorProviderError);
       expect((error as SeniorAdvisorProviderError).category).toBe("empty_response");
       expect(buildSeniorAdvisorProviderFallbackMessage(error)).toContain("empty provider response");
+    }
+  });
+
+  it("extracts OpenCode Go OpenAI-compatible chat completion text", () => {
+    expect(
+      extractSeniorAdvisorOpenCodeGoText({
+        choices: [{ message: { content: "Upload RVTools first." } }],
+      }),
+    ).toBe("Upload RVTools first.");
+
+    expect(
+      extractSeniorAdvisorOpenCodeGoText({
+        choices: [
+          {
+            message: {
+              content: [
+                { type: "text", text: "First action." },
+                { type: "text", text: "Second action." },
+              ],
+            },
+          },
+        ],
+      }),
+    ).toBe("First action.\nSecond action.");
+  });
+
+  it("keeps safe OpenCode Go response-shape metadata", () => {
+    const response = { choices: [{ finish_reason: "stop", message: { content: [{ tool_call: {} }] } }] };
+
+    expect(describeSeniorAdvisorOpenCodeGoResponseShape(response)).toMatchObject({
+      hasChoices: true,
+      choiceCount: 1,
+      finishReason: "stop",
+      firstPartTypes: ["tool_call"],
+    });
+
+    expect(() => extractSeniorAdvisorOpenCodeGoText({ choices: [] })).toThrow(SeniorAdvisorProviderError);
+  });
+
+  it("keeps OpenAI out of admin-selectable runtime modes", () => {
+    expect(AI_RUNTIME_MODE_OPTIONS).toEqual(["env", "disabled", "mock", "gemini"]);
+    expect(AI_RUNTIME_MODE_OPTIONS).not.toContain("openai");
+    expect(AI_RUNTIME_MODE_OPTIONS).not.toContain("opencode_go");
+  });
+
+  it("configures Gemini as primary with OpenCode Go fallback", () => {
+    const originalEnv = { ...process.env };
+    try {
+      process.env.AI_ADVISORY_ENABLED = "true";
+      process.env.AI_ADVISORY_PROVIDER = "gemini";
+      process.env.AI_ADVISORY_MODEL = "gemini-2.5-flash";
+      process.env.AI_ADVISORY_FALLBACK_PROVIDER = "opencode_go";
+      process.env.AI_ADVISORY_FALLBACK_MODEL = "glm-5.1";
+      process.env.OPENCODE_API_KEY = "test-opencode-key";
+
+      const config = getAiAdvisoryConfig();
+      expect(config.provider).toBe("gemini");
+      expect(config.model).toBe("gemini-2.5-flash");
+      expect(config.fallbackProvider).toBe("opencode_go");
+      expect(config.fallbackModel).toBe("glm-5.1");
+      expect(getAiAdvisoryProviderKey("opencode_go")).toBe("test-opencode-key");
+    } finally {
+      process.env = originalEnv;
     }
   });
 });

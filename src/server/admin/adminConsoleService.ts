@@ -108,8 +108,11 @@ function createFallbackAiRuntimeStatus(): AdminAiRuntimeStatus {
     estado: "desconocido",
     proveedor: "disabled",
     modelo: null,
+    proveedorFallback: null,
+    modeloFallback: null,
     iaActiva: false,
     geminiConfigurado: false,
+    opencodeGoConfigurado: false,
     openaiConfigurado: false,
     fallbackDisponible: true,
     ultimoEstado: "unknown",
@@ -211,7 +214,7 @@ function getAiOperationalAlerts(aiStatus: AdminAiRuntimeStatus) {
     });
   }
 
-  if (aiStatus.iaActiva && !["gemini", "mock", "openai"].includes(aiStatus.proveedor)) {
+  if (aiStatus.iaActiva && !["gemini", "mock", "opencode_go"].includes(aiStatus.proveedor)) {
     alerts.push({
       title: "Proveedor desconocido",
       status: "Atencion",
@@ -219,11 +222,19 @@ function getAiOperationalAlerts(aiStatus: AdminAiRuntimeStatus) {
     });
   }
 
-  if (aiStatus.openaiConfigurado && aiStatus.proveedor !== "openai") {
+  if (aiStatus.proveedor === "openai") {
     alerts.push({
-      title: "OpenAI configurado pero no activo",
+      title: "OpenAI legacy no operativo",
+      status: "Atencion",
+      message: "OpenAI queda deprecado y no debe usarse como proveedor operativo normal.",
+    });
+  }
+
+  if (aiStatus.proveedorFallback === "opencode_go" && !aiStatus.opencodeGoConfigurado) {
+    alerts.push({
+      title: "Fallback OpenCode Go no configurado",
       status: "Info",
-      message: "OpenAI no se usa mientras el proveedor activo sea distinto de openai.",
+      message: "Gemini sigue siendo primario; OpenCode Go requiere OPENCODE_API_KEY para fallback real.",
     });
   }
 
@@ -934,10 +945,13 @@ export async function getAdminConsoleData(params?: {
       { name: "HOSTINGER_STORAGE_ROOT", value: configState(process.env.HOSTINGER_STORAGE_ROOT), secret: true },
       { name: "ADMIN_EMAILS", value: configState(process.env.ADMIN_EMAILS), secret: true },
       { name: "GEMINI_API_KEY", value: configState(process.env.GEMINI_API_KEY), secret: true },
-      { name: "OPENAI_API_KEY", value: configState(process.env.OPENAI_API_KEY), secret: true },
+      { name: "OPENCODE_API_KEY", value: configState(process.env.OPENCODE_API_KEY), secret: true },
+      { name: "OPENCODE_GO_BASE_URL", value: safeVisibleValue(process.env.OPENCODE_GO_BASE_URL), secret: false },
       { name: "AI_ADVISORY_ENABLED", value: safeVisibleValue(process.env.AI_ADVISORY_ENABLED), secret: false },
       { name: "AI_ADVISORY_PROVIDER", value: safeVisibleValue(process.env.AI_ADVISORY_PROVIDER), secret: false },
       { name: "AI_ADVISORY_MODEL", value: safeVisibleValue(process.env.AI_ADVISORY_MODEL), secret: false },
+      { name: "AI_ADVISORY_FALLBACK_PROVIDER", value: safeVisibleValue(process.env.AI_ADVISORY_FALLBACK_PROVIDER), secret: false },
+      { name: "AI_ADVISORY_FALLBACK_MODEL", value: safeVisibleValue(process.env.AI_ADVISORY_FALLBACK_MODEL), secret: false },
       { name: "MAX_UPLOAD_SIZE_MB", value: safeVisibleValue(process.env.MAX_UPLOAD_SIZE_MB), secret: false },
     ],
     runtimeSettings,

@@ -91,7 +91,8 @@ function formatStatusLabel(value: string | null | undefined) {
     expired: "Vencido",
     fallback: "Fallback",
     free_preview: "Vista previa gratuita",
-    gemini: "Gemini",
+    gemini: "Google AI Studio Gemini",
+    opencode_go: "OpenCode Go",
     internal_qa: "QA interno",
     lost: "Perdido",
     manual: "Manual",
@@ -481,7 +482,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <MetricCard icon={<Database size={22} />} label="Evaluaciones totales" value={data.summary.totalAssessments} note="No archivadas" />
           <MetricCard icon={<Activity size={22} />} label="Últimos 7 días" value={data.summary.assessmentsLast7Days} note="Evaluaciones creadas" />
           <MetricCard icon={<FileText size={22} />} label="PDF generados" value={data.summary.totalReports} note="Reportes no borrados" />
-          <MetricCard icon={<Bot size={22} />} label="IA Gemini" value={ai.iaActiva ? "Activa" : "No activa"} note={`Proveedor: ${ai.proveedor}`} />
+          <MetricCard icon={<Bot size={22} />} label="IA Advisory" value={ai.iaActiva ? "Activa" : "No activa"} note={`Primario: ${formatStatusLabel(ai.proveedor)}; fallback: ${ai.proveedorFallback ? formatStatusLabel(ai.proveedorFallback) : "No configurado"}`} />
           <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
           <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Lanzamiento controlado" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
@@ -501,7 +502,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             description="Overrides operativos seguros desde DB. No editan Hostinger, no muestran secretos y requieren confirmación."
           />
           <section className="assessment-summary-grid">
-            <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Efectivo: ${ai.proveedor}`} />
+            <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Primario: ${formatStatusLabel(ai.proveedor)}`} />
             <MetricCard icon={<ShieldCheck size={22} />} label="Aplicación de límites IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
             <MetricCard icon={<FileText size={22} />} label="Generación PDF" value={data.runtimeSettings.reportsPdfGenerationEnabled ? "Activa" : "Bloqueada"} note="Control operativo global" />
             <MetricCard icon={<FileText size={22} />} label="Descargas" value={data.runtimeSettings.reportsDownloadEnabled ? "Activas" : "Bloqueadas"} note="Control operativo global" />
@@ -517,7 +518,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   ["disabled", "Apagar IA", "La IA queda desactivada por runtime setting."],
                   ["mock", "Volver a simulación", "Usa proveedor simulado para QA/control operativo."],
                   ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* de Hostinger/runtime."],
-                  ["gemini", "Forzar Gemini", "Usa Gemini si la credencial existe en el entorno."],
+                  ["gemini", "Forzar Gemini", "Usa Google AI Studio Gemini como proveedor primario si la credencial existe en el entorno."],
                 ].map(([mode, label, help]) => (
                   <form key={mode} className="unlock-admin-form" action={setAiRuntimeModeFormAction}>
                     <input type="hidden" name="mode" value={mode} />
@@ -592,12 +593,13 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             id="ia-consumo"
             icon={<Bot size={18} />}
             label="IA y Consumo"
-            title="Estado de Gemini AI Advisory"
-            description="Estado seguro del proveedor. No muestra keys, prompts ni respuestas crudas."
+            title="Estado de Gemini + OpenCode Go Advisory"
+            description="Estado seguro de proveedores. Gemini es primario; OpenCode Go queda como fallback. No muestra keys, prompts ni respuestas crudas."
           />
           <section className="assessment-summary-grid">
             <MetricCard icon={<Bot size={22} />} label="IA activa" value={ai.iaActiva ? "Sí" : "No"} note={`Proveedor: ${ai.proveedor}`} />
-            <MetricCard icon={<Settings size={22} />} label="Modelo" value={ai.modelo ?? "No configurado"} note="Modelo activo o fallback" />
+            <MetricCard icon={<Settings size={22} />} label="Modelo primario" value={ai.modelo ?? "No configurado"} note="Gemini operativo esperado" />
+            <MetricCard icon={<Settings size={22} />} label="Fallback IA" value={ai.proveedorFallback ? formatStatusLabel(ai.proveedorFallback) : "No configurado"} note={ai.modeloFallback ?? "Sin modelo fallback"} />
             <MetricCard icon={<CheckCircle2 size={22} />} label="Último estado" value={ai.ultimoEstado} note={`Último error: ${ai.ultimoError}`} />
             <MetricCard icon={<ShieldCheck size={22} />} label="Fallback" value={ai.fallbackDisponible ? "Disponible" : "No disponible"} note="Preview/PDF no deben romperse" />
             <MetricCard icon={<Activity size={22} />} label="Llamadas en memoria" value={data.aiConsumption.callsInMemory} note="Se reinician con deploy/restart" />
@@ -616,7 +618,8 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               <h3>Configuración segura de IA</h3>
               <div className="report-history-meta">
                 <span>Credencial Gemini: {ai.geminiConfigurado ? "Configurada" : "No configurada"}</span>
-                <span>Credencial OpenAI: {ai.openaiConfigurado ? "Configurada" : "No configurada"}</span>
+                <span>Credencial OpenCode Go: {ai.opencodeGoConfigurado ? "Configurada" : "No configurada"}</span>
+                <span>OpenAI: no expuesto como proveedor operativo</span>
                 <span>Secretos expuestos: {ai.secretosExpuestos ? "Sí" : "No"}</span>
                 <span>Archivos crudos enviados: {ai.archivosCrudosEnviados ? "Sí" : "No"}</span>
                 <span>Timeout: {ai.timeoutMs} ms</span>

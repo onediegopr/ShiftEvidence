@@ -12,8 +12,11 @@ export type SeniorAdvisorProviderResponseShape = {
   hasTextFunction: boolean;
   hasResponseTextFunction: boolean;
   hasCandidates: boolean;
+  hasChoices?: boolean;
   candidateCount: number;
+  choiceCount?: number;
   firstCandidateKeys: string[];
+  firstChoiceKeys?: string[];
   firstPartTypes: string[];
   finishReason: string | null;
 };
@@ -270,6 +273,77 @@ export function extractSeniorAdvisorGeminiText(value: unknown) {
   return extractGeminiTextFromCandidates({ value, responseShape });
 }
 
+export function describeSeniorAdvisorOpenCodeGoResponseShape(value: unknown): SeniorAdvisorProviderResponseShape {
+  const choices = isRecord(value) && Array.isArray(value.choices) ? value.choices : [];
+  const firstChoice = choices.find(isRecord) ?? null;
+  const message = firstChoice && isRecord(firstChoice.message) ? firstChoice.message : null;
+  const content = message?.content;
+  const firstPartTypes = Array.isArray(content)
+    ? content
+        .filter(isRecord)
+        .flatMap((part) => Object.keys(part).sort())
+        .filter((key, index, array) => array.indexOf(key) === index)
+        .slice(0, 8)
+    : typeof content === "string"
+      ? ["text"]
+      : [];
+
+  return {
+    hasTextFunction: false,
+    hasResponseTextFunction: false,
+    hasCandidates: false,
+    hasChoices: choices.length > 0,
+    candidateCount: 0,
+    choiceCount: choices.length,
+    firstCandidateKeys: [],
+    firstChoiceKeys: firstChoice ? Object.keys(firstChoice).sort().slice(0, 8) : [],
+    firstPartTypes,
+    finishReason: firstChoice ? asString(firstChoice.finish_reason) ?? asString(firstChoice.finishReason) : null,
+  };
+}
+
+export function extractSeniorAdvisorOpenCodeGoText(value: unknown) {
+  const responseShape = describeSeniorAdvisorOpenCodeGoResponseShape(value);
+  if (!isRecord(value)) {
+    throw new SeniorAdvisorProviderError({
+      message: "OpenCode Go Senior Advisor response was not an object.",
+      category: "invalid_response",
+      provider: "opencode_go",
+      safeReason: "invalid_response_shape",
+      responseShape,
+    });
+  }
+
+  const choices = Array.isArray(value.choices) ? value.choices : [];
+  const text = choices
+    .flatMap((choice) => {
+      if (!isRecord(choice) || !isRecord(choice.message)) return [];
+      const content = choice.message.content;
+      if (typeof content === "string") return [content];
+      if (!Array.isArray(content)) return [];
+      return content.map((part) => {
+        if (!isRecord(part)) return "";
+        if (typeof part.text === "string") return part.text;
+        if (typeof part.content === "string") return part.content;
+        return "";
+      });
+    })
+    .join("\n")
+    .trim();
+
+  if (!text) {
+    throw new SeniorAdvisorProviderError({
+      message: "OpenCode Go Senior Advisor response was empty.",
+      category: responseShape.hasChoices ? "empty_response" : "invalid_response",
+      provider: "opencode_go",
+      safeReason: responseShape.hasChoices ? "empty_response" : "invalid_response_shape",
+      responseShape,
+    });
+  }
+
+  return text;
+}
+
 export function getSeniorAdvisorProviderErrorCategory(error: unknown): SeniorAdvisorProviderErrorCategory {
   if (error instanceof SeniorAdvisorProviderError) return error.category;
   if (error instanceof Error && error.name === "AbortError") return "timeout";
@@ -309,8 +383,8 @@ export function getSeniorAdvisorProviderErrorMetadata(error: unknown): {
       responseHasTextFunction: shape?.hasTextFunction ?? null,
       responseHasResponseTextFunction: shape?.hasResponseTextFunction ?? null,
       responseHasCandidates: shape?.hasCandidates ?? null,
-      responseCandidateCount: shape?.candidateCount ?? null,
-      responseFirstCandidateKeys: shape?.firstCandidateKeys.join(",") ?? null,
+      responseCandidateCount: shape?.candidateCount ?? shape?.choiceCount ?? null,
+      responseFirstCandidateKeys: (shape?.firstCandidateKeys.length ? shape.firstCandidateKeys : shape?.firstChoiceKeys ?? []).join(",") || null,
       responseFirstPartTypes: shape?.firstPartTypes.join(",") ?? null,
       responseFinishReason: shape?.finishReason ?? null,
     };

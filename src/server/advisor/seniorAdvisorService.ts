@@ -5,10 +5,11 @@ import {
 } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import {
+  OPENCODE_GO_DEFAULT_BASE_URL,
   getAiAdvisoryProviderKey,
   getEffectiveAiAdvisoryConfig,
 } from "../ai/aiAdvisoryConfig";
-import type { AiAdvisoryConfig } from "../ai/aiAdvisoryTypes";
+import type { AiAdvisoryConfig, AiAdvisoryProvider } from "../ai/aiAdvisoryTypes";
 import {
   estimateAiCostUsd,
   estimateTokensFromChars,
@@ -27,10 +28,13 @@ import {
   buildSeniorAdvisorProviderFallbackMessage,
   buildSeniorAdvisorProviderHttpError,
   extractSeniorAdvisorGeminiText,
+  extractSeniorAdvisorOpenCodeGoText,
   getSeniorAdvisorGeminiModelCandidates,
   getSeniorAdvisorProviderErrorCategory,
   getSeniorAdvisorProviderErrorMetadata,
   getSeniorAdvisorProviderErrorModel,
+  SeniorAdvisorProviderError,
+  type SeniorAdvisorProviderErrorCategory,
 } from "./seniorAdvisorProviderHandling";
 import { buildSeniorAdvisorPrompt } from "./seniorAdvisorPrompt";
 import {
@@ -56,6 +60,11 @@ type ProviderTextResult = {
   text: string;
   durationMs: number;
   model: string | null;
+  provider: AiAdvisoryProvider;
+  fallbackUsed: boolean;
+  primaryProvider: AiAdvisoryProvider;
+  primaryModel: string | null;
+  primaryErrorCategory: SeniorAdvisorProviderErrorCategory | null;
 };
 
 const MAX_HISTORY_MESSAGES = 50;
@@ -384,7 +393,16 @@ async function callGeminiProvider(params: {
       const jsonResponse = (await response.json()) as unknown;
       const text = extractSeniorAdvisorGeminiText(jsonResponse);
 
-      return { text, durationMs: Date.now() - startedAt, model };
+      return {
+        text,
+        durationMs: Date.now() - startedAt,
+        model,
+        provider: "gemini",
+        fallbackUsed: false,
+        primaryProvider: "gemini",
+        primaryModel: params.config.model,
+        primaryErrorCategory: null,
+      };
     } catch (error) {
       lastError = error;
       const category = getSeniorAdvisorProviderErrorCategory(error);
@@ -448,7 +466,161 @@ async function callOpenAiProvider(params: {
     throw new Error("OpenAI Senior Advisor response was empty.");
   }
 
-  return { text: text.trim(), durationMs: Date.now() - startedAt, model };
+  return {
+    text: text.trim(),
+    durationMs: Date.now() - startedAt,
+    model,
+    provider: "openai",
+    fallbackUsed: false,
+    primaryProvider: "openai",
+    primaryModel: params.config.model,
+    primaryErrorCategory: null,
+  };
+}
+
+async function callOpenCodeGoProvider(params: {
+  config: AiAdvisoryConfig;
+  apiKey: string;
+  prompt: string;
+  maxResponseTokens: number;
+  model?: string | null;
+  fallbackUsed: boolean;
+  primaryProvider: AiAdvisoryProvider;
+  primaryModel: string | null;
+  primaryErrorCategory: SeniorAdvisorProviderErrorCategory | null;
+}): Promise<ProviderTextResult> {
+  const startedAt = Date.now();
+  const model = params.model ?? params.config.fallbackModel ?? "glm-5.1";
+  const response = await fetchWithTimeout(
+    params.config.opencodeGoBaseUrl ?? OPENCODE_GO_DEFAULT_BASE_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${params.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are the Senior Migration Advisor for one ShiftReadiness assessment. Use only the provided context, avoid guarantees, and answer concisely.",
+          },
+          { role: "user", content: params.prompt },
+        ],
+        temperature: 0.2,
+        max_tokens: params.maxResponseTokens,
+      }),
+    },
+    params.config.timeoutMs,
+  );
+
+  if (!response.ok) {
+    throw await buildSeniorAdvisorProviderHttpError({
+      response,
+      provider: "opencode_go",
+      model,
+    });
+  }
+
+  const jsonResponse = (await response.json()) as unknown;
+  const text = extractSeniorAdvisorOpenCodeGoText(jsonResponse);
+
+  return {
+    text,
+    durationMs: Date.now() - startedAt,
+    model,
+    provider: "opencode_go",
+    fallbackUsed: params.fallbackUsed,
+    primaryProvider: params.primaryProvider,
+    primaryModel: params.primaryModel,
+    primaryErrorCategory: params.primaryErrorCategory,
+  };
+}
+
+function buildMissingProviderKeyError(provider: AiAdvisoryProvider, model: string | null) {
+  return new SeniorAdvisorProviderError({
+    message: `${provider} Senior Advisor provider key is not configured.`,
+    category: "config_missing",
+    provider,
+    model,
+    safeReason: "server_side_api_key_missing",
+  });
+}
+
+function shouldFallbackToOpenCodeGo(error: unknown) {
+  const category = getSeniorAdvisorProviderErrorCategory(error);
+  return category !== "safety_blocked";
+}
+
+async function callAdvisorProviderWithFallback(params: {
+  config: AiAdvisoryConfig;
+  prompt: string;
+  maxResponseTokens: number;
+}): Promise<ProviderTextResult> {
+  const primaryProvider = params.config.provider;
+  const primaryModel = params.config.model;
+
+  try {
+    const apiKey = getAiAdvisoryProviderKey(primaryProvider);
+    if (!apiKey) {
+      throw buildMissingProviderKeyError(primaryProvider, primaryModel);
+    }
+
+    if (primaryProvider === "gemini") {
+      return await callGeminiProvider({
+        config: params.config,
+        apiKey,
+        prompt: params.prompt,
+        maxResponseTokens: params.maxResponseTokens,
+      });
+    }
+
+    if (primaryProvider === "opencode_go") {
+      return await callOpenCodeGoProvider({
+        config: params.config,
+        apiKey,
+        prompt: params.prompt,
+        maxResponseTokens: params.maxResponseTokens,
+        model: primaryModel,
+        fallbackUsed: false,
+        primaryProvider,
+        primaryModel,
+        primaryErrorCategory: null,
+      });
+    }
+
+    return await callOpenAiProvider({
+      config: params.config,
+      apiKey,
+      prompt: params.prompt,
+      maxResponseTokens: params.maxResponseTokens,
+    });
+  } catch (primaryError) {
+    if (
+      primaryProvider === "gemini" &&
+      params.config.fallbackProvider === "opencode_go" &&
+      shouldFallbackToOpenCodeGo(primaryError)
+    ) {
+      const fallbackKey = getAiAdvisoryProviderKey("opencode_go");
+      if (fallbackKey) {
+        return callOpenCodeGoProvider({
+          config: params.config,
+          apiKey: fallbackKey,
+          prompt: params.prompt,
+          maxResponseTokens: params.maxResponseTokens,
+          model: params.config.fallbackModel,
+          fallbackUsed: true,
+          primaryProvider,
+          primaryModel,
+          primaryErrorCategory: getSeniorAdvisorProviderErrorCategory(primaryError),
+        });
+      }
+    }
+
+    throw primaryError;
+  }
 }
 
 function getErrorCategory(error: unknown) {
@@ -865,77 +1037,25 @@ export async function sendSeniorAdvisorMessage(
         text: mockText,
         durationMs: Date.now() - startedAt,
         model: config.model,
+        provider: "mock",
+        fallbackUsed: false,
+        primaryProvider: "mock",
+        primaryModel: config.model,
+        primaryErrorCategory: null,
       };
     } else {
-      const apiKey = getAiAdvisoryProviderKey(config.provider);
-      if (!apiKey) {
-        const assistantText = "The configured AI provider is missing a server-side API key. Deterministic assessment sections remain available.";
-        const assistantMessage = await persistAdvisorExchange({
-          assessment,
-          conversationId: conversation.id,
-          userId: params.userId,
-          userMessage: security.sanitizedText,
-          assistantMessage: assistantText,
-          userStatus: "blocked",
-          assistantStatus: "blocked",
-          provider: config.provider,
-          model: config.model,
-          estimatedInputTokens: estimateTokensFromChars(inputChars),
-          estimatedOutputTokens: estimateTokensFromChars(assistantText.length),
-          estimatedCostUsd: 0,
-          creditCost: 0,
-          safetyFlags: security.safetyFlags,
-          referencedContextJson: contextSections,
-        });
-        await recordAiUsageEvent({
-          assessmentId: assessment.id,
-          userId: params.userId,
-          provider: config.provider,
-          model: config.model,
-          operationType: SENIOR_ADVISOR_OPERATION_TYPE,
-          status: "unavailable",
-          durationMs: Date.now() - startedAt,
-          inputChars,
-          outputChars: assistantText.length,
-          errorCategory: "config_missing",
-          fallbackUsed: true,
-          metadataJson: { reason: "config_missing", contextReduced: boundedPrompt.reduced },
-        });
-        await recordAdvisorAuditEvent({
-          userId: params.userId,
-          assessment,
-          eventType: "advisor_message_failed",
-          message: "Senior Migration Advisor provider configuration is incomplete.",
-          metadataJson: { reason: "config_missing" },
-        });
-        return {
-          ok: true,
-          assistantMessage,
-          usage: usageState.usage,
-        };
-      }
-
-      providerResult =
-        config.provider === "gemini"
-          ? await callGeminiProvider({
-              config,
-              apiKey,
-              prompt: boundedPrompt.prompt,
-              maxResponseTokens: usageState.limits.maxResponseTokens,
-            })
-          : await callOpenAiProvider({
-              config,
-              apiKey,
-              prompt: boundedPrompt.prompt,
-              maxResponseTokens: usageState.limits.maxResponseTokens,
-            });
+      providerResult = await callAdvisorProviderWithFallback({
+        config,
+        prompt: boundedPrompt.prompt,
+        maxResponseTokens: usageState.limits.maxResponseTokens,
+      });
     }
 
     const outputText = sanitizeAdvisorResponse(providerResult.text);
     const estimatedInputTokens = estimateTokensFromChars(inputChars);
     const estimatedOutputTokens = estimateTokensFromChars(outputText.length);
     const estimatedCostUsd = estimateAiCostUsd({
-      provider: config.provider,
+      provider: providerResult.provider,
       model: providerResult.model,
       inputTokens: estimatedInputTokens,
       outputTokens: estimatedOutputTokens,
@@ -946,7 +1066,7 @@ export async function sendSeniorAdvisorMessage(
       userId: params.userId,
       userMessage: security.sanitizedText,
       assistantMessage: outputText,
-      provider: config.provider,
+      provider: providerResult.provider,
       model: providerResult.model,
       estimatedInputTokens,
       estimatedOutputTokens,
@@ -958,16 +1078,22 @@ export async function sendSeniorAdvisorMessage(
     await recordAiUsageEvent({
       assessmentId: assessment.id,
       userId: params.userId,
-      provider: config.provider,
+      provider: providerResult.provider,
       model: providerResult.model,
       operationType: SENIOR_ADVISOR_OPERATION_TYPE,
-      status: config.provider === "mock" ? "mock" : "success",
+      status: providerResult.provider === "mock" ? "mock" : "success",
       durationMs: providerResult.durationMs,
       inputChars,
       outputChars: outputText.length,
-      fallbackUsed: security.safetyFlags.length > 0 || boundedPrompt.reduced,
+      fallbackUsed: providerResult.fallbackUsed || security.safetyFlags.length > 0 || boundedPrompt.reduced,
       metadataJson: {
-        status: config.provider === "mock" ? "mock" : "success",
+        status: providerResult.provider === "mock" ? "mock" : "success",
+        primaryProvider: providerResult.primaryProvider,
+        primaryModel: providerResult.primaryModel,
+        finalProvider: providerResult.provider,
+        finalModel: providerResult.model,
+        fallbackUsed: providerResult.fallbackUsed,
+        primaryErrorCategory: providerResult.primaryErrorCategory,
         contextReduced: boundedPrompt.reduced,
         contextSections: Object.values(contextSections).filter(Boolean).length,
         creditCost: 1,
@@ -979,8 +1105,9 @@ export async function sendSeniorAdvisorMessage(
       eventType: "advisor_message_sent",
       message: "Senior Migration Advisor message completed.",
       metadataJson: {
-        provider: config.provider,
+        provider: providerResult.provider,
         model: providerResult.model,
+        fallbackUsed: providerResult.fallbackUsed,
         creditCost: 1,
       },
     });

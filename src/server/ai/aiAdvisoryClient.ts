@@ -1,4 +1,8 @@
-import { getEffectiveAiAdvisoryConfig, getAiAdvisoryProviderKey } from "./aiAdvisoryConfig";
+import {
+  OPENCODE_GO_DEFAULT_BASE_URL,
+  getEffectiveAiAdvisoryConfig,
+  getAiAdvisoryProviderKey,
+} from "./aiAdvisoryConfig";
 import { buildAiAdvisoryContextPayload } from "./advisoryContextPayload";
 import { buildAiAdvisoryPrompt } from "./aiAdvisoryPrompts";
 import type { AssessmentDetail } from "../assessments/assessmentService";
@@ -247,6 +251,10 @@ function normalizeStringList(value: unknown, fallback: string[] = []) {
     .map((item) => item.trim())
     .filter(Boolean)
     .slice(0, 8);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function normalizeProviderJson(value: unknown, fallback: AiAdvisoryOutput): AiAdvisoryOutput {
@@ -520,6 +528,74 @@ async function callOpenAiProvider(params: {
   return normalizeProviderJson(parseProviderJsonText(text), params.fallback);
 }
 
+function extractOpenCodeGoChatText(value: unknown) {
+  if (!isRecord(value) || !Array.isArray(value.choices)) {
+    throw new Error("OpenCode Go advisory response shape was invalid.");
+  }
+
+  const text = value.choices
+    .flatMap((choice) => {
+      if (!isRecord(choice) || !isRecord(choice.message)) return [];
+      const content = choice.message.content;
+      if (typeof content === "string") return [content];
+      if (!Array.isArray(content)) return [];
+      return content.map((part) => {
+        if (!isRecord(part)) return "";
+        if (typeof part.text === "string") return part.text;
+        if (typeof part.content === "string") return part.content;
+        return "";
+      });
+    })
+    .join("\n")
+    .trim();
+
+  if (!text) {
+    throw new Error("OpenCode Go advisory response was empty.");
+  }
+
+  return text;
+}
+
+async function callOpenCodeGoProvider(params: {
+  config: AiAdvisoryConfig;
+  apiKey: string;
+  prompt: string;
+  fallback: AiAdvisoryOutput;
+}) {
+  const model = params.config.model ?? params.config.fallbackModel ?? "glm-5.1";
+  const response = await fetchWithTimeout(
+    params.config.opencodeGoBaseUrl ?? OPENCODE_GO_DEFAULT_BASE_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${params.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Return only valid JSON matching the ShiftReadiness AI advisory schema. Do not include markdown fences.",
+          },
+          { role: "user", content: params.prompt },
+        ],
+        max_tokens: Math.max(256, Math.min(params.config.maxOutputChars, 8192)),
+        temperature: 0.2,
+      }),
+    },
+    params.config.timeoutMs,
+  );
+
+  if (!response.ok) {
+    throw new Error(`OpenCode Go advisory request failed with status ${response.status}.`);
+  }
+
+  const text = extractOpenCodeGoChatText(await response.json());
+  return normalizeProviderJson(parseProviderJsonText(text), params.fallback);
+}
+
 export async function generateAiAdvisoryFromPayload(
   payload: AiAdvisoryContextPayload,
   safeAssessmentId = "synthetic-ai-advisory",
@@ -687,7 +763,9 @@ export async function generateAiAdvisoryFromPayload(
     const prompt = buildAiAdvisoryPrompt(inputJson);
     const output = config.provider === "gemini"
       ? await callGeminiProvider({ config, apiKey, prompt, fallback })
-      : await callOpenAiProvider({ config, apiKey, prompt, fallback });
+      : config.provider === "opencode_go"
+        ? await callOpenCodeGoProvider({ config, apiKey, prompt, fallback })
+        : await callOpenAiProvider({ config, apiKey, prompt, fallback });
 
     recordAiRuntimeEvent({
       eventType: "ai_advisory_success",

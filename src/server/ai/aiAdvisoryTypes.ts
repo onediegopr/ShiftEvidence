@@ -1,4 +1,4 @@
-export type AiAdvisoryProvider = "none" | "disabled" | "mock" | "gemini" | "openai";
+export type AiAdvisoryProvider = "none" | "disabled" | "mock" | "gemini" | "opencode_go" | "openai";
 
 export type AiAdvisoryProviderStatus = "success" | "unavailable" | "error" | "disabled" | "mock";
 
@@ -6,6 +6,9 @@ export type AiAdvisoryConfig = {
   enabled: boolean;
   provider: AiAdvisoryProvider;
   model: string | null;
+  fallbackProvider: AiAdvisoryProvider | null;
+  fallbackModel: string | null;
+  opencodeGoBaseUrl: string | null;
   timeoutMs: number;
   maxInputChars: number;
   maxOutputChars: number;

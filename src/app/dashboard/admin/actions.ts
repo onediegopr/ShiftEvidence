@@ -10,6 +10,7 @@ import {
   upsertUserEntitlementFromForm,
 } from "../../../server/admin/adminOpsService";
 import {
+  AI_RUNTIME_MODE_OPTIONS,
   parseOperationalRuntimeSettingsForm,
   setRuntimeMode,
   updateOperationalRuntimeSettings,
@@ -114,13 +115,14 @@ export async function setAiRuntimeModeFormAction(formData: FormData) {
       throw new Error("Confirmacion requerida para cambiar el modo IA.");
     }
     const mode = formData.get("mode");
-    if (mode !== "env" && mode !== "disabled" && mode !== "mock" && mode !== "gemini") {
+    if (!AI_RUNTIME_MODE_OPTIONS.includes(mode as (typeof AI_RUNTIME_MODE_OPTIONS)[number])) {
       throw new Error("Modo IA invalido.");
     }
+    const runtimeMode = mode as (typeof AI_RUNTIME_MODE_OPTIONS)[number];
     await setRuntimeMode({
       actorUserId: session.user.id,
       actorEmail: session.user.email,
-      mode,
+      mode: runtimeMode,
     });
     adminRedirect("saved=runtime&tab=configuracion-operativa");
   } catch (error) {

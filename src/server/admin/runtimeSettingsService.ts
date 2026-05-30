@@ -5,6 +5,7 @@ import { getAiBudgetSettings } from "./adminOpsService";
 import { recordAdminAuditEvent } from "./adminOpsService";
 
 export type AiRuntimeMode = "env" | "disabled" | "mock" | "gemini";
+export const AI_RUNTIME_MODE_OPTIONS: AiRuntimeMode[] = ["env", "disabled", "mock", "gemini"];
 
 export type OperationalRuntimeSettings = {
   aiRuntimeMode: AiRuntimeMode;
@@ -60,7 +61,7 @@ function booleanFromForm(formData: FormData, key: string, fallback: boolean) {
 }
 
 function parseAiRuntimeMode(value: unknown): AiRuntimeMode {
-  return value === "disabled" || value === "mock" || value === "gemini" || value === "env" ? value : "env";
+  return AI_RUNTIME_MODE_OPTIONS.includes(value as AiRuntimeMode) ? (value as AiRuntimeMode) : "env";
 }
 
 export function parseOperationalRuntimeSettingsForm(formData: FormData): OperationalRuntimeSettings {
