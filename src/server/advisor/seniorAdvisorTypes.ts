@@ -1,4 +1,5 @@
 import type { AiAdvisoryProvider } from "../ai/aiAdvisoryTypes";
+import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
 
 export const SENIOR_ADVISOR_CONTEXT_VERSION = "advisor-context-v1";
 export const SENIOR_ADVISOR_PROMPT_VERSION = "advisor-prompt-v1";
@@ -178,6 +179,7 @@ export type SeniorAdvisorPanelState = {
   conversationId: string | null;
   usage: SeniorAdvisorUsageState;
   messages: SeniorAdvisorMessageView[];
+  memory: AdvisorMemoryPanelState;
   lockedReason: string | null;
   helper: {
     title: string;

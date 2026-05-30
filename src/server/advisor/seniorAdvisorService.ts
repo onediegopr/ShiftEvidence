@@ -19,6 +19,8 @@ import {
 import { assertCanUseAi, getEffectiveUserEntitlement } from "../admin/runtimeSettingsService";
 import { ensureAssessmentOwnership, type AssessmentDetail } from "../assessments/assessmentService";
 import { logger } from "../logging/logger";
+import { getAdvisorMemoryPanelState } from "./advisorMemoryService";
+import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
 import { buildSeniorAdvisorContextPayload, summarizeSeniorAdvisorContextSections } from "./seniorAdvisorContextService";
 import {
   buildSeniorAdvisorUsageState,
@@ -68,6 +70,29 @@ type ProviderTextResult = {
 };
 
 const MAX_HISTORY_MESSAGES = 50;
+
+const EMPTY_ADVISOR_MEMORY_PANEL_STATE: AdvisorMemoryPanelState = {
+  enabled: false,
+  available: false,
+  lockedReason: "Project Memory is temporarily unavailable.",
+  planLabel: "Unavailable",
+  maxItemsPerAssessment: 0,
+  counts: {
+    total: 0,
+    active: 0,
+    needsReview: 0,
+    resolved: 0,
+    rejected: 0,
+    superseded: 0,
+    archived: 0,
+    decisions: 0,
+    openQuestions: 0,
+    nextSteps: 0,
+  },
+  summary: "Project Memory is temporarily unavailable.",
+  previewItems: [],
+  items: [],
+};
 
 type AdvisorBlockedResultCode = "plan_restricted" | "budget_blocked" | "ai_disabled";
 
@@ -696,12 +721,22 @@ export async function getSeniorAdvisorPanelState(
         take: MAX_HISTORY_MESSAGES,
       })
     : [];
+  const memory = await getAdvisorMemoryPanelState(params).catch((error) => {
+    logger.warn("advisor_memory_panel_state_unavailable", {
+      assessmentId: assessment.id,
+      userId: params.userId,
+      error,
+    });
+
+    return EMPTY_ADVISOR_MEMORY_PANEL_STATE;
+  });
 
   return {
     assessmentId: assessment.id,
     conversationId: usageState.conversationId,
     usage: usageState.usage,
     messages: messages.map(mapMessageView),
+    memory,
     lockedReason: usageState.usage.enabled
       ? null
       : "Senior Migration Advisor is available on Professional, Blueprint and Partner plans.",

@@ -113,3 +113,27 @@ export type AdvisorMemorySummary = {
   context: AdvisorMemoryContext;
   summary: string;
 };
+
+export type AdvisorMemoryPanelState = {
+  enabled: boolean;
+  available: boolean;
+  lockedReason: string | null;
+  planLabel: string;
+  maxItemsPerAssessment: number;
+  counts: AdvisorMemoryCounts;
+  summary: string;
+  previewItems: AdvisorMemoryItemView[];
+  items: AdvisorMemoryItemView[];
+};
+
+export type AdvisorMemoryActionResult =
+  | {
+      ok: true;
+      message: string;
+      memory: AdvisorMemoryPanelState;
+    }
+  | {
+      ok: false;
+      message: string;
+      memory?: AdvisorMemoryPanelState;
+    };

@@ -12,6 +12,7 @@ import type {
   AdvisorMemoryContextItem,
   AdvisorMemoryCounts,
   AdvisorMemoryCreateInput,
+  AdvisorMemoryPanelState,
   AdvisorMemorySummary,
   AdvisorMemoryItemStatus,
   AdvisorMemoryItemView,
@@ -59,6 +60,19 @@ const CONTEXT_TYPES = [
   "constraint",
   "risk_interpretation",
 ] as const;
+
+const EMPTY_COUNTS: AdvisorMemoryCounts = {
+  total: 0,
+  active: 0,
+  needsReview: 0,
+  resolved: 0,
+  rejected: 0,
+  superseded: 0,
+  archived: 0,
+  decisions: 0,
+  openQuestions: 0,
+  nextSteps: 0,
+};
 
 function json(value: unknown): Prisma.InputJsonValue {
   return value as Prisma.InputJsonValue;
@@ -230,6 +244,63 @@ export async function listAdvisorMemoryItems(
   });
 
   return items.map(mapMemoryItem);
+}
+
+export async function getAdvisorMemoryPanelState(params: ActorParams): Promise<AdvisorMemoryPanelState> {
+  const assessment = await ensureAssessmentOwnership(params);
+  const limits = await getMemoryLimits({ userId: params.userId, assessment });
+
+  if (!limits.enabled || !limits.canUseMemory) {
+    return {
+      enabled: false,
+      available: true,
+      lockedReason: "Project Memory is available on paid Advisor plans.",
+      planLabel: limits.label,
+      maxItemsPerAssessment: limits.maxItemsPerAssessment,
+      counts: EMPTY_COUNTS,
+      summary: "Project Memory is locked for this plan.",
+      previewItems: [],
+      items: [],
+    };
+  }
+
+  const [items, counts] = await Promise.all([
+    prisma.assessmentAdvisorMemoryItem.findMany({
+      where: {
+        assessmentId: assessment.id,
+        workspaceId: assessment.workspaceId,
+        status: { not: "archived" },
+      },
+      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+      take: 100,
+    }),
+    getAdvisorMemoryCounts(assessment.id, assessment.workspaceId),
+  ]);
+  const mapped = items.map(mapMemoryItem);
+  const previewItems = [
+    ...mapped.filter((item) => item.status === "needs_review").slice(0, 3),
+    ...mapped.filter((item) => item.status === "active" && item.type === "decision").slice(0, 3),
+    ...mapped.filter((item) => item.status === "active" && item.type === "open_question").slice(0, 3),
+    ...mapped.filter((item) => item.status === "active" && item.type === "next_step").slice(0, 3),
+  ].slice(0, 9);
+  const summary = [
+    `${counts.decisions} decisions`,
+    `${counts.openQuestions} open questions`,
+    `${counts.nextSteps} next steps`,
+    `${counts.needsReview} needing review`,
+  ].join("; ");
+
+  return {
+    enabled: true,
+    available: true,
+    lockedReason: null,
+    planLabel: limits.label,
+    maxItemsPerAssessment: limits.maxItemsPerAssessment,
+    counts,
+    summary,
+    previewItems,
+    items: mapped,
+  };
 }
 
 export async function createAdvisorMemoryItem(params: {

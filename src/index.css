@@ -4221,6 +4221,171 @@ p {
     background: rgba(255, 255, 255, 0.018);
 }
 
+.senior-advisor-memory-panel {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid rgba(34, 211, 238, 0.12);
+    border-radius: 14px;
+    background:
+        linear-gradient(135deg, rgba(34, 211, 238, 0.055), transparent 40%),
+        rgba(3, 7, 18, 0.22);
+}
+
+.senior-advisor-memory-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.senior-advisor-memory-header h3 {
+    color: white;
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+}
+
+.senior-advisor-memory-header .btn,
+.senior-advisor-memory-actions .btn,
+.senior-advisor-memory-create-actions .btn {
+    min-height: 2rem;
+    padding: 0.42rem 0.7rem;
+    font-size: 0.78rem;
+}
+
+.senior-advisor-memory-stats {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.senior-advisor-memory-stats div {
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0.55rem 0.65rem;
+}
+
+.senior-advisor-memory-stats span,
+.senior-advisor-memory-meta span {
+    color: var(--text-dark);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.senior-advisor-memory-stats strong {
+    display: block;
+    color: white;
+    font-size: 1rem;
+    margin-top: 0.15rem;
+}
+
+.senior-advisor-memory-empty {
+    align-items: center;
+    border: 1px dashed rgba(148, 163, 184, 0.18);
+    border-radius: 12px;
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.75rem;
+}
+
+.senior-advisor-memory-empty p {
+    font-size: 0.85rem;
+}
+
+.senior-advisor-memory-groups {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.senior-advisor-memory-group {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.senior-advisor-memory-group > h4 {
+    color: #dbeafe;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.senior-advisor-memory-item {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.46);
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+}
+
+.senior-advisor-memory-item-head {
+    align-items: flex-start;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.senior-advisor-memory-item-head h4 {
+    color: white;
+    font-size: 0.9rem;
+}
+
+.senior-advisor-memory-item-head p,
+.senior-advisor-memory-summary {
+    font-size: 0.82rem;
+}
+
+.senior-advisor-memory-summary {
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+.senior-advisor-memory-badges,
+.senior-advisor-memory-meta,
+.senior-advisor-memory-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.senior-advisor-memory-create {
+    border-top: 1px solid rgba(255, 255, 255, 0.075);
+    padding-top: 0.7rem;
+}
+
+.senior-advisor-memory-create summary {
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.85rem;
+    font-weight: 800;
+    gap: 0.4rem;
+}
+
+.senior-advisor-memory-create-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 0.75rem;
+}
+
+.senior-advisor-memory-create-summary,
+.senior-advisor-memory-create-actions {
+    grid-column: 1 / -1;
+}
+
+.senior-advisor-memory-create-actions {
+    align-items: center;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: space-between;
+}
+
 .senior-advisor-prompt-grid {
     display: flex;
     flex-wrap: wrap;
@@ -6005,6 +6170,8 @@ p {
         flex-wrap: wrap;
     }
     .senior-advisor-credit-actions,
+    .senior-advisor-memory-header,
+    .senior-advisor-memory-create-actions,
     .senior-advisor-composer-footer {
         align-items: flex-start;
         flex-direction: column;
@@ -6021,6 +6188,10 @@ p {
     .senior-advisor-prompt-chip,
     .senior-advisor-message-body {
         overflow-wrap: anywhere;
+    }
+    .senior-advisor-memory-stats,
+    .senior-advisor-memory-create-grid {
+        grid-template-columns: 1fr;
     }
     .senior-advisor-message-user {
         margin-left: 0;
