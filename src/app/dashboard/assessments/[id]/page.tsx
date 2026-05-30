@@ -621,9 +621,13 @@ export default async function AssessmentDetailPage({
     storageDestinationStatus === "ready_for_analysis" ||
     storageDestinationStatus === "analyzed"
       ? "#10b981"
-      : storageDestinationStatus === "draft" || storageDestinationStatus === "analysis_pending"
+      : storageDestinationStatus === "draft" ||
+        storageDestinationStatus === "analysis_pending" ||
+        storageDestinationStatus === "stale"
         ? "#f59e0b"
-        : "#475569";
+        : storageDestinationStatus === "failed"
+          ? "#ef4444"
+          : "#475569";
   const clientContextStatus = clientContextSummary?.status ?? "not_provided";
   const clientContextDotColor =
     clientContextStatus === "ready_for_analysis" ||

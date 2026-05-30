@@ -50,7 +50,8 @@ export type AdminSectionKey =
   | "runtime_settings"
   | "owner_emails"
   | "ai_status"
-  | "ai_usage";
+  | "ai_usage"
+  | "storage_ceph";
 
 export type AdminSectionFailure = {
   sectionKey: AdminSectionKey;
@@ -358,6 +359,84 @@ export async function getAdminConsoleData(params?: {
       failedReports,
     };
   };
+
+  const loadStorageCephMetrics = async () => {
+    const [
+      activeStorageAssessments,
+      readinessGroups,
+      cephRequested,
+      cephSuitabilityGroups,
+      activeWithoutEvidence,
+      evidenceClassifications,
+      aiAnalysisGroups,
+    ] = await Promise.all([
+      prisma.assessment.count({ where: { storageReadinessEnabled: true, archivedAt: null } }),
+      prisma.assessmentStorageDestinationReadiness.groupBy({
+        by: ["status"],
+        _count: { _all: true },
+      }),
+      prisma.assessmentStorageDestinationReadiness.count({
+        where: {
+          OR: [
+            { targetStoragePreference: "ceph" },
+            { mode: "ceph_candidate" },
+          ],
+        },
+      }),
+      prisma.assessmentStorageAnalysis.groupBy({
+        by: ["cephSuitabilityStatus"],
+        _count: { _all: true },
+      }),
+      prisma.assessment.count({
+        where: {
+          storageReadinessEnabled: true,
+          archivedAt: null,
+          storageEvidence: { none: {} },
+        },
+      }),
+      prisma.assessmentStorageEvidence.groupBy({
+        by: ["classification"],
+        _count: { _all: true },
+      }),
+      prisma.assessmentStorageAnalysis.groupBy({
+        by: ["status"],
+        _count: { _all: true },
+      }),
+    ]);
+
+    const readinessStatus: Record<string, number> = {};
+    readinessGroups.forEach((g) => {
+      readinessStatus[g.status] = g._count._all;
+    });
+
+    const cephSuitability: Record<string, number> = {};
+    cephSuitabilityGroups.forEach((g) => {
+      if (g.cephSuitabilityStatus) {
+        cephSuitability[g.cephSuitabilityStatus] = g._count._all;
+      }
+    });
+
+    const evidenceClassification: Record<string, number> = {};
+    evidenceClassifications.forEach((g) => {
+      evidenceClassification[g.classification] = g._count._all;
+    });
+
+    const aiAnalysisStatus: Record<string, number> = {};
+    aiAnalysisGroups.forEach((g) => {
+      aiAnalysisStatus[g.status] = g._count._all;
+    });
+
+    return {
+      activeStorageAssessments,
+      readinessStatus,
+      cephRequested,
+      cephSuitability,
+      activeWithoutEvidence,
+      evidenceClassification,
+      aiAnalysisStatus,
+    };
+  };
+
   const loadRecentUsers = () =>
     prisma.user.findMany({
       where: usersWhere,
@@ -474,6 +553,48 @@ export async function getAdminConsoleData(params?: {
             },
           },
         },
+        storageReadinessEnabled: true,
+        storageDestinationReadiness: {
+          select: {
+            status: true,
+            mode: true,
+            targetStoragePreference: true,
+          },
+        },
+        storageAnalysis: {
+          select: {
+            status: true,
+            cephSuitabilityStatus: true,
+            storageReadinessScore: true,
+            storageEvidenceConfidence: true,
+          },
+        },
+        storageContext: {
+          select: {
+            status: true,
+            wordCount: true,
+            characterCount: true,
+          },
+        },
+        storageEvidence: {
+          where: {
+            evidenceFile: { deletedAt: null },
+          },
+          select: {
+            id: true,
+            classification: true,
+            analysisStatus: true,
+            includedInStorageAnalysis: true,
+            evidenceFile: {
+              select: {
+                id: true,
+                originalFilename: true,
+                sizeBytes: true,
+                processingStatus: true,
+              },
+            },
+          },
+        },
       },
     });
   const loadRecentAuditEvents = () =>
@@ -513,6 +634,7 @@ export async function getAdminConsoleData(params?: {
     advancedAuditEventsResult,
     runtimeSettingsResult,
     paginationCountsResult,
+    storageCephResultPart,
   ] = await Promise.all([
     resolveAdminSection<Awaited<ReturnType<typeof loadSummaryMetrics>>>({
       sectionKey: "summary_metrics",
@@ -605,6 +727,22 @@ export async function getAdminConsoleData(params?: {
       },
       load: loadPaginationCounts,
     }),
+    resolveAdminSection<Awaited<ReturnType<typeof loadStorageCephMetrics>>>({
+      sectionKey: "storage_ceph",
+      title: "Storage y Ceph",
+      errorKey: "admin_storage_ceph_failed",
+      message: "No se pudieron cargar las metricas de Storage y Ceph.",
+      fallback: {
+        activeStorageAssessments: 0,
+        readinessStatus: {},
+        cephRequested: 0,
+        cephSuitability: {},
+        activeWithoutEvidence: 0,
+        evidenceClassification: {},
+        aiAnalysisStatus: {},
+      },
+      load: loadStorageCephMetrics,
+    }),
   ]);
 
   const summaryMetrics = rememberSection(summaryMetricsResult);
@@ -617,6 +755,7 @@ export async function getAdminConsoleData(params?: {
   const advancedAuditEvents = rememberSection(advancedAuditEventsResult);
   const runtimeSettings = rememberSection(runtimeSettingsResult);
   const paginationCounts = rememberSection(paginationCountsResult);
+  const storageCephResult = rememberSection(storageCephResultPart);
   const {
     totalUsers,
     totalAssessments,
@@ -681,6 +820,15 @@ export async function getAdminConsoleData(params?: {
 
   return {
     sectionFailures,
+    storageCeph: {
+      activeStorageAssessments: storageCephResult.activeStorageAssessments,
+      readinessStatus: storageCephResult.readinessStatus,
+      cephRequested: storageCephResult.cephRequested,
+      cephSuitability: storageCephResult.cephSuitability,
+      activeWithoutEvidence: storageCephResult.activeWithoutEvidence,
+      evidenceClassification: storageCephResult.evidenceClassification,
+      aiAnalysisStatus: storageCephResult.aiAnalysisStatus,
+    },
     summary: {
       totalUsers,
       totalAssessments,
@@ -900,6 +1048,27 @@ export async function getAdminConsoleData(params?: {
           fileSize: item.evidenceFile.sizeBytes,
           processingStatus: item.evidenceFile.processingStatus,
         })),
+        storage: {
+          enabled: assessment.storageReadinessEnabled,
+          readinessStatus: assessment.storageDestinationReadiness?.status ?? "not_started",
+          readinessMode: assessment.storageDestinationReadiness?.mode ?? "agnostic",
+          targetPreference: assessment.storageDestinationReadiness?.targetStoragePreference ?? "not_decided",
+          analysisStatus: assessment.storageAnalysis?.status ?? "not_started",
+          cephSuitabilityStatus: assessment.storageAnalysis?.cephSuitabilityStatus ?? "not_evaluated_storage_1",
+          readinessScore: assessment.storageAnalysis?.storageReadinessScore ?? null,
+          evidenceConfidence: assessment.storageAnalysis?.storageEvidenceConfidence ?? null,
+          contextStatus: assessment.storageContext?.status ?? "not_provided",
+          contextWordCount: assessment.storageContext?.wordCount ?? 0,
+          evidenceFilesCount: assessment.storageEvidence.length,
+          evidence: assessment.storageEvidence.map((item) => ({
+            id: item.id,
+            classification: item.classification,
+            analysisStatus: item.analysisStatus,
+            filename: item.evidenceFile.originalFilename,
+            fileSize: item.evidenceFile.sizeBytes,
+            includedInAnalysis: item.includedInStorageAnalysis,
+          })),
+        },
       };
     }),
     recentAuditEvents,

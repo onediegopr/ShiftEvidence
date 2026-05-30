@@ -10,7 +10,9 @@ import {
   Database,
   FileText,
   Gauge,
+  HardDrive,
   Lock,
+  Server,
   Settings,
   ShieldCheck,
   Users,
@@ -109,6 +111,36 @@ function formatStatusLabel(value: string | null | undefined) {
     trial: "Prueba",
     unavailable: "No disponible",
     unknown: "Desconocido",
+    // Storage Readiness
+    not_started: "No iniciado",
+    draft: "Borrador",
+    submitted: "Enviado",
+    ready_for_analysis: "Listo para análisis",
+    analysis_pending: "Análisis pendiente",
+    analyzed: "Analizado",
+    skipped: "Omitido",
+    stale: "Desactualizado",
+    failed: "Fallido",
+    // Storage Modes
+    agnostic: "Agnóstico",
+    zfs_local: "ZFS Local",
+    nfs_san: "NFS/SAN",
+    ceph_candidate: "Candidato Ceph",
+    // Storage Preferences
+    nfs: "NFS",
+    san: "SAN",
+    ceph: "Ceph",
+    pbs: "Proxmox Backup Server",
+    not_decided: "No decidido",
+    // Ceph Suitability
+    ceph_applies: "Aplica Ceph",
+    ceph_does_not_apply: "No aplica Ceph",
+    ceph_conditional: "Ceph Condicional",
+    ceph_overkill: "Ceph Overkill",
+    ceph_underdesigned: "Ceph Subdimensionado",
+    not_enough_evidence: "Evidencia insuficiente",
+    deferred_storage_2: "Diferido (Storage 2)",
+    not_evaluated_storage_1: "No evaluado (Storage 1)",
   };
 
   return labels[value] ?? value;
@@ -398,6 +430,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Evaluaciones", "evaluaciones"],
     ["Licenciamiento", "licenciamiento"],
     ["Contexto y Evidencias", "contexto-evidencias"],
+    ["Storage/Ceph", "storage-ceph"],
     ["IA y Consumo", "ia-consumo"],
     ["Configuración Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
@@ -452,6 +485,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
           <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Lanzamiento controlado" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
+          <MetricCard icon={<HardDrive size={22} />} label="Storage Activo" value={data.storageCeph?.activeStorageAssessments ?? 0} note="Con módulo storage" />
+          <MetricCard icon={<Server size={22} />} label="Ceph Solicitado" value={data.storageCeph?.cephRequested ?? 0} note="Preferencia Ceph o candidate" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Fallos IA Storage" value={(data.storageCeph?.aiAnalysisStatus?.failed ?? 0) + (data.storageCeph?.aiAnalysisStatus?.budget_blocked ?? 0) + (data.storageCeph?.aiAnalysisStatus?.plan_restricted ?? 0)} note="Fallados, bloqueados o restringidos" />
         </section>
       )}
 
@@ -1304,6 +1340,30 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <td>{assessment.title}</td>
                     <td>{assessment.clientLabel ?? assessment.ownerEmail}</td>
                     <td>{formatStatusLabel(assessment.status)}</td>
+                    <td>
+                      {assessment.storage.enabled ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                          <span
+                            className={`assessment-chip assessment-chip-${
+                              ["submitted", "ready_for_analysis", "analyzed"].includes(assessment.storage.readinessStatus)
+                                ? "good"
+                                : assessment.storage.readinessStatus === "failed"
+                                  ? "danger"
+                                  : ["skipped", "not_started"].includes(assessment.storage.readinessStatus)
+                                    ? "neutral"
+                                    : "warning"
+                            }`}
+                          >
+                            {formatStatusLabel(assessment.storage.readinessStatus)}
+                          </span>
+                          <span className="assessment-inline-note" style={{ fontSize: "10px" }}>
+                            {formatStatusLabel(assessment.storage.readinessMode)} / {formatStatusLabel(assessment.storage.cephSuitabilityStatus)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="assessment-chip assessment-chip-neutral">Inactivo</span>
+                      )}
+                    </td>
                     <td>{assessment.evidence}</td>
                     <td>{assessment.context}</td>
                     <td>{assessment.pdf}</td>
@@ -1516,6 +1576,248 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "storage-ceph" && (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            id="storage-ceph"
+            icon={<HardDrive size={18} />}
+            label="Storage y Ceph"
+            title="Consola Operativa de Storage / Ceph"
+            description="Métricas agregadas, distribución de clasificaciones de evidencia, estados del motor Ceph y auditoría de IA de Storage."
+          />
+
+          <div className="assessment-summary-grid" style={{ marginBottom: "24px" }}>
+            <MetricCard
+              icon={<HardDrive size={22} />}
+              label="Storage Activo"
+              value={data.storageCeph.activeStorageAssessments}
+              note="Evaluaciones con módulo activo"
+            />
+            <MetricCard
+              icon={<Server size={22} />}
+              label="Ceph Solicitado"
+              value={data.storageCeph.cephRequested}
+              note="Preferencia o candidato Ceph"
+            />
+            <MetricCard
+              icon={<AlertTriangle size={22} />}
+              label="Falta Evidencia"
+              value={data.storageCeph.activeWithoutEvidence}
+              note="Storage activo sin archivos"
+            />
+            <MetricCard
+              icon={<Activity size={22} />}
+              label="Evidencia Clasificada"
+              value={
+                Object.values(data.storageCeph.evidenceClassification || {}).reduce(
+                  (a: number, b: number) => a + b,
+                  0
+                ) as number
+              }
+              note="Total de archivos subidos"
+            />
+          </div>
+
+          <div className="grid-2-columns" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "24px" }}>
+            <div className="glass-card" style={{ padding: "16px" }}>
+              <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
+                Estados de Readiness (Progreso)
+              </h3>
+              <table className="assessment-table" style={{ fontSize: "12px" }}>
+                <thead>
+                  <tr>
+                    <th>Estado de Flujo</th>
+                    <th style={{ textAlign: "right" }}>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {["not_started", "draft", "submitted", "ready_for_analysis", "analysis_pending", "analyzed", "skipped", "stale", "failed"].map((status) => {
+                    const count = data.storageCeph.readinessStatus[status] ?? 0;
+                    return (
+                      <tr key={status}>
+                        <td>
+                          <span className={`assessment-chip assessment-chip-${status === "failed" ? "danger" : ["submitted", "ready_for_analysis", "analyzed"].includes(status) ? "good" : ["skipped", "not_started"].includes(status) ? "neutral" : "warning"}`}>
+                            {formatStatusLabel(status)}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: "right", fontWeight: "bold" }}>{count}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="glass-card" style={{ padding: "16px" }}>
+              <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
+                Evaluaciones Ceph por Resultado
+              </h3>
+              <table className="assessment-table" style={{ fontSize: "12px" }}>
+                <thead>
+                  <tr>
+                    <th>Resultado Ceph</th>
+                    <th style={{ textAlign: "right" }}>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {["ceph_applies", "ceph_does_not_apply", "ceph_conditional", "ceph_overkill", "ceph_underdesigned", "not_enough_evidence", "deferred_storage_2", "not_evaluated_storage_1"].map((status) => {
+                    const count = data.storageCeph.cephSuitability[status] ?? 0;
+                    return (
+                      <tr key={status}>
+                        <td>
+                          <span className={`assessment-chip assessment-chip-${status === "ceph_applies" ? "good" : status === "ceph_underdesigned" ? "danger" : ["ceph_does_not_apply", "not_evaluated_storage_1"].includes(status) ? "neutral" : "warning"}`}>
+                            {formatStatusLabel(status)}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: "right", fontWeight: "bold" }}>{count}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="grid-2-columns" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "24px" }}>
+            <div className="glass-card" style={{ padding: "16px" }}>
+              <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
+                Evidencias de Storage por Clasificación
+              </h3>
+              <table className="assessment-table" style={{ fontSize: "12px" }}>
+                <thead>
+                  <tr>
+                    <th>Clasificación Técnica</th>
+                    <th style={{ textAlign: "right" }}>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    "source_storage_export",
+                    "target_storage_design",
+                    "hardware_bom",
+                    "network_diagram",
+                    "ceph_status",
+                    "ceph_osd_tree",
+                    "ceph_df",
+                    "pbs_backup_info",
+                    "vsan_summary",
+                    "san_nas_export",
+                    "architecture_diagram",
+                    "quote_or_bill_of_materials",
+                    "unknown_needs_review"
+                  ].map((classification) => {
+                    const count = data.storageCeph.evidenceClassification[classification] ?? 0;
+                    return (
+                      <tr key={classification}>
+                        <td>{formatStatusLabel(classification)}</td>
+                        <td style={{ textAlign: "right", fontWeight: "bold" }}>{count}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="glass-card" style={{ padding: "16px" }}>
+              <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
+                Auditoría IA (Estado Análisis Storage)
+              </h3>
+              <table className="assessment-table" style={{ fontSize: "12px" }}>
+                <thead>
+                  <tr>
+                    <th>Estado de Análisis IA</th>
+                    <th style={{ textAlign: "right" }}>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {["not_started", "pending", "completed", "failed", "stale", "ai_disabled", "budget_blocked", "plan_restricted"].map((status) => {
+                    const count = data.storageCeph.aiAnalysisStatus[status] ?? 0;
+                    return (
+                      <tr key={status}>
+                        <td>
+                          <span className={`assessment-chip assessment-chip-${status === "completed" ? "good" : ["failed", "budget_blocked", "plan_restricted"].includes(status) ? "danger" : "warning"}`}>
+                            {formatStatusLabel(status)}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: "right", fontWeight: "bold" }}>{count}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
+            Detalle de Evaluaciones con Storage Habilitado
+          </h3>
+          <div className="assessment-table-wrap">
+            <table className="assessment-table">
+              <thead>
+                <tr>
+                  <th>Evaluación</th>
+                  <th>Cliente/Usuario</th>
+                  <th>Flujo Readiness</th>
+                  <th>Modo Destino</th>
+                  <th>Preferencia Destino</th>
+                  <th>Suitability Ceph</th>
+                  <th>Puntaje</th>
+                  <th>Confianza</th>
+                  <th>Evidencias</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentAssessments
+                  .filter((assessment) => assessment.storage.enabled)
+                  .map((assessment) => {
+                    const st = assessment.storage;
+                    return (
+                      <tr key={assessment.id}>
+                        <td>
+                          <Link href={`/dashboard/assessments/${assessment.id}?tab=storage`} className="dashboard-card-link" style={{ fontWeight: "bold" }}>
+                            {assessment.title}
+                          </Link>
+                        </td>
+                        <td>{assessment.clientLabel ?? assessment.ownerEmail}</td>
+                        <td>
+                          <span className={`assessment-chip assessment-chip-${st.readinessStatus === "failed" ? "danger" : ["submitted", "ready_for_analysis", "analyzed"].includes(st.readinessStatus) ? "good" : ["skipped", "not_started"].includes(st.readinessStatus) ? "neutral" : "warning"}`}>
+                            {formatStatusLabel(st.readinessStatus)}
+                          </span>
+                        </td>
+                        <td>{formatStatusLabel(st.readinessMode)}</td>
+                        <td>{formatStatusLabel(st.targetPreference)}</td>
+                        <td>
+                          <span className={`assessment-chip assessment-chip-${st.cephSuitabilityStatus === "ceph_applies" ? "good" : st.cephSuitabilityStatus === "ceph_underdesigned" ? "danger" : ["ceph_does_not_apply", "not_evaluated_storage_1"].includes(st.cephSuitabilityStatus) ? "neutral" : "warning"}`}>
+                            {formatStatusLabel(st.cephSuitabilityStatus)}
+                          </span>
+                        </td>
+                        <td>{st.readinessScore !== null ? `${st.readinessScore}/100` : "-"}</td>
+                        <td>{st.evidenceConfidence !== null ? `${st.evidenceConfidence}/100` : "-"}</td>
+                        <td>
+                          {st.evidenceFilesCount > 0 ? (
+                            <span className="assessment-chip assessment-chip-good">
+                              {st.evidenceFilesCount} archivos
+                            </span>
+                          ) : (
+                            <span className="assessment-chip assessment-chip-danger">Sin archivos</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                {data.recentAssessments.filter((assessment) => assessment.storage.enabled).length === 0 && (
+                  <tr>
+                    <td colSpan={9} style={{ textAlign: "center" }} className="assessment-empty-note">
+                      No hay evaluaciones con módulo Storage habilitado.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

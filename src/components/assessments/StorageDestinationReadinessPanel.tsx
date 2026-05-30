@@ -104,6 +104,15 @@ const classificationOptions = [
   ["unknown_needs_review", "Unknown / needs review"],
 ] as const;
 
+const classificationHelpTexts: Record<string, string> = {
+  ceph_osd_tree: "Ceph OSD Tree: CLI output showing the map of OSDs, their weight, status (up/down), and CRUSH map hierarchy.",
+  ceph_df: "Ceph DF: Displays Ceph cluster space usage, showing raw disk capacity, pool allocation, and available bytes.",
+  hardware_bom: "Hardware BOM: List of server specs, physical drives, CPU details, RAM configurations, and controllers.",
+  network_diagram: "Network Diagram: Diagram or details outlining storage network topology, switches, speed, and redundant paths.",
+  pbs_backup_info: "PBS Backup Info: Proxmox Backup Server topology, datastore size, retention, and verification plans.",
+  vsan_summary: "vSAN Summary: Disk groups, cache/capacity configurations, storage policies, and health status of the source VMware vSAN."
+};
+
 function labelFromValue(value: string | null | undefined) {
   if (!value) return "Not provided";
   return value
@@ -215,6 +224,8 @@ export function StorageDestinationReadinessPanel({
 }) {
   const rawText = summary.context?.rawText ?? "";
   const [text, setText] = useState(rawText);
+  const [uploadClassification, setUploadClassification] = useState("unknown_needs_review");
+  const [itemClassifications, setItemClassifications] = useState<Record<string, string>>({});
   const currentWordCount = countWords(text);
   const currentCharacterCount = text.length;
   const maxWords = summary.limits.maxStorageContextWords;
@@ -1039,13 +1050,23 @@ export function StorageDestinationReadinessPanel({
       >
         <label className="form-label">
           Classification
-          <select name="classification" className="form-input" defaultValue="unknown_needs_review">
+          <select
+            name="classification"
+            className="form-input"
+            value={uploadClassification}
+            onChange={(e) => setUploadClassification(e.target.value)}
+          >
             {classificationOptions.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
           </select>
+          {classificationHelpTexts[uploadClassification] && (
+            <p className="assessment-inline-note" style={{ marginTop: "4px", fontStyle: "italic" }}>
+              💡 {classificationHelpTexts[uploadClassification]}
+            </p>
+          )}
         </label>
         <label className="form-label">
           Upload file
@@ -1107,13 +1128,23 @@ export function StorageDestinationReadinessPanel({
               >
                 <label className="form-label">
                   Classification
-                  <select name="classification" className="form-input" defaultValue={item.classification}>
+                  <select
+                    name="classification"
+                    className="form-input"
+                    value={itemClassifications[item.id] ?? item.classification}
+                    onChange={(e) => setItemClassifications({ ...itemClassifications, [item.id]: e.target.value })}
+                  >
                     {classificationOptions.map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
                     ))}
                   </select>
+                  {classificationHelpTexts[itemClassifications[item.id] ?? item.classification] && (
+                    <p className="assessment-inline-note" style={{ marginTop: "4px", fontStyle: "italic" }}>
+                      💡 {classificationHelpTexts[itemClassifications[item.id] ?? item.classification]}
+                    </p>
+                  )}
                 </label>
                 <label className="form-label">
                   Notes
