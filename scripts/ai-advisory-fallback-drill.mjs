@@ -12,7 +12,8 @@ assert(client.includes('emptyOutput(config, "unavailable")'), "missing-key fallb
 assert(client.includes('emptyOutput(config, "error")'), "provider-error fallback output is not present");
 assert(client.includes('error.name === "AbortError"'), "timeout classification is not present");
 assert(client.includes('eventType: "ai_advisory_fallback_used"'), "fallback runtime event is not recorded");
-assert(client.includes("buildAiAdvisoryPrompt(truncateJsonInput(payload, config.maxInputChars))"), "input truncation before provider call is not present");
+assert(client.includes("buildSafeJsonInput(payload, config.maxInputChars)"), "bounded input JSON before provider call is not present");
+assert(client.includes("buildAiAdvisoryPrompt(inputJson)"), "provider prompt must be built from the bounded input JSON");
 
 assert(runtimeStatus.includes("secretosExpuestos: false"), "runtime status must report no exposed secrets");
 assert(runtimeStatus.includes("archivosCrudosEnviados: false"), "runtime status must report no raw files sent");
