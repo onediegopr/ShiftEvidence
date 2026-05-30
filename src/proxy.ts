@@ -15,6 +15,7 @@ const staleChunkPaths = new Set([
   "/_next/static/chunks/0ni6xu0_390qc.js",
   "/_next/static/chunks/0xwf.9y8g2d_~.js",
   "/_next/static/chunks/05_74ghocpq7_.js",
+  "/_next/static/chunks/0d7ky5xpi95-q.js",
 ]);
 
 export function proxy(request: NextRequest) {

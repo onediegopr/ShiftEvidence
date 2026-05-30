@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { getCurrentAdminUserForConsole } from "../../../server/admin/adminAuth";
 import { getAdminConsoleData } from "../../../server/admin/adminConsoleService";
+import { logger } from "../../../server/logging/logger";
 import {
   createUserEntitlementAction,
   revokeUserEntitlementAction,
@@ -212,6 +213,46 @@ function AccessDenied() {
   );
 }
 
+function AdminConsoleUnavailable({ adminEmail }: { adminEmail: string }) {
+  return (
+    <main className="dashboard-page">
+      <section className="dashboard-hero glass-card">
+        <div>
+          <div className="badge badge-cyan">Panel de Administración</div>
+          <h1>La consola admin está en modo degradado.</h1>
+          <p>
+            No pudimos cargar los datos operativos en este runtime. La sesión admin sigue activa, pero
+            evitamos romper la página mientras se corrige el runtime o se regenera el cliente Prisma.
+          </p>
+          <p className="assessment-inline-note">Sesión admin: {adminEmail}</p>
+        </div>
+        <div className="dashboard-hero-actions">
+          <Link href="/dashboard" className="btn btn-secondary">
+            Volver al panel
+          </Link>
+          <Link href="/dashboard/admin/pricing" className="btn btn-secondary">
+            <Gauge size={16} />
+            Inteligencia de Precios
+          </Link>
+        </div>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          id="admin-runtime-degradado"
+          icon={<AlertTriangle size={18} />}
+          label="Fallback seguro"
+          title="Datos admin temporalmente no disponibles"
+          description="El panel captura el error de carga y muestra este fallback para evitar un error 500/Server Components en producción."
+        />
+        <div className="dashboard-banner dashboard-banner-warning" role="status">
+          Las métricas administrativas no están disponibles hasta corregir el runtime desplegado. Las métricas de Storage/Ceph no están disponibles hasta aplicar las migraciones Storage.
+        </div>
+      </section>
+    </main>
+  );
+}
+
 type AdminConsolePageProps = {
   searchParams?:
     | {
@@ -256,7 +297,21 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     usersSearch,
     assessmentsPage,
     assessmentsSearch,
+  }).catch((error: unknown) => {
+    logger.error("admin_console_data_unavailable", {
+      error,
+      usersPage,
+      assessmentsPage,
+      usersSearchActive: Boolean(usersSearch),
+      assessmentsSearchActive: Boolean(assessmentsSearch),
+    });
+
+    return null;
   });
+
+  if (!data) {
+    return <AdminConsoleUnavailable adminEmail={session.user.email} />;
+  }
 
   const ai = data.aiStatus;
   const aiUsage = data.aiConsumption.persistentUsage;
