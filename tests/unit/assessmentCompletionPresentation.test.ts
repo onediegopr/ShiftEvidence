@@ -39,7 +39,7 @@ describe("assessment completion presentation helpers", () => {
       "/dashboard/assessments/assessment-1?tab=evidence#evidence-upload",
     );
     expect(getCompletionModuleHref("assessment-1", "storage_analysis")).toBe(
-      "/dashboard/assessments/assessment-1?tab=basics#storage-readiness",
+      "/dashboard/assessments/assessment-1?tab=storage#storage-destination-readiness",
     );
     expect(getCompletionModuleHref("assessment-1", "client_context_intelligence")).toBe(
       "/dashboard/assessments/assessment-1?tab=client-context#client-context-additional-evidence",

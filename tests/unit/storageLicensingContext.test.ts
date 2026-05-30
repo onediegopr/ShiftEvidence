@@ -299,4 +299,106 @@ describe("optional storage and licensing module UX model", () => {
     expect(moduleByKey(summary.modules, "licensing_cost_exposure").status).toBe("skipped");
     expect(summary.canGenerateReport).toBe(true);
   });
+
+  it("marks submitted Storage Destination Readiness complete without blocking report generation", () => {
+    const summary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        storageDestinationReadiness: {
+          id: "storage-destination-1",
+          assessmentId: "assessment-1",
+          status: "submitted",
+          mode: "ceph_candidate",
+          currentStorageType: "vsan",
+          targetStoragePreference: "ceph",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+          hasProxmoxTarget: false,
+          hasPbs: null,
+          hasMinimumThreeNodes: null,
+          hasDedicatedStorageNetwork: null,
+          hasCephExperience: null,
+          hasVendorOrPartnerSupport: null,
+          estimatedGrowthPercent3y: 30,
+          downtimeTolerance: "weekend_window",
+          rpoRtoNotes: null,
+          sourceNotes: null,
+          storageConstraintsJson: ["performance", "backup"],
+          assumptionsJson: {
+            noCephRecommendationInStorage1: true,
+          },
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageContext: {
+          id: "storage-context-1",
+          assessmentId: "assessment-1",
+          rawText: "Ceph is being considered, but hardware and networking are not validated.",
+          wordCount: 11,
+          characterCount: 72,
+          status: "submitted",
+          planLimitWords: 1500,
+          planLimitFiles: 1,
+          truncated: false,
+          submittedByUserId: "user-1",
+          submittedAt: now,
+          lastEditedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageAnalysis: {
+          id: "storage-analysis-1",
+          assessmentId: "assessment-1",
+          status: "not_started",
+          storageReadinessScore: null,
+          storageEvidenceConfidence: null,
+          cephSuitabilityStatus: "not_evaluated_storage_1",
+          interpretedSummary: null,
+          missingEvidenceJson: [],
+          recommendationsJson: [],
+          analysisVersion: "storage-1-foundation",
+          generatedAt: null,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageEvidence: [],
+      }),
+    );
+
+    const storageModule = moduleByKey(summary.modules, "storage_analysis");
+
+    expect(storageModule.status).toBe("complete");
+    expect(storageModule.limitationText).toContain("Ceph suitability is not calculated");
+    expect(summary.canGenerateReport).toBe(true);
+  });
+
+  it("keeps skipped Storage Destination Readiness optional", () => {
+    const summary = computeAssessmentCompletionSummary(
+      parsedRvtoolsAssessment({
+        storageDestinationReadiness: {
+          id: "storage-destination-1",
+          assessmentId: "assessment-1",
+          status: "skipped",
+          mode: "agnostic",
+          currentStorageType: null,
+          targetStoragePreference: null,
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageContext: {
+          id: "storage-context-1",
+          assessmentId: "assessment-1",
+          rawText: null,
+          wordCount: 0,
+          characterCount: 0,
+          status: "skipped",
+          createdAt: now,
+          updatedAt: now,
+        },
+        storageEvidence: [],
+      }),
+    );
+
+    expect(moduleByKey(summary.modules, "storage_analysis").status).toBe("skipped");
+    expect(summary.canGenerateReport).toBe(true);
+  });
 });

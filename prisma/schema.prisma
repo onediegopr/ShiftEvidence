@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  profiles      UserProfile[]
-  ownedWorkspaces Workspace[]
-  memberships   WorkspaceMember[]
-  evidenceFiles  EvidenceFile[]
-  auditEvents   AuditEvent[]
-  aiUsageEvents AiUsageEvent[]
-  userEntitlements UserEntitlement[]
-  upgradeEvents  UpgradeEvent[]
-  reports        Report[]
-  unlockRequests UnlockRequest[]
+  id                    String                 @id
+  name                  String
+  email                 String
+  emailVerified         Boolean                @default(false)
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  sessions              Session[]
+  accounts              Account[]
+  profiles              UserProfile[]
+  ownedWorkspaces       Workspace[]
+  memberships           WorkspaceMember[]
+  evidenceFiles         EvidenceFile[]
+  auditEvents           AuditEvent[]
+  aiUsageEvents         AiUsageEvent[]
+  userEntitlements      UserEntitlement[]
+  upgradeEvents         UpgradeEvent[]
+  reports               Report[]
+  unlockRequests        UnlockRequest[]
   passwordResetRequests PasswordResetRequest[]
 
   @@unique([email])
@@ -83,20 +82,20 @@ model Verification {
 }
 
 model PasswordResetRequest {
-  id                String    @id @default(cuid())
-  userId            String?
-  emailNormalized   String
-  emailHash         String
-  tokenHash         String?   @unique
-  status            String    @default("pending")
-  deliveryMode      String    @default("manual")
-  expiresAt         DateTime?
-  usedAt            DateTime?
-  requestedIpHash   String?
-  userAgentHash     String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id              String    @id @default(cuid())
+  userId          String?
+  emailNormalized String
+  emailHash       String
+  tokenHash       String?   @unique
+  status          String    @default("pending")
+  deliveryMode    String    @default("manual")
+  expiresAt       DateTime?
+  usedAt          DateTime?
+  requestedIpHash String?
+  userAgentHash   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([emailHash])
@@ -120,78 +119,82 @@ model UserProfile {
 }
 
 model Workspace {
-  id           String          @id @default(cuid())
-  ownerUserId  String
-  name         String
-  companyName  String?
-  plan         WorkspacePlan   @default(free)
-  billingStatus BillingStatus  @default(none)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  ownerUser    User            @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  members      WorkspaceMember[]
-  assessments  Assessment[]
-  evidenceFiles EvidenceFile[]
-  auditEvents  AuditEvent[]
-  upgradeEvents UpgradeEvent[]
-  reports      Report[]
+  id             String            @id @default(cuid())
+  ownerUserId    String
+  name           String
+  companyName    String?
+  plan           WorkspacePlan     @default(free)
+  billingStatus  BillingStatus     @default(none)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  ownerUser      User              @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  members        WorkspaceMember[]
+  assessments    Assessment[]
+  evidenceFiles  EvidenceFile[]
+  auditEvents    AuditEvent[]
+  upgradeEvents  UpgradeEvent[]
+  reports        Report[]
   unlockRequests UnlockRequest[]
 
   @@index([ownerUserId])
 }
 
 model WorkspaceMember {
-  id          String         @id @default(cuid())
+  id          String        @id @default(cuid())
   workspaceId String
   userId      String
-  role        WorkspaceRole  @default(member)
-  createdAt   DateTime       @default(now())
-  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        WorkspaceRole @default(member)
+  createdAt   DateTime      @default(now())
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
   @@index([userId])
 }
 
 model Assessment {
-  id                       String               @id @default(cuid())
-  workspaceId              String
-  title                    String
-  clientLabel              String?
-  assessmentType           AssessmentType       @default(vmware_to_proxmox)
-  sourcePlatform           SourcePlatform       @default(vmware)
-  targetPlatform           TargetPlatform       @default(proxmox)
-  status                   AssessmentStatus     @default(draft)
-  planLevel                PlanLevel            @default(free)
-  storageReadinessEnabled  Boolean              @default(false)
-  storageReadinessStatus   StorageReadinessStatus @default(not_selected)
-  archivedAt               DateTime?
-  createdAt                DateTime             @default(now())
-  updatedAt                DateTime             @updatedAt
-  workspace                Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  modules                  AssessmentModule[]
-  infrastructureInput      AssessmentInfrastructureInput?
-  costRiskAssumptions      CostRiskAssumptions?
-  preliminaryResult        AssessmentPreliminaryResult?
-  licensingAnalysis        AssessmentLicensingAnalysis?
-  storageReadinessInput    StorageReadinessInput?
-  clientContext            AssessmentClientContext?
-  clientContextAnalysis    AssessmentClientContextAnalysis?
-  entitlements             AssessmentEntitlement[]
-  evidenceFiles            EvidenceFile[]
-  additionalEvidence       AssessmentAdditionalEvidence[]
-  parsedVMs                ParsedVM[]
-  parsedHosts              ParsedHost[]
-  parsedDatastores         ParsedDatastore[]
-  parsedSnapshots          ParsedSnapshot[]
-  parsedInventorySummaries ParsedInventorySummary[]
-  riskFindings             RiskFinding[]
-  assessmentScore          AssessmentScore?
-  auditEvents              AuditEvent[]
-  aiUsageEvents            AiUsageEvent[]
-  upgradeEvents             UpgradeEvent[]
-  reports                  Report[]
-  unlockRequests           UnlockRequest[]
+  id                          String                                 @id @default(cuid())
+  workspaceId                 String
+  title                       String
+  clientLabel                 String?
+  assessmentType              AssessmentType                         @default(vmware_to_proxmox)
+  sourcePlatform              SourcePlatform                         @default(vmware)
+  targetPlatform              TargetPlatform                         @default(proxmox)
+  status                      AssessmentStatus                       @default(draft)
+  planLevel                   PlanLevel                              @default(free)
+  storageReadinessEnabled     Boolean                                @default(false)
+  storageReadinessStatus      StorageReadinessStatus                 @default(not_selected)
+  archivedAt                  DateTime?
+  createdAt                   DateTime                               @default(now())
+  updatedAt                   DateTime                               @updatedAt
+  workspace                   Workspace                              @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  modules                     AssessmentModule[]
+  infrastructureInput         AssessmentInfrastructureInput?
+  costRiskAssumptions         CostRiskAssumptions?
+  preliminaryResult           AssessmentPreliminaryResult?
+  licensingAnalysis           AssessmentLicensingAnalysis?
+  storageReadinessInput       StorageReadinessInput?
+  storageDestinationReadiness AssessmentStorageDestinationReadiness?
+  storageContext              AssessmentStorageContext?
+  storageAnalysis             AssessmentStorageAnalysis?
+  clientContext               AssessmentClientContext?
+  clientContextAnalysis       AssessmentClientContextAnalysis?
+  entitlements                AssessmentEntitlement[]
+  evidenceFiles               EvidenceFile[]
+  additionalEvidence          AssessmentAdditionalEvidence[]
+  storageEvidence             AssessmentStorageEvidence[]
+  parsedVMs                   ParsedVM[]
+  parsedHosts                 ParsedHost[]
+  parsedDatastores            ParsedDatastore[]
+  parsedSnapshots             ParsedSnapshot[]
+  parsedInventorySummaries    ParsedInventorySummary[]
+  riskFindings                RiskFinding[]
+  assessmentScore             AssessmentScore?
+  auditEvents                 AuditEvent[]
+  aiUsageEvents               AiUsageEvent[]
+  upgradeEvents               UpgradeEvent[]
+  reports                     Report[]
+  unlockRequests              UnlockRequest[]
 
   @@index([workspaceId])
   @@index([workspaceId, archivedAt, updatedAt])
@@ -200,86 +203,86 @@ model Assessment {
 }
 
 model AssessmentModule {
-  id             String                @id @default(cuid())
-  assessmentId    String
-  moduleKey       AssessmentModuleKey
-  status          AssessmentModuleStatus @default(locked)
-  includedInPlan  Boolean               @default(false)
-  isOptional      Boolean               @default(false)
-  isPaidAddon     Boolean               @default(false)
-  priceCents      Int?
-  currency        String                @default("USD")
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  assessment      Assessment            @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  id             String                 @id @default(cuid())
+  assessmentId   String
+  moduleKey      AssessmentModuleKey
+  status         AssessmentModuleStatus @default(locked)
+  includedInPlan Boolean                @default(false)
+  isOptional     Boolean                @default(false)
+  isPaidAddon    Boolean                @default(false)
+  priceCents     Int?
+  currency       String                 @default("USD")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  assessment     Assessment             @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
   @@unique([assessmentId, moduleKey])
   @@index([assessmentId])
 }
 
 model CostRiskAssumptions {
-  id                  String   @id @default(cuid())
-  assessmentId        String   @unique
-  vmwareLicenseModel  String?
-  socketCount         Int?
-  coreCount           Int?
-  vmCount             Int?
-  annualVmwareCost    Decimal? @db.Decimal(14, 2)
-  estimatedProxmoxCost Decimal? @db.Decimal(14, 2)
-  currency            String   @default("USD")
-  years               Int      @default(3)
-  migrationComplexity String?
-  businessCriticality String?
-  riskTolerance       String?
-  assumptionsJson     Json?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  assessment          Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  id                   String     @id @default(cuid())
+  assessmentId         String     @unique
+  vmwareLicenseModel   String?
+  socketCount          Int?
+  coreCount            Int?
+  vmCount              Int?
+  annualVmwareCost     Decimal?   @db.Decimal(14, 2)
+  estimatedProxmoxCost Decimal?   @db.Decimal(14, 2)
+  currency             String     @default("USD")
+  years                Int        @default(3)
+  migrationComplexity  String?
+  businessCriticality  String?
+  riskTolerance        String?
+  assumptionsJson      Json?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  assessment           Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model AssessmentInfrastructureInput {
-  id                      String   @id @default(cuid())
-  assessmentId            String   @unique
-  vmCount                 Int?
-  hostCount               Int?
-  clusterCount            Int?
-  socketCount             Int?
-  coreCount               Int?
-  totalRamGb              Float?
-  storageFootprintTb      Float?
-  usedStorageTb           Float?
-  snapshotCount           Int?
-  criticalWorkloadCount    Int?
-  largeVmCount            Int?
-  poweredOffVmCount       Int?
-  notes                   String?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  assessment              Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  id                    String     @id @default(cuid())
+  assessmentId          String     @unique
+  vmCount               Int?
+  hostCount             Int?
+  clusterCount          Int?
+  socketCount           Int?
+  coreCount             Int?
+  totalRamGb            Float?
+  storageFootprintTb    Float?
+  usedStorageTb         Float?
+  snapshotCount         Int?
+  criticalWorkloadCount Int?
+  largeVmCount          Int?
+  poweredOffVmCount     Int?
+  notes                 String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  assessment            Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model AssessmentPreliminaryResult {
-  id                       String     @id @default(cuid())
-  assessmentId             String     @unique
-  annualSubscriptionDelta  Float?
+  id                         String     @id @default(cuid())
+  assessmentId               String     @unique
+  annualSubscriptionDelta    Float?
   threeYearSubscriptionDelta Float?
-  savingsPercent           Float?
-  riskScore                Int?
-  riskLevel                RiskLevel?
-  readinessLabel           String?
-  missingEvidenceJson      Json?
-  recommendationsJson      Json?
-  calculatedAt             DateTime?
-  createdAt                DateTime   @default(now())
-  updatedAt                DateTime   @updatedAt
-  assessment               Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  savingsPercent             Float?
+  riskScore                  Int?
+  riskLevel                  RiskLevel?
+  readinessLabel             String?
+  missingEvidenceJson        Json?
+  recommendationsJson        Json?
+  calculatedAt               DateTime?
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @updatedAt
+  assessment                 Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model AssessmentLicensingAnalysis {
   id                       String                            @id @default(cuid())
   assessmentId             String                            @unique
-  status                   AssessmentLicensingAnalysisStatus  @default(not_included)
-  mode                     AssessmentLicensingAnalysisMode    @default(skipped)
+  status                   AssessmentLicensingAnalysisStatus @default(not_included)
+  mode                     AssessmentLicensingAnalysisMode   @default(skipped)
   currency                 String                            @default("USD")
   financialConfidenceScore Int?
   financialConfidenceLabel String?
@@ -307,13 +310,123 @@ model AssessmentLicensingAnalysis {
 }
 
 model AssessmentClientContext {
+  id                String                            @id @default(cuid())
+  assessmentId      String                            @unique
+  rawText           String?                           @db.Text
+  wordCount         Int                               @default(0)
+  characterCount    Int                               @default(0)
+  status            AssessmentClientContextStatus     @default(not_provided)
+  sourceType        AssessmentClientContextSourceType @default(customer_free_text)
+  planLimitWords    Int?
+  planLimitFiles    Int?
+  truncated         Boolean                           @default(false)
+  submittedByUserId String?
+  submittedAt       DateTime?
+  lastEditedAt      DateTime?
+  createdAt         DateTime                          @default(now())
+  updatedAt         DateTime                          @updatedAt
+  assessment        Assessment                        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([submittedByUserId])
+}
+
+model AssessmentClientContextAnalysis {
+  id                        String                                @id @default(cuid())
+  assessmentId              String                                @unique
+  status                    AssessmentClientContextAnalysisStatus @default(not_started)
+  interpretedSummary        String?                               @db.Text
+  businessPrioritiesJson    Json?
+  migrationConstraintsJson  Json?
+  criticalWorkloadsJson     Json?
+  customerReportedRisksJson Json?
+  aiExtractedInsightsJson   Json?
+  contradictionsJson        Json?
+  validationItemsJson       Json?
+  reportImpactJson          Json?
+  nextQuestionsJson         Json?
+  contextCompletenessScore  Int?
+  businessContextConfidence String?
+  analysisVersion           String?
+  promptVersion             String?
+  modelUsed                 String?
+  safetyFlagsJson           Json?
+  generatedAt               DateTime?
+  createdAt                 DateTime                              @default(now())
+  updatedAt                 DateTime                              @updatedAt
+  assessment                Assessment                            @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([generatedAt])
+}
+
+model AssessmentAdditionalEvidence {
+  id                        String                                     @id @default(cuid())
+  assessmentId              String
+  evidenceFileId            String
+  purpose                   AssessmentAdditionalEvidencePurpose        @default(client_context)
+  classification            AssessmentAdditionalEvidenceClassification @default(unknown_needs_review)
+  analysisStatus            AssessmentAdditionalEvidenceAnalysisStatus @default(received_not_analyzed)
+  aiSummary                 String?                                    @db.Text
+  includedInContextAnalysis Boolean                                    @default(true)
+  planRestricted            Boolean                                    @default(false)
+  notes                     String?                                    @db.Text
+  createdAt                 DateTime                                   @default(now())
+  updatedAt                 DateTime                                   @updatedAt
+  assessment                Assessment                                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile              EvidenceFile                               @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, evidenceFileId])
+  @@index([assessmentId])
+  @@index([evidenceFileId])
+  @@index([purpose])
+  @@index([classification])
+  @@index([analysisStatus])
+  @@index([includedInContextAnalysis])
+}
+
+model AssessmentStorageDestinationReadiness {
+  id                         String                                      @id @default(cuid())
+  assessmentId               String                                      @unique
+  status                     AssessmentStorageDestinationReadinessStatus @default(not_started)
+  mode                       AssessmentStorageDestinationMode            @default(agnostic)
+  currentStorageType         AssessmentStorageCurrentType?
+  targetStoragePreference    AssessmentStorageTargetPreference?
+  needsHighAvailability      Boolean?
+  requiresSharedStorage      Boolean?
+  hasProxmoxTarget           Boolean?
+  hasPbs                     Boolean?
+  hasMinimumThreeNodes       Boolean?
+  hasDedicatedStorageNetwork Boolean?
+  hasCephExperience          Boolean?
+  hasVendorOrPartnerSupport  Boolean?
+  estimatedGrowthPercent3y   Int?
+  downtimeTolerance          String?
+  rpoRtoNotes                String?                                     @db.Text
+  sourceNotes                String?                                     @db.Text
+  storageConstraintsJson     Json?
+  assumptionsJson            Json?
+  createdAt                  DateTime                                    @default(now())
+  updatedAt                  DateTime                                    @updatedAt
+  assessment                 Assessment                                  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([status])
+  @@index([mode])
+  @@index([currentStorageType])
+  @@index([targetStoragePreference])
+}
+
+model AssessmentStorageContext {
   id                String                         @id @default(cuid())
   assessmentId      String                         @unique
   rawText           String?                        @db.Text
   wordCount         Int                            @default(0)
   characterCount    Int                            @default(0)
-  status            AssessmentClientContextStatus  @default(not_provided)
-  sourceType        AssessmentClientContextSourceType @default(customer_free_text)
+  status            AssessmentStorageContextStatus @default(not_provided)
   planLimitWords    Int?
   planLimitFiles    Int?
   truncated         Boolean                        @default(false)
@@ -330,123 +443,112 @@ model AssessmentClientContext {
   @@index([submittedByUserId])
 }
 
-model AssessmentClientContextAnalysis {
-  id                         String                              @id @default(cuid())
-  assessmentId               String                              @unique
-  status                     AssessmentClientContextAnalysisStatus @default(not_started)
-  interpretedSummary         String?                             @db.Text
-  businessPrioritiesJson     Json?
-  migrationConstraintsJson   Json?
-  criticalWorkloadsJson      Json?
-  customerReportedRisksJson  Json?
-  aiExtractedInsightsJson    Json?
-  contradictionsJson         Json?
-  validationItemsJson        Json?
-  reportImpactJson           Json?
-  nextQuestionsJson          Json?
-  contextCompletenessScore   Int?
-  businessContextConfidence  String?
-  analysisVersion            String?
-  promptVersion              String?
-  modelUsed                  String?
-  safetyFlagsJson            Json?
-  generatedAt                DateTime?
-  createdAt                  DateTime                            @default(now())
-  updatedAt                  DateTime                            @updatedAt
-  assessment                 Assessment                          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+model AssessmentStorageEvidence {
+  id                        String                                  @id @default(cuid())
+  assessmentId              String
+  evidenceFileId            String
+  classification            AssessmentStorageEvidenceClassification @default(unknown_needs_review)
+  analysisStatus            AssessmentStorageEvidenceAnalysisStatus @default(received_not_analyzed)
+  includedInStorageAnalysis Boolean                                 @default(true)
+  planRestricted            Boolean                                 @default(false)
+  notes                     String?                                 @db.Text
+  createdAt                 DateTime                                @default(now())
+  updatedAt                 DateTime                                @updatedAt
+  assessment                Assessment                              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile              EvidenceFile                            @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, evidenceFileId])
+  @@index([assessmentId])
+  @@index([evidenceFileId])
+  @@index([classification])
+  @@index([analysisStatus])
+  @@index([includedInStorageAnalysis])
+}
+
+model AssessmentStorageAnalysis {
+  id                        String                          @id @default(cuid())
+  assessmentId              String                          @unique
+  status                    AssessmentStorageAnalysisStatus @default(not_started)
+  storageReadinessScore     Int?
+  storageEvidenceConfidence Int?
+  cephSuitabilityStatus     String?
+  interpretedSummary        String?                         @db.Text
+  missingEvidenceJson       Json?
+  recommendationsJson       Json?
+  analysisVersion           String?
+  generatedAt               DateTime?
+  createdAt                 DateTime                        @default(now())
+  updatedAt                 DateTime                        @updatedAt
+  assessment                Assessment                      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([status])
   @@index([generatedAt])
 }
 
-model AssessmentAdditionalEvidence {
-  id                        String                                     @id @default(cuid())
-  assessmentId              String
-  evidenceFileId            String
-  purpose                   AssessmentAdditionalEvidencePurpose         @default(client_context)
-  classification            AssessmentAdditionalEvidenceClassification  @default(unknown_needs_review)
-  analysisStatus            AssessmentAdditionalEvidenceAnalysisStatus   @default(received_not_analyzed)
-  aiSummary                 String?                                    @db.Text
-  includedInContextAnalysis Boolean                                    @default(true)
-  planRestricted            Boolean                                    @default(false)
-  notes                     String?                                    @db.Text
-  createdAt                 DateTime                                  @default(now())
-  updatedAt                 DateTime                                  @updatedAt
-  assessment                Assessment                                @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile              EvidenceFile                              @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
-
-  @@unique([assessmentId, evidenceFileId])
-  @@index([assessmentId])
-  @@index([evidenceFileId])
-  @@index([purpose])
-  @@index([classification])
-  @@index([analysisStatus])
-  @@index([includedInContextAnalysis])
-}
-
 model StorageReadinessInput {
-  id                         String   @id @default(cuid())
-  assessmentId               String   @unique
-  currentStorageType         String?
-  targetStoragePreference    String?
-  capacityTb                 Float?
-  usedTb                     Float?
-  expectedGrowthPercent      Float?
-  requiresHa                 Boolean?
-  requiresSharedStorage      Boolean?
-  workloadProfile            String?
-  performanceSensitivity     String?
+  id                             String     @id @default(cuid())
+  assessmentId                   String     @unique
+  currentStorageType             String?
+  targetStoragePreference        String?
+  capacityTb                     Float?
+  usedTb                         Float?
+  expectedGrowthPercent          Float?
+  requiresHa                     Boolean?
+  requiresSharedStorage          Boolean?
+  workloadProfile                String?
+  performanceSensitivity         String?
   operationalComplexityTolerance String?
-  notes                      String?
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
-  assessment                 Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  notes                          String?
+  createdAt                      DateTime   @default(now())
+  updatedAt                      DateTime   @updatedAt
+  assessment                     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model AssessmentEntitlement {
-  id              String              @id @default(cuid())
-  assessmentId    String
-  entitlementKey  EntitlementKey
-  status          EntitlementStatus   @default(locked)
-  source          String?
-  purchasedAt     DateTime?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  assessment      Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  id             String            @id @default(cuid())
+  assessmentId   String
+  entitlementKey EntitlementKey
+  status         EntitlementStatus @default(locked)
+  source         String?
+  purchasedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  assessment     Assessment        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
   @@unique([assessmentId, entitlementKey])
   @@index([assessmentId])
 }
 
 model EvidenceFile {
-  id              String                    @id @default(cuid())
-  assessmentId    String
-  workspaceId     String
-  uploadedByUserId String
-  evidenceType    EvidenceType
-  originalFilename String
-  storedFilename  String
-  relativePath    String
-  fileHash        String
-  mimeType        String?
-  sizeBytes       Int
-  processingStatus EvidenceProcessingStatus @default(uploaded)
-  processingError String?
-  uploadedAt      DateTime                  @default(now())
-  deletedAt       DateTime?
-  createdAt       DateTime                  @default(now())
-  updatedAt       DateTime                  @updatedAt
-  assessment      Assessment                @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  workspace       Workspace                 @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  uploadedByUser  User                      @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
-  parsedVMs       ParsedVM[]
-  parsedHosts     ParsedHost[]
-  parsedDatastores ParsedDatastore[]
-  parsedSnapshots ParsedSnapshot[]
-  parsedInventorySummary ParsedInventorySummary?
+  id                        String                         @id @default(cuid())
+  assessmentId              String
+  workspaceId               String
+  uploadedByUserId          String
+  evidenceType              EvidenceType
+  originalFilename          String
+  storedFilename            String
+  relativePath              String
+  fileHash                  String
+  mimeType                  String?
+  sizeBytes                 Int
+  processingStatus          EvidenceProcessingStatus       @default(uploaded)
+  processingError           String?
+  uploadedAt                DateTime                       @default(now())
+  deletedAt                 DateTime?
+  createdAt                 DateTime                       @default(now())
+  updatedAt                 DateTime                       @updatedAt
+  assessment                Assessment                     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace                 Workspace                      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  uploadedByUser            User                           @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  parsedVMs                 ParsedVM[]
+  parsedHosts               ParsedHost[]
+  parsedDatastores          ParsedDatastore[]
+  parsedSnapshots           ParsedSnapshot[]
+  parsedInventorySummary    ParsedInventorySummary?
   additionalEvidenceRecords AssessmentAdditionalEvidence[]
-  riskFindings    RiskFinding[]
+  storageEvidenceRecords    AssessmentStorageEvidence[]
+  riskFindings              RiskFinding[]
 
   @@index([assessmentId])
   @@index([assessmentId, deletedAt, uploadedAt])
@@ -459,29 +561,29 @@ model EvidenceFile {
 }
 
 model ParsedVM {
-  id              String          @id @default(cuid())
-  assessmentId    String
-  evidenceFileId  String
-  vmName          String
-  powerState      String?
-  guestOs         String?
-  cpuCount        Int?
-  memoryMb        Int?
-  diskCount       Int?
-  provisionedGb   Float?
-  usedGb          Float?
-  nicCount        Int?
-  toolsStatus     String?
-  datastoreName   String?
-  clusterName     String?
-  hostName        String?
-  riskLevel       ParsedRiskLevel?
-  recommendation  String?
-  rawJson         Json?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile    EvidenceFile    @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  id             String           @id @default(cuid())
+  assessmentId   String
+  evidenceFileId String
+  vmName         String
+  powerState     String?
+  guestOs        String?
+  cpuCount       Int?
+  memoryMb       Int?
+  diskCount      Int?
+  provisionedGb  Float?
+  usedGb         Float?
+  nicCount       Int?
+  toolsStatus    String?
+  datastoreName  String?
+  clusterName    String?
+  hostName       String?
+  riskLevel      ParsedRiskLevel?
+  recommendation String?
+  rawJson        Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  assessment     Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile   EvidenceFile     @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([evidenceFileId])
@@ -490,21 +592,21 @@ model ParsedVM {
 }
 
 model ParsedHost {
-  id              String          @id @default(cuid())
-  assessmentId    String
-  evidenceFileId  String
-  hostName        String
-  clusterName     String?
-  cpuModel        String?
-  cpuSockets      Int?
-  cpuCores        Int?
-  memoryGb        Float?
-  version         String?
-  rawJson         Json?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile    EvidenceFile    @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  assessmentId   String
+  evidenceFileId String
+  hostName       String
+  clusterName    String?
+  cpuModel       String?
+  cpuSockets     Int?
+  cpuCores       Int?
+  memoryGb       Float?
+  version        String?
+  rawJson        Json?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  assessment     Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile   EvidenceFile @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([evidenceFileId])
@@ -513,21 +615,21 @@ model ParsedHost {
 }
 
 model ParsedDatastore {
-  id              String          @id @default(cuid())
-  assessmentId    String
-  evidenceFileId  String
-  datastoreName   String
-  datastoreType   String?
-  capacityGb      Float?
-  usedGb          Float?
-  freeGb          Float?
-  usagePercent    Float?
-  riskLevel       ParsedRiskLevel?
-  rawJson         Json?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile    EvidenceFile    @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  id             String           @id @default(cuid())
+  assessmentId   String
+  evidenceFileId String
+  datastoreName  String
+  datastoreType  String?
+  capacityGb     Float?
+  usedGb         Float?
+  freeGb         Float?
+  usagePercent   Float?
+  riskLevel      ParsedRiskLevel?
+  rawJson        Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  assessment     Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile   EvidenceFile     @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([evidenceFileId])
@@ -536,7 +638,7 @@ model ParsedDatastore {
 }
 
 model ParsedSnapshot {
-  id              String          @id @default(cuid())
+  id              String           @id @default(cuid())
   assessmentId    String
   evidenceFileId  String
   vmName          String?
@@ -546,10 +648,10 @@ model ParsedSnapshot {
   sizeGb          Float?
   riskLevel       ParsedRiskLevel?
   rawJson         Json?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile    EvidenceFile    @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  assessment      Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile    EvidenceFile     @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([evidenceFileId])
@@ -558,31 +660,31 @@ model ParsedSnapshot {
 }
 
 model ParsedInventorySummary {
-  id                  String     @id @default(cuid())
-  assessmentId        String
-  evidenceFileId      String     @unique
-  vmCount             Int        @default(0)
-  hostCount           Int        @default(0)
-  datastoreCount      Int        @default(0)
-  snapshotCount       Int        @default(0)
-  poweredOnVmCount    Int        @default(0)
-  poweredOffVmCount   Int        @default(0)
-  totalProvisionedGb  Float?
-  totalUsedGb         Float?
-  largestVmGb         Float?
-  oldestSnapshotDays  Int?
-  parsedAt            DateTime?
-  parseWarningsJson   Json?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
-  assessment          Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile        EvidenceFile @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  id                 String       @id @default(cuid())
+  assessmentId       String
+  evidenceFileId     String       @unique
+  vmCount            Int          @default(0)
+  hostCount          Int          @default(0)
+  datastoreCount     Int          @default(0)
+  snapshotCount      Int          @default(0)
+  poweredOnVmCount   Int          @default(0)
+  poweredOffVmCount  Int          @default(0)
+  totalProvisionedGb Float?
+  totalUsedGb        Float?
+  largestVmGb        Float?
+  oldestSnapshotDays Int?
+  parsedAt           DateTime?
+  parseWarningsJson  Json?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  assessment         Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile       EvidenceFile @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
 }
 
 model RiskFinding {
-  id             String               @id @default(cuid())
+  id             String              @id @default(cuid())
   assessmentId   String
   evidenceFileId String?
   category       RiskFindingCategory
@@ -592,14 +694,14 @@ model RiskFinding {
   title          String
   description    String
   recommendation String?
-  visibleInFree  Boolean              @default(true)
+  visibleInFree  Boolean             @default(true)
   requiresPlan   PlanLevel?
   source         RiskFindingSource
   metadataJson   Json?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  assessment     Assessment           @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  evidenceFile   EvidenceFile?        @relation(fields: [evidenceFileId], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  assessment     Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile   EvidenceFile?       @relation(fields: [evidenceFileId], references: [id], onDelete: SetNull)
 
   @@index([assessmentId])
   @@index([evidenceFileId])
@@ -610,33 +712,33 @@ model RiskFinding {
 }
 
 model AssessmentScore {
-  id              String     @id @default(cuid())
-  assessmentId    String     @unique
+  id              String        @id @default(cuid())
+  assessmentId    String        @unique
   readinessScore  Int
   confidenceScore Int
   inventoryScore  Int?
   costRiskScore   Int?
   storageScore    Int?
   riskLevel       RiskSeverity?
-  calculatedAt    DateTime   @default(now())
+  calculatedAt    DateTime      @default(now())
   metadataJson    Json?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  assessment      Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  assessment      Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 }
 
 model AuditEvent {
-  id            String    @id @default(cuid())
-  userId        String?
-  workspaceId   String?
-  assessmentId  String?
-  eventType     String
-  message       String
-  metadataJson  Json?
-  createdAt     DateTime  @default(now())
-  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  assessment    Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  id           String      @id @default(cuid())
+  userId       String?
+  workspaceId  String?
+  assessmentId String?
+  eventType    String
+  message      String
+  metadataJson Json?
+  createdAt    DateTime    @default(now())
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace    Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment   Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([assessmentId])
@@ -645,26 +747,26 @@ model AuditEvent {
 }
 
 model AiUsageEvent {
-  id                    String    @id @default(cuid())
-  createdAt             DateTime  @default(now())
-  assessmentId           String?
-  userId                 String?
-  provider               String
-  model                  String?
-  operationType          String   @default("unknown")
-  status                 String
-  durationMs             Int?
-  inputChars             Int?
-  outputChars            Int?
-  estimatedInputTokens   Int?
-  estimatedOutputTokens  Int?
-  estimatedTotalTokens   Int?
-  estimatedCostUsd       Float?
-  errorCategory          String?
-  fallbackUsed           Boolean  @default(false)
-  metadataJson           Json?
-  user                   User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  assessment             Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now())
+  assessmentId          String?
+  userId                String?
+  provider              String
+  model                 String?
+  operationType         String      @default("unknown")
+  status                String
+  durationMs            Int?
+  inputChars            Int?
+  outputChars           Int?
+  estimatedInputTokens  Int?
+  estimatedOutputTokens Int?
+  estimatedTotalTokens  Int?
+  estimatedCostUsd      Float?
+  errorCategory         String?
+  fallbackUsed          Boolean     @default(false)
+  metadataJson          Json?
+  user                  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  assessment            Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([userId])
@@ -690,26 +792,26 @@ model SystemSetting {
 }
 
 model LicensingPricingSnapshot {
-  id                 String                         @id @default(cuid())
-  vendor             LicensingPricingVendor
-  status             LicensingPricingSnapshotStatus @default(draft)
-  currency           String                         @default("USD")
-  sourceName         String
-  sourceUrl          String?
-  sourceType         LicensingPricingSourceType     @default(placeholder)
-  lastCheckedAt      DateTime?
-  effectiveDate      DateTime?
-  approvedAt         DateTime?
-  approvedByUserId   String?
-  rejectedAt         DateTime?
-  rejectedByUserId   String?
-  rejectionReason    String?
-  notesInternal      String?
-  metadataJson       Json?
-  createdAt          DateTime                       @default(now())
-  updatedAt          DateTime                       @updatedAt
-  items              LicensingPricingSnapshotItem[]
-  changeLogs         LicensingPricingChangeLog[]
+  id               String                         @id @default(cuid())
+  vendor           LicensingPricingVendor
+  status           LicensingPricingSnapshotStatus @default(draft)
+  currency         String                         @default("USD")
+  sourceName       String
+  sourceUrl        String?
+  sourceType       LicensingPricingSourceType     @default(placeholder)
+  lastCheckedAt    DateTime?
+  effectiveDate    DateTime?
+  approvedAt       DateTime?
+  approvedByUserId String?
+  rejectedAt       DateTime?
+  rejectedByUserId String?
+  rejectionReason  String?
+  notesInternal    String?
+  metadataJson     Json?
+  createdAt        DateTime                       @default(now())
+  updatedAt        DateTime                       @updatedAt
+  items            LicensingPricingSnapshotItem[]
+  changeLogs       LicensingPricingChangeLog[]
 
   @@index([vendor, status])
   @@index([status, updatedAt])
@@ -718,20 +820,20 @@ model LicensingPricingSnapshot {
 }
 
 model LicensingPricingSnapshotItem {
-  id              String                 @id @default(cuid())
+  id              String                   @id @default(cuid())
   snapshotId      String
   vendor          LicensingPricingVendor
   productName     String
   edition         String?
   sku             String?
   metric          LicensingPricingMetric
-  unitPriceUsd    Decimal?               @db.Decimal(14, 2)
+  unitPriceUsd    Decimal?                 @db.Decimal(14, 2)
   minUnits        Int?
   termMonths      Int?
   assumptionsJson Json?
   sourceNote      String?
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
   snapshot        LicensingPricingSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
 
   @@index([snapshotId])
@@ -740,16 +842,16 @@ model LicensingPricingSnapshotItem {
 }
 
 model LicensingPricingRefreshRun {
-  id                         String                         @id @default(cuid())
-  status                     LicensingPricingRefreshStatus  @default(running)
+  id                         String                        @id @default(cuid())
+  status                     LicensingPricingRefreshStatus @default(running)
   triggeredByUserId          String?
-  startedAt                  DateTime                       @default(now())
+  startedAt                  DateTime                      @default(now())
   completedAt                DateTime?
   summary                    String?
   detailsJson                Json?
-  createdDraftSnapshotsCount Int                            @default(0)
-  errorsCount                Int                            @default(0)
-  createdAt                  DateTime                       @default(now())
+  createdDraftSnapshotsCount Int                           @default(0)
+  errorsCount                Int                           @default(0)
+  createdAt                  DateTime                      @default(now())
 
   @@index([status, createdAt])
   @@index([triggeredByUserId])
@@ -775,22 +877,22 @@ model LicensingPricingChangeLog {
 }
 
 model UserEntitlement {
-  id                 String    @id @default(cuid())
-  userId             String
-  planKey            String    @default("free_preview")
-  status             String    @default("manual")
-  source             String    @default("admin")
-  startsAt           DateTime  @default(now())
-  expiresAt          DateTime?
-  maxAssessments     Int?
-  maxPdfReports      Int?
-  aiEnabled          Boolean   @default(false)
-  fullReportEnabled  Boolean   @default(false)
-  notesInternal      String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  createdByUserId    String?
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String    @id @default(cuid())
+  userId            String
+  planKey           String    @default("free_preview")
+  status            String    @default("manual")
+  source            String    @default("admin")
+  startsAt          DateTime  @default(now())
+  expiresAt         DateTime?
+  maxAssessments    Int?
+  maxPdfReports     Int?
+  aiEnabled         Boolean   @default(false)
+  fullReportEnabled Boolean   @default(false)
+  notesInternal     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdByUserId   String?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([planKey])
@@ -800,19 +902,19 @@ model UserEntitlement {
 }
 
 model CommercialOpportunity {
-  id                String   @id @default(cuid())
-  userId            String?
-  assessmentId      String?
-  score             Int      @default(0)
-  status            String   @default("new_lead")
-  tagsJson          Json?
-  nextBestAction    String?
-  suggestedPlan     String?
-  notesInternal     String?
-  lastActivityAt    DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  updatedByUserId   String?
+  id              String    @id @default(cuid())
+  userId          String?
+  assessmentId    String?
+  score           Int       @default(0)
+  status          String    @default("new_lead")
+  tagsJson        Json?
+  nextBestAction  String?
+  suggestedPlan   String?
+  notesInternal   String?
+  lastActivityAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  updatedByUserId String?
 
   @@index([userId])
   @@index([assessmentId])
@@ -822,17 +924,17 @@ model CommercialOpportunity {
 }
 
 model UpgradeEvent {
-  id            String    @id @default(cuid())
-  userId        String?
-  workspaceId   String?
-  assessmentId  String?
-  triggerType   String
-  message       String
-  clicked       Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  assessment    Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  id           String      @id @default(cuid())
+  userId       String?
+  workspaceId  String?
+  assessmentId String?
+  triggerType  String
+  message      String
+  clicked      Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace    Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment   Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([assessmentId])
@@ -840,27 +942,27 @@ model UpgradeEvent {
 }
 
 model Report {
-  id               String      @id @default(cuid())
-  assessmentId     String
-  workspaceId      String
+  id                String       @id @default(cuid())
+  assessmentId      String
+  workspaceId       String
   generatedByUserId String?
-  reportType       ReportType
-  status           ReportStatus
-  originalFilename String
-  storedFilename   String
-  relativePath     String
-  fileHash         String?
-  mimeType         String      @default("application/pdf")
-  sizeBytes        Int?
-  planRequired     PlanLevel?
-  generatedAt      DateTime?
-  deletedAt        DateTime?
-  processingError  String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  assessment       Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  workspace        Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  generatedByUser  User?       @relation(fields: [generatedByUserId], references: [id], onDelete: SetNull)
+  reportType        ReportType
+  status            ReportStatus
+  originalFilename  String
+  storedFilename    String
+  relativePath      String
+  fileHash          String?
+  mimeType          String       @default("application/pdf")
+  sizeBytes         Int?
+  planRequired      PlanLevel?
+  generatedAt       DateTime?
+  deletedAt         DateTime?
+  processingError   String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  assessment        Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  generatedByUser   User?        @relation(fields: [generatedByUserId], references: [id], onDelete: SetNull)
 
   @@index([assessmentId])
   @@index([assessmentId, deletedAt, createdAt])
@@ -873,14 +975,14 @@ model Report {
 }
 
 model UnlockRequest {
-  id            String               @id @default(cuid())
+  id            String              @id @default(cuid())
   assessmentId  String
   workspaceId   String
   userId        String
   requestedType UnlockRequestType
-  status        UnlockRequestStatus  @default(pending)
+  status        UnlockRequestStatus @default(pending)
   amountCents   Int?
-  currency      String               @default("USD")
+  currency      String              @default("USD")
   contactEmail  String?
   notes         String?
   adminNotes    String?
@@ -888,11 +990,11 @@ model UnlockRequest {
   rejectedAt    DateTime?
   fulfilledAt   DateTime?
   cancelledAt   DateTime?
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-  assessment    Assessment           @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  workspace     Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  assessment    Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace     Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([assessmentId])
   @@index([workspaceId])
@@ -1145,6 +1247,88 @@ enum AssessmentAdditionalEvidenceAnalysisStatus {
   summarized
   failed
   excluded
+}
+
+enum AssessmentStorageDestinationReadinessStatus {
+  not_started
+  draft
+  submitted
+  ready_for_analysis
+  analysis_pending
+  analyzed
+  skipped
+  stale
+  failed
+}
+
+enum AssessmentStorageDestinationMode {
+  agnostic
+  zfs_local
+  nfs_san
+  ceph_candidate
+  unknown
+}
+
+enum AssessmentStorageCurrentType {
+  vmfs
+  vsan
+  nfs
+  san
+  local_datastore
+  mixed
+  unknown
+}
+
+enum AssessmentStorageTargetPreference {
+  zfs_local
+  nfs
+  san
+  ceph
+  pbs
+  unknown
+  not_decided
+}
+
+enum AssessmentStorageContextStatus {
+  not_provided
+  draft
+  submitted
+  skipped
+  ready_for_analysis
+  analyzed
+  stale
+}
+
+enum AssessmentStorageEvidenceClassification {
+  source_storage_export
+  target_storage_design
+  hardware_bom
+  network_diagram
+  ceph_status
+  ceph_osd_tree
+  ceph_df
+  pbs_backup_info
+  vsan_summary
+  san_nas_export
+  architecture_diagram
+  quote_or_bill_of_materials
+  unknown_needs_review
+}
+
+enum AssessmentStorageEvidenceAnalysisStatus {
+  received_not_analyzed
+  queued
+  summarized
+  failed
+  excluded
+}
+
+enum AssessmentStorageAnalysisStatus {
+  not_started
+  pending
+  completed
+  failed
+  stale
 }
 
 enum LicensingPricingVendor {

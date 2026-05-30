@@ -122,13 +122,13 @@ export const assessmentCompletionModuleCatalog = [
   },
   {
     key: "storage_analysis",
-    label: "Storage Analysis",
-    description: "Current and target storage context across SAN, NAS, vSAN, Ceph or ZFS.",
+    label: "Storage Destination Readiness",
+    description: "Source storage, target preference, Ceph interest, constraints and storage evidence.",
     required: false,
     weight: 13,
-    actionLabel: "Add storage context",
+    actionLabel: "Add storage readiness",
     impactIfMissing:
-      "Storage recommendations remain estimated and require manual validation.",
+      "Storage destination recommendations remain estimated and require manual validation.",
   },
   {
     key: "licensing_cost_exposure",
@@ -594,6 +594,16 @@ function detectMigrationQuestionsModule(
 function detectStorageAnalysisModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
+  const destinationReadiness = assessment.storageDestinationReadiness;
+  const storageFreeContext = assessment.storageContext;
+  const storageEvidence = assessment.storageEvidence ?? [];
+  const activeStorageEvidenceCount = storageEvidence.filter(
+    (item) =>
+      item.evidenceFile.deletedAt === null &&
+      item.evidenceFile.processingStatus !== "deleted" &&
+      item.analysisStatus !== "excluded" &&
+      item.includedInStorageAnalysis,
+  ).length;
   const storageInput = assessment.storageReadinessInput;
   const storageContext = getStorageAnalysisContextFromAssessment(assessment as AssessmentDetail);
   const parsedDatastoreCount =
@@ -621,7 +631,116 @@ function detectStorageAnalysisModule(
     storageContext.knownConstraints,
     storageContext.notes,
   ]);
-  const evidenceSource = storageContextFieldCount > 0 ? "storage_context" : "storage_readiness";
+  const destinationReadinessFieldCount = countMeaningfulValues([
+    destinationReadiness?.currentStorageType,
+    destinationReadiness?.targetStoragePreference,
+    destinationReadiness?.needsHighAvailability,
+    destinationReadiness?.requiresSharedStorage,
+    destinationReadiness?.hasProxmoxTarget,
+    destinationReadiness?.hasPbs,
+    destinationReadiness?.hasMinimumThreeNodes,
+    destinationReadiness?.hasDedicatedStorageNetwork,
+    destinationReadiness?.hasCephExperience,
+    destinationReadiness?.hasVendorOrPartnerSupport,
+    destinationReadiness?.estimatedGrowthPercent3y,
+    destinationReadiness?.downtimeTolerance,
+    destinationReadiness?.rpoRtoNotes,
+    destinationReadiness?.sourceNotes,
+    destinationReadiness?.storageConstraintsJson,
+  ]);
+  const evidenceSource =
+    destinationReadiness || storageFreeContext || activeStorageEvidenceCount > 0
+      ? "storage_destination_readiness"
+      : storageContextFieldCount > 0
+        ? "storage_context"
+        : "storage_readiness";
+
+  if (destinationReadiness?.status === "skipped" || storageFreeContext?.status === "skipped") {
+    return {
+      status: "skipped",
+      evidence: { count: parsedDatastoreCount + activeStorageEvidenceCount, source: evidenceSource },
+      limitationText:
+        "Storage Destination Readiness was skipped. Storage recommendations should be treated as estimates from RVTools datastore evidence only.",
+    };
+  }
+
+  if (
+    assessment.storageAnalysis?.status === "completed" ||
+    destinationReadiness?.status === "analyzed" ||
+    storageFreeContext?.status === "analyzed"
+  ) {
+    return {
+      status: "complete",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt:
+          assessment.storageAnalysis?.generatedAt ??
+          destinationReadiness?.updatedAt ??
+          storageFreeContext?.updatedAt,
+      },
+    };
+  }
+
+  if (
+    destinationReadiness?.status === "submitted" ||
+    destinationReadiness?.status === "ready_for_analysis" ||
+    storageFreeContext?.status === "submitted" ||
+    storageFreeContext?.status === "ready_for_analysis"
+  ) {
+    return {
+      status: "complete",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt: getLatestDate([
+          destinationReadiness?.updatedAt,
+          storageFreeContext?.submittedAt ?? storageFreeContext?.updatedAt,
+          ...storageEvidence.map((item) => item.updatedAt ?? item.createdAt),
+        ]),
+      },
+      limitationText:
+        "Storage Destination Readiness is submitted as advisory context. Ceph suitability is not calculated until a later module.",
+    };
+  }
+
+  if (
+    destinationReadiness?.status === "failed" ||
+    assessment.storageAnalysis?.status === "failed"
+  ) {
+    return {
+      status: "failed",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+      },
+      limitationText:
+        "Storage Destination Readiness needs attention before storage context can be used confidently.",
+    };
+  }
+
+  if (
+    destinationReadiness?.status === "draft" ||
+    storageFreeContext?.status === "draft" ||
+    destinationReadinessFieldCount > 0 ||
+    (storageFreeContext?.wordCount ?? 0) > 0 ||
+    activeStorageEvidenceCount > 0
+  ) {
+    return {
+      status: "partial",
+      evidence: {
+        count: parsedDatastoreCount + activeStorageEvidenceCount,
+        source: evidenceSource,
+        lastUpdatedAt: getLatestDate([
+          destinationReadiness?.updatedAt,
+          storageFreeContext?.lastEditedAt ?? storageFreeContext?.updatedAt,
+          ...storageEvidence.map((item) => item.updatedAt ?? item.createdAt),
+        ]),
+      },
+      limitationText:
+        "Storage Destination Readiness is in draft. Submit it when source storage, target preference and missing evidence are ready for review.",
+    };
+  }
 
   if (storageContext.decision === "not_applicable") {
     return {

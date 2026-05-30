@@ -60,6 +60,7 @@ import {
 import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
 import { ClientContextAdditionalEvidencePanel } from "../../../../components/assessments/ClientContextAdditionalEvidencePanel";
 import { LicensingCostExposurePanel } from "../../../../components/assessments/LicensingCostExposurePanel";
+import { StorageDestinationReadinessPanel } from "../../../../components/assessments/StorageDestinationReadinessPanel";
 import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
   getEvidenceUploadStatus,
@@ -95,6 +96,7 @@ import {
 import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 import { buildAssessmentLicensingAnalysisSummary } from "../../../../server/assessments/licensingCostExposureService";
 import { buildAssessmentClientContextSummary } from "../../../../server/assessments/clientContextService";
+import { buildAssessmentStorageDestinationReadinessSummary } from "../../../../server/assessments/storageDestinationReadinessService";
 
 type AssessmentDetailPageProps = {
   params: Promise<{
@@ -611,6 +613,22 @@ export default async function AssessmentDetailPage({
         assessment,
       })
     : null;
+  const storageDestinationReadinessSummary = session
+    ? await buildAssessmentStorageDestinationReadinessSummary({
+        userId: session.user.id,
+        assessment,
+      })
+    : null;
+  const storageDestinationStatus =
+    storageDestinationReadinessSummary?.status ?? "not_started";
+  const storageDestinationDotColor =
+    storageDestinationStatus === "submitted" ||
+    storageDestinationStatus === "ready_for_analysis" ||
+    storageDestinationStatus === "analyzed"
+      ? "#10b981"
+      : storageDestinationStatus === "draft" || storageDestinationStatus === "analysis_pending"
+        ? "#f59e0b"
+        : "#475569";
   const clientContextStatus = clientContextSummary?.status ?? "not_provided";
   const clientContextDotColor =
     clientContextStatus === "ready_for_analysis" ||
@@ -690,6 +708,16 @@ export default async function AssessmentDetailPage({
             style={{ background: migrationContextCoverage.overallPercent >= 45 ? "#10b981" : migrationContextCoverage.overallPercent > 0 ? "#f59e0b" : "#475569" }}
           ></span>
           Migration Context
+        </Link>
+        <Link
+          href={`/dashboard/assessments/${assessment.id}?tab=storage`}
+          className={`tab-btn ${activeTab === "storage" ? "active" : ""}`}
+        >
+          <span
+            className="tab-progress-dot"
+            style={{ background: storageDestinationDotColor }}
+          ></span>
+          Storage
         </Link>
         <Link
           href={`/dashboard/assessments/${assessment.id}?tab=client-context`}
@@ -1246,6 +1274,13 @@ export default async function AssessmentDetailPage({
         <ClientContextAdditionalEvidencePanel
           assessmentId={assessment.id}
           summary={clientContextSummary}
+        />
+      ) : null}
+
+      {activeTab === "storage" && storageDestinationReadinessSummary ? (
+        <StorageDestinationReadinessPanel
+          assessmentId={assessment.id}
+          summary={storageDestinationReadinessSummary}
         />
       ) : null}
 

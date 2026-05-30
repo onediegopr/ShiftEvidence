@@ -69,7 +69,7 @@ export function getCompletionModuleHref(assessmentId: string, key: AssessmentMod
     case "migration_questions":
       return `/dashboard/assessments/${assessmentId}?tab=context`;
     case "storage_analysis":
-      return `/dashboard/assessments/${assessmentId}?tab=basics#storage-readiness`;
+      return `/dashboard/assessments/${assessmentId}?tab=storage#storage-destination-readiness`;
     case "licensing_cost_exposure":
       return `/dashboard/assessments/${assessmentId}?tab=basics#cost-risk-assumptions`;
     case "client_context_intelligence":
