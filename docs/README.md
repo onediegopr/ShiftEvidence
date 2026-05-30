@@ -66,19 +66,26 @@ This index points to the current operational documentation for ShiftReadiness. H
 
 ## Storage Destination Readiness / Ceph
 
+- [Storage/Ceph Final Operational Closure](./hito-storage-module-close-1-final-operational-closure.md)
 - [STORAGE-1 - Storage Destination Readiness Foundation](./hito-storage-1-storage-destination-readiness-foundation.md)
 - [STORAGE-2 - AI Storage Context Intelligence + Agnostic Scoring](./hito-storage-2-ai-storage-context-intelligence-agnostic-scoring.md)
 - [STORAGE-3 - Ceph Suitability & Operations Readiness Engine](./hito-storage-3-ceph-suitability-operations-readiness-engine.md)
 - [STORAGE-4 - Storage/Ceph Report, PDF & Landing Visibility](./hito-storage-4-storage-ceph-report-pdf-landing-visibility.md)
+- [Storage Release Readiness Plan](./hito-storage-release-readiness-1-storage-ceph-controlled-release-plan.md)
+- [Neon MCP Storage/Ceph Migration](./hito-storage-release-neon-1-neon-mcp-storage-ceph-migration.md)
+- [User-Attested Storage/Ceph Production Smoke](./hito-storage-smoke-final-1-user-attested-storage-ceph-production-smoke.md)
+- [Storage/Ceph Word Export](./exports/ShiftReadiness_Storage_Ceph_Module_Closure_v1.docx)
 
 Read these to understand:
 
+- final Storage/Ceph operational closure;
 - Storage Destination Readiness;
 - Storage Context Intelligence;
 - Ceph Suitability & Operations Readiness;
 - report preview/PDF storage payloads;
 - landing/marketing storage visibility;
-- pending release/migration implications for the target environment.
+- release/migration status in Neon production;
+- remaining non-blocking roadmap items.
 
 ## Admin / AI / Entitlements
 
@@ -109,6 +116,7 @@ Read these to understand:
 | Review licensing module | COST-1A/B/C docs |
 | Review client context / AI | CONTEXT-1/2/3 docs |
 | Review Storage/Ceph | STORAGE-1/2/3/4 docs, master manual |
+| Confirm Storage/Ceph final status | Storage/Ceph final closure doc, Neon migration doc, smoke final doc |
 | Plan Storage migrations/release | Master manual, release readiness docs, Prisma/Hostinger migration docs |
 | Debug report/PDF | Report preview, report generation, PDF template, PDF polish docs |
 | Onboard partner/MSP | Executive summary, master manual, entitlements docs |

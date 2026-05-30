@@ -1,18 +1,20 @@
 # ShiftReadiness Word Exports
 
-Generated on: 2026-05-29
+Generated on: 2026-05-30
 
-Status: Controlled Production Release Closed / Full Public Launch Not Declared
+Status: Storage/Ceph Operationally Closed / Full Public Launch Not Declared
 
 ## Exported Files
 
 - `ShiftReadiness_Master_Product_Technical_Manual_v1.docx`
 - `ShiftReadiness_Executive_Summary_Current_State_v1.docx`
+- `ShiftReadiness_Storage_Ceph_Module_Closure_v1.docx`
 
 ## Source Documents
 
 - `docs/shiftreadiness-master-product-technical-manual.md`
 - `docs/shiftreadiness-executive-summary-current-state.md`
+- `docs/hito-storage-module-close-1-final-operational-closure.md`
 - `docs/README.md`
 
 ## Scope
@@ -20,6 +22,8 @@ Status: Controlled Production Release Closed / Full Public Launch Not Declared
 These files are professional Word exports for internal onboarding, UX/Antigravity/Gemini review, partner or consultant review, and future executive PDF editions.
 
 The exports summarize the current ShiftReadiness product, technical architecture, module state, production release status, roadmap, runbook, and glossary.
+
+The Storage/Ceph closure export records the final operational state of Storage Destination Readiness, Storage Context Intelligence, Ceph Suitability & Operations Readiness, report/PDF visibility, Neon migration state, smoke closure, remaining risks, and roadmap.
 
 ## Safety Notes
 
