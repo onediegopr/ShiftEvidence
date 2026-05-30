@@ -356,7 +356,6 @@ export async function getCommercialOpportunities() {
         select: {
           plan: true,
           ownerUserId: true,
-          ownerUser: { select: { email: true, name: true } },
         },
       },
       evidenceFiles: { where: { deletedAt: null }, select: { id: true } },
@@ -366,6 +365,14 @@ export async function getCommercialOpportunities() {
       costRiskAssumptions: { select: { assumptionsJson: true } },
     },
   });
+  const ownerUserIds = [...new Set(assessments.map((assessment) => assessment.workspace.ownerUserId))];
+  const ownerUsers = ownerUserIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: ownerUserIds } },
+        select: { id: true, email: true },
+      })
+    : [];
+  const ownerEmailById = new Map(ownerUsers.map((user) => [user.id, user.email]));
 
   return assessments.map((assessment) => {
     const vmCount = assessment.parsedInventorySummaries[0]?.vmCount ?? 0;
@@ -389,13 +396,14 @@ export async function getCommercialOpportunities() {
       hasContext,
     });
     const stored = existingByAssessment.get(assessment.id);
+    const ownerEmail = ownerEmailById.get(assessment.workspace.ownerUserId) ?? "Propietario no disponible en este runtime";
 
     return {
       id: stored?.id ?? assessment.id,
       userId: assessment.workspace.ownerUserId,
       assessmentId: assessment.id,
-      client: assessment.clientLabel ?? assessment.workspace.ownerUser.email,
-      ownerEmail: assessment.workspace.ownerUser.email,
+      client: assessment.clientLabel ?? ownerEmail,
+      ownerEmail,
       assessmentTitle: assessment.title,
       score: stored?.score ?? score,
       tags: stored?.tagsJson && Array.isArray(stored.tagsJson) ? stored.tagsJson.filter((tag): tag is string => typeof tag === "string") : tags,

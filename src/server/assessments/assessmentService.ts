@@ -1,10 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { logger } from "../logging/logger";
 import { ensureDefaultWorkspace } from "../workspace/workspaceService";
 import { assertCanCreateAssessment } from "../admin/runtimeSettingsService";
 import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
 
-export const assessmentDetailInclude = {
+export const assessmentCoreInclude = {
   workspace: {
     select: {
       id: true,
@@ -21,9 +22,6 @@ export const assessmentDetailInclude = {
   preliminaryResult: true,
   licensingAnalysis: true,
   storageReadinessInput: true,
-  storageDestinationReadiness: true,
-  storageContext: true,
-  storageAnalysis: true,
   clientContext: true,
   clientContextAnalysis: true,
   entitlements: true,
@@ -38,16 +36,6 @@ export const assessmentDetailInclude = {
     ],
   },
   additionalEvidence: {
-    include: {
-      evidenceFile: true,
-    },
-    orderBy: [
-      {
-        createdAt: "desc",
-      },
-    ],
-  },
-  storageEvidence: {
     include: {
       evidenceFile: true,
     },
@@ -124,9 +112,43 @@ export const assessmentDetailInclude = {
   },
 } satisfies Prisma.AssessmentInclude;
 
-export type AssessmentDetail = Prisma.AssessmentGetPayload<{
-  include: typeof assessmentDetailInclude;
+const assessmentStorageInclude = {
+  storageDestinationReadiness: true,
+  storageContext: true,
+  storageAnalysis: true,
+  storageEvidence: {
+    include: {
+      evidenceFile: true,
+    },
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+    ],
+  },
+} satisfies Prisma.AssessmentInclude;
+
+export const assessmentDetailInclude = assessmentCoreInclude;
+
+type AssessmentCoreDetail = Prisma.AssessmentGetPayload<{
+  include: typeof assessmentCoreInclude;
 }>;
+
+type AssessmentStorageRelations = Pick<
+  Prisma.AssessmentGetPayload<{
+    include: typeof assessmentStorageInclude;
+  }>,
+  "storageDestinationReadiness" | "storageContext" | "storageAnalysis" | "storageEvidence"
+>;
+
+export type AssessmentDetail = AssessmentCoreDetail & AssessmentStorageRelations;
+
+const emptyStorageRelations: AssessmentStorageRelations = {
+  storageDestinationReadiness: null,
+  storageContext: null,
+  storageAnalysis: null,
+  storageEvidence: [],
+};
 
 export type AssessmentListItem = Prisma.AssessmentGetPayload<{
   include: {
@@ -167,6 +189,46 @@ function parseAssessmentId(assessmentId: string) {
   }
 
   return trimmed;
+}
+
+async function loadOptionalStorageRelations(assessmentId: string): Promise<AssessmentStorageRelations> {
+  try {
+    const assessment = await prisma.assessment.findUnique({
+      where: {
+        id: assessmentId,
+      },
+      include: assessmentStorageInclude,
+    });
+
+    if (!assessment) {
+      return emptyStorageRelations;
+    }
+
+    return {
+      storageDestinationReadiness: assessment.storageDestinationReadiness,
+      storageContext: assessment.storageContext,
+      storageAnalysis: assessment.storageAnalysis,
+      storageEvidence: assessment.storageEvidence,
+    };
+  } catch (error) {
+    logger.warn("assessment_detail_optional_storage_unavailable", {
+      assessmentId,
+      error,
+    });
+
+    return emptyStorageRelations;
+  }
+}
+
+async function withOptionalStorageRelations<T extends AssessmentCoreDetail>(
+  assessment: T,
+): Promise<T & AssessmentStorageRelations> {
+  const storageRelations = await loadOptionalStorageRelations(assessment.id);
+
+  return {
+    ...assessment,
+    ...storageRelations,
+  };
 }
 
 export async function listAssessmentsForCurrentWorkspace(params: {
@@ -218,7 +280,7 @@ export async function findAssessmentForUser(params: {
   userId: string;
   assessmentId: string;
 }) {
-  return prisma.assessment.findFirst({
+  const assessment = await prisma.assessment.findFirst({
     where: {
       id: parseAssessmentId(params.assessmentId),
       archivedAt: null,
@@ -232,6 +294,30 @@ export async function findAssessmentForUser(params: {
     },
     include: assessmentDetailInclude,
   });
+
+  if (!assessment) {
+    return null;
+  }
+
+  return withOptionalStorageRelations(assessment);
+}
+
+export async function findAssessmentForAdmin(params: {
+  assessmentId: string;
+}) {
+  const assessment = await prisma.assessment.findFirst({
+    where: {
+      id: parseAssessmentId(params.assessmentId),
+      archivedAt: null,
+    },
+    include: assessmentDetailInclude,
+  });
+
+  if (!assessment) {
+    return null;
+  }
+
+  return withOptionalStorageRelations(assessment);
 }
 
 export async function ensureAssessmentOwnership(params: {
@@ -271,7 +357,7 @@ export async function createAssessment(params: {
     workspaceId,
   });
 
-  return prisma.$transaction(async (tx) => {
+  const assessment = await prisma.$transaction(async (tx) => {
     const assessment = await tx.assessment.create({
       data: {
         workspaceId,
@@ -353,6 +439,8 @@ export async function createAssessment(params: {
 
     return assessment;
   });
+
+  return withOptionalStorageRelations(assessment);
 }
 
 export async function updateAssessmentBasics(params: {
@@ -369,7 +457,7 @@ export async function updateAssessmentBasics(params: {
   const title = normalizeOptionalTextInput(params.title, "Assessment title", INPUT_LIMITS.assessmentTitle) ?? assessment.title;
   const clientLabel = normalizeOptionalTextInput(params.clientLabel, "Client / company label", INPUT_LIMITS.companyName);
 
-  return prisma.$transaction(async (tx) => {
+  const updatedAssessment = await prisma.$transaction(async (tx) => {
     const updatedAssessment = await tx.assessment.update({
       where: {
         id: assessment.id,
@@ -397,6 +485,8 @@ export async function updateAssessmentBasics(params: {
 
     return updatedAssessment;
   });
+
+  return withOptionalStorageRelations(updatedAssessment);
 }
 
 export async function setStorageReadinessEnabled(params: {
@@ -409,7 +499,7 @@ export async function setStorageReadinessEnabled(params: {
     assessmentId: params.assessmentId,
   });
 
-  return prisma.$transaction(async (tx) => {
+  const updatedAssessment = await prisma.$transaction(async (tx) => {
     const updatedAssessment = await tx.assessment.update({
       where: {
         id: assessment.id,
@@ -472,6 +562,8 @@ export async function setStorageReadinessEnabled(params: {
 
     return updatedAssessment;
   });
+
+  return withOptionalStorageRelations(updatedAssessment);
 }
 
 export async function archiveAssessment(params: {
@@ -483,7 +575,7 @@ export async function archiveAssessment(params: {
     assessmentId: params.assessmentId,
   });
 
-  return prisma.$transaction(async (tx) => {
+  const archivedAssessment = await prisma.$transaction(async (tx) => {
     const archived = await tx.assessment.update({
       where: {
         id: assessment.id,
@@ -507,4 +599,6 @@ export async function archiveAssessment(params: {
 
     return archived;
   });
+
+  return withOptionalStorageRelations(archivedAssessment);
 }

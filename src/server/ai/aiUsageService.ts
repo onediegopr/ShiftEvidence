@@ -207,7 +207,7 @@ export async function getAdminAiUsage(params?: {
             clientLabel: true,
             workspace: {
               select: {
-                ownerUser: { select: { email: true } },
+                ownerUserId: true,
               },
             },
           },
@@ -220,6 +220,20 @@ export async function getAdminAiUsage(params?: {
   ]);
   const hasMore = eventRows.length > limit;
   const events = eventRows.slice(0, limit);
+  const ownerUserIds = [
+    ...new Set(
+      events
+        .map((event) => event.assessment?.workspace.ownerUserId)
+        .filter((userId): userId is string => Boolean(userId)),
+    ),
+  ];
+  const ownerUsers = ownerUserIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: ownerUserIds } },
+        select: { id: true, email: true },
+      })
+    : [];
+  const ownerEmailById = new Map(ownerUsers.map((user) => [user.id, user.email]));
 
   const totalCalls = events.length;
   const successCount = events.filter((event) => event.status === "success" || event.status === "mock").length;
@@ -275,7 +289,9 @@ export async function getAdminAiUsage(params?: {
     const existingAssessment = byAssessment.get(assessmentKey) ?? {
       assessmentId: event.assessmentId,
       title: event.assessment?.title ?? "No disponible",
-      owner: event.assessment?.workspace.ownerUser.email ?? "No disponible",
+      owner: event.assessment?.workspace.ownerUserId
+        ? ownerEmailById.get(event.assessment.workspace.ownerUserId) ?? "Propietario no disponible en este runtime"
+        : "No disponible",
       calls: 0,
       tokens: 0,
       cost: 0,

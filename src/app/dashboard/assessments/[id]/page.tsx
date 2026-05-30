@@ -24,9 +24,8 @@ import { auth } from "../../../../lib/auth";
 import { upsertUserProfileFromSession } from "../../../../server/user/userProfileService";
 import { ensureDefaultWorkspace } from "../../../../server/workspace/workspaceService";
 import { isAdminEmail } from "../../../../server/admin/adminAuth";
-import { prisma } from "../../../../lib/prisma";
-import { assessmentDetailInclude } from "../../../../server/assessments/assessmentService";
 import {
+  findAssessmentForAdmin,
   findAssessmentForUser,
   type AssessmentDetail,
 } from "../../../../server/assessments/assessmentService";
@@ -522,12 +521,8 @@ async function getAssessment(params: AssessmentDetailPageProps["params"]) {
 
   let assessment;
   if (isAdminEmail(session.user.email)) {
-    assessment = await prisma.assessment.findFirst({
-      where: {
-        id: parsedId,
-        archivedAt: null,
-      },
-      include: assessmentDetailInclude,
+    assessment = await findAssessmentForAdmin({
+      assessmentId: parsedId,
     });
   } else {
     assessment = await findAssessmentForUser({

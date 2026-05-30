@@ -117,6 +117,21 @@ export async function getAdminConsoleData(params?: {
     : {};
 
   const assessmentsSearch = params?.assessmentsSearch?.trim() ?? "";
+  const assessmentOwnerMatches = assessmentsSearch
+    ? await prisma.user.findMany({
+        where: {
+          email: {
+            contains: assessmentsSearch,
+            mode: "insensitive",
+          },
+        },
+        select: {
+          id: true,
+        },
+        take: 50,
+      })
+    : [];
+  const assessmentOwnerUserIds = assessmentOwnerMatches.map((user) => user.id);
   const assessmentsWhere: Prisma.AssessmentWhereInput = {
     archivedAt: null,
     ...(assessmentsSearch
@@ -124,7 +139,9 @@ export async function getAdminConsoleData(params?: {
           OR: [
             { title: { contains: assessmentsSearch, mode: "insensitive" } },
             { clientLabel: { contains: assessmentsSearch, mode: "insensitive" } },
-            { workspace: { ownerUser: { email: { contains: assessmentsSearch, mode: "insensitive" } } } },
+            ...(assessmentOwnerUserIds.length > 0
+              ? [{ workspace: { ownerUserId: { in: assessmentOwnerUserIds } } }]
+              : []),
           ],
         }
       : {}),
@@ -198,11 +215,7 @@ export async function getAdminConsoleData(params?: {
           select: {
             name: true,
             plan: true,
-            ownerUser: {
-              select: {
-                email: true,
-              },
-            },
+            ownerUserId: true,
           },
         },
         evidenceFiles: {
@@ -300,6 +313,15 @@ export async function getAdminConsoleData(params?: {
     prisma.user.count({ where: usersWhere }),
     prisma.assessment.count({ where: assessmentsWhere }),
   ]);
+
+  const ownerUserIds = [...new Set(recentAssessments.map((assessment) => assessment.workspace.ownerUserId))];
+  const ownerUsers = ownerUserIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: ownerUserIds } },
+        select: { id: true, email: true },
+      })
+    : [];
+  const ownerEmailById = new Map(ownerUsers.map((user) => [user.id, user.email]));
 
   const aiStatus = await getAiRuntimeStatus();
   const aiUsage = await getAdminAiUsage({ range: "30d" });
@@ -477,7 +499,7 @@ export async function getAdminConsoleData(params?: {
         id: assessment.id,
         title: assessment.title,
         clientLabel: assessment.clientLabel,
-        ownerEmail: assessment.workspace.ownerUser.email,
+        ownerEmail: ownerEmailById.get(assessment.workspace.ownerUserId) ?? "Propietario no disponible en este runtime",
         status: assessment.status,
         evidence: assessment.evidenceFiles.length > 0 ? `${parsedFiles}/${assessment.evidenceFiles.length} parseados` : "Sin evidencia",
         context: hasContext ? "Con contexto" : "Pendiente",
