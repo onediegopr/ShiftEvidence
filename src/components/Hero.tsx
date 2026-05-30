@@ -1355,54 +1355,69 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     fontSize="6"
                     fontWeight="bold"
                   >
-                    BAY 04 | STORAGE ARCHITECTURE
+                    BAY 04 | CEPH CLUSTERED RING + PBS
                   </text>
 
-                  {/* Vendor-neutral adaptive storage topology */}
-                  <g transform="translate(8, 12)">
+                  {/* Clustered Ceph Storage Replication Ring */}
+                  <g transform="translate(0, 0)">
+                    {/* Ring Connection Lines */}
                     <path
-                      d="M 18,9 L 58,6 L 102,11 L 92,29 L 52,32 L 18,9 M 58,6 L 52,32 M 102,11 L 52,32 M 18,9 L 92,29"
+                      d="M 68,14 L 44,27 L 92,27 Z"
                       fill="none"
-                      stroke="url(#storageTopologyGrad)"
+                      stroke="rgba(16, 185, 129, 0.4)"
                       strokeWidth="1"
-                      strokeDasharray="3 4"
-                      strokeLinecap="round"
+                      strokeDasharray="3 3"
                     >
-                      <animate attributeName="stroke-dashoffset" values="40;0" dur="4.8s" repeatCount="indefinite" />
+                      <animate
+                        attributeName="stroke-dashoffset"
+                        values="30;0"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
                     </path>
+
+                    {/* PBS Backup Target Connector */}
                     <path
-                      d="M 18,9 C 44,22 68,22 102,11 M 52,32 C 65,23 78,23 92,29"
+                      d="M 68,27 V 37"
                       fill="none"
-                      stroke="rgba(34, 211, 238, 0.18)"
-                      strokeWidth="0.9"
-                      strokeDasharray="2 8"
-                    >
-                      <animate attributeName="stroke-dashoffset" values="0;-36" dur="6.2s" repeatCount="indefinite" />
-                    </path>
+                      stroke="rgba(16, 185, 129, 0.5)"
+                      strokeWidth="0.8"
+                      strokeDasharray="2 2"
+                    />
+
+                    {/* OSD Nodes */}
                     {[
-                      { x: 18, y: 9, label: "SAN" },
-                      { x: 58, y: 6, label: "NAS" },
-                      { x: 102, y: 11, label: "NFS" },
-                      { x: 92, y: 29, label: "ZFS" },
-                      { x: 52, y: 32, label: "iSCSI" },
+                      { x: 68, y: 14, label: "OSD-01" },
+                      { x: 44, y: 27, label: "OSD-02" },
+                      { x: 92, y: 27, label: "OSD-03" },
                     ].map((node, idx) => (
-                      <g key={`storage-node-${node.label}`} transform={`translate(${node.x}, ${node.y})`}>
+                      <g key={`ceph-node-${node.label}`} transform={`translate(${node.x}, ${node.y})`}>
                         <circle
                           r="4.2"
                           fill="rgba(16, 185, 129, 0.12)"
-                          stroke={idx < 2 ? "#f97316" : "#10b981"}
-                          strokeWidth="1"
+                          stroke="#10b981"
+                          strokeWidth="1.2"
                           filter="url(#glow)"
                         >
-                          <animate attributeName="r" values="3.8;4.8;3.8" dur={`${2.2 + idx * 0.25}s`} repeatCount="indefinite" />
+                          <animate
+                            attributeName="r"
+                            values="3.8;4.8;3.8"
+                            dur={`${2 + idx * 0.3}s`}
+                            repeatCount="indefinite"
+                          />
                         </circle>
-                        <circle r="1.25" fill="#ffffff">
-                          <animate attributeName="opacity" values="0.35;1;0.35" dur={`${1.2 + idx * 0.2}s`} repeatCount="indefinite" />
+                        <circle r="1.2" fill="#34d399">
+                          <animate
+                            attributeName="opacity"
+                            values="0.4;1;0.4"
+                            dur={`${1 + idx * 0.2}s`}
+                            repeatCount="indefinite"
+                          />
                         </circle>
                         <text
                           x="0"
-                          y={idx === 4 ? "10" : "-7"}
-                          fill="rgba(226, 232, 240, 0.54)"
+                          y={node.y === 14 ? "-7" : "10"}
+                          fill="rgba(226, 232, 240, 0.72)"
                           fontSize="3.8"
                           fontWeight="800"
                           textAnchor="middle"
@@ -1411,9 +1426,31 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                         </text>
                       </g>
                     ))}
-                    <text x="60" y="42" fill="rgba(16, 185, 129, 0.78)" fontSize="5" fontWeight="800" textAnchor="middle" letterSpacing="0.08em">
-                      ADAPTIVE TOPOLOGY
-                    </text>
+
+                    {/* PBS Backup target block */}
+                    <g transform="translate(53, 37)">
+                      <rect
+                        x="0"
+                        y="0"
+                        width="30"
+                        height="7"
+                        rx="1.5"
+                        fill="#0c1814"
+                        stroke="#10b981"
+                        strokeWidth="0.8"
+                      />
+                      <text
+                        x="15"
+                        y="5"
+                        fill="#10b981"
+                        fontSize="4"
+                        fontWeight="900"
+                        textAnchor="middle"
+                        letterSpacing="0.05em"
+                      >
+                        PBS TARGET
+                      </text>
+                    </g>
                   </g>
                 </g>
 
@@ -1918,8 +1955,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 {[
                   { x: -118, y: -84, text: "COMPATIBLE", c: "#22d3ee", w: 82 },
                   { x: 36, y: -84, text: "VERIFIED", c: "#10b981", w: 68 },
-                  { x: -118, y: 82, text: "LOW RISK", c: "#10b981", w: 70 },
-                  { x: 24, y: 82, text: "READY PLAN", c: "#a855f7", w: 82 },
+                  { x: -118, y: 82, text: "TCO SAVINGS", c: "#10b981", w: 76 },
+                  { x: 24, y: 82, text: "BROADCOM FREE", c: "#ea580c", w: 84 },
                 ].map((tag, idx) => (
                   <g key={`engine-status-${tag.text}`} transform={`translate(${tag.x}, ${tag.y})`}>
                     <rect
@@ -2302,6 +2339,97 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   keyPoints="0;0.5;1"
                   keyTimes="0;0.5;1"
                 />
+              </g>
+
+              {/* Senior AI Advisor Floating Terminal Console Card */}
+              <g transform="translate(210, 290)">
+                {/* Terminal Background */}
+                <rect
+                  x="0"
+                  y="0"
+                  width="180"
+                  height="45"
+                  rx="6"
+                  fill="#030712"
+                  fillOpacity="0.88"
+                  stroke="url(#shiftGrad)"
+                  strokeWidth="1.2"
+                  filter="url(#glow)"
+                >
+                  <animate
+                    attributeName="stroke-opacity"
+                    values="0.6;1;0.6"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </rect>
+
+                {/* Cognitive Brain Icon */}
+                <g transform="translate(10, 8)" strokeWidth="0.8">
+                  <rect x="0" y="0" width="12" height="12" rx="2" fill="none" stroke="#a855f7" />
+                  <circle cx="6" cy="6" r="3" fill="#a855f7" opacity="0.3">
+                    <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  <circle cx="6" cy="6" r="1" fill="#a855f7" />
+                </g>
+
+                {/* Console Header */}
+                <text
+                  x="28"
+                  y="17"
+                  fill="rgba(34, 211, 238, 0.9)"
+                  fontSize="5.2"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                  letterSpacing="0.05em"
+                >
+                  SENIOR AI ADVISOR | CONTEXT CAPTURE
+                </text>
+
+                {/* Blinking Prompt Cursor */}
+                <rect x="142" y="13" width="1.5" height="4.5" fill="#22d3ee">
+                  <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite" />
+                </rect>
+
+                {/* Diagnostic Line 1 */}
+                <text
+                  x="10"
+                  y="29"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.8"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="1;0;1"
+                    dur="6s"
+                    repeatCount="indefinite"
+                    keyTimes="0;0.5;1"
+                  />
+                  &gt; SCANNING: WORKLOAD CONFIGURATION EVIDENCE
+                </text>
+
+                {/* Diagnostic Line 2 */}
+                <g>
+                  <animate
+                    attributeName="opacity"
+                    values="0;1;0"
+                    dur="6s"
+                    repeatCount="indefinite"
+                    keyTimes="0;0.5;1"
+                  />
+                  <text
+                    x="10"
+                    y="38"
+                    fill="#ef4444"
+                    fontSize="4.8"
+                    fontWeight="bold"
+                    fontFamily="var(--font-mono)"
+                  >
+                    &gt; ALERT: INCOMPATIBLE LEGACY SAN. ROUTING CEPH...
+                  </text>
+                </g>
               </g>
             </svg>
 
