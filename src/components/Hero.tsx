@@ -1336,8 +1336,93 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   </g>
                 </g>
 
-                {/* Bay 4: Storage (Y: 200) */}
-                <g transform="translate(12, 200)">
+                {/* Storage Bay 4 removed (now in separate storage enclosure below rack) */}
+
+                {/* Target architecture health and routing overlay */}
+                <g opacity="0.9">
+                  <path
+                    d="M 24,82 C 60,112 100,112 136,82 M 25,190 C 58,176 102,176 136,190"
+                    fill="none"
+                    stroke="rgba(16, 185, 129, 0.26)"
+                    strokeWidth="0.9"
+                    strokeDasharray="3 7"
+                    strokeLinecap="round"
+                  >
+                    <animate attributeName="stroke-dashoffset" values="0;-44" dur="5.6s" repeatCount="indefinite" />
+                  </path>
+                  <rect
+                    x="25"
+                    y="28"
+                    width="110"
+                    height="9"
+                    rx="4.5"
+                    fill="rgba(6, 18, 15, 0.76)"
+                    stroke="rgba(16, 185, 129, 0.28)"
+                    strokeWidth="0.7"
+                  />
+                  <text
+                    x="80"
+                    y="35"
+                    fill="rgba(52, 211, 153, 0.9)"
+                    fontSize="5.2"
+                    fontWeight="900"
+                    textAnchor="middle"
+                    letterSpacing="0.1em"
+                  >
+                    HA READY | BALANCED
+                  </text>
+                  {[
+                    { x: 135, y: 74 },
+                    { x: 134, y: 130 },
+                    { x: 135, y: 191 },
+                  ].map((point, idx) => (
+                    <g key={`target-validated-${idx}`} transform={`translate(${point.x}, ${point.y})`}>
+                      <circle r="4.4" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" strokeWidth="0.8">
+                        <animate attributeName="opacity" values="0.45;1;0.45" dur={`${1.8 + idx * 0.35}s`} repeatCount="indefinite" />
+                      </circle>
+                      <path d="M -2,0.2 L -0.4,2 L 2.6,-2" fill="none" stroke="#10b981" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" />
+                    </g>
+                  ))}
+                </g>
+              </g>
+
+              {/* Separate Proxmox Target Ceph Storage Enclosure (X: 430, Y: 265, W: 160, H: 60) */}
+              <g transform="translate(430, 265)">
+                <rect
+                  x="0"
+                  y="0"
+                  width="160"
+                  height="60"
+                  rx="8"
+                  fill="url(#proxmoxBg)"
+                  stroke="#ea580c"
+                  strokeWidth="1.5"
+                  opacity="0.9"
+                />
+                <rect
+                  x="0"
+                  y="0"
+                  width="160"
+                  height="60"
+                  rx="8"
+                  fill="none"
+                  stroke="#ff781f"
+                  strokeWidth="0.8"
+                  opacity="0.3"
+                  filter="url(#glow)"
+                />
+                <text
+                  x="8"
+                  y="10"
+                  fill="rgba(255, 255, 255, 0.4)"
+                  fontSize="6.2"
+                  fontWeight="bold"
+                >
+                  CEPH STORAGE TIER
+                </text>
+                
+                {/* Embedded Ceph Storage Bay */}
+                <g transform="translate(12, 8)">
                   <rect
                     x="0"
                     y="0"
@@ -1452,53 +1537,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                       </text>
                     </g>
                   </g>
-                </g>
-
-                {/* Target architecture health and routing overlay */}
-                <g opacity="0.9">
-                  <path
-                    d="M 24,82 C 60,112 100,112 136,82 M 25,190 C 58,176 102,176 136,190"
-                    fill="none"
-                    stroke="rgba(16, 185, 129, 0.26)"
-                    strokeWidth="0.9"
-                    strokeDasharray="3 7"
-                    strokeLinecap="round"
-                  >
-                    <animate attributeName="stroke-dashoffset" values="0;-44" dur="5.6s" repeatCount="indefinite" />
-                  </path>
-                  <rect
-                    x="25"
-                    y="28"
-                    width="110"
-                    height="9"
-                    rx="4.5"
-                    fill="rgba(6, 18, 15, 0.76)"
-                    stroke="rgba(16, 185, 129, 0.28)"
-                    strokeWidth="0.7"
-                  />
-                  <text
-                    x="80"
-                    y="35"
-                    fill="rgba(52, 211, 153, 0.9)"
-                    fontSize="5.2"
-                    fontWeight="900"
-                    textAnchor="middle"
-                    letterSpacing="0.1em"
-                  >
-                    HA READY | BALANCED
-                  </text>
-                  {[
-                    { x: 135, y: 74 },
-                    { x: 134, y: 130 },
-                    { x: 135, y: 191 },
-                  ].map((point, idx) => (
-                    <g key={`target-validated-${idx}`} transform={`translate(${point.x}, ${point.y})`}>
-                      <circle r="4.4" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" strokeWidth="0.8">
-                        <animate attributeName="opacity" values="0.45;1;0.45" dur={`${1.8 + idx * 0.35}s`} repeatCount="indefinite" />
-                      </circle>
-                      <path d="M -2,0.2 L -0.4,2 L 2.6,-2" fill="none" stroke="#10b981" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" />
-                    </g>
-                  ))}
                 </g>
               </g>
 
@@ -2341,15 +2379,17 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 />
               </g>
 
-              {/* Senior AI Advisor Floating Terminal Console Card */}
-              <g transform="translate(210, 315)">
+              {/* Stacked Floating Terminal Console Cards */}
+              
+              {/* Card 1: Senior AI Advisor (X: 210, Y: 298, W: 180, H: 36) */}
+              <g transform="translate(210, 298)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
                   y="0"
                   width="180"
-                  height="45"
-                  rx="6"
+                  height="36"
+                  rx="5"
                   fill="#030712"
                   fillOpacity="0.88"
                   stroke="url(#shiftGrad)"
@@ -2365,20 +2405,20 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </rect>
 
                 {/* Cognitive Brain Icon */}
-                <g transform="translate(10, 8)" strokeWidth="0.8">
-                  <rect x="0" y="0" width="12" height="12" rx="2" fill="none" stroke="#a855f7" />
-                  <circle cx="6" cy="6" r="3" fill="#a855f7" opacity="0.3">
-                    <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
+                <g transform="translate(8, 5)" strokeWidth="0.8">
+                  <rect x="0" y="0" width="10" height="10" rx="1.5" fill="none" stroke="#a855f7" />
+                  <circle cx="5" cy="5" r="2.5" fill="#a855f7" opacity="0.3">
+                    <animate attributeName="r" values="1.8;3.2;1.8" dur="2s" repeatCount="indefinite" />
                   </circle>
-                  <circle cx="6" cy="6" r="1" fill="#a855f7" />
+                  <circle cx="5" cy="5" r="0.8" fill="#a855f7" />
                 </g>
 
                 {/* Console Header */}
                 <text
-                  x="28"
-                  y="17"
+                  x="24"
+                  y="12"
                   fill="rgba(34, 211, 238, 0.9)"
-                  fontSize="5.2"
+                  fontSize="5"
                   fontWeight="bold"
                   fontFamily="var(--font-mono)"
                   letterSpacing="0.05em"
@@ -2387,16 +2427,16 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </text>
 
                 {/* Blinking Prompt Cursor */}
-                <rect x="142" y="13" width="1.5" height="4.5" fill="#22d3ee">
+                <rect x="134" y="8" width="1.2" height="4" fill="#22d3ee">
                   <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite" />
                 </rect>
 
                 {/* Diagnostic Line 1 */}
                 <text
                   x="10"
-                  y="29"
+                  y="22"
                   fill="rgba(255, 255, 255, 0.85)"
-                  fontSize="4.8"
+                  fontSize="4.6"
                   fontWeight="bold"
                   fontFamily="var(--font-mono)"
                 >
@@ -2421,9 +2461,9 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   />
                   <text
                     x="10"
-                    y="38"
+                    y="30"
                     fill="#ef4444"
-                    fontSize="4.8"
+                    fontSize="4.6"
                     fontWeight="bold"
                     fontFamily="var(--font-mono)"
                   >
@@ -2431,12 +2471,80 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                   </text>
                 </g>
               </g>
-            </svg>
 
-            <div className="badge badge-tam" style={{ marginBottom: "0" }}>
-              <Shield size={12} />
-              <span>Former VMware TAM-led readiness methodology</span>
-            </div>
+              {/* Card 2: Decision Economics (X: 210, Y: 339, W: 180, H: 36) */}
+              <g transform="translate(210, 339)">
+                {/* Terminal Background */}
+                <rect
+                  x="0"
+                  y="0"
+                  width="180"
+                  height="36"
+                  rx="5"
+                  fill="#030712"
+                  fillOpacity="0.88"
+                  stroke="url(#shiftGrad)"
+                  strokeWidth="1.2"
+                  filter="url(#glow)"
+                >
+                  <animate
+                    attributeName="stroke-opacity"
+                    values="0.6;1;0.6"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </rect>
+
+                {/* Ascending Chart Icon */}
+                <g transform="translate(8, 5)" strokeWidth="0.8">
+                  <rect x="0" y="0" width="10" height="10" rx="1.5" fill="none" stroke="#eab308" />
+                  <path d="M 2,8 L 5,5 L 8,7 L 8,3" fill="none" stroke="#eab308" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="8" cy="3" r="0.8" fill="#eab308" />
+                </g>
+
+                {/* Console Header */}
+                <text
+                  x="24"
+                  y="12"
+                  fill="rgba(234, 179, 8, 0.9)"
+                  fontSize="5"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                  letterSpacing="0.05em"
+                >
+                  DECISION ECONOMICS | VMWARE EXIT TCO
+                </text>
+
+                {/* Blinking Prompt Cursor */}
+                <rect x="135" y="8" width="1.2" height="4" fill="#eab308">
+                  <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite" />
+                </rect>
+
+                {/* Economics Line 1 */}
+                <text
+                  x="10"
+                  y="22"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; BROADCOM RENEWAL COST EXPOSURE: HIGH
+                </text>
+
+                {/* Economics Line 2 */}
+                <text
+                  x="10"
+                  y="30"
+                  fill="#10b981"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; ESTIMATED TARGET SAVINGS: 82%
+                </text>
+              </g>
+            </svg>
 
             <div
               className="hero-description-group"
@@ -2463,13 +2571,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 Audit Your Cluster
                 <ArrowRight size={18} />
               </button>
-              <button
-                onClick={() => scrollToSection("sample-output")}
+              <a
+                href="/sample-report"
                 className="btn btn-secondary"
               >
                 View Sample Report
                 <FileText size={18} className="text-cyan" />
-              </button>
+              </a>
             </div>
           </div>
         </div>
