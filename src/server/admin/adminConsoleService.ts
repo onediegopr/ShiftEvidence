@@ -467,8 +467,8 @@ export async function getAdminConsoleData(params?: {
             evidenceFile: {
               select: {
                 id: true,
-                filename: true,
-                fileSize: true,
+                originalFilename: true,
+                sizeBytes: true,
                 processingStatus: true,
               },
             },
@@ -896,8 +896,8 @@ export async function getAdminConsoleData(params?: {
           classification: item.classification,
           purpose: item.purpose,
           analysisStatus: item.analysisStatus,
-          filename: item.evidenceFile.filename,
-          fileSize: item.evidenceFile.fileSize,
+          filename: item.evidenceFile.originalFilename,
+          fileSize: item.evidenceFile.sizeBytes,
           processingStatus: item.evidenceFile.processingStatus,
         })),
       };
