@@ -29,6 +29,7 @@ model User {
   unlockRequests        UnlockRequest[]
   createdAdvisorConversations AssessmentAdvisorConversation[] @relation("AssessmentAdvisorConversationCreatedBy")
   advisorMessages       AssessmentAdvisorMessage[] @relation("AssessmentAdvisorMessageUser")
+  createdAdvisorMemoryItems AssessmentAdvisorMemoryItem[] @relation("AssessmentAdvisorMemoryItemCreatedBy")
   passwordResetRequests PasswordResetRequest[]
 
   @@unique([email])
@@ -139,6 +140,7 @@ model Workspace {
   unlockRequests UnlockRequest[]
   advisorConversations AssessmentAdvisorConversation[]
   advisorMessages      AssessmentAdvisorMessage[]
+  advisorMemoryItems   AssessmentAdvisorMemoryItem[]
 
   @@index([ownerUserId])
 }
@@ -201,6 +203,7 @@ model Assessment {
   unlockRequests              UnlockRequest[]
   advisorConversation         AssessmentAdvisorConversation?
   advisorMessages             AssessmentAdvisorMessage[]
+  advisorMemoryItems          AssessmentAdvisorMemoryItem[]
 
   @@index([workspaceId])
   @@index([workspaceId, archivedAt, updatedAt])
@@ -508,6 +511,7 @@ model AssessmentAdvisorConversation {
   workspace       Workspace                           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   createdByUser   User?                               @relation("AssessmentAdvisorConversationCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   messages        AssessmentAdvisorMessage[]
+  memoryItems     AssessmentAdvisorMemoryItem[]
 
   @@index([assessmentId])
   @@index([workspaceId])
@@ -539,6 +543,7 @@ model AssessmentAdvisorMessage {
   assessment            Assessment                     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   workspace             Workspace                      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user                  User?                          @relation("AssessmentAdvisorMessageUser", fields: [userId], references: [id], onDelete: SetNull)
+  sourcedMemoryItems    AssessmentAdvisorMemoryItem[]  @relation("AssessmentAdvisorMemoryItemSourceMessage")
 
   @@index([conversationId])
   @@index([assessmentId])
@@ -547,6 +552,43 @@ model AssessmentAdvisorMessage {
   @@index([role])
   @@index([status])
   @@index([createdAt])
+}
+
+model AssessmentAdvisorMemoryItem {
+  id                String                            @id @default(cuid())
+  assessmentId      String
+  workspaceId       String
+  conversationId    String?
+  sourceMessageId   String?
+  createdByUserId   String?
+  type              AssessmentAdvisorMemoryItemType
+  status            AssessmentAdvisorMemoryItemStatus @default(needs_review)
+  sourceType        AssessmentAdvisorMemorySourceType
+  truthStatus       AssessmentAdvisorMemoryTruthStatus
+  title             String
+  summary           String                            @db.Text
+  detailsJson       Json?
+  tagsJson          Json?
+  relatedEntityJson Json?
+  confidence        Int?
+  version           Int                               @default(1)
+  supersedesId      String?
+  resolvedAt        DateTime?
+  createdAt         DateTime                          @default(now())
+  updatedAt         DateTime                          @updatedAt
+  assessment        Assessment                        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace         Workspace                         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversation      AssessmentAdvisorConversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  sourceMessage     AssessmentAdvisorMessage?         @relation("AssessmentAdvisorMemoryItemSourceMessage", fields: [sourceMessageId], references: [id], onDelete: SetNull)
+  createdByUser     User?                             @relation("AssessmentAdvisorMemoryItemCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  supersedes        AssessmentAdvisorMemoryItem?      @relation("AdvisorMemorySupersession", fields: [supersedesId], references: [id], onDelete: SetNull)
+  supersededBy      AssessmentAdvisorMemoryItem[]     @relation("AdvisorMemorySupersession")
+
+  @@index([assessmentId, status])
+  @@index([workspaceId, type])
+  @@index([assessmentId, type, status])
+  @@index([sourceMessageId])
+  @@index([supersedesId])
 }
 
 model StorageReadinessInput {
@@ -1412,6 +1454,49 @@ enum AssessmentAdvisorMessageStatus {
   completed
   failed
   blocked
+}
+
+enum AssessmentAdvisorMemoryItemType {
+  decision
+  open_question
+  resolved_question
+  assumption
+  risk_interpretation
+  customer_preference
+  evidence_note
+  next_step
+  advisor_recommendation
+  constraint
+  summary
+}
+
+enum AssessmentAdvisorMemoryItemStatus {
+  active
+  resolved
+  superseded
+  rejected
+  needs_review
+  archived
+}
+
+enum AssessmentAdvisorMemorySourceType {
+  user_message
+  advisor_message
+  system_generated
+  assessment_state
+  client_context
+  storage_analysis
+  licensing_analysis
+  manual_admin
+}
+
+enum AssessmentAdvisorMemoryTruthStatus {
+  confirmed
+  customer_reported
+  inferred
+  missing
+  advisor_generated
+  user_confirmed
 }
 
 enum LicensingPricingVendor {

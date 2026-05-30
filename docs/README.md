@@ -109,6 +109,8 @@ Read these to understand:
 - [Advisor UX provider polish](./hito-advisor-ux-provider-1-compact-ui-provider-response-fix.md)
 - [Advisor chat UX polish](./hito-advisor-ux-chat-2-chat-layout-premium-ui-polish.md)
 - [Advisor v1 operational closure](./hito-advisor-v1-close-1-senior-migration-advisor-operational-closure.md)
+- [Advisor Project Memory Vault specification](./hito-advisor-2-audit-spec-project-memory-vault.md)
+- [Advisor Project Memory Vault DB Models + Core Services](./hito-advisor-2a-project-memory-vault-db-models-core-services.md)
 
 ## Hostinger / Production Ops
 
