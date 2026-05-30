@@ -12,6 +12,7 @@ export type AiUsageOperationType =
   | "retry"
   | "client_context_analysis"
   | "storage_context_analysis"
+  | "senior_advisor_message"
   | "unknown";
 export type AiUsageStatus =
   | "success"

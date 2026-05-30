@@ -27,6 +27,8 @@ model User {
   upgradeEvents         UpgradeEvent[]
   reports               Report[]
   unlockRequests        UnlockRequest[]
+  createdAdvisorConversations AssessmentAdvisorConversation[] @relation("AssessmentAdvisorConversationCreatedBy")
+  advisorMessages       AssessmentAdvisorMessage[] @relation("AssessmentAdvisorMessageUser")
   passwordResetRequests PasswordResetRequest[]
 
   @@unique([email])
@@ -135,6 +137,8 @@ model Workspace {
   upgradeEvents  UpgradeEvent[]
   reports        Report[]
   unlockRequests UnlockRequest[]
+  advisorConversations AssessmentAdvisorConversation[]
+  advisorMessages      AssessmentAdvisorMessage[]
 
   @@index([ownerUserId])
 }
@@ -195,6 +199,8 @@ model Assessment {
   upgradeEvents               UpgradeEvent[]
   reports                     Report[]
   unlockRequests              UnlockRequest[]
+  advisorConversation         AssessmentAdvisorConversation?
+  advisorMessages             AssessmentAdvisorMessage[]
 
   @@index([workspaceId])
   @@index([workspaceId, archivedAt, updatedAt])
@@ -484,6 +490,63 @@ model AssessmentStorageAnalysis {
   @@index([assessmentId])
   @@index([status])
   @@index([generatedAt])
+}
+
+model AssessmentAdvisorConversation {
+  id              String                              @id @default(cuid())
+  assessmentId    String                              @unique
+  workspaceId     String
+  status          AssessmentAdvisorConversationStatus @default(active)
+  title           String?
+  createdByUserId String?
+  messageCount    Int                                 @default(0)
+  creditUsed      Int                                 @default(0)
+  lastMessageAt   DateTime?
+  createdAt       DateTime                            @default(now())
+  updatedAt       DateTime                            @updatedAt
+  assessment      Assessment                          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace       Workspace                           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdByUser   User?                               @relation("AssessmentAdvisorConversationCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  messages        AssessmentAdvisorMessage[]
+
+  @@index([assessmentId])
+  @@index([workspaceId])
+  @@index([status])
+  @@index([createdByUserId])
+  @@index([lastMessageAt])
+}
+
+model AssessmentAdvisorMessage {
+  id                    String                         @id @default(cuid())
+  conversationId        String
+  assessmentId          String
+  workspaceId           String
+  userId                String?
+  role                  AssessmentAdvisorMessageRole
+  content               String?                        @db.Text
+  sanitizedContent      String                         @db.Text
+  status                AssessmentAdvisorMessageStatus @default(completed)
+  model                 String?
+  provider              String?
+  estimatedInputTokens  Int?
+  estimatedOutputTokens Int?
+  estimatedCostUsd      Float?
+  creditCost            Int                            @default(0)
+  safetyFlagsJson       Json?
+  referencedContextJson Json?
+  createdAt             DateTime                       @default(now())
+  conversation          AssessmentAdvisorConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  assessment            Assessment                     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  workspace             Workspace                      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user                  User?                          @relation("AssessmentAdvisorMessageUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId])
+  @@index([assessmentId])
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model StorageReadinessInput {
@@ -1332,6 +1395,23 @@ enum AssessmentStorageAnalysisStatus {
   ai_disabled
   budget_blocked
   plan_restricted
+}
+
+enum AssessmentAdvisorConversationStatus {
+  active
+  archived
+}
+
+enum AssessmentAdvisorMessageRole {
+  user
+  assistant
+  system
+}
+
+enum AssessmentAdvisorMessageStatus {
+  completed
+  failed
+  blocked
 }
 
 enum LicensingPricingVendor {

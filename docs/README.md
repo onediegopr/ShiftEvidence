@@ -96,6 +96,7 @@ Read these to understand:
 - [AI Advisory Guardrails](./ai-advisory-guardrails.md)
 - [AI Provider Runbook](./ai-advisory-production-provider-runbook.md)
 - [Entitlements / Unlock Flow](./entitlements-unlock-flow-v1.md)
+- [ADVISOR-1 - Senior Migration Advisor Basic Chat + Usage Limits](./hito-advisor-1-senior-migration-advisor-basic-chat-usage-limits.md)
 
 ## Hostinger / Production Ops
 

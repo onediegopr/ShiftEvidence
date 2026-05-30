@@ -7,6 +7,7 @@ import {
   Archive,
   ArrowRight,
   BadgePercent,
+  Brain,
   CircleAlert,
   Database,
   Download,
@@ -59,7 +60,9 @@ import {
 import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
 import { ClientContextAdditionalEvidencePanel } from "../../../../components/assessments/ClientContextAdditionalEvidencePanel";
 import { LicensingCostExposurePanel } from "../../../../components/assessments/LicensingCostExposurePanel";
+import { SeniorMigrationAdvisorPanel } from "../../../../components/assessments/SeniorMigrationAdvisorPanel";
 import { StorageDestinationReadinessPanel } from "../../../../components/assessments/StorageDestinationReadinessPanel";
+import { getSeniorAdvisorPanelState } from "../../../../server/advisor/seniorAdvisorService";
 import { getEvidenceUploadPrerequisites } from "../../../../server/assessments/assessmentUploadPrerequisites";
 import {
   getEvidenceUploadStatus,
@@ -614,6 +617,13 @@ export default async function AssessmentDetailPage({
         assessment,
       })
     : null;
+  const seniorAdvisorState =
+    session && !isAdmin
+      ? await getSeniorAdvisorPanelState({
+          userId: session.user.id,
+          assessmentId: assessment.id,
+        })
+      : null;
   const storageDestinationStatus =
     storageDestinationReadinessSummary?.status ?? "not_started";
   const storageDestinationDotColor =
@@ -637,6 +647,11 @@ export default async function AssessmentDetailPage({
       : clientContextStatus === "draft" || clientContextStatus === "analysis_pending"
         ? "#f59e0b"
         : "#475569";
+  const seniorAdvisorDotColor = seniorAdvisorState?.usage.enabled
+    ? seniorAdvisorState.messages.length > 0
+      ? "#10b981"
+      : "#f59e0b"
+    : "#475569";
 
   const editDefaults = getEditBasicsDefaults(assessment);
   const totalPrereqs = uploadPrerequisites.missingPrerequisites.length;
@@ -727,6 +742,16 @@ export default async function AssessmentDetailPage({
             style={{ background: clientContextDotColor }}
           ></span>
           Client Context
+        </Link>
+        <Link
+          href={`/dashboard/assessments/${assessment.id}?tab=advisor`}
+          className={`tab-btn ${activeTab === "advisor" ? "active" : ""}`}
+        >
+          <span
+            className="tab-progress-dot"
+            style={{ background: seniorAdvisorDotColor }}
+          ></span>
+          Senior Advisor
         </Link>
         <Link
           href={`/dashboard/assessments/${assessment.id}?tab=inventory`}
@@ -1281,6 +1306,25 @@ export default async function AssessmentDetailPage({
           assessmentId={assessment.id}
           summary={storageDestinationReadinessSummary}
         />
+      ) : null}
+
+      {activeTab === "advisor" && seniorAdvisorState ? (
+        <SeniorMigrationAdvisorPanel initialState={seniorAdvisorState} />
+      ) : null}
+
+      {activeTab === "advisor" && !seniorAdvisorState ? (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            icon={<Brain size={18} />}
+            eyebrow="Premium advisor"
+            title="Senior Migration Advisor"
+            description="Senior Migration Advisor is available inside the user assessment workspace. Admin cross-workspace views do not run advisor chat."
+          />
+          <p className="assessment-empty-note">
+            Open this assessment as a workspace member to use the advisor. This avoids cross-workspace
+            context leakage and keeps advisor conversations scoped to assessment ownership.
+          </p>
+        </section>
       ) : null}
 
       {activeTab === "evidence" && (
