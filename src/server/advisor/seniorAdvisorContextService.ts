@@ -5,7 +5,12 @@ import {
   getNextStepsSummary,
 } from "../assessments/assessmentCompletionService";
 import type { AssessmentDetail } from "../assessments/assessmentService";
+import { logger } from "../logging/logger";
 import { getParsedInventorySnapshot } from "../rvtools/rvtoolsInventoryService";
+import {
+  buildAdvisorMemoryPromptContext,
+  buildUnavailableAdvisorMemoryPromptContext,
+} from "./advisorMemoryPromptContext";
 import { sanitizeSeniorAdvisorText } from "./seniorAdvisorSecurity";
 import {
   SENIOR_ADVISOR_CONTEXT_VERSION,
@@ -238,6 +243,15 @@ export function buildSeniorAdvisorContextPayload(
 export function summarizeSeniorAdvisorContextSections(
   context: SeniorAdvisorContextPayload,
 ) {
+  const memoryItemCount = context.projectMemory
+    ? context.projectMemory.decisions.length +
+      context.projectMemory.openQuestions.length +
+      context.projectMemory.nextSteps.length +
+      context.projectMemory.constraints.length +
+      context.projectMemory.risks.length +
+      context.projectMemory.other.length
+    : 0;
+
   return {
     completion: true,
     inventory: context.inventory.vmCount !== null || context.inventory.hostCount !== null,
@@ -248,7 +262,38 @@ export function summarizeSeniorAdvisorContextSections(
     ceph: Boolean(context.storage.cephStatus),
     evidenceMetadata: context.evidence.filesCount,
     reports: context.reports.generatedCount,
+    memoryIncluded: Boolean(context.projectMemory?.included),
+    memoryItemCount,
+    memoryContextChars: context.projectMemory?.contextChars ?? 0,
+    memoryFallbackReason: context.projectMemory?.included
+      ? null
+      : context.projectMemory?.reason ?? null,
   };
+}
+
+export async function buildSeniorAdvisorContextPayloadWithMemory(params: {
+  assessment: AssessmentDetail;
+  userId: string;
+}): Promise<SeniorAdvisorContextPayload> {
+  const context = buildSeniorAdvisorContextPayload(params.assessment);
+
+  try {
+    return {
+      ...context,
+      projectMemory: await buildAdvisorMemoryPromptContext(params),
+    };
+  } catch (error) {
+    logger.warn("advisor_memory_prompt_context_unavailable", {
+      assessmentId: params.assessment.id,
+      userId: params.userId,
+      error,
+    });
+
+    return {
+      ...context,
+      projectMemory: buildUnavailableAdvisorMemoryPromptContext("memory_unavailable"),
+    };
+  }
 }
 
 export function extractQuestionLikeItems(context: SeniorAdvisorContextPayload) {
@@ -257,5 +302,6 @@ export function extractQuestionLikeItems(context: SeniorAdvisorContextPayload) {
     ...context.licensing.missingEvidence,
     ...context.clientContext.nextQuestions,
     ...context.storage.missingEvidence,
+    ...(context.projectMemory?.openQuestions.map((item) => item.title) ?? []),
   ].slice(0, MAX_LIST_ITEMS);
 }

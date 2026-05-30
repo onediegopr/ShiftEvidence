@@ -112,6 +112,7 @@ Read these to understand:
 - [Advisor Project Memory Vault specification](./hito-advisor-2-audit-spec-project-memory-vault.md)
 - [Advisor Project Memory Vault DB Models + Core Services](./hito-advisor-2a-project-memory-vault-db-models-core-services.md)
 - [Advisor Project Memory Vault UI Panel + Actions](./hito-advisor-2b-project-memory-vault-ui-panel-actions.md)
+- [Advisor Project Memory Vault Prompt Context Integration](./hito-advisor-2c-project-memory-vault-prompt-context-integration.md)
 
 ## Hostinger / Production Ops
 

@@ -1,7 +1,7 @@
 const SECRET_KEY_PATTERN =
   /(database_url|better_auth_secret|api[_-]?key|secret|password|passwd|pwd|token|cookie|authorization|bearer|session|reset[_ -]?token)/i;
 const SECRET_VALUE_PATTERN =
-  /\b(database_url|password|passwd|pwd|secret|token|cookie|authorization|bearer|reset token)\s*[:=]\s*[^\s,;]+/gi;
+  /\b(database_url|api[_-]?key|password|passwd|pwd|secret|token|cookie|authorization|bearer|reset token)\s*[:=]\s*[^\s,;]+/gi;
 const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
 const WINDOWS_PATH_PATTERN = /[A-Z]:\\(?:[^\\/:*?"<>|\r\n]+\\)+[^\\/:*?"<>|\r\n]*/gi;
 const UNIX_STORAGE_PATH_PATTERN = /\/(?:home|var|mnt|storage|private|uploads|tmp)\/[^\s"'<>]+/gi;

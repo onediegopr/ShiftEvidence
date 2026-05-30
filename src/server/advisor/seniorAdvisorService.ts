@@ -19,9 +19,10 @@ import {
 import { assertCanUseAi, getEffectiveUserEntitlement } from "../admin/runtimeSettingsService";
 import { ensureAssessmentOwnership, type AssessmentDetail } from "../assessments/assessmentService";
 import { logger } from "../logging/logger";
+import { compactAdvisorMemoryPromptContext } from "./advisorMemoryPromptContext";
 import { getAdvisorMemoryPanelState } from "./advisorMemoryService";
 import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
-import { buildSeniorAdvisorContextPayload, summarizeSeniorAdvisorContextSections } from "./seniorAdvisorContextService";
+import { buildSeniorAdvisorContextPayloadWithMemory, summarizeSeniorAdvisorContextSections } from "./seniorAdvisorContextService";
 import {
   buildSeniorAdvisorUsageState,
   resolveSeniorAdvisorPlanLimits,
@@ -219,6 +220,7 @@ function mapBlockedCode(code: string): {
 function compactAdvisorContext(context: SeniorAdvisorContextPayload) {
   return {
     ...context,
+    projectMemory: compactAdvisorMemoryPromptContext(context.projectMemory, 3),
     completion: {
       ...context.completion,
       modules: context.completion.modules.slice(0, 8),
@@ -248,6 +250,7 @@ function compactAdvisorContext(context: SeniorAdvisorContextPayload) {
 function minimalAdvisorContext(context: SeniorAdvisorContextPayload) {
   return {
     contextVersion: context.contextVersion,
+    projectMemory: compactAdvisorMemoryPromptContext(context.projectMemory, 1),
     assessment: context.assessment,
     completion: {
       completionScore: context.completion.completionScore,
@@ -319,18 +322,38 @@ function buildBoundedPrompt(params: {
   return { prompt, contextUsed: minimalAdvisorContext(params.context), reduced: true };
 }
 
+export function buildSeniorAdvisorMemoryUsageMetadata(
+  contextSections: ReturnType<typeof summarizeSeniorAdvisorContextSections>,
+) {
+  return {
+    memoryIncluded: contextSections.memoryIncluded,
+    memoryItemCount: contextSections.memoryItemCount,
+    memoryContextChars: contextSections.memoryContextChars,
+    memoryFallbackReason: contextSections.memoryFallbackReason,
+  };
+}
+
 function buildMockAdvisorAnswer(params: {
   context: SeniorAdvisorContextPayload;
   question: string;
 }) {
   const question = params.question.toLowerCase();
   const context = params.context;
+  const memory = context.projectMemory?.included ? context.projectMemory : null;
   const missing = [
     ...context.completion.missingEvidence,
     ...context.licensing.missingEvidence,
     ...context.storage.missingEvidence,
+    ...(memory?.openQuestions.map((item) => item.title) ?? []),
   ].slice(0, 5);
   const topRisks = context.topRisks.slice(0, 3);
+  const memoryContinuity =
+    memory && memory.decisions.length > 0
+      ? `Known project decisions to preserve: ${memory.decisions
+          .slice(0, 3)
+          .map((item) => `${item.title} (${item.truthStatus})`)
+          .join("; ")}.`
+      : null;
 
   if (question.includes("ceph")) {
     return [
@@ -350,8 +373,14 @@ function buildMockAdvisorAnswer(params: {
         ? `Highest-value missing evidence: ${missing.join("; ")}.`
         : "No high-signal missing evidence was found in the advisor context, but you should still validate business, backup and storage assumptions before production.",
       context.completion.nextSteps.length > 0
-        ? `Recommended next steps: ${context.completion.nextSteps.slice(0, 4).join("; ")}.`
+        ? `Recommended next steps: ${[
+            ...context.completion.nextSteps,
+            ...(memory?.nextSteps.map((item) => item.title) ?? []),
+          ]
+            .slice(0, 4)
+            .join("; ")}.`
         : "Recommended next step: review the completion center and fill the highest-impact gaps.",
+      memoryContinuity,
     ].join("\n\n");
   }
 
@@ -361,8 +390,9 @@ function buildMockAdvisorAnswer(params: {
       ? `Top risks: ${topRisks.map((risk) => `${risk.severity} ${risk.title}`).join("; ")}.`
       : "No top risks are available in the advisor context yet.",
     `Readiness score: ${context.scores.readinessScore ?? "not calculated"}; confidence score: ${context.scores.confidenceScore ?? "not calculated"}.`,
+    memoryContinuity,
     "Use this answer as advisory guidance only. It does not approve production migration or replace the deterministic ShiftReadiness findings.",
-  ].join("\n\n");
+  ].filter(Boolean).join("\n\n");
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {
@@ -873,7 +903,13 @@ export async function sendSeniorAdvisorMessage(
       inputChars: 0,
       outputChars: 0,
       fallbackUsed: true,
-      metadataJson: { reason: "plan_restricted" },
+      metadataJson: {
+        reason: "plan_restricted",
+        memoryIncluded: false,
+        memoryItemCount: 0,
+        memoryContextChars: 0,
+        memoryFallbackReason: "not_evaluated",
+      },
     });
     return {
       ok: false,
@@ -905,7 +941,13 @@ export async function sendSeniorAdvisorMessage(
       inputChars: 0,
       outputChars: 0,
       fallbackUsed: true,
-      metadataJson: { reason: "credits_exhausted" },
+      metadataJson: {
+        reason: "credits_exhausted",
+        memoryIncluded: false,
+        memoryItemCount: 0,
+        memoryContextChars: 0,
+        memoryFallbackReason: "not_evaluated",
+      },
     });
     return {
       ok: false,
@@ -932,7 +974,10 @@ export async function sendSeniorAdvisorMessage(
     validation.normalizedMessage,
     usageState.limits.maxUserMessageChars,
   );
-  const context = buildSeniorAdvisorContextPayload(assessment);
+  const context = await buildSeniorAdvisorContextPayloadWithMemory({
+    assessment,
+    userId: params.userId,
+  });
   const conversation = await getOrCreateAdvisorConversation({
     assessment,
     userId: params.userId,
@@ -957,6 +1002,7 @@ export async function sendSeniorAdvisorMessage(
     ),
   });
   const contextSections = summarizeSeniorAdvisorContextSections(boundedPrompt.contextUsed);
+  const memoryUsageMetadata = buildSeniorAdvisorMemoryUsageMetadata(contextSections);
   const inputChars = boundedPrompt.prompt.length;
 
   if (!config.enabled || config.provider === "none" || config.provider === "disabled") {
@@ -989,7 +1035,11 @@ export async function sendSeniorAdvisorMessage(
       inputChars,
       outputChars: assistantText.length,
       fallbackUsed: true,
-      metadataJson: { reason: "ai_disabled", contextReduced: boundedPrompt.reduced },
+      metadataJson: {
+        reason: "ai_disabled",
+        contextReduced: boundedPrompt.reduced,
+        ...memoryUsageMetadata,
+      },
     });
     await recordAdvisorAuditEvent({
       userId: params.userId,
@@ -1045,7 +1095,11 @@ export async function sendSeniorAdvisorMessage(
       inputChars,
       outputChars: assistantText.length,
       fallbackUsed: true,
-      metadataJson: { reason: operationalCheck.code, contextReduced: boundedPrompt.reduced },
+      metadataJson: {
+        reason: operationalCheck.code,
+        contextReduced: boundedPrompt.reduced,
+        ...memoryUsageMetadata,
+      },
     });
     await recordAdvisorAuditEvent({
       userId: params.userId,
@@ -1131,6 +1185,7 @@ export async function sendSeniorAdvisorMessage(
         primaryErrorCategory: providerResult.primaryErrorCategory,
         contextReduced: boundedPrompt.reduced,
         contextSections: Object.values(contextSections).filter(Boolean).length,
+        ...memoryUsageMetadata,
         creditCost: 1,
       },
     });
@@ -1207,6 +1262,7 @@ export async function sendSeniorAdvisorMessage(
       metadataJson: {
         ...providerErrorMetadata,
         contextReduced: boundedPrompt.reduced,
+        ...memoryUsageMetadata,
       },
     });
     await recordAdvisorAuditEvent({

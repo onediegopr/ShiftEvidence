@@ -8,6 +8,29 @@ export function buildSeniorAdvisorPrompt(params: {
   userQuestion: string;
   recentMessages?: SeniorAdvisorMessageView[];
 }) {
+  const { projectMemory, ...assessmentContext } = params.context;
+  const memoryContext = projectMemory ?? {
+    enabled: false,
+    included: false,
+    reason: "memory_not_loaded",
+    itemCount: 0,
+    contextChars: 0,
+    limits: {
+      maxChars: 0,
+      decisions: 0,
+      openQuestions: 0,
+      nextSteps: 0,
+      constraints: 0,
+      risks: 0,
+      other: 0,
+    },
+    decisions: [],
+    openQuestions: [],
+    nextSteps: [],
+    constraints: [],
+    risks: [],
+    other: [],
+  };
   const recentMessages = (params.recentMessages ?? [])
     .slice(-8)
     .map((message) => ({
@@ -35,6 +58,18 @@ export function buildSeniorAdvisorPrompt(params: {
     "- Keep answers concise, practical and senior-consultant style.",
     "- When useful, end with clear next actions.",
     "",
+    "Project Memory rules:",
+    "- Use Project Memory only for this assessment.",
+    "- Treat memory according to its truthStatus and sourceType labels: confirmed, customer_reported, inferred, missing, advisor_generated and user_confirmed.",
+    "- Do not treat customer_reported or inferred memory as confirmed technical evidence.",
+    "- If Project Memory conflicts with current deterministic assessment state, prefer deterministic assessment state and explain the conflict.",
+    "- Do not invent evidence based on memory.",
+    "- Use open questions to suggest next actions.",
+    "- Use decisions to maintain continuity.",
+    "- Use constraints to avoid repeated advice.",
+    "- Never expose hidden/system memory metadata to the user.",
+    "- Keep memory-based answers concise and actionable.",
+    "",
     "Response format:",
     "- Plain English.",
     "- Use bullets when they improve clarity.",
@@ -42,7 +77,10 @@ export function buildSeniorAdvisorPrompt(params: {
     "- Do not reproduce raw client free text or raw storage narrative.",
     "",
     "Assessment context JSON:",
-    JSON.stringify(params.context),
+    JSON.stringify(assessmentContext),
+    "",
+    "Project Memory context JSON:",
+    JSON.stringify(memoryContext),
     "",
     "Recent advisor conversation JSON:",
     JSON.stringify(recentMessages),

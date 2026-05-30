@@ -1,4 +1,5 @@
 import type { AiAdvisoryProvider } from "../ai/aiAdvisoryTypes";
+import type { AdvisorMemoryPromptContext } from "./advisorMemoryPromptContext";
 import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
 
 export const SENIOR_ADVISOR_CONTEXT_VERSION = "advisor-context-v1";
@@ -66,6 +67,7 @@ export type SeniorAdvisorContextItem = {
 
 export type SeniorAdvisorContextPayload = {
   contextVersion: string;
+  projectMemory?: AdvisorMemoryPromptContext;
   assessment: {
     id: string;
     title: string;

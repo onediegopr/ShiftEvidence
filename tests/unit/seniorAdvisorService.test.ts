@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildSeniorAdvisorMemoryUsageMetadata } from "../../src/server/advisor/seniorAdvisorService";
 import {
   buildSeniorAdvisorProviderFallbackMessage,
   buildSeniorAdvisorProviderHttpError,
@@ -17,6 +18,31 @@ import { getAiAdvisoryConfig, getAiAdvisoryProviderKey } from "../../src/server/
 describe("senior advisor service contract", () => {
   it("uses a dedicated AI usage operation type", () => {
     expect(SENIOR_ADVISOR_OPERATION_TYPE).toBe("senior_advisor_message");
+  });
+
+  it("builds safe memory usage metadata without raw memory text", () => {
+    expect(
+      buildSeniorAdvisorMemoryUsageMetadata({
+        completion: true,
+        inventory: true,
+        riskFindings: 1,
+        licensing: false,
+        clientContext: false,
+        storage: true,
+        ceph: false,
+        evidenceMetadata: 1,
+        reports: 0,
+        memoryIncluded: true,
+        memoryItemCount: 3,
+        memoryContextChars: 1200,
+        memoryFallbackReason: null,
+      }),
+    ).toEqual({
+      memoryIncluded: true,
+      memoryItemCount: 3,
+      memoryContextChars: 1200,
+      memoryFallbackReason: null,
+    });
   });
 
   it("routes legacy Gemini Advisor models to a supported fallback candidate", () => {
