@@ -29,6 +29,8 @@ import {
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "No disponible";
+  const date = new Date(value);
+  if (date.getTime() === 0 || Number.isNaN(date.getTime())) return "No disponible";
 
   return new Intl.DateTimeFormat("es-AR", {
     day: "2-digit",
@@ -36,7 +38,7 @@ function formatDate(value: Date | string | null | undefined) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function formatDuration(value: number | null | undefined) {
@@ -187,6 +189,68 @@ function MetricCard({
   );
 }
 
+function getAdminTabSectionKeys(activeTab: string) {
+  const allSections = [
+    "owner_lookup",
+    "summary_metrics",
+    "users",
+    "assessments",
+    "audit_events",
+    "entitlements",
+    "commercial_opportunities",
+    "ai_budget",
+    "advanced_audit",
+    "runtime_settings",
+    "owner_emails",
+    "ai_status",
+    "ai_usage",
+  ];
+
+  const sectionKeysByTab: Record<string, string[]> = {
+    resumen: allSections,
+    "estado-sistema": ["summary_metrics", "runtime_settings", "ai_status"],
+    usuarios: ["users", "entitlements", "commercial_opportunities", "ai_usage", "summary_metrics"],
+    evaluaciones: ["owner_lookup", "assessments", "owner_emails", "commercial_opportunities", "ai_usage", "summary_metrics"],
+    licenciamiento: ["assessments", "owner_emails"],
+    "contexto-evidencias": ["assessments", "owner_emails"],
+    "ia-consumo": ["ai_status", "ai_usage", "ai_budget"],
+    "configuracion-operativa": ["runtime_settings", "ai_status"],
+    "accesos-planes": ["users", "entitlements"],
+    oportunidades: ["commercial_opportunities"],
+    configuracion: ["runtime_settings"],
+    auditoria: ["audit_events", "advanced_audit"],
+  };
+
+  return sectionKeysByTab[activeTab] ?? allSections;
+}
+
+function SectionFallbackNotice({
+  activeTab,
+  failures,
+}: {
+  activeTab: string;
+  failures: Array<{ sectionKey: string; title: string; errorKey: string; message: string }>;
+}) {
+  const activeKeys = new Set(getAdminTabSectionKeys(activeTab));
+  const visibleFailures = failures.filter((failure) => activeKeys.has(failure.sectionKey));
+
+  if (visibleFailures.length === 0) return null;
+
+  return (
+    <div className="dashboard-banner dashboard-banner-warning" role="status">
+      <strong>Seccion admin parcialmente degradada.</strong>{" "}
+      Una o mas metricas opcionales no pudieron cargarse; la consola principal sigue disponible.
+      <ul style={{ margin: "8px 0 0", paddingLeft: "18px" }}>
+        {visibleFailures.map((failure) => (
+          <li key={`${failure.sectionKey}-${failure.errorKey}`}>
+            <strong>{failure.title}</strong>: {failure.message} <span className="assessment-inline-note">({failure.errorKey})</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function AccessDenied() {
   return (
     <main className="dashboard-page">
@@ -246,7 +310,7 @@ function AdminConsoleUnavailable({ adminEmail }: { adminEmail: string }) {
           description="El panel captura el error de carga y muestra este fallback para evitar un error 500/Server Components en producción."
         />
         <div className="dashboard-banner dashboard-banner-warning" role="status">
-          Las métricas administrativas no están disponibles hasta corregir el runtime desplegado. Las métricas de Storage/Ceph no están disponibles hasta aplicar las migraciones Storage.
+          La consola admin no pudo cargar una o mas secciones operativas. El resto del producto sigue disponible. Revisa los logs sanitizados para identificar la seccion afectada.
         </div>
       </section>
     </main>
@@ -376,6 +440,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
 
       {savedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{savedMessage}</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+      <SectionFallbackNotice activeTab={activeTab} failures={data.sectionFailures} />
 
       {activeTab === "resumen" && (
         <section id="resumen" className="assessment-summary-grid">

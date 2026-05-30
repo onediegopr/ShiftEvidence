@@ -2,13 +2,14 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { getAdminAiUsage } from "../ai/aiUsageService";
 import { getAiRuntimeStatus } from "../ai/aiRuntimeStatus";
+import { logger } from "../logging/logger";
 import {
   getAdminAiBudgetSummary,
   getAdvancedAuditEvents,
   getCommercialOpportunities,
   listUserEntitlements,
 } from "./adminOpsService";
-import { getOperationalRuntimeSettings } from "./runtimeSettingsService";
+import { DEFAULT_RUNTIME_SETTINGS, getOperationalRuntimeSettings } from "./runtimeSettingsService";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -33,6 +34,170 @@ function statusFromBoolean(value: boolean, configuredLabel = "Operativo") {
 }
 
 type AdminAiRuntimeStatus = Awaited<ReturnType<typeof getAiRuntimeStatus>>;
+type AdminAiUsage = Awaited<ReturnType<typeof getAdminAiUsage>>;
+type AdminAiBudgetSummary = Awaited<ReturnType<typeof getAdminAiBudgetSummary>>;
+
+export type AdminSectionKey =
+  | "owner_lookup"
+  | "summary_metrics"
+  | "users"
+  | "assessments"
+  | "audit_events"
+  | "entitlements"
+  | "commercial_opportunities"
+  | "ai_budget"
+  | "advanced_audit"
+  | "runtime_settings"
+  | "owner_emails"
+  | "ai_status"
+  | "ai_usage";
+
+export type AdminSectionFailure = {
+  sectionKey: AdminSectionKey;
+  title: string;
+  errorKey: string;
+  message: string;
+};
+
+export type AdminSectionResult<T> =
+  | { ok: true; data: T }
+  | ({ ok: false; data: T } & AdminSectionFailure);
+
+export async function resolveAdminSection<T>(params: {
+  sectionKey: AdminSectionKey;
+  title: string;
+  errorKey: string;
+  message: string;
+  fallback: T;
+  load: () => Promise<T>;
+}): Promise<AdminSectionResult<T>> {
+  try {
+    return { ok: true, data: await params.load() };
+  } catch (error) {
+    logger.error("admin_console_section_unavailable", {
+      sectionKey: params.sectionKey,
+      errorKey: params.errorKey,
+      error,
+    });
+
+    return {
+      ok: false,
+      data: params.fallback,
+      sectionKey: params.sectionKey,
+      title: params.title,
+      errorKey: params.errorKey,
+      message: params.message,
+    };
+  }
+}
+
+function getAdminSectionFailure<T>(result: AdminSectionResult<T>): AdminSectionFailure | null {
+  if (result.ok) return null;
+
+  return {
+    sectionKey: result.sectionKey,
+    title: result.title,
+    errorKey: result.errorKey,
+    message: result.message,
+  };
+}
+
+function createFallbackAiRuntimeStatus(): AdminAiRuntimeStatus {
+  return {
+    estado: "desconocido",
+    proveedor: "disabled",
+    modelo: null,
+    iaActiva: false,
+    geminiConfigurado: false,
+    openaiConfigurado: false,
+    fallbackDisponible: true,
+    ultimoEstado: "unknown",
+    ultimoError: "none",
+    ultimoChequeo: null,
+    timeoutMs: 0,
+    maxInputChars: 0,
+    maxOutputChars: 0,
+    secretosExpuestos: false,
+    archivosCrudosEnviados: false,
+    redaccionSecretos: "enabled",
+    metricas: {
+      solicitudes: 0,
+      exitos: 0,
+      errores: 0,
+      timeouts: 0,
+      fallbackUsado: 0,
+    },
+    metricasEnMemoriaDisponibles: false,
+    ultimaDuracionMs: null,
+    duracionPromedioMs: null,
+    eventosRecientes: [],
+  };
+}
+
+function createFallbackAiUsage(range = "30d"): AdminAiUsage {
+  return {
+    summary: {
+      range,
+      totalCalls: 0,
+      calls24h: 0,
+      calls7d: 0,
+      calls30d: 0,
+      successCount: 0,
+      errorCount: 0,
+      timeoutCount: 0,
+      fallbackCount: 0,
+      estimatedInputTokens: 0,
+      estimatedOutputTokens: 0,
+      estimatedTotalTokens: 0,
+      estimatedCostUsd: 0,
+      averageDurationMs: null,
+      lastEventAt: new Date(0),
+    },
+    recentEvents: [],
+    byUser: [],
+    byAssessment: [],
+    recentErrors: [],
+    pagination: {
+      limit: 0,
+      page: 1,
+      returned: 0,
+      hasMore: false,
+      nextPage: null,
+    },
+    alerts: [
+      {
+        status: "Atencion",
+        title: "Uso IA no disponible",
+        message: "La seccion de consumo IA no pudo cargarse en este runtime.",
+      },
+    ],
+  };
+}
+
+function createFallbackAiBudget(): AdminAiBudgetSummary {
+  return {
+    settings: {
+      monthlyBudgetUsd: null,
+      alertThreshold50: true,
+      alertThreshold80: true,
+      alertThreshold100: true,
+      dailyBudgetUsd: null,
+      perUserMonthlyBudgetUsd: null,
+      perAssessmentBudgetUsd: null,
+    },
+    spentMonthUsd: 0,
+    monthlyBudgetUsd: null,
+    percentUsed: null,
+    remainingMonthUsd: null,
+    alerts: [
+      {
+        status: "Atencion",
+        title: "Presupuesto IA no disponible",
+        message: "La metrica de presupuesto IA no pudo cargarse; no bloquea el resto de la consola.",
+      },
+    ],
+  };
+}
 
 function getAiOperationalAlerts(aiStatus: AdminAiRuntimeStatus) {
   const alerts: Array<{ title: string; status: "Operativo" | "Atencion" | "Info"; message: string }> = [];
@@ -97,6 +262,12 @@ export async function getAdminConsoleData(params?: {
   assessmentsPage?: number;
 }) {
   const since = sevenDaysAgo();
+  const sectionFailures: AdminSectionFailure[] = [];
+  const rememberSection = <T>(result: AdminSectionResult<T>) => {
+    const failure = getAdminSectionFailure(result);
+    if (failure) sectionFailures.push(failure);
+    return result.data;
+  };
 
   const usersPage = params?.usersPage && params.usersPage > 0 ? params.usersPage : 1;
   const usersTake = 12;
@@ -117,19 +288,30 @@ export async function getAdminConsoleData(params?: {
     : {};
 
   const assessmentsSearch = params?.assessmentsSearch?.trim() ?? "";
+  const loadAssessmentOwnerMatches = () =>
+    prisma.user.findMany({
+      where: {
+        email: {
+          contains: assessmentsSearch,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+      },
+      take: 50,
+    });
   const assessmentOwnerMatches = assessmentsSearch
-    ? await prisma.user.findMany({
-        where: {
-          email: {
-            contains: assessmentsSearch,
-            mode: "insensitive",
-          },
-        },
-        select: {
-          id: true,
-        },
-        take: 50,
-      })
+    ? rememberSection(
+        await resolveAdminSection<Awaited<ReturnType<typeof loadAssessmentOwnerMatches>>>({
+          sectionKey: "owner_lookup",
+          title: "Busqueda de propietarios",
+          errorKey: "admin_owner_lookup_failed",
+          message: "No se pudo resolver el filtro por propietario. La busqueda de evaluaciones sigue disponible por titulo o cliente.",
+          fallback: [],
+          load: loadAssessmentOwnerMatches,
+        }),
+      )
     : [];
   const assessmentOwnerUserIds = assessmentOwnerMatches.map((user) => user.id);
   const assessmentsWhere: Prisma.AssessmentWhereInput = {
@@ -147,32 +329,36 @@ export async function getAdminConsoleData(params?: {
       : {}),
   };
 
-  const [
-    totalUsers,
-    totalAssessments,
-    assessmentsLast7Days,
-    totalReports,
-    activeEvidenceFiles,
-    failedEvidenceFiles,
-    failedReports,
-    recentUsers,
-    recentAssessments,
-    recentAuditEvents,
-    userEntitlements,
-    commercialOpportunities,
-    aiBudget,
-    advancedAuditEvents,
-    runtimeSettings,
-    filteredUsersCount,
-    filteredAssessmentsCount,
-  ] = await Promise.all([
-    prisma.user.count(),
-    prisma.assessment.count({ where: { archivedAt: null } }),
-    prisma.assessment.count({ where: { createdAt: { gte: since }, archivedAt: null } }),
-    prisma.report.count({ where: { deletedAt: null } }),
-    prisma.evidenceFile.count({ where: { deletedAt: null } }),
-    prisma.evidenceFile.count({ where: { processingStatus: "failed", deletedAt: null } }),
-    prisma.report.count({ where: { status: "failed", deletedAt: null } }),
+  const loadSummaryMetrics = async () => {
+    const [
+      totalUsers,
+      totalAssessments,
+      assessmentsLast7Days,
+      totalReports,
+      activeEvidenceFiles,
+      failedEvidenceFiles,
+      failedReports,
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.assessment.count({ where: { archivedAt: null } }),
+      prisma.assessment.count({ where: { createdAt: { gte: since }, archivedAt: null } }),
+      prisma.report.count({ where: { deletedAt: null } }),
+      prisma.evidenceFile.count({ where: { deletedAt: null } }),
+      prisma.evidenceFile.count({ where: { processingStatus: "failed", deletedAt: null } }),
+      prisma.report.count({ where: { status: "failed", deletedAt: null } }),
+    ]);
+
+    return {
+      totalUsers,
+      totalAssessments,
+      assessmentsLast7Days,
+      totalReports,
+      activeEvidenceFiles,
+      failedEvidenceFiles,
+      failedReports,
+    };
+  };
+  const loadRecentUsers = () =>
     prisma.user.findMany({
       where: usersWhere,
       orderBy: { createdAt: "desc" },
@@ -198,7 +384,8 @@ export async function getAdminConsoleData(params?: {
           },
         },
       },
-    }),
+    });
+  const loadRecentAssessments = () =>
     prisma.assessment.findMany({
       where: assessmentsWhere,
       orderBy: { updatedAt: "desc" },
@@ -288,7 +475,8 @@ export async function getAdminConsoleData(params?: {
           },
         },
       },
-    }),
+    });
+  const loadRecentAuditEvents = () =>
     prisma.auditEvent.findMany({
       orderBy: { createdAt: "desc" },
       take: 20,
@@ -304,27 +492,182 @@ export async function getAdminConsoleData(params?: {
           select: { title: true },
         },
       },
+    });
+  const loadPaginationCounts = async () => {
+    const [filteredUsersCount, filteredAssessmentsCount] = await Promise.all([
+      prisma.user.count({ where: usersWhere }),
+      prisma.assessment.count({ where: assessmentsWhere }),
+    ]);
+
+    return { filteredUsersCount, filteredAssessmentsCount };
+  };
+
+  const [
+    summaryMetricsResult,
+    recentUsersResult,
+    recentAssessmentsResult,
+    recentAuditEventsResult,
+    userEntitlementsResult,
+    commercialOpportunitiesResult,
+    aiBudgetResult,
+    advancedAuditEventsResult,
+    runtimeSettingsResult,
+    paginationCountsResult,
+  ] = await Promise.all([
+    resolveAdminSection<Awaited<ReturnType<typeof loadSummaryMetrics>>>({
+      sectionKey: "summary_metrics",
+      title: "Metricas principales",
+      errorKey: "admin_summary_metrics_failed",
+      message: "No se pudieron cargar las metricas principales. El resto de la consola sigue disponible.",
+      fallback: {
+        totalUsers: 0,
+        totalAssessments: 0,
+        assessmentsLast7Days: 0,
+        totalReports: 0,
+        activeEvidenceFiles: 0,
+        failedEvidenceFiles: 0,
+        failedReports: 0,
+      },
+      load: loadSummaryMetrics,
     }),
-    listUserEntitlements(),
-    getCommercialOpportunities(),
-    getAdminAiBudgetSummary(),
-    getAdvancedAuditEvents(),
-    getOperationalRuntimeSettings(),
-    prisma.user.count({ where: usersWhere }),
-    prisma.assessment.count({ where: assessmentsWhere }),
+    resolveAdminSection<Awaited<ReturnType<typeof loadRecentUsers>>>({
+      sectionKey: "users",
+      title: "Usuarios",
+      errorKey: "admin_users_failed",
+      message: "No se pudo cargar la lista de usuarios. La seccion de usuarios queda temporalmente degradada.",
+      fallback: [],
+      load: loadRecentUsers,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof loadRecentAssessments>>>({
+      sectionKey: "assessments",
+      title: "Evaluaciones",
+      errorKey: "admin_assessments_failed",
+      message: "No se pudo cargar la lista de evaluaciones. Las secciones dependientes muestran fallback local.",
+      fallback: [],
+      load: loadRecentAssessments,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof loadRecentAuditEvents>>>({
+      sectionKey: "audit_events",
+      title: "Auditoria reciente",
+      errorKey: "admin_recent_audit_failed",
+      message: "No se pudieron cargar los ultimos eventos de auditoria.",
+      fallback: [],
+      load: loadRecentAuditEvents,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof listUserEntitlements>>>({
+      sectionKey: "entitlements",
+      title: "Accesos y planes",
+      errorKey: "admin_entitlements_failed",
+      message: "No se pudieron cargar los accesos manuales. Pricing admin no fue modificado.",
+      fallback: [],
+      load: listUserEntitlements,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof getCommercialOpportunities>>>({
+      sectionKey: "commercial_opportunities",
+      title: "Oportunidades comerciales",
+      errorKey: "admin_commercial_opportunities_failed",
+      message: "No se pudieron cargar las oportunidades comerciales. El resto de la consola sigue disponible.",
+      fallback: [],
+      load: getCommercialOpportunities,
+    }),
+    resolveAdminSection<AdminAiBudgetSummary>({
+      sectionKey: "ai_budget",
+      title: "Presupuesto IA",
+      errorKey: "admin_ai_budget_failed",
+      message: "No se pudo cargar el presupuesto IA. La seccion IA muestra metricas disponibles y fallback local.",
+      fallback: createFallbackAiBudget(),
+      load: getAdminAiBudgetSummary,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof getAdvancedAuditEvents>>>({
+      sectionKey: "advanced_audit",
+      title: "Auditoria avanzada",
+      errorKey: "admin_advanced_audit_failed",
+      message: "No se pudo cargar la auditoria avanzada.",
+      fallback: [],
+      load: getAdvancedAuditEvents,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof getOperationalRuntimeSettings>>>({
+      sectionKey: "runtime_settings",
+      title: "Configuracion operativa",
+      errorKey: "admin_runtime_settings_failed",
+      message: "No se pudo cargar la configuracion operativa desde DB. Se muestran defaults seguros.",
+      fallback: DEFAULT_RUNTIME_SETTINGS,
+      load: getOperationalRuntimeSettings,
+    }),
+    resolveAdminSection<Awaited<ReturnType<typeof loadPaginationCounts>>>({
+      sectionKey: "summary_metrics",
+      title: "Paginacion admin",
+      errorKey: "admin_pagination_counts_failed",
+      message: "No se pudieron cargar los totales de paginacion. Las tablas muestran datos disponibles.",
+      fallback: {
+        filteredUsersCount: 0,
+        filteredAssessmentsCount: 0,
+      },
+      load: loadPaginationCounts,
+    }),
   ]);
 
+  const summaryMetrics = rememberSection(summaryMetricsResult);
+  const recentUsers = rememberSection(recentUsersResult);
+  const recentAssessments = rememberSection(recentAssessmentsResult);
+  const recentAuditEvents = rememberSection(recentAuditEventsResult);
+  const userEntitlements = rememberSection(userEntitlementsResult);
+  const commercialOpportunities = rememberSection(commercialOpportunitiesResult);
+  const aiBudget = rememberSection(aiBudgetResult);
+  const advancedAuditEvents = rememberSection(advancedAuditEventsResult);
+  const runtimeSettings = rememberSection(runtimeSettingsResult);
+  const paginationCounts = rememberSection(paginationCountsResult);
+  const {
+    totalUsers,
+    totalAssessments,
+    assessmentsLast7Days,
+    totalReports,
+    activeEvidenceFiles,
+    failedEvidenceFiles,
+    failedReports,
+  } = summaryMetrics;
+  const { filteredUsersCount, filteredAssessmentsCount } = paginationCounts;
+
   const ownerUserIds = [...new Set(recentAssessments.map((assessment) => assessment.workspace.ownerUserId))];
+  const loadOwnerUsers = () =>
+    prisma.user.findMany({
+      where: { id: { in: ownerUserIds } },
+      select: { id: true, email: true },
+    });
   const ownerUsers = ownerUserIds.length > 0
-    ? await prisma.user.findMany({
-        where: { id: { in: ownerUserIds } },
-        select: { id: true, email: true },
-      })
+    ? rememberSection(
+        await resolveAdminSection<Awaited<ReturnType<typeof loadOwnerUsers>>>({
+          sectionKey: "owner_emails",
+          title: "Emails de propietarios",
+          errorKey: "admin_owner_emails_failed",
+          message: "No se pudieron resolver los emails de propietarios. Se muestran placeholders seguros.",
+          fallback: [],
+          load: loadOwnerUsers,
+        }),
+      )
     : [];
   const ownerEmailById = new Map(ownerUsers.map((user) => [user.id, user.email]));
 
-  const aiStatus = await getAiRuntimeStatus();
-  const aiUsage = await getAdminAiUsage({ range: "30d" });
+  const aiStatus = rememberSection(
+    await resolveAdminSection<AdminAiRuntimeStatus>({
+      sectionKey: "ai_status",
+      title: "Estado IA runtime",
+      errorKey: "admin_ai_status_failed",
+      message: "No se pudo cargar el estado runtime de IA. Se muestra fallback local.",
+      fallback: createFallbackAiRuntimeStatus(),
+      load: getAiRuntimeStatus,
+    }),
+  );
+  const aiUsage = rememberSection(
+    await resolveAdminSection<AdminAiUsage>({
+      sectionKey: "ai_usage",
+      title: "Consumo IA",
+      errorKey: "admin_ai_usage_failed",
+      message: "No se pudo cargar el consumo IA persistente. La consola muestra metricas IA en fallback.",
+      fallback: createFallbackAiUsage("30d"),
+      load: () => getAdminAiUsage({ range: "30d" }),
+    }),
+  );
   const persistentUsageByUser = new Map(aiUsage.byUser.filter((item) => item.userId).map((item) => [item.userId, item]));
   const persistentUsageByAssessment = new Map(
     aiUsage.byAssessment.filter((item) => item.assessmentId).map((item) => [item.assessmentId, item]),
@@ -337,6 +680,7 @@ export async function getAdminConsoleData(params?: {
   const failedSignals = failedEvidenceFiles + failedReports;
 
   return {
+    sectionFailures,
     summary: {
       totalUsers,
       totalAssessments,
