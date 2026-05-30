@@ -45,6 +45,10 @@ import {
   buildCustomerContextIntelligenceReportSection,
   type CustomerContextIntelligenceReportSection,
 } from "./reportCustomerContextIntelligenceSection";
+import {
+  buildStorageDestinationReadinessReportSection,
+  type StorageDestinationReadinessReportSection,
+} from "./reportStorageDestinationReadinessSection";
 
 type ReportPreviewStatus = "available" | "partial" | "locked";
 
@@ -87,6 +91,7 @@ export type ReportPreviewData = {
   costRiskStatus: string;
   licensingCostExposure: LicensingCostExposureReportSection;
   customerContextIntelligence: CustomerContextIntelligenceReportSection;
+  storageDestinationReadiness: StorageDestinationReadinessReportSection;
   readinessScore: number | null;
   confidenceScore: number | null;
   recommendedDecision: string;
@@ -365,6 +370,65 @@ function mergeCoverageWithCustomerContext(
   };
 }
 
+function getStorageCoverageLimitations(section: StorageDestinationReadinessReportSection) {
+  if (!section.included) {
+    return [];
+  }
+
+  const limitations = [
+    "Storage Destination Readiness is separate from general technical confidence and uses source datastore evidence, target storage inputs and customer-provided storage context.",
+  ];
+
+  if (section.status === "stale") {
+    limitations.push("Storage inputs changed after the last analysis and should be re-analyzed before executive use.");
+  }
+
+  if (
+    section.status === "failed" ||
+    section.status === "ai_disabled" ||
+    section.status === "budget_blocked" ||
+    section.status === "plan_restricted"
+  ) {
+    limitations.push("Storage analysis did not complete; report output is limited to safe fallback storage evidence and metadata.");
+  }
+
+  if ((section.storageEvidenceConfidence ?? 100) < 60) {
+    limitations.push("Storage evidence confidence is limited; collect target nodes, disk layout, storage network, backup/PBS and failure-domain evidence before architecture decisions.");
+  }
+
+  if (section.ceph.requestedOrConsidered && !section.ceph.status) {
+    limitations.push("Ceph was requested or signaled, but no deterministic Ceph suitability evaluation is persisted yet.");
+  }
+
+  if (section.ceph.status === "not_enough_evidence") {
+    limitations.push("Ceph cannot be assessed defensibly yet because required hardware, network, backup or operations evidence is missing.");
+  }
+
+  if (section.missingStorageEvidence.length > 0) {
+    limitations.push(`Missing storage evidence remains open: ${section.missingStorageEvidence.slice(0, 3).map((item) => item.item).join(", ")}.`);
+  }
+
+  return limitations;
+}
+
+function mergeCoverageWithStorageContext(
+  coverage: ReportCoverageSectionData,
+  section: StorageDestinationReadinessReportSection,
+): ReportCoverageSectionData {
+  const storageLimitations = getStorageCoverageLimitations(section);
+  if (storageLimitations.length === 0) {
+    return coverage;
+  }
+
+  return {
+    ...coverage,
+    limitations: coverage.hasLimitations
+      ? [...coverage.limitations, ...storageLimitations]
+      : storageLimitations,
+    hasLimitations: true,
+  };
+}
+
 export function getReportSections(assessment: AssessmentDetail) {
   return reportSectionConfigs.map((section) => ({
     ...section,
@@ -395,7 +459,7 @@ export function getUpgradeRecommendations(assessment: AssessmentDetail) {
     recommendations.add("Parse RVTools evidence to unlock inventory-driven findings.");
   }
 
-  if (!assessment.storageReadinessEnabled) {
+  if (!assessment.storageReadinessEnabled && !assessment.storageDestinationReadiness) {
     recommendations.add("Add Storage Destination Readiness if target storage needs deeper validation.");
   }
 
@@ -487,6 +551,18 @@ function buildEvidenceOverview(assessment: AssessmentDetail): ReportEvidenceOver
 
   if (assessment.storageReadinessEnabled) {
     received.add("Storage Destination Readiness selected");
+  }
+
+  if (assessment.storageDestinationReadiness) {
+    received.add("Storage Destination Readiness inputs");
+  }
+
+  if (assessment.storageAnalysis) {
+    received.add("Storage Context Intelligence / Ceph readiness output");
+  }
+
+  if ((assessment.storageEvidence ?? []).length > 0) {
+    received.add("Storage evidence metadata");
   }
 
   if (migrationContextCoverage.overallPercent > 0) {
@@ -618,12 +694,16 @@ export async function getReportPreviewData(
       additionalEvidence: assessment.additionalEvidence ?? [],
     },
   );
-  const assessmentCoverage = mergeCoverageWithCustomerContext(
-    mergeCoverageWithLicensingContext(
-      buildAssessmentCoverageSection(completionSummary),
-      licensingCostExposure,
+  const storageDestinationReadiness = buildStorageDestinationReadinessReportSection(assessment);
+  const assessmentCoverage = mergeCoverageWithStorageContext(
+    mergeCoverageWithCustomerContext(
+      mergeCoverageWithLicensingContext(
+        buildAssessmentCoverageSection(completionSummary),
+        licensingCostExposure,
+      ),
+      customerContextIntelligence,
     ),
-    customerContextIntelligence,
+    storageDestinationReadiness,
   );
   const fullReportStatus = commercialStatus.hasFullReportUnlocked ? "unlocked" : "locked";
   const reportCards = [
@@ -691,6 +771,7 @@ export async function getReportPreviewData(
     costRiskStatus,
     licensingCostExposure,
     customerContextIntelligence,
+    storageDestinationReadiness,
     readinessScore,
     confidenceScore,
     recommendedDecision,

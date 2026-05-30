@@ -3,6 +3,7 @@ import type { AssessmentCompletionModule, AssessmentCompletionSummary } from "..
 import { buildAssessmentCoverageSection } from "../../src/server/reports/reportCoverageSection";
 import { buildCustomerContextIntelligenceReportSection } from "../../src/server/reports/reportCustomerContextIntelligenceSection";
 import { buildLicensingCostExposureReportSection } from "../../src/server/reports/reportLicensingCostExposureSection";
+import { buildStorageDestinationReadinessReportSection } from "../../src/server/reports/reportStorageDestinationReadinessSection";
 import { renderPdfReportBuffer } from "../../src/server/reports/reportPdfRenderer";
 import type { ReportPreviewData } from "../../src/server/reports/reportPreviewService";
 
@@ -129,6 +130,13 @@ function makeReportPreview(): ReportPreviewData {
     costRiskStatus: "Available",
     licensingCostExposure: buildLicensingCostExposureReportSection(null),
     customerContextIntelligence: buildCustomerContextIntelligenceReportSection(null),
+    storageDestinationReadiness: buildStorageDestinationReadinessReportSection({
+      storageDestinationReadiness: null,
+      storageContext: null,
+      storageAnalysis: null,
+      storageEvidence: [],
+      parsedDatastores: [],
+    } as unknown as Parameters<typeof buildStorageDestinationReadinessReportSection>[0]),
     readinessScore: 78,
     confidenceScore: 72,
     recommendedDecision: "Proceed with pilot",
@@ -423,6 +431,131 @@ describe("PDF report renderer", () => {
       reportTypeLabel: "Readiness Report",
       generatedAt: new Date("2026-05-29T00:00:00Z"),
       generatedByLabel: "CONTEXT-3 local smoke",
+      reportPreview: preview,
+    });
+
+    expect(buffer.subarray(0, 4).toString("utf8")).toBe("%PDF");
+    expect(buffer.length).toBeGreaterThan(24_000);
+  });
+
+  it("renders a full storage and Ceph readiness section without throwing", async () => {
+    const preview = makeReportPreview();
+    preview.storageDestinationReadiness = {
+      included: true,
+      status: "completed",
+      currentStorageType: "vmfs",
+      targetStoragePreference: "ceph",
+      storageReadinessScore: 76,
+      storageEvidenceConfidence: 68,
+      storageDestinationReadiness: 76,
+      storageMigrationRisk: 62,
+      interpretedStorageSummary:
+        "Storage evidence supports a conditional Ceph review, but target network and operations evidence still need validation.",
+      sourceStorageSummary: [
+        {
+          item: "6 source datastores parsed from RVTools",
+          evidence: "Datastore capacity and usage were available.",
+          confidence: "medium",
+          source: "rvtools",
+        },
+      ],
+      destinationOptions: [
+        {
+          option: "ceph_candidate",
+          suitability: "risky",
+          rationale: "Ceph is possible but requires remediation.",
+          missingEvidence: ["Failure domain map", "OSD layout"],
+        },
+      ],
+      storageConstraints: [
+        {
+          constraint: "Strict downtime tolerance",
+          type: "downtime",
+          impact: "Migration waves need validation.",
+        },
+      ],
+      missingStorageEvidence: [
+        {
+          item: "Storage network speed",
+          whyItMatters: "Ceph readiness depends on target network evidence.",
+          priority: "high",
+        },
+      ],
+      storageContradictions: [
+        {
+          title: "Ceph preference with limited operations evidence",
+          description: "Ceph was selected, but no owner or support model is confirmed.",
+          validationRecommendation: "Confirm Ceph owner before blueprint work.",
+        },
+      ],
+      nextStorageQuestions: [
+        {
+          question: "What storage network speed is planned?",
+          reason: "Ceph performance depends on network design.",
+          priority: "high",
+        },
+      ],
+      ceph: {
+        requestedOrConsidered: true,
+        status: "ceph_conditional",
+        summary: "Ceph may apply conditionally after remediation.",
+        suitabilityScore: 66,
+        operationsReadinessScore: 48,
+        evidenceConfidenceScore: 61,
+        capacityFitScore: 70,
+        networkReadinessScore: 55,
+        failureDomainReadinessScore: 40,
+        backupReadinessScore: 72,
+        operationalSkillsScore: 35,
+        findings: [
+          {
+            severity: "high",
+            category: "operations",
+            title: "No Ceph owner confirmed",
+            description: "Ceph ownership is not clear.",
+            impact: "Operational risk remains elevated.",
+            recommendation: "Confirm support before production.",
+          },
+        ],
+        remediations: [
+          {
+            priority: "high",
+            action: "Confirm storage network and Ceph owner.",
+            reason: "These inputs are required before blueprint work.",
+            requiredBeforeCeph: true,
+          },
+        ],
+        missingEvidence: [
+          {
+            item: "OSD layout",
+            whyItMatters: "Usable capacity and fault tolerance depend on disk layout.",
+            priority: "high",
+          },
+        ],
+        recommendedNextStep: "remediate_before_ceph",
+      },
+      additionalStorageEvidence: [
+        {
+          filename: "storage-network.png",
+          classification: "network_diagram",
+          analysisStatus: "received_not_analyzed",
+          included: true,
+        },
+      ],
+      assumptions: ["RVTools describes source storage only."],
+      disclaimers: [
+        "Ceph is not recommended by default.",
+        "The original free-text storage narrative is not reproduced.",
+      ],
+    };
+
+    const buffer = await renderPdfReportBuffer({
+      assessmentTitle: "STORAGE-4 PDF Synthetic Smoke",
+      clientLabel: null,
+      workspaceName: "Local QA",
+      reportTypeLabel: "Readiness Report",
+      generatedAt: new Date("2026-05-30T00:00:00Z"),
+      generatedByLabel: "STORAGE-4 local smoke",
       reportPreview: preview,
     });
 

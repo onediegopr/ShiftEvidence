@@ -53,10 +53,10 @@ const appCopy = {
   q2: "How does this compare to traditional consulting firms or a VMware TAM?",
   a2: "Traditional consulting (like IBM, Deloitte, or Accenture) relies on manual human interviews and static templates that take weeks and cost tens of thousands of dollars. Shift Evidence productizes this process, using guardrailed AI to evaluate storage configurations, license deltas, and risk roadmap waves in minutes at a fraction of the cost.",
   q3: "Is this target storage recommendation only for Ceph?",
-  a3: "No. Shift Evidence is fully storage-agnostic. It models storage compatibility across local ZFS, SAN, NAS, and Ceph environments. However, since Ceph is the preferred target for VMware-scale high-availability exits, the engine highlights optimal Ceph cluster target architectures when applicable.",
+  a3: "No. Shift Evidence is storage-agnostic first. It evaluates local ZFS, existing SAN/NAS/NFS and Ceph when relevant. Ceph is never treated as the default recommendation; it requires evidence for hardware, network, failure domains, backup and operational readiness.",
   ctaTitle: "Start Your VMware Readiness Assessment",
   ctaPain: "VMware exit decisions need evidence, not guesses.",
-  ctaBody: "Initialize an evidence-backed audit of cost exposure, migration blockers, and storage target configurations today.",
+  ctaBody: "Initialize an evidence-backed audit of cost exposure, migration blockers, storage destination readiness and Ceph suitability today.",
   ctaInput: "Enter corporate email",
   ctaBtn: "Initialize Assessment",
   noAgents: "No ESXi agents required",
@@ -341,8 +341,8 @@ export default function LandingPage() {
                       <BarChart3 size={18} />
                     </div>
                     <div>
-                      <strong>Cost & Savings Engine</strong>
-                      <span>Compare current VMware license costs with Proxmox alternatives automatically.</span>
+                      <strong>Licensing & Cost Exposure</strong>
+                      <span>Compare VMware/Broadcom renewal exposure with Proxmox subscription scenarios using approved pricing snapshots. Not a vendor quote.</span>
                     </div>
                   </li>
                   <li>
@@ -350,8 +350,8 @@ export default function LandingPage() {
                       <Layers size={18} />
                     </div>
                     <div>
-                      <strong>Agnostic Storage Scenario Modeling</strong>
-                      <span>Validate target storage designs across SAN, NAS, or ZFS, with specific highlights for Ceph configurations.</span>
+                      <strong>Storage & Ceph Readiness</strong>
+                      <span>Evaluate ZFS local, existing NFS/SAN or Ceph with missing evidence, network, backup and operations caveats.</span>
                     </div>
                   </li>
                   <li>
@@ -533,8 +533,8 @@ export default function LandingPage() {
                   <div className="sample-card-icon">
                     <DollarSign size={20} />
                   </div>
-                  <h3>Cost Delta Analysis</h3>
-                  <p>Automated subscription comparison calculating your exact savings from removing broadcom-style vCPU licensing surcharges.</p>
+                  <h3>Licensing & Cost Exposure</h3>
+                  <p>Directional VMware/Broadcom renewal exposure versus Proxmox subscription scenarios using approved pricing snapshots. Not a vendor quote.</p>
                 </div>
                 <div className="sample-card-tag">Financial Plan</div>
               </div>
@@ -555,8 +555,8 @@ export default function LandingPage() {
                   <div className="sample-card-icon">
                     <Layers size={20} />
                   </div>
-                  <h3>Proxmox Fit Specifications</h3>
-                  <p>Architectural target blueprints recommending storage configurations (ZFS, Ceph, SAN) and VM cluster layouts.</p>
+                  <h3>Storage & Ceph Readiness</h3>
+                  <p>Evidence-based storage destination view for ZFS local, existing NFS/SAN or Ceph, including missing evidence and operational caveats.</p>
                 </div>
                 <div className="sample-card-tag">Architecture Target</div>
               </div>

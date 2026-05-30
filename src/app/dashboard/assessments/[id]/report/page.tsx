@@ -9,6 +9,7 @@ import {
   Building2,
   CircleAlert,
   FileText,
+  HardDrive,
   Image as ImageIcon,
   Lock,
   PanelTop,
@@ -156,6 +157,8 @@ function renderStatusTone(value: string) {
     case "high":
     case "fulfilled":
     case "strong":
+    case "ceph_applies":
+    case "ceph_does_not_apply":
       return "good" as const;
     case "partial":
     case "pending":
@@ -175,12 +178,16 @@ function renderStatusTone(value: string) {
     case "ai_disabled":
     case "budget_blocked":
     case "plan_restricted":
+    case "ceph_conditional":
+    case "ceph_overkill":
+    case "not_enough_evidence":
       return "warning" as const;
     case "rejected":
       return "danger" as const;
     case "failed":
     case "blocked":
     case "low":
+    case "ceph_underdesigned":
       return "danger" as const;
     case "deleted":
     case "cancelled":
@@ -801,6 +808,136 @@ export default async function ReportPreviewPage({
         <p className="assessment-table-note">
           Customer-provided context is advisory. It may contain assumptions or unverified claims and must be validated
           against RVTools, backup exports, Proxmox target validation or other structured sources.
+        </p>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          icon={<HardDrive size={18} />}
+          eyebrow="Storage destination"
+          title="Storage Destination Readiness"
+          description="Report-ready storage destination signals based on source datastore evidence, target storage inputs and customer-provided storage context."
+        />
+        <div className="assessment-status-row">
+          {renderStatusPill(`Status: ${statusLabel(report.storageDestinationReadiness.status)}`, renderStatusTone(report.storageDestinationReadiness.status))}
+          {renderStatusPill(
+            `Storage confidence: ${
+              report.storageDestinationReadiness.storageEvidenceConfidence !== null
+                ? `${report.storageDestinationReadiness.storageEvidenceConfidence}/100`
+                : "not scored"
+            }`,
+            renderStatusTone(
+              report.storageDestinationReadiness.storageEvidenceConfidence !== null &&
+                report.storageDestinationReadiness.storageEvidenceConfidence >= 75
+                ? "high"
+                : report.storageDestinationReadiness.storageEvidenceConfidence !== null &&
+                    report.storageDestinationReadiness.storageEvidenceConfidence >= 50
+                  ? "medium"
+                  : "limited",
+            ),
+          )}
+          {renderStatusPill(`Target: ${statusLabel(report.storageDestinationReadiness.targetStoragePreference ?? "not_decided")}`, "neutral")}
+          {renderStatusPill(
+            `Ceph: ${statusLabel(report.storageDestinationReadiness.ceph.status ?? (report.storageDestinationReadiness.ceph.requestedOrConsidered ? "not_evaluated" : "not_selected"))}`,
+            renderStatusTone(report.storageDestinationReadiness.ceph.status ?? "not_available"),
+          )}
+        </div>
+        {!report.storageDestinationReadiness.included ? (
+          <p className="assessment-empty-note">
+            Storage Destination Readiness is not included or has not been analyzed for this assessment. Report generation
+            continues normally because this module is optional.
+          </p>
+        ) : (
+          <>
+            <div className="assessment-summary-grid report-summary-grid">
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Destination readiness</span>
+                <strong>
+                  {report.storageDestinationReadiness.storageDestinationReadiness !== null
+                    ? `${report.storageDestinationReadiness.storageDestinationReadiness}/100`
+                    : "-"}
+                </strong>
+                <p>Target storage clarity signal</p>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Storage evidence</span>
+                <strong>
+                  {report.storageDestinationReadiness.storageEvidenceConfidence !== null
+                    ? `${report.storageDestinationReadiness.storageEvidenceConfidence}/100`
+                    : "-"}
+                </strong>
+                <p>Separate from technical confidence</p>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Migration risk</span>
+                <strong>
+                  {report.storageDestinationReadiness.storageMigrationRisk !== null
+                    ? `${report.storageDestinationReadiness.storageMigrationRisk}/100`
+                    : "-"}
+                </strong>
+                <p>Higher means storage migration riskier</p>
+              </article>
+              <article className="assessment-preview-card">
+                <span className="assessment-preview-label">Ceph status</span>
+                <strong>{statusLabel(report.storageDestinationReadiness.ceph.status ?? "not_selected")}</strong>
+                <p>{report.storageDestinationReadiness.ceph.recommendedNextStep ? statusLabel(report.storageDestinationReadiness.ceph.recommendedNextStep) : "No Ceph next step"}</p>
+              </article>
+            </div>
+            <div className="report-finding-note">
+              <strong>Storage interpretation</strong>
+              <p>
+                {report.storageDestinationReadiness.interpretedStorageSummary ??
+                  "Storage inputs are available, but no interpreted storage summary has been persisted yet."}
+              </p>
+            </div>
+            <div className="assessment-preview-columns">
+              <article className="glass-card assessment-subcard">
+                <h3>Destination options</h3>
+                {report.storageDestinationReadiness.destinationOptions.length === 0 ? (
+                  <p>No destination options were persisted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.storageDestinationReadiness.destinationOptions.slice(0, 4).map((item) => (
+                      <li key={`${item.option}-${item.suitability}`}>
+                        <strong>{statusLabel(item.option)}:</strong> {statusLabel(item.suitability)} - {item.rationale}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Missing storage evidence</h3>
+                {report.storageDestinationReadiness.missingStorageEvidence.length === 0 ? (
+                  <p>No major storage evidence gaps were persisted.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    {report.storageDestinationReadiness.missingStorageEvidence.slice(0, 5).map((item) => (
+                      <li key={item.item}>
+                        <strong>{statusLabel(item.priority)}:</strong> {item.item} - {item.whyItMatters}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+              <article className="glass-card assessment-subcard">
+                <h3>Ceph readiness</h3>
+                {!report.storageDestinationReadiness.ceph.requestedOrConsidered ? (
+                  <p>Ceph was not selected or strongly signaled. Storage readiness remains agnostic.</p>
+                ) : (
+                  <ul className="assessment-bullet-list">
+                    <li>Status: {statusLabel(report.storageDestinationReadiness.ceph.status ?? "not_evaluated")}</li>
+                    <li>Suitability: {report.storageDestinationReadiness.ceph.suitabilityScore !== null ? `${report.storageDestinationReadiness.ceph.suitabilityScore}/100` : "not scored"}</li>
+                    <li>Operations: {report.storageDestinationReadiness.ceph.operationsReadinessScore !== null ? `${report.storageDestinationReadiness.ceph.operationsReadinessScore}/100` : "not scored"}</li>
+                    <li>Next step: {report.storageDestinationReadiness.ceph.recommendedNextStep ? statusLabel(report.storageDestinationReadiness.ceph.recommendedNextStep) : "not provided"}</li>
+                  </ul>
+                )}
+              </article>
+            </div>
+          </>
+        )}
+        <p className="assessment-table-note">
+          Storage readiness is evidence-based and conservative. Ceph is not recommended by default, and raw storage
+          narrative or file contents are not printed in the preview or PDF.
         </p>
       </section>
 

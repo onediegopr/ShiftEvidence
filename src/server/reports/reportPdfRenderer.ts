@@ -824,6 +824,316 @@ function boolLabel(value: boolean | null | undefined) {
   return "Unknown";
 }
 
+function shouldRenderFullStorageSection(input: PdfReportRenderInput) {
+  return input.reportTypeLabel !== "PDF Preview";
+}
+
+function getStorageStatusTone(value: string | null | undefined): Tone {
+  switch (value) {
+    case "completed":
+    case "analyzed":
+    case "submitted":
+    case "ceph_applies":
+    case "ceph_does_not_apply":
+    case "high":
+      return "good";
+    case "draft":
+    case "ready_for_analysis":
+    case "pending":
+    case "stale":
+    case "ai_disabled":
+    case "budget_blocked":
+    case "plan_restricted":
+    case "ceph_conditional":
+    case "ceph_overkill":
+    case "not_enough_evidence":
+    case "medium":
+    case "limited":
+      return "warning";
+    case "failed":
+    case "ceph_underdesigned":
+    case "low":
+      return "danger";
+    default:
+      return "neutral";
+  }
+}
+
+function scoreValue(value: number | null | undefined) {
+  return value === null || value === undefined ? "Not scored" : `${value}/100`;
+}
+
+function addStorageDestinationReadinessSection(doc: PDFKit.PDFDocument, input: PdfReportRenderInput) {
+  const section = input.reportPreview.storageDestinationReadiness;
+  const fullSection = shouldRenderFullStorageSection(input);
+
+  if (!fullSection && !section.included) {
+    return;
+  }
+
+  addContentPage(
+    doc,
+    fullSection ? "Section 2B" : "Preview",
+    "Storage Destination Readiness",
+    fullSection ? "Target storage path, missing evidence and Ceph suitability" : "Storage readiness teaser for the full report",
+  );
+
+  paragraph(
+    doc,
+    "This section evaluates the storage destination path for the VMware -> Proxmox migration. It separates source storage evidence, target storage assumptions, missing validations and Ceph suitability when applicable.",
+  );
+  doc.moveDown(0.8);
+
+  if (!section.included) {
+    callout(doc, "Storage Destination Readiness was not included for this assessment. Core report generation is not blocked by this optional module.", "info");
+    return;
+  }
+
+  const cardY = doc.y;
+  metricCard({
+    doc,
+    x: MARGIN,
+    y: cardY,
+    w: 122,
+    h: 86,
+    label: "Analysis status",
+    value: titleCase(section.status),
+    note: "Optional storage layer",
+    tone: getStorageStatusTone(section.status),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 130,
+    y: cardY,
+    w: 126,
+    h: 86,
+    label: "Destination readiness",
+    value: scoreValue(section.storageDestinationReadiness ?? section.storageReadinessScore),
+    note: "Target clarity signal",
+    tone: getScoreTone(section.storageDestinationReadiness ?? section.storageReadinessScore),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 264,
+    y: cardY,
+    w: 116,
+    h: 86,
+    label: "Storage confidence",
+    value: scoreValue(section.storageEvidenceConfidence),
+    note: "Storage evidence only",
+    tone: getScoreTone(section.storageEvidenceConfidence),
+  });
+  metricCard({
+    doc,
+    x: MARGIN + 388,
+    y: cardY,
+    w: 120,
+    h: 86,
+    label: "Migration risk",
+    value: scoreValue(section.storageMigrationRisk),
+    note: "Higher means riskier",
+    tone: section.storageMigrationRisk !== null && section.storageMigrationRisk >= 70 ? "danger" : section.storageMigrationRisk !== null && section.storageMigrationRisk >= 45 ? "warning" : "neutral",
+  });
+  doc.y = cardY + 110;
+
+  keyValueTable(doc, [
+    ["Current storage type", titleCase(section.currentStorageType ?? "unknown")],
+    ["Target preference", titleCase(section.targetStoragePreference ?? "not_decided")],
+    ["Ceph status", section.ceph.status ? titleCase(section.ceph.status) : section.ceph.requestedOrConsidered ? "Not evaluated yet" : "Not selected"],
+    ["Ceph next step", section.ceph.recommendedNextStep ? titleCase(section.ceph.recommendedNextStep) : "Not applicable"],
+  ]);
+
+  h2(doc, "Storage interpretation");
+  paragraph(
+    doc,
+    section.interpretedStorageSummary ??
+      "Storage destination inputs are available, but no interpreted storage summary has been persisted yet.",
+  );
+  doc.moveDown(0.6);
+
+  if (!fullSection) {
+    h2(doc, "Preview highlights");
+    bulletList(
+      doc,
+      [
+        ...section.missingStorageEvidence.slice(0, 2).map((item) => `${titleCase(item.priority)} priority: ${item.item}. ${item.whyItMatters}`),
+        section.ceph.status ? `Ceph status: ${titleCase(section.ceph.status)}.` : null,
+      ].filter((item): item is string => Boolean(item)),
+      4,
+      "Storage Preview continued",
+    );
+    callout(doc, "Full Storage Destination Readiness detail is reserved for the full readiness report. Raw storage narrative and file contents are not reproduced.", "info");
+    return;
+  }
+
+  h2(doc, "Source Storage Summary");
+  bulletList(
+    doc,
+    section.sourceStorageSummary.length > 0
+      ? section.sourceStorageSummary.map((item) => `${item.item}. Evidence: ${item.evidence ?? "Storage evidence requires validation."} Confidence: ${titleCase(item.confidence)}. Source: ${titleCase(item.source)}.`)
+      : ["No source storage summary was persisted. Use RVTools datastore evidence and storage context to improve this section."],
+    8,
+    "Source Storage Summary continued",
+  );
+
+  h2(doc, "Destination Storage Options");
+  bulletList(
+    doc,
+    section.destinationOptions.length > 0
+      ? section.destinationOptions.map((item) => `${titleCase(item.option)} - ${titleCase(item.suitability)}. ${item.rationale}${item.missingEvidence.length > 0 ? ` Missing: ${item.missingEvidence.join(", ")}.` : ""}`)
+      : ["No destination option analysis has been persisted yet."],
+    7,
+    "Destination Storage Options continued",
+  );
+
+  h2(doc, "Storage Constraints");
+  bulletList(
+    doc,
+    section.storageConstraints.length > 0
+      ? section.storageConstraints.map((item) => `${titleCase(item.type)}: ${item.constraint}. Impact: ${item.impact ?? "Validate impact before target design."}`)
+      : ["No storage constraints were persisted."],
+    7,
+    "Storage Constraints continued",
+  );
+
+  h2(doc, "Missing Storage Evidence");
+  bulletList(
+    doc,
+    section.missingStorageEvidence.length > 0
+      ? section.missingStorageEvidence.map((item) => `${titleCase(item.priority)} priority: ${item.item}. ${item.whyItMatters}`)
+      : ["No high-priority storage evidence gaps were persisted."],
+    8,
+    "Missing Storage Evidence continued",
+  );
+
+  h2(doc, "Storage Contradictions / Items to Validate");
+  bulletList(
+    doc,
+    section.storageContradictions.length > 0
+      ? section.storageContradictions.map((item) => `${item.title}: ${item.description} Recommended validation: ${item.validationRecommendation}`)
+      : ["No storage contradictions were persisted."],
+    6,
+    "Storage Validation Items continued",
+  );
+
+  if (section.ceph.requestedOrConsidered) {
+    h2(doc, "Ceph Suitability & Operations Readiness");
+    callout(
+      doc,
+      "Ceph is evaluated only when the evidence supports it. Customer preference for Ceph is not treated as a technical recommendation.",
+      "warning",
+    );
+    const cephCardY = doc.y;
+    metricCard({
+      doc,
+      x: MARGIN,
+      y: cephCardY,
+      w: 122,
+      h: 86,
+      label: "Ceph status",
+      value: section.ceph.status ? titleCase(section.ceph.status) : "Not evaluated",
+      note: "Deterministic engine",
+      tone: getStorageStatusTone(section.ceph.status),
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 130,
+      y: cephCardY,
+      w: 126,
+      h: 86,
+      label: "Suitability",
+      value: scoreValue(section.ceph.suitabilityScore),
+      note: "Ceph fit",
+      tone: getScoreTone(section.ceph.suitabilityScore),
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 264,
+      y: cephCardY,
+      w: 116,
+      h: 86,
+      label: "Operations",
+      value: scoreValue(section.ceph.operationsReadinessScore),
+      note: "Skills/support",
+      tone: getScoreTone(section.ceph.operationsReadinessScore),
+    });
+    metricCard({
+      doc,
+      x: MARGIN + 388,
+      y: cephCardY,
+      w: 120,
+      h: 86,
+      label: "Evidence",
+      value: scoreValue(section.ceph.evidenceConfidenceScore),
+      note: "Ceph-specific",
+      tone: getScoreTone(section.ceph.evidenceConfidenceScore),
+    });
+    doc.y = cephCardY + 110;
+    paragraph(doc, section.ceph.summary ?? "Ceph was considered, but no persisted Ceph summary is available yet.");
+    doc.moveDown(0.6);
+    keyValueTable(doc, [
+      ["Capacity fit", scoreValue(section.ceph.capacityFitScore)],
+      ["Network readiness", scoreValue(section.ceph.networkReadinessScore)],
+      ["Failure domains", scoreValue(section.ceph.failureDomainReadinessScore)],
+      ["Backup/PBS readiness", scoreValue(section.ceph.backupReadinessScore)],
+      ["Operational skills", scoreValue(section.ceph.operationalSkillsScore)],
+      ["Recommended next step", section.ceph.recommendedNextStep ? titleCase(section.ceph.recommendedNextStep) : "Not provided"],
+    ]);
+    h2(doc, "Ceph findings");
+    bulletList(
+      doc,
+      section.ceph.findings.length > 0
+        ? section.ceph.findings.map((item) => `${titleCase(item.severity)} - ${item.title}: ${item.impact} Recommendation: ${item.recommendation}`)
+        : ["No Ceph findings were persisted."],
+      8,
+      "Ceph Findings continued",
+    );
+    h2(doc, "Ceph remediations");
+    bulletList(
+      doc,
+      section.ceph.remediations.length > 0
+        ? section.ceph.remediations.map((item) => `${titleCase(item.priority)} priority: ${item.action}. ${item.reason} Required before Ceph: ${boolLabel(item.requiredBeforeCeph)}.`)
+        : ["No Ceph remediations were persisted."],
+      8,
+      "Ceph Remediations continued",
+    );
+    h2(doc, "Ceph missing evidence");
+    bulletList(
+      doc,
+      section.ceph.missingEvidence.length > 0
+        ? section.ceph.missingEvidence.map((item) => `${titleCase(item.priority)} priority: ${item.item}. ${item.whyItMatters}`)
+        : ["No Ceph-specific missing evidence was persisted."],
+      8,
+      "Ceph Missing Evidence continued",
+    );
+  } else {
+    callout(doc, "Ceph was not selected or strongly signaled for this assessment. Storage Destination Readiness remains agnostic.", "info");
+  }
+
+  h2(doc, "Next storage questions");
+  bulletList(
+    doc,
+    section.nextStorageQuestions.length > 0
+      ? section.nextStorageQuestions.map((item) => `${titleCase(item.priority)} priority: ${item.question} Reason: ${item.reason}`)
+      : ["No storage next questions were persisted."],
+    6,
+    "Storage Next Questions continued",
+  );
+
+  h2(doc, "Additional storage evidence");
+  bulletList(
+    doc,
+    section.additionalStorageEvidence.length > 0
+      ? section.additionalStorageEvidence.map((item) => `${item.filename ?? "Unnamed file"}: ${titleCase(item.classification)}; status: ${titleCase(item.analysisStatus)}; included: ${boolLabel(item.included)}.`)
+      : ["No storage evidence files were classified for this assessment."],
+    8,
+    "Storage Evidence Metadata continued",
+  );
+
+  h2(doc, "Storage assumptions and disclaimers");
+  bulletList(doc, [...section.assumptions, ...section.disclaimers], 10, "Storage Disclaimers continued");
+}
+
 function addCustomerContextIntelligenceSection(doc: PDFKit.PDFDocument, input: PdfReportRenderInput) {
   const section = input.reportPreview.customerContextIntelligence;
   const fullSection = shouldRenderFullCustomerContextSection(input);
@@ -834,7 +1144,7 @@ function addCustomerContextIntelligenceSection(doc: PDFKit.PDFDocument, input: P
 
   addContentPage(
     doc,
-    fullSection ? "Section 2D" : "Preview",
+    fullSection ? "Section 2E" : "Preview",
     "Customer Context Intelligence",
     fullSection ? "Structured interpretation of customer-provided context" : "Customer context teaser for the full report",
   );
@@ -1424,8 +1734,9 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     });
 
     addCoverageSection(doc, preview);
+    addStorageDestinationReadinessSection(doc, input);
 
-    addContentPage(doc, "Section 2B", "Migration Context Summary", "Human project context and confidence impact");
+    addContentPage(doc, "Section 2C", "Migration Context Summary", "Human project context and confidence impact");
     h2(doc, "Context coverage", "Missing context is treated as evidence gap, not a hard error.");
     keyValueTable(doc, [
       ["Overall coverage", `${preview.migrationContext.coverage.overallPercent}%`],
@@ -1439,7 +1750,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     bulletList(doc, preview.migrationContext.missingContext, 8);
 
     if (shouldIncludeAiAdvisory(preview)) {
-      addContentPage(doc, "Section 2C", "AI Advisory Notes", "Optional sanitized advisory guidance");
+      addContentPage(doc, "Section 2D", "AI Advisory Notes", "Optional sanitized advisory guidance");
       callout(doc, "AI advisory is optional. It does not replace deterministic readiness, confidence or internal risk findings.", "info");
       keyValueTable(doc, [
         ["Provider status", titleCase(preview.aiAdvisory.providerStatus)],
@@ -1600,6 +1911,19 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       if (customerContextSection.disclaimers && customerContextSection.disclaimers.length > 0) {
         h2(doc, "Customer Context Intelligence Disclaimer");
         bulletList(doc, customerContextSection.disclaimers, 6, "Customer Context Disclaimer continued");
+      }
+    }
+
+    const storageSection = preview.storageDestinationReadiness;
+    if (storageSection) {
+      if (storageSection.assumptions && storageSection.assumptions.length > 0) {
+        h2(doc, "Storage Destination Readiness Assumptions");
+        bulletList(doc, storageSection.assumptions, 8, "Storage Assumptions continued");
+      }
+
+      if (storageSection.disclaimers && storageSection.disclaimers.length > 0) {
+        h2(doc, "Storage Destination Readiness Disclaimer");
+        bulletList(doc, storageSection.disclaimers, 8, "Storage Disclaimer continued");
       }
     }
 

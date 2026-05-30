@@ -112,10 +112,12 @@ const addOns = [
     includes: [
       "Current storage review",
       "Target storage architecture analysis",
-      "Agnostic recommendation",
+      "Agnostic destination recommendation",
       "SAN / NAS / NFS / iSCSI / ZFS / Ceph / Hybrid scenarios",
+      "Ceph Suitability & Operations Readiness when relevant",
       "Storage risk level",
       "Proxmox compatibility considerations",
+      "Missing storage evidence",
       "Migration impact",
       "Additional report section",
     ],
@@ -126,6 +128,7 @@ const addOns = [
       "Storage configuration",
       "Managed operation",
       "Guaranteed performance validation",
+      "Ceph as a default recommendation",
     ],
     upsell:
       "Storage is optional. Add it only when target architecture matters for this assessment.",
@@ -498,6 +501,7 @@ export default function ShiftReadinessPage() {
                 <ul className="sr-bullet-list">
                   <li>Existing SAN, NAS, NFS and iSCSI usage.</li>
                   <li>ZFS local layouts and hybrid infrastructure patterns.</li>
+                  <li>Ceph suitability only when hardware, network, backup and operations evidence supports it.</li>
                   <li>Shared storage needs and HA requirements.</li>
                   <li>Workload profile, performance sensitivity and growth.</li>
                   <li>Target architecture complexity.</li>
@@ -513,6 +517,9 @@ export default function ShiftReadinessPage() {
                     "Storage risk: low",
                     "Storage risk: medium",
                     "Storage risk: high",
+                    "Ceph conditional",
+                    "Ceph underdesigned",
+                    "Not enough evidence",
                     "Hybrid architecture recommended",
                     "Agnostic recommendation",
                   ].map((item) => (
