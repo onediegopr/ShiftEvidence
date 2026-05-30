@@ -11,11 +11,6 @@ export default function Hero({ onOpenScanner }: HeroProps) {
   const vmwareLogoSrc = assetSrc(vmwareLogo);
   const proxmoxLogoSrc = assetSrc(proxmoxLogo);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <section
       className="section hero-section"
