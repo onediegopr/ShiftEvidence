@@ -78,7 +78,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               className="migration-flow-svg"
               viewBox="0 0 600 400"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ overflow: "visible", width: "100%", maxWidth: "700px" }}
+              style={{ overflow: "visible", width: "100%", maxWidth: "875px" }}
             >
               <defs>
                 {/* Gradients */}
@@ -1736,7 +1736,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                         dur="8s"
                         repeatCount="indefinite"
                       />
-                      <g transform="scale(2.8)">
+                      <g transform="scale(2.1)">
                         <circle
                           cx="-4"
                           cy="0"
@@ -2342,7 +2342,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </g>
 
               {/* Senior AI Advisor Floating Terminal Console Card */}
-              <g transform="translate(210, 290)">
+              <g transform="translate(210, 315)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
