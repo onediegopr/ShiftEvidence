@@ -97,109 +97,99 @@ export function SeniorMigrationAdvisorPanel({
   }
 
   return (
-    <section id="senior-migration-advisor" className="assessment-section glass-card">
-      <div className="assessment-section-title">
-        <div className="assessment-section-eyebrow">
-          <Brain size={18} />
-          <span>Premium advisor</span>
-        </div>
-        <h2>Senior Migration Advisor</h2>
-        <p>{initialState.helper.shortDescription}</p>
-      </div>
-
-      <div className="assessment-status-row">
-        <span className={`assessment-chip assessment-chip-${usageTone(usage)}`}>
-          {usage.enabled ? `${usage.messagesRemaining} messages remaining` : "Plan locked"}
-        </span>
-        <span className="assessment-chip assessment-chip-neutral">
-          {usage.messagesUsed} / {usage.messageLimit} used
-        </span>
-        <span className="assessment-chip assessment-chip-warning">
-          Advisory only, not migration approval
-        </span>
-        <span className="assessment-chip assessment-chip-neutral">{usage.planLabel}</span>
-      </div>
-
-      <div className="assessment-optional-module-panel">
-        <ShieldAlert size={24} />
-        <div>
-          <h3>Evidence-based advisory, not a generic chatbot.</h3>
-          <p>
-            The advisor uses this assessment context only. It can explain findings, risks,
-            missing evidence, Storage/Ceph and Licensing results, but it cannot guarantee success,
-            approve production migration or execute infrastructure changes.
-          </p>
-        </div>
-        <div className="assessment-optional-module-meta">
-          <span>Usage warning at 80%</span>
-          <span>More credits: contact us placeholder</span>
-          <span>Billing integration: not active</span>
-        </div>
-      </div>
-
-      <div className="assessment-preview-columns">
-        <article className="glass-card assessment-subcard">
+    <section id="senior-migration-advisor" className="assessment-section glass-card senior-advisor-shell">
+      <div className="senior-advisor-header">
+        <div className="assessment-section-title senior-advisor-title">
           <div className="assessment-section-eyebrow">
-            <Sparkles size={16} />
-            <span>Can help with</span>
+            <Brain size={18} />
+            <span>Premium advisor</span>
           </div>
-          <ul className="assessment-bullet-list">
-            {initialState.helper.canDo.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-        <article className="glass-card assessment-subcard">
-          <div className="assessment-section-eyebrow">
-            <Lock size={16} />
-            <span>Cannot do</span>
-          </div>
-          <ul className="assessment-bullet-list">
-            {initialState.helper.cannotDo.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-      </div>
-
-      <article className="glass-card assessment-subcard">
-        <div className="assessment-inventory-table-head">
-          <div>
-            <h3>Advisor credits</h3>
-            <p className="assessment-inline-note">
-              Your plan includes a limited number of advisor messages for this assessment.
-              Additional advisor credits will be available as a future add-on.
-            </p>
-          </div>
+          <h2>Senior Migration Advisor</h2>
+          <p>{initialState.helper.shortDescription}</p>
+        </div>
+        <div className="senior-advisor-status-panel">
+          <span className="assessment-chip assessment-chip-neutral">{usage.planLabel}</span>
           <span className={`assessment-chip assessment-chip-${usageTone(usage)}`}>
-            {usage.percentUsed}% used
+            {usage.enabled ? `${usage.messagesRemaining} remaining` : "Plan locked"}
           </span>
+          <span className="assessment-chip assessment-chip-warning">Advisory only</span>
         </div>
-        <div className="assessment-inline-actions">
+      </div>
+
+      <div className="senior-advisor-usage-strip">
+        <div>
+          <span>Advisor credits</span>
+          <strong>
+            {usage.messagesUsed} / {usage.messageLimit} used
+          </strong>
+        </div>
+        <div>
+          <span>Usage</span>
+          <strong>{usage.percentUsed}%</strong>
+        </div>
+        <div>
+          <span>Warning</span>
+          <strong>80%</strong>
+        </div>
+        <div className="senior-advisor-credit-actions">
           <button
             type="button"
             className="btn btn-secondary"
             onClick={requestCredits}
             disabled={!usage.canRequestMoreCredits || isPending}
           >
-            Request more advisor credits
+            Request credits
           </button>
           <button type="button" className="btn btn-secondary" disabled>
-            Buy more credits - coming soon
+            Buy credits - soon
           </button>
         </div>
-      </article>
+      </div>
 
-      <article className="glass-card assessment-subcard">
+      <details className="glass-card senior-advisor-help" open={!usage.enabled}>
+        <summary>
+          <span>
+            <ShieldAlert size={16} />
+            What can I ask?
+          </span>
+          <small>Evidence-based advisory, not migration approval.</small>
+        </summary>
+        <div className="senior-advisor-help-grid">
+          <div>
+            <div className="assessment-section-eyebrow">
+              <Sparkles size={14} />
+              <span>Can help with</span>
+            </div>
+            <ul className="assessment-bullet-list">
+              {initialState.helper.canDo.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="assessment-section-eyebrow">
+              <Lock size={14} />
+              <span>Cannot do</span>
+            </div>
+            <ul className="assessment-bullet-list">
+              {initialState.helper.cannotDo.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </details>
+
+      <article className="glass-card senior-advisor-prompts">
         <div className="assessment-section-eyebrow">
           <MessageSquare size={16} />
           <span>Suggested prompts</span>
         </div>
-        <div className="assessment-inline-actions">
+        <div className="senior-advisor-prompt-grid">
           {initialState.helper.suggestedPrompts.map((prompt) => (
             <button
               type="button"
-              className="btn btn-secondary"
+              className="senior-advisor-prompt-chip"
               key={prompt}
               onClick={() => sendMessage(prompt)}
               disabled={!usage.enabled || usage.exhausted || isPending}
@@ -210,82 +200,88 @@ export function SeniorMigrationAdvisorPanel({
         </div>
       </article>
 
-      <div className="assessment-accordion-list">
-        {messages.length === 0 ? (
-          <p className="assessment-empty-note">
-            No advisor messages yet. Ask a question about this assessment to start.
-          </p>
-        ) : (
-          messages.map((item) => (
-            <article key={item.id} className="glass-card assessment-subcard">
-              <div className="assessment-inventory-table-head">
-                <div>
-                  <h3>{item.role === "assistant" ? "Senior Migration Advisor" : "You"}</h3>
-                  <p className="assessment-inline-note">
-                    {formatDate(item.createdAt)}
-                    {item.model ? ` - ${item.model}` : ""}
-                  </p>
+      <div className="glass-card senior-advisor-console">
+        <div className="senior-advisor-chat-scroll">
+          {messages.length === 0 ? (
+            <div className="senior-advisor-empty-state">
+              <MessageSquare size={20} />
+              <p>No advisor messages yet. Ask a question about this assessment to start.</p>
+            </div>
+          ) : (
+            messages.map((item) => (
+              <article
+                key={item.id}
+                className={`senior-advisor-message senior-advisor-message-${item.role}`}
+              >
+                <div className="senior-advisor-message-head">
+                  <div>
+                    <h3>{item.role === "assistant" ? "Senior Migration Advisor" : "You"}</h3>
+                    <p>
+                      {formatDate(item.createdAt)}
+                      {item.model ? ` - ${item.model}` : ""}
+                    </p>
+                  </div>
+                  <span className={`assessment-chip assessment-chip-${messageTone(item.status)}`}>
+                    {item.status}
+                  </span>
                 </div>
-                <span className={`assessment-chip assessment-chip-${messageTone(item.status)}`}>
-                  {item.status}
-                </span>
-              </div>
-              <p style={{ whiteSpace: "pre-wrap" }}>{item.content}</p>
-              {item.safetyFlags.length > 0 ? (
-                <div className="assessment-status-row">
-                  {item.safetyFlags.map((flag) => (
-                    <span key={flag.flag} className="assessment-chip assessment-chip-warning">
-                      {flag.flag}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </article>
-          ))
-        )}
-      </div>
+                <p className="senior-advisor-message-body">{item.content}</p>
+                {item.safetyFlags.length > 0 ? (
+                  <div className="assessment-status-row">
+                    {item.safetyFlags.map((flag) => (
+                      <span key={flag.flag} className="assessment-chip assessment-chip-warning">
+                        {flag.flag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            ))
+          )}
+        </div>
 
-      {feedback ? (
-        <article className="glass-card assessment-subcard">
-          <span className="assessment-chip assessment-chip-warning">Advisor notice</span>
-          <p>{feedback}</p>
-        </article>
-      ) : null}
+        {feedback ? (
+          <div className="senior-advisor-feedback">
+            <span className="assessment-chip assessment-chip-warning">Advisor notice</span>
+            <p>{feedback}</p>
+          </div>
+        ) : null}
 
-      <form
-        className="assessment-form-grid assessment-form-grid-wide"
-        onSubmit={(event) => {
-          event.preventDefault();
-          sendMessage(message);
-        }}
-      >
-        <label className="form-label assessment-form-span-2">
-          Ask about this assessment
-          <textarea
-            className="form-input assessment-textarea"
-            rows={5}
-            value={message}
-            maxLength={maxChars || undefined}
-            onChange={(event) => setMessage(event.target.value)}
-            placeholder="Ask what to complete next, how to explain a risk, why confidence is low, or what evidence would improve this assessment."
-            disabled={!usage.enabled || usage.exhausted || isPending}
-          />
-          <span className="assessment-inline-note">
-            {usage.enabled
-              ? `${message.length.toLocaleString("en-US")} characters. Do not paste passwords, tokens or raw file contents.`
-              : "Senior Migration Advisor is available on paid assessment plans."}
-          </span>
-        </label>
-        <div className="assessment-inline-actions assessment-form-span-2">
-          <button type="submit" className="btn btn-primary btn-glow" disabled={!canSend}>
-            {isPending ? "Sending..." : "Send to Senior Advisor"}
-            <Send size={16} />
-          </button>
+        <form
+          className="senior-advisor-composer"
+          onSubmit={(event) => {
+            event.preventDefault();
+            sendMessage(message);
+          }}
+        >
+          <label className="form-label">
+            Ask about this assessment
+            <textarea
+              className="form-input assessment-textarea senior-advisor-textarea"
+              rows={4}
+              value={message}
+              maxLength={maxChars || undefined}
+              onChange={(event) => setMessage(event.target.value)}
+              placeholder="Ask what to complete next, how to explain a risk, why confidence is low, or what evidence would improve this assessment."
+              disabled={!usage.enabled || usage.exhausted || isPending}
+            />
+          </label>
+          <div className="senior-advisor-composer-footer">
+            <span className="assessment-inline-note">
+              {usage.enabled
+                ? `${message.length.toLocaleString("en-US")} characters. Do not paste passwords, tokens or raw file contents.`
+                : "Senior Migration Advisor is available on paid assessment plans."}
+            </span>
+            <button type="submit" className="btn btn-primary btn-glow" disabled={!canSend}>
+              {isPending ? "Sending..." : "Send"}
+              <Send size={16} />
+            </button>
+          </div>
           <span className="assessment-inline-note">
             Advisor responses are advisory and cannot override deterministic ShiftReadiness engines.
           </span>
-        </div>
-      </form>
+        </form>
+      </div>
     </section>
   );
 }

@@ -1008,6 +1008,9 @@ export async function sendSeniorAdvisorMessage(
       providerStatus: providerErrorMetadata.providerStatus ?? null,
       httpStatus: providerErrorMetadata.httpStatus ?? null,
       safeReason: providerErrorMetadata.safeReason ?? null,
+      responseCandidateCount: providerErrorMetadata.responseCandidateCount ?? null,
+      responseFirstPartTypes: providerErrorMetadata.responseFirstPartTypes ?? null,
+      responseFinishReason: providerErrorMetadata.responseFinishReason ?? null,
     });
     const assistantText = buildSeniorAdvisorProviderFallbackMessage(error);
     const assistantMessage = await persistAdvisorExchange({
