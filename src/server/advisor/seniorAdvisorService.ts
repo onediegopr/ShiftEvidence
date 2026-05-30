@@ -23,6 +23,15 @@ import {
   buildSeniorAdvisorUsageState,
   resolveSeniorAdvisorPlanLimits,
 } from "./seniorAdvisorPlanLimits";
+import {
+  buildSeniorAdvisorProviderFallbackMessage,
+  buildSeniorAdvisorProviderHttpError,
+  extractSeniorAdvisorGeminiText,
+  getSeniorAdvisorGeminiModelCandidates,
+  getSeniorAdvisorProviderErrorCategory,
+  getSeniorAdvisorProviderErrorMetadata,
+  getSeniorAdvisorProviderErrorModel,
+} from "./seniorAdvisorProviderHandling";
 import { buildSeniorAdvisorPrompt } from "./seniorAdvisorPrompt";
 import {
   inspectSeniorAdvisorMessage,
@@ -46,6 +55,7 @@ type ActorParams = {
 type ProviderTextResult = {
   text: string;
   durationMs: number;
+  model: string | null;
 };
 
 const MAX_HISTORY_MESSAGES = 50;
@@ -339,42 +349,59 @@ async function callGeminiProvider(params: {
   maxResponseTokens: number;
 }): Promise<ProviderTextResult> {
   const startedAt = Date.now();
-  const model = params.config.model ?? "gemini-2.5-flash";
-  const response = await fetchWithTimeout(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": params.apiKey,
-      },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: params.prompt }] }],
-        generationConfig: {
-          maxOutputTokens: params.maxResponseTokens,
-          temperature: 0.2,
+  const models = getSeniorAdvisorGeminiModelCandidates(params.config.model);
+  let lastError: unknown = null;
+
+  for (const model of models) {
+    try {
+      const response = await fetchWithTimeout(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": params.apiKey,
+          },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: params.prompt }] }],
+            generationConfig: {
+              maxOutputTokens: params.maxResponseTokens,
+              temperature: 0.2,
+            },
+          }),
         },
-      }),
-    },
-    params.config.timeoutMs,
-  );
+        params.config.timeoutMs,
+      );
 
-  if (!response.ok) {
-    throw new Error(`Gemini Senior Advisor request failed with status ${response.status}.`);
+      if (!response.ok) {
+        throw await buildSeniorAdvisorProviderHttpError({
+          response,
+          provider: "gemini",
+          model,
+        });
+      }
+
+      const jsonResponse = (await response.json()) as unknown;
+      const text = extractSeniorAdvisorGeminiText(jsonResponse);
+
+      return { text, durationMs: Date.now() - startedAt, model };
+    } catch (error) {
+      lastError = error;
+      const category = getSeniorAdvisorProviderErrorCategory(error);
+      const canRetryModel =
+        /^gemini-1\.5-/i.test(model) &&
+        models.some((candidate) => candidate !== model) &&
+        category !== "config_missing" &&
+        category !== "quota_exceeded" &&
+        category !== "safety_blocked" &&
+        category !== "timeout";
+      if (!canRetryModel) {
+        throw error;
+      }
+    }
   }
 
-  const jsonResponse = (await response.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  };
-  const text = jsonResponse.candidates?.[0]?.content?.parts
-    ?.map((part) => part.text ?? "")
-    .join("\n")
-    .trim();
-  if (!text) {
-    throw new Error("Gemini Senior Advisor response was empty.");
-  }
-
-  return { text, durationMs: Date.now() - startedAt };
+  throw lastError;
 }
 
 async function callOpenAiProvider(params: {
@@ -403,7 +430,11 @@ async function callOpenAiProvider(params: {
   );
 
   if (!response.ok) {
-    throw new Error(`OpenAI Senior Advisor request failed with status ${response.status}.`);
+    throw await buildSeniorAdvisorProviderHttpError({
+      response,
+      provider: "openai",
+      model,
+    });
   }
 
   const jsonResponse = (await response.json()) as {
@@ -417,19 +448,11 @@ async function callOpenAiProvider(params: {
     throw new Error("OpenAI Senior Advisor response was empty.");
   }
 
-  return { text: text.trim(), durationMs: Date.now() - startedAt };
+  return { text: text.trim(), durationMs: Date.now() - startedAt, model };
 }
 
 function getErrorCategory(error: unknown) {
-  if (error instanceof Error && error.name === "AbortError") {
-    return "timeout";
-  }
-
-  if (error instanceof Error && /empty|parse|invalid/i.test(error.message)) {
-    return "invalid_response";
-  }
-
-  return "provider_error";
+  return getSeniorAdvisorProviderErrorCategory(error);
 }
 
 async function recordAdvisorAuditEvent(params: {
@@ -841,6 +864,7 @@ export async function sendSeniorAdvisorMessage(
       providerResult = {
         text: mockText,
         durationMs: Date.now() - startedAt,
+        model: config.model,
       };
     } else {
       const apiKey = getAiAdvisoryProviderKey(config.provider);
@@ -912,7 +936,7 @@ export async function sendSeniorAdvisorMessage(
     const estimatedOutputTokens = estimateTokensFromChars(outputText.length);
     const estimatedCostUsd = estimateAiCostUsd({
       provider: config.provider,
-      model: config.model,
+      model: providerResult.model,
       inputTokens: estimatedInputTokens,
       outputTokens: estimatedOutputTokens,
     });
@@ -923,7 +947,7 @@ export async function sendSeniorAdvisorMessage(
       userMessage: security.sanitizedText,
       assistantMessage: outputText,
       provider: config.provider,
-      model: config.model,
+      model: providerResult.model,
       estimatedInputTokens,
       estimatedOutputTokens,
       estimatedCostUsd,
@@ -935,7 +959,7 @@ export async function sendSeniorAdvisorMessage(
       assessmentId: assessment.id,
       userId: params.userId,
       provider: config.provider,
-      model: config.model,
+      model: providerResult.model,
       operationType: SENIOR_ADVISOR_OPERATION_TYPE,
       status: config.provider === "mock" ? "mock" : "success",
       durationMs: providerResult.durationMs,
@@ -956,7 +980,7 @@ export async function sendSeniorAdvisorMessage(
       message: "Senior Migration Advisor message completed.",
       metadataJson: {
         provider: config.provider,
-        model: config.model,
+        model: providerResult.model,
         creditCost: 1,
       },
     });
@@ -973,26 +997,29 @@ export async function sendSeniorAdvisorMessage(
   } catch (error) {
     const errorCategory = getErrorCategory(error);
     const usageStatus: AiUsageStatus = errorCategory === "timeout" ? "timeout" : "error";
+    const providerErrorMetadata = getSeniorAdvisorProviderErrorMetadata(error);
+    const errorModel = getSeniorAdvisorProviderErrorModel(error) ?? config.model;
     logger.warn("senior_advisor_message_failed", {
       assessmentId: assessment.id,
       userId: params.userId,
       provider: config.provider,
-      model: config.model,
+      model: errorModel,
       errorCategory,
-      error,
+      providerStatus: providerErrorMetadata.providerStatus ?? null,
+      httpStatus: providerErrorMetadata.httpStatus ?? null,
+      safeReason: providerErrorMetadata.safeReason ?? null,
     });
-    const assistantText =
-      "Senior Migration Advisor could not complete this answer. Deterministic assessment sections remain available; retry later or ask a narrower question.";
+    const assistantText = buildSeniorAdvisorProviderFallbackMessage(error);
     const assistantMessage = await persistAdvisorExchange({
       assessment,
       conversationId: conversation.id,
       userId: params.userId,
       userMessage: security.sanitizedText,
       assistantMessage: assistantText,
-      userStatus: "failed",
+      userStatus: "completed",
       assistantStatus: "failed",
       provider: config.provider,
-      model: config.model,
+      model: errorModel,
       estimatedInputTokens: estimateTokensFromChars(inputChars),
       estimatedOutputTokens: estimateTokensFromChars(assistantText.length),
       estimatedCostUsd: 0,
@@ -1004,7 +1031,7 @@ export async function sendSeniorAdvisorMessage(
       assessmentId: assessment.id,
       userId: params.userId,
       provider: config.provider,
-      model: config.model,
+      model: errorModel,
       operationType: SENIOR_ADVISOR_OPERATION_TYPE,
       status: usageStatus,
       durationMs: Date.now() - startedAt,
@@ -1012,14 +1039,20 @@ export async function sendSeniorAdvisorMessage(
       outputChars: assistantText.length,
       errorCategory,
       fallbackUsed: true,
-      metadataJson: { reason: errorCategory, contextReduced: boundedPrompt.reduced },
+      metadataJson: {
+        ...providerErrorMetadata,
+        contextReduced: boundedPrompt.reduced,
+      },
     });
     await recordAdvisorAuditEvent({
       userId: params.userId,
       assessment,
       eventType: "advisor_message_failed",
       message: "Senior Migration Advisor message failed.",
-      metadataJson: { reason: errorCategory },
+      metadataJson: {
+        ...providerErrorMetadata,
+        contextReduced: boundedPrompt.reduced,
+      },
     });
     return {
       ok: true,
