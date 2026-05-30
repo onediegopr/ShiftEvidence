@@ -65,6 +65,10 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 Our platform provides fully storage-agnostic modeling, optimized for high-performance Ceph
                 targets and compatible with SAN, NAS, or ZFS environments.
               </p>
+              <div className="badge badge-tam" style={{ marginTop: "0.75rem", marginBottom: "0" }}>
+                <Shield size={12} />
+                <span>Former VMware TAM-led readiness methodology</span>
+              </div>
             </div>
           </div>
 
@@ -2376,13 +2380,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
               {/* Stacked Floating Terminal Console Cards */}
               
-              {/* Card 1: Senior AI Advisor (X: 210, Y: 298, W: 180, H: 36) */}
-              <g transform="translate(210, 298)">
+              {/* Card 1: Senior AI Advisor (X: 10, Y: 335, W: 270, H: 36) */}
+              <g transform="translate(10, 335)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
                   y="0"
-                  width="180"
+                  width="270"
                   height="36"
                   rx="5"
                   fill="#030712"
@@ -2422,7 +2426,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </text>
 
                 {/* Blinking Prompt Cursor */}
-                <rect x="134" y="8" width="1.2" height="4" fill="#22d3ee">
+                <rect x="138" y="8" width="1.2" height="4" fill="#22d3ee">
                   <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite" />
                 </rect>
 
@@ -2467,13 +2471,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </g>
               </g>
 
-              {/* Card 2: Decision Economics (X: 210, Y: 339, W: 180, H: 36) */}
-              <g transform="translate(210, 339)">
+              {/* Card 2: Decision Economics (X: 320, Y: 335, W: 270, H: 36) */}
+              <g transform="translate(320, 335)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
                   y="0"
-                  width="180"
+                  width="270"
                   height="36"
                   rx="5"
                   fill="#030712"
@@ -2511,7 +2515,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 </text>
 
                 {/* Blinking Prompt Cursor */}
-                <rect x="135" y="8" width="1.2" height="4" fill="#eab308">
+                <rect x="142" y="8" width="1.2" height="4" fill="#eab308">
                   <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite" />
                 </rect>
 
