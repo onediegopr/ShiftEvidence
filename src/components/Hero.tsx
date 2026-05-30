@@ -65,7 +65,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 Our platform provides fully storage-agnostic modeling, optimized for high-performance Ceph
                 targets and compatible with SAN, NAS, or ZFS environments.
               </p>
-              <div className="badge badge-tam" style={{ marginTop: "0.75rem", marginBottom: "0" }}>
+              <div className="badge badge-tam" style={{ marginTop: "0.75rem", marginBottom: "0", alignSelf: "flex-start" }}>
                 <Shield size={12} />
                 <span>Former VMware TAM-led readiness methodology</span>
               </div>
@@ -2380,14 +2380,14 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
               {/* Stacked Floating Terminal Console Cards */}
               
-              {/* Card 1: Senior AI Advisor (X: 10, Y: 335, W: 270, H: 36) */}
+              {/* Card 1: Senior AI Advisor (X: 10, Y: 335, W: 270, H: 58) */}
               <g transform="translate(10, 335)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
                   y="0"
                   width="270"
-                  height="36"
+                  height="58"
                   rx="5"
                   fill="#030712"
                   fillOpacity="0.88"
@@ -2469,16 +2469,52 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                     &gt; ALERT: INCOMPATIBLE LEGACY SAN. ROUTING CEPH...
                   </text>
                 </g>
+
+                {/* Diagnostic Line 3 */}
+                <text
+                  x="10"
+                  y="38"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; WORKLOAD PROFILE: INTENSIVE DB &amp; WEB SERVICES
+                </text>
+
+                {/* Diagnostic Line 4 */}
+                <text
+                  x="10"
+                  y="46"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; ADVISORY: MIGRATION WAVE PLANNING RECOMMENDED
+                </text>
+
+                {/* Diagnostic Line 5 */}
+                <text
+                  x="10"
+                  y="54"
+                  fill="#22d3ee"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; TELEMETRY: 100% AGENTLESS SECURE EXTRACTION
+                </text>
               </g>
 
-              {/* Card 2: Decision Economics (X: 320, Y: 335, W: 270, H: 36) */}
+              {/* Card 2: Decision Economics (X: 320, Y: 335, W: 270, H: 58) */}
               <g transform="translate(320, 335)">
                 {/* Terminal Background */}
                 <rect
                   x="0"
                   y="0"
                   width="270"
-                  height="36"
+                  height="58"
                   rx="5"
                   fill="#030712"
                   fillOpacity="0.88"
@@ -2542,6 +2578,42 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 >
                   &gt; ESTIMATED TARGET SAVINGS: 82%
                 </text>
+
+                {/* Economics Line 3 */}
+                <text
+                  x="10"
+                  y="38"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; NET SAVINGS FORECAST: $184,200 / 3-YEAR TCO
+                </text>
+
+                {/* Economics Line 4 */}
+                <text
+                  x="10"
+                  y="46"
+                  fill="rgba(255, 255, 255, 0.85)"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; HARDWARE TAX REDUCTION: CEPH VS LEGACY SAN
+                </text>
+
+                {/* Economics Line 5 */}
+                <text
+                  x="10"
+                  y="54"
+                  fill="#eab308"
+                  fontSize="4.6"
+                  fontWeight="bold"
+                  fontFamily="var(--font-mono)"
+                >
+                  &gt; RENEWAL PENALTY EXPOSURE: 4.8X INCREASE AVOIDED
+                </text>
               </g>
             </svg>
 
@@ -2549,8 +2621,8 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               className="hero-description-group"
               style={{
                 maxWidth: "620px",
-                marginTop: "1.5rem",
-                marginBottom: "1.5rem",
+                marginTop: "0",
+                marginBottom: "0.75rem",
                 textAlign: "center",
               }}
             >
