@@ -64,6 +64,22 @@ This index points to the current operational documentation for ShiftReadiness. H
 - [CONTEXT-2 - AI Context Intelligence Engine](./hito-context-2-ai-context-intelligence-engine.md)
 - [CONTEXT-3 - Customer Context Report/PDF Integration](./hito-context-3-customer-context-report-pdf-integration.md)
 
+## Storage Destination Readiness / Ceph
+
+- [STORAGE-1 - Storage Destination Readiness Foundation](./hito-storage-1-storage-destination-readiness-foundation.md)
+- [STORAGE-2 - AI Storage Context Intelligence + Agnostic Scoring](./hito-storage-2-ai-storage-context-intelligence-agnostic-scoring.md)
+- [STORAGE-3 - Ceph Suitability & Operations Readiness Engine](./hito-storage-3-ceph-suitability-operations-readiness-engine.md)
+- [STORAGE-4 - Storage/Ceph Report, PDF & Landing Visibility](./hito-storage-4-storage-ceph-report-pdf-landing-visibility.md)
+
+Read these to understand:
+
+- Storage Destination Readiness;
+- Storage Context Intelligence;
+- Ceph Suitability & Operations Readiness;
+- report preview/PDF storage payloads;
+- landing/marketing storage visibility;
+- pending release/migration implications for the target environment.
+
 ## Admin / AI / Entitlements
 
 - [Admin Console Foundation](./hito-admin-1-spanish-admin-console-foundation.md)
@@ -92,6 +108,8 @@ This index points to the current operational documentation for ShiftReadiness. H
 | Operate production | Release docs, Hostinger runbooks, production smoke checklist |
 | Review licensing module | COST-1A/B/C docs |
 | Review client context / AI | CONTEXT-1/2/3 docs |
+| Review Storage/Ceph | STORAGE-1/2/3/4 docs, master manual |
+| Plan Storage migrations/release | Master manual, release readiness docs, Prisma/Hostinger migration docs |
 | Debug report/PDF | Report preview, report generation, PDF template, PDF polish docs |
 | Onboard partner/MSP | Executive summary, master manual, entitlements docs |
 

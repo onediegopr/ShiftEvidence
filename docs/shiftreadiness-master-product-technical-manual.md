@@ -27,6 +27,9 @@ Listo:
 - Licensing & Cost Exposure Analysis.
 - Client Context & Additional Evidence.
 - Customer Context Intelligence.
+- Storage Destination Readiness.
+- Storage Context Intelligence.
+- Ceph Suitability & Operations Readiness.
 - Controlled production release.
 
 No debe prometer:
@@ -36,6 +39,8 @@ No debe prometer:
 - Pricing oficial de vendors.
 - Diagnostico completo si faltan evidencias clave.
 - Que texto libre del cliente equivale a evidencia tecnica confirmada.
+- Que Ceph es recomendado por default.
+- Performance/capacity/zero downtime garantizados.
 - Que AI decide por el equipo tecnico.
 
 ## 2. Product Positioning
@@ -78,9 +83,17 @@ El texto libre del cliente y las notas manuales se tratan como contexto reportad
 
 El modulo financiero solo debe usar snapshots aprobados para calculos. Broad scenarios y estimaciones se marcan como direccionales, no como cotizacion.
 
+### Storage agnostic first
+
+Storage Destination Readiness evalua primero la evidencia y restricciones. No fuerza ZFS, NFS/SAN ni Ceph. Ceph es salida condicional/premium, no default.
+
+### Ceph requires defensible evidence
+
+Ceph no se recomienda solo porque Proxmox lo soporta. Requiere evidencia sobre nodos, OSDs/discos, red, failure domains, capacidad utilizable, crecimiento, backup/PBS, skills y soporte.
+
 ### Optional modules do not block core report
 
-Licensing, Client Context, Storage readiness parcial y otros modulos opcionales mejoran precision, pero no deben bloquear el reporte core si RVTools y requisitos minimos estan completos.
+Licensing, Client Context, Storage Destination Readiness, Ceph Suitability y otros modulos opcionales mejoran precision, pero no deben bloquear el reporte core si RVTools y requisitos minimos estan completos.
 
 ### Raw client context is never printed
 
@@ -110,7 +123,7 @@ Capas:
 - Public routes: landing, sign-in, sign-up, sample report.
 - Authenticated dashboard: assessments, detail, report, modules.
 - Server services: assessment, evidence, inventory, reports, AI, pricing, admin.
-- Prisma data model: users, workspaces, assessments, evidence, parsed inventory, scores, reports, audit, pricing snapshots, client context.
+- Prisma data model: users, workspaces, assessments, evidence, parsed inventory, scores, reports, audit, pricing snapshots, client context, storage destination readiness, storage context/evidence and storage analysis.
 - Report pipeline: preview payload -> normalized sections -> PDF renderer -> secure storage/download.
 - Admin: Spanish internal UI, server-side auth guard via `ADMIN_EMAILS`.
 
@@ -126,7 +139,7 @@ Flujo tipico:
 6. Completion Center muestra modulos requeridos y opcionales.
 7. Usuario completa optional modules segun caso:
    - migration questions;
-   - storage readiness parcial;
+   - Storage Destination Readiness / Ceph Suitability;
    - licensing/cost exposure;
    - client context/additional evidence.
 8. Servicios calculan scores, findings y payloads de preview.
@@ -170,7 +183,7 @@ Modulos relevantes:
 
 - RVTools evidence: requerido.
 - Manual/migration context: recomendado/opcional segun estado.
-- Storage readiness: opcional/en desarrollo.
+- Storage Destination Readiness: opcional, implementado como modulo agnostico con Storage Context Intelligence y Ceph Suitability.
 - Licensing & Cost Exposure: opcional.
 - Client Context Intelligence: opcional.
 
@@ -415,6 +428,295 @@ No implementa aun:
 - file content ingestion beyond safe metadata/classification;
 - storage cost model.
 
+## 10A. Storage Destination Readiness, Storage Context Intelligence & Ceph
+
+Storage Destination Readiness es el modulo opcional dedicado a decidir el camino de storage destino antes de una migracion VMware -> Proxmox. Sigue la misma metodologia central del producto:
+
+```text
+Evidence -> Questions -> Optional Evidence -> AI/Rules -> Scores -> Missing Evidence -> Recommendations -> Report/PDF.
+```
+
+### Storage Destination Readiness
+
+Proposito:
+
+- separar el analisis de storage destino del intake general y del modelo legacy `CostRiskAssumptions.assumptionsJson.storageContext`;
+- evaluar storage de forma agnostica primero;
+- mostrar si faltan datos para decidir entre ZFS local, NFS/SAN existente, Ceph, PBS-related patterns u otro patron;
+- convertir missing storage evidence en hallazgos y proximas preguntas.
+
+Modelos dedicados:
+
+- `AssessmentStorageDestinationReadiness`;
+- `AssessmentStorageContext`;
+- `AssessmentStorageEvidence`;
+- `AssessmentStorageAnalysis`.
+
+Entradas estructuradas:
+
+- source storage type: VMFS, vSAN, NFS, SAN, local datastore, mixed, unknown;
+- target storage preference: ZFS local, NFS, SAN, Ceph, PBS, unknown, not decided;
+- HA/shared storage;
+- Proxmox target known/unknown;
+- PBS/backup signal;
+- 3-year growth;
+- downtime tolerance;
+- RPO/RTO notes;
+- Ceph interest signals: minimum three nodes, dedicated storage network, Ceph experience, vendor/partner support.
+
+UI:
+
+- tab `Storage` dentro del assessment detail;
+- status card;
+- source storage;
+- target preference;
+- Ceph interest capture;
+- storage free context;
+- storage additional evidence;
+- missing evidence helper;
+- conservative disclaimer.
+
+Completion Center:
+
+- modulo opcional;
+- no bloquea `canGenerateReport`;
+- mejora report precision;
+- estados principales: not started, draft, submitted, analyzed, stale, failed, skipped.
+
+### Storage free context
+
+`AssessmentStorageContext` guarda narrativa libre especifica de storage. No se mezcla con Client Context general.
+
+Permite describir:
+
+- arquitectura storage actual;
+- hardware disponible;
+- red/storage network;
+- expectativas sobre Ceph;
+- skills y soporte operativo;
+- growth;
+- downtime tolerance;
+- backup/PBS;
+- restricciones de negocio/operacion.
+
+Reglas:
+
+- raw storage text se guarda, pero no se imprime en report preview/PDF;
+- word/character count;
+- limites por plan;
+- save draft / submit / skip;
+- customer-provided context is advisory until validated with technical evidence.
+
+### Additional Storage Evidence
+
+`AssessmentStorageEvidence` es una capa semantica sobre `EvidenceFile`.
+
+Clasificaciones actuales:
+
+- source_storage_export;
+- target_storage_design;
+- hardware_bom;
+- network_diagram;
+- ceph_status;
+- ceph_osd_tree;
+- ceph_df;
+- pbs_backup_info;
+- vsan_summary;
+- san_nas_export;
+- architecture_diagram;
+- quote_or_bill_of_materials;
+- unknown_needs_review.
+
+Estados:
+
+- received_not_analyzed;
+- queued;
+- summarized;
+- failed;
+- excluded.
+
+Reglas:
+
+- se muestra metadata, no contenido de archivos;
+- no hay OCR ni deep PDF/DOCX extraction todavia;
+- no se envia binario a IA;
+- no se toca el parser RVTools.
+
+### Storage Context Intelligence
+
+Storage Context Intelligence convierte storage context, preguntas estructuradas y metadata de evidencia en salida estructurada.
+
+Servicios:
+
+- `storageContextChunkingService`;
+- `storageContextSecurityService`;
+- `storageContextPrompt`;
+- `storageContextAiAnalysisService`;
+- `storageReadinessScoringService`;
+- `storageContextIntelligenceTypes`.
+
+Incluye:
+
+- interpreted storage summary;
+- source storage summary;
+- target storage preference;
+- destination options;
+- storage constraints;
+- Ceph signals preliminares;
+- operational readiness signals;
+- missing storage evidence;
+- contradictions/items to validate;
+- next questions;
+- recommendation impact;
+- storage completeness score;
+- storage evidence confidence;
+- storage destination readiness;
+- storage migration risk;
+- preliminary Ceph confidence.
+
+Seguridad:
+
+- chunking para texto largo;
+- sanitizer/redaction;
+- prompt injection mitigation;
+- el prompt trata customer content como data, nunca como instrucciones;
+- el output debe ser JSON estructurado;
+- AI disabled / budget blocked / plan restricted degradan de forma segura.
+
+Ceph en STORAGE-2:
+
+- solo signal preliminar;
+- `finalDecisionDeferred: true`;
+- no emite decision final de Ceph.
+
+### Ceph Suitability & Operations Readiness
+
+Ceph Suitability & Operations Readiness es un motor deterministico/rule-based. No llama IA.
+
+Principio:
+
+```text
+Ceph should never be recommended only because it is available in Proxmox.
+```
+
+Statuses:
+
+- `ceph_applies`;
+- `ceph_does_not_apply`;
+- `ceph_conditional`;
+- `ceph_overkill`;
+- `ceph_underdesigned`;
+- `not_enough_evidence`.
+
+Scores:
+
+- Ceph Suitability;
+- Ceph Operations Readiness;
+- Ceph Evidence Confidence;
+- Capacity Fit;
+- Network Readiness;
+- Failure Domain Readiness;
+- Backup Readiness;
+- Operational Skills.
+
+Criterios:
+
+- node count;
+- OSD/disk layout;
+- network speed / dedicated storage network;
+- failure domains;
+- raw vs usable capacity assumptions;
+- growth;
+- workload type and latency sensitivity;
+- backup/PBS readiness;
+- Ceph skills;
+- support model;
+- additional evidence.
+
+Output:
+
+- final Ceph status;
+- summary;
+- decision rationale;
+- findings;
+- remediations;
+- missing evidence;
+- assumptions;
+- recommended next step.
+
+Recommended next steps posibles:
+
+- proceed_to_ceph_blueprint;
+- collect_more_evidence;
+- use_zfs_or_existing_shared_storage;
+- remediate_before_ceph;
+- avoid_ceph_for_this_case;
+- run_pilot_first.
+
+### Report preview / PDF integration
+
+STORAGE-4 agrego:
+
+- payload `storageDestinationReadiness` en report preview;
+- normalizador `reportStorageDestinationReadinessSection.ts`;
+- UI compacta en report preview;
+- seccion PDF `Storage Destination Readiness`;
+- subseccion PDF `Ceph Suitability & Operations Readiness`.
+
+El normalizador consume resultados persistidos:
+
+- no recalcula Ceph;
+- tolera JSON null/malformed;
+- trunca listas largas;
+- ordena findings por severidad;
+- muestra fallbacks para not included, submitted/not analyzed, stale, failed, not enough evidence y no Ceph selected.
+
+El PDF incluye:
+
+- Storage Destination Readiness score;
+- Storage Evidence Confidence;
+- Storage Migration Risk;
+- target preference;
+- source storage summary;
+- destination options;
+- missing storage evidence;
+- storage contradictions/items to validate;
+- Ceph status/scores/findings/remediations cuando aplica;
+- assumptions/disclaimers.
+
+No imprime:
+
+- raw storage text;
+- contenido de archivos;
+- paths privados;
+- promesas de performance/capacity/downtime.
+
+### Landing / marketing visibility
+
+STORAGE-4 hizo visible:
+
+- `Storage & Ceph Readiness`;
+- `Licensing & Cost Exposure`;
+- plan/add-on copy de Storage Destination Readiness;
+- disclaimer de Ceph como no-default;
+- disclaimer de Licensing como not a vendor quote.
+
+Copy estrategico:
+
+- "Know whether your Proxmox storage target is ready - ZFS, existing NFS/SAN or Ceph - before moving production workloads."
+- "Ceph is evaluated when relevant; it is not recommended by default."
+- "Missing storage evidence lowers confidence, not usefulness."
+
+### Current limitations
+
+- STORAGE-1 migration sigue pendiente de aplicar en ambiente objetivo cuando se decida release futuro.
+- No collector Proxmox/Ceph/PBS todavia.
+- No deep PDF/DOCX/TXT extraction para storage evidence todavia.
+- No OCR.
+- No storage cost/TCO model.
+- Ceph tuning con evidencia real queda pendiente.
+- PDF visual con datasets storage-heavy reales puede requerir polish.
+
 ## 11. Customer Context Intelligence
 
 ### AI analysis
@@ -503,6 +805,7 @@ Report preview consolida:
 - risk findings;
 - licensingCostExposure;
 - customerContextIntelligence;
+- storageDestinationReadiness;
 - report entitlements/status.
 
 ### Report types
@@ -524,6 +827,8 @@ Incluye:
 - risk/cost summary;
 - Licensing & Cost Exposure Analysis;
 - Customer Context Intelligence;
+- Storage Destination Readiness;
+- Ceph Suitability & Operations Readiness cuando aplica;
 - technical details segun tipo.
 
 ### Disclaimers
@@ -533,12 +838,16 @@ Disclaimers importantes:
 - financial estimates are not vendor quotes;
 - customer-provided context is advisory;
 - raw narrative is not reproduced;
+- raw storage narrative is not reproduced;
+- storage evidence files are metadata-only;
+- Ceph is not recommended by default;
+- no performance/capacity/zero downtime guarantee;
 - third-party licensing not included;
 - storage cost modeling in development/not included.
 
 ### Smoke tests
 
-Hay tests y smoke PDF sinteticos. Release reciente confirmo `/sample-report` en produccion y user-attested PDF real OK.
+Hay tests y smoke PDF sinteticos. Storage/Ceph report visibility agrego pruebas de normalizador, PDF smoke y landing copy. Release reciente confirmo `/sample-report` en produccion y user-attested PDF real OK.
 
 ### Remaining visual risks
 
@@ -572,7 +881,7 @@ Pricing admin:
 - refresh manual;
 - approve/reject/archive;
 - changelog;
-- Storage "En desarrollo".
+- Storage/Ceph adoption visibility futura.
 
 ## 14. AI, Usage & Budget
 
@@ -674,15 +983,16 @@ Pendiente de tuning comercial:
 
 Estado actual:
 
-- Current release closure commit: `46edf2e docs: close user-attested production smoke`.
+- Current feature/documentation baseline: `ddf64d4 feat: add storage and Ceph report visibility`.
+- Previous release closure commit: `46edf2e docs: close user-attested production smoke`.
 - Controlled production release: closed operationally.
 - Full public launch: not declared.
 
 Migrations:
 
-- 15 migrations in repo.
-- Productive migrations applied in controlled release.
-- `npx prisma migrate status`: up to date.
+- Productive migrations from the controlled release were applied and `npx prisma migrate status` was up to date at closure.
+- Storage Destination Readiness introduced migration files after that controlled release.
+- Storage migrations are pending for the target environment until a future controlled release/migration window is approved.
 
 Smoke:
 
@@ -698,6 +1008,7 @@ Remaining production risks:
 - Full public launch requires business decision.
 - Real customer data QA may expose polish needs.
 - Pricing real approval/population pending.
+- Storage/Ceph migrations must be applied in the target environment before deploying Storage-dependent runtime code there.
 
 ## 18. Current Percentages
 
@@ -706,6 +1017,8 @@ Remaining production risks:
 | Product functional readiness | 99.8-99.9% |
 | Demo readiness | 97-98% |
 | Report/PDF readiness | 95-97% |
+| Storage module | ~95% |
+| Landing/demo visibility | improved after Storage/Ceph and Licensing visibility updates |
 | Production readiness | 97-98% |
 | Release confidence | 97-98% |
 | Licensing & Cost Exposure | 100% development / 95-97% operational |
@@ -719,9 +1032,12 @@ Remaining production risks:
 
 - Full public launch not declared.
 - Pricing real approval/population pending.
+- Storage migrations pending for target environment release.
+- Ceph tuning with real evidence pending.
 - Deep file extraction TXT/PDF/DOCX pending.
 - OCR pending.
 - Storage cost model pending.
+- Proxmox/Ceph/PBS read-only collector pending.
 - Performance historical analysis pending.
 - Proxmox target validation deeper pending.
 - Real customer prompt tuning pending.
@@ -734,6 +1050,9 @@ Remaining production risks:
 ### Immediate
 
 - Push/maintain master documentation.
+- Prepare controlled release readiness for pending Storage migrations.
+- Validate Storage/Ceph with real assessments.
+- Run PDF visual QA with storage-heavy real or synthetic data.
 - Use this manual for onboarding, demos and partner alignment.
 - Decide controlled beta / demo real candidates.
 - Populate approved pricing snapshots with real validated sources when ready.
@@ -741,7 +1060,8 @@ Remaining production risks:
 ### Short term
 
 - Real customer PDF visual QA.
-- Prompt tuning with real client context.
+- Prompt tuning with real client and storage/Ceph context.
+- Admin visibility for storage adoption, Ceph requests, stale/failed storage analysis and plan-limit hits.
 - Pricing approval/population runbook execution.
 - Hostinger log review cadence.
 - Partner/MSP plan/gating refinement.
@@ -751,11 +1071,15 @@ Remaining production risks:
 - Deep TXT/PDF/DOCX extraction.
 - Backup evidence ingestion.
 - Proxmox target validation deeper.
+- Proxmox/Ceph/PBS read-only collector.
 - Storage cost model.
 - Performance historical analysis.
 
 ### Future
 
+- Ceph operations dashboard.
+- MSP storage assessment templates.
+- Partner/white-label storage methodology.
 - Partner/MSP white-label.
 - Advanced wave planning.
 - More integrations: CMDB/IPAM/backup platforms.
