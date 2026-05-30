@@ -6,6 +6,7 @@ export const SENIOR_ADVISOR_OPERATION_TYPE = "senior_advisor_message" as const;
 
 export type SeniorAdvisorPlanKey =
   | "starter"
+  | "internal_qa"
   | "readiness_report"
   | "pro"
   | "blueprint"

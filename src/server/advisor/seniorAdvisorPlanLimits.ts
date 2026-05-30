@@ -22,6 +22,20 @@ const PLAN_LIMITS: Record<
     requestMoreCreditsEnabled: false,
     requestMoreCreditsMode: "coming_soon",
   },
+  internal_qa: {
+    label: "Internal QA",
+    enabled: true,
+    messageLimit: 25,
+    maxUserMessageChars: 3_000,
+    maxPromptInputChars: 18_000,
+    maxResponseTokens: 900,
+    warningAtPercent: 80,
+    deepSynthesisEnabled: false,
+    executiveBriefEnabled: false,
+    canRequestMoreCredits: true,
+    requestMoreCreditsEnabled: false,
+    requestMoreCreditsMode: "contact_us",
+  },
   readiness_report: {
     label: "Professional",
     enabled: true,
@@ -86,8 +100,11 @@ export function normalizeSeniorAdvisorPlanKey(
   const normalized = value?.trim().toLowerCase();
 
   switch (normalized) {
-    case "admin":
     case "internal_qa":
+    case "advisor_qa":
+    case "qa":
+      return "internal_qa";
+    case "admin":
     case "msp_partner":
     case "partner":
       return "partner";
