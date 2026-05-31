@@ -45,25 +45,17 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             <div className="badge badge-premium">
               <Shield size={13} className="shield-blink" />
               <span>
-                Cognitive Advisory Copilot | 100% Agentless & Enterprise Verified
+                No agents. No mandatory credentials. No production access. Starts with RVTools.
               </span>
             </div>
             <h1 className="hero-title">
-              Not a parser. The first
+              Audit your VMware exit risk
               <br />
-              AI-powered <span className="text-gradient">Senior Copilot</span>
-              <br />
-              for VMware exits.
+              before <span className="text-gradient">production moves</span>.
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
-                Go beyond basic calculators and scripts. Shift Evidence is a guided advisory engine
-                that combines raw configuration evidence with smart contextual intake to simulate a
-                principal architect review.
-              </p>
-              <p className="text-muted">
-                Our platform provides fully storage-agnostic modeling, optimized for high-performance Ceph
-                targets and compatible with SAN, NAS, or ZFS environments.
+                Shift Evidence turns RVTools inventory, storage destination evidence and project context into a VMware → Proxmox readiness decision pack: risk signals, evidence confidence, storage readiness, migration waves, reports and a contextual Senior Migration Advisor.
               </p>
               <div className="badge badge-tam" style={{ marginTop: "0.75rem", marginBottom: "0", alignSelf: "flex-start" }}>
                 <Shield size={12} />
@@ -2630,16 +2622,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 className="text-muted"
                 style={{ fontSize: "1rem", lineHeight: "1.6", margin: 0 }}
               >
-                It analyzes the migration from multiple angles: workload risk,
-                infrastructure sizing, backup gaps, storage and network
-                complexity, missing evidence, migration waves, no-go items and
-                executive decision criteria.
+                Shift Evidence turns RVTools inventory, storage destination evidence and project context into a VMware → Proxmox readiness decision pack.
               </p>
             </div>
 
             <div className="hero-actions">
               <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
-                Audit Your Cluster
+                Start Free Assessment
                 <ArrowRight size={18} />
               </button>
               <a
@@ -2648,6 +2637,17 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               >
                 View Sample Report
                 <FileText size={18} className="text-cyan" />
+              </a>
+              <a
+                href="/client-login"
+                className="btn btn-secondary"
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "var(--text-muted)",
+                }}
+              >
+                Client login
               </a>
             </div>
           </div>
