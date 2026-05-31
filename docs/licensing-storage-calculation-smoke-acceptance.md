@@ -264,3 +264,15 @@ Veredicto: APROBADO CON OBSERVACIONES.
 La base funcional queda validada por codigo, tests, rutas publicas y smoke visible de la calculadora default. Quedan observaciones por build local bloqueado por `EPERM` y smokes autenticados no ejecutados.
 
 No se tocaron produccion, DB productiva, Hostinger, deploy ni env vars.
+
+## 14. Build unblock follow-up
+
+Fecha: 2026-05-31
+
+- Causa probable: lock local de Windows/OneDrive sobre un artefacto previo en `.next/static`.
+- Resolucion: se confirmo que no habia dev server en puerto 3000, se preservaron procesos Codex, se verifico que `.next` resolvia dentro del workspace y se elimino solo `.next`.
+- Build final: OK con `npm run build`.
+- Warning conocido: Turbopack/NFT sobre `src/server/evidence/localStorageService.ts`.
+- Validaciones finales: `npx prisma validate`, `npx prisma generate`, `npm run typecheck`, `npm run lint`, `npm run test:run` y `npm run build` OK.
+- Push: preparado para `origin/main` sin force push.
+- Commit de cierre documental: `docs: close licensing storage smoke acceptance`.
