@@ -490,7 +490,7 @@ export default function MigrationReadinessReplay() {
                   <span>Full synthetic PDF report</span>
                 </div>
                 <a 
-                  href="/sample-reports/proxmox-migration-readiness-sample-report.pdf" 
+                  href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf" 
                   className="btn btn-primary btn-sm btn-glow" 
                   target="_blank" 
                   rel="noreferrer"

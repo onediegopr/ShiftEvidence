@@ -20,10 +20,13 @@ The public sample remains isolated from the real product runtime:
 ## Public Route And PDF
 
 - Public page: `/sample-report`.
-- Public PDF: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
+- Public PDF: `/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf`.
+- Compatibility PDF: `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - Generator: `scripts/generate-public-sample-report.mjs`.
 - Component: `src/components/sample-report/SampleReportPage.tsx`.
 - Dataset: synthetic `Northbridge Industrial Group`.
+
+The versioned PDF path was introduced after HCDN continued serving the previous unversioned PDF from cache on clean requests. The old path remains in place for existing external links, while public CTAs now point to the versioned asset.
 
 ## Synthetic Dataset
 
@@ -107,6 +110,7 @@ This writes:
 
 ```text
 public/sample-reports/proxmox-migration-readiness-sample-report.pdf
+public/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf
 ```
 
 The generator normalizes non-sensitive PDF metadata so repeated generation remains stable.
@@ -172,6 +176,7 @@ To revert:
 1. Revert the commit that changed the sample generator/page/CTA files.
 2. Restore the prior PDF artifact.
 3. Regenerate with the old generator if necessary.
+4. Point public CTAs back to the unversioned path after HCDN cache is known to be fresh.
 
 No database, auth, billing, entitlement, real pricing or production storage rollback is required.
 
@@ -179,4 +184,4 @@ No database, auth, billing, entitlement, real pricing or production storage roll
 
 - The PDF is a static synthetic artifact, not generated from the live assessment report renderer.
 - Future product sections may need periodic sample refreshes.
-- A post-push production smoke should verify CDN freshness for `/sample-report` and the PDF path.
+- HCDN may keep stale HTML for `/sample-report` until its cache expires or is purged.

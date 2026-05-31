@@ -250,7 +250,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 <ArrowRight size={18} />
               </Link>
               <a
-                href="/sample-reports/proxmox-migration-readiness-sample-report.pdf"
+                href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf"
                 className="btn btn-secondary"
                 target="_blank"
                 rel="noreferrer"

@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const outputDir = path.join(repoRoot, "public", "sample-reports");
 const outputPath = path.join(outputDir, "proxmox-migration-readiness-sample-report.pdf");
+const versionedOutputPath = path.join(outputDir, "proxmox-migration-readiness-premium-sample-report-v2.pdf");
 
 const colors = {
   ink: "#101828",
@@ -545,4 +546,7 @@ fs.writeFileSync(
   "latin1",
 );
 
+fs.copyFileSync(outputPath, versionedOutputPath);
+
 console.log(`Generated ${path.relative(repoRoot, outputPath)} (${totalPages} pages)`);
+console.log(`Generated ${path.relative(repoRoot, versionedOutputPath)} (${totalPages} pages)`);
