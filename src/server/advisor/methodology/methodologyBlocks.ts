@@ -401,7 +401,7 @@ export const METHODOLOGY_BLOCKS = [
       "Missing evidence handling: list the specific validations required before moving from No-Go or Conditional Go to the next stage.",
     ].join("\n"),
     domain: "governance",
-    tags: ["no_go", "conditional_go", "validation", "governance", "risk_gate"],
+    tags: ["no_go_validations", "no_go", "conditional_go", "validation", "governance", "risk_gate"],
     keywords: [
       "no go",
       "conditional go",

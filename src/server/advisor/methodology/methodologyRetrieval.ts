@@ -68,6 +68,7 @@ function scoreBlock(params: {
 
   const score =
     matchedTags.length * 8 +
+    matchedTags.filter((tag) => normalizeText(tag) === normalizeText(params.block.id)).length * 12 +
     matchedKeywords.length * 3 +
     matchedUseCases.length * 6 +
     matchedDomains.length * 5;
