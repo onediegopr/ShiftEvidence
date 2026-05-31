@@ -195,7 +195,56 @@ Riesgo operativo:
 - Si env vars aparecen accidentalmente, el estado puede pasar a configured disabled, pero checkout sigue inactivo.
 - Activar pagos reales requiere un hito separado con seguridad, webhooks y fulfillment.
 
-## 13. Rollback
+## 13. Update - Redirect origin hardening
+
+Fecha: 2026-05-31
+
+El smoke productivo de BILLING-2.7 detecto que los fallback redirects de
+`POST /billing/checkout/[plan]/start` devolvian `https://0.0.0.0:3000/...`.
+
+Causa:
+
+- La ruta construia el fallback con `new URL(path, request.url)`.
+- En runtime Hostinger/Next, `request.url` puede reflejar el host interno del
+  proceso (`0.0.0.0:3000`) y no el dominio publico.
+
+Fix:
+
+- Se agrego `src/server/billing/checkoutOrigin.ts`.
+- El origen de checkout se resuelve con esta prioridad:
+  1. `NEXT_PUBLIC_APP_URL` si existe y es un host publico permitido.
+  2. `BETTER_AUTH_URL` si existe y es un host publico permitido.
+  3. `x-forwarded-host` / `x-forwarded-proto` sanitizados.
+  4. fallback seguro a `https://shiftevidence.com`.
+- Hosts internos como `0.0.0.0`, `localhost`, `127.0.0.1`, `::` y `::1` son
+  rechazados para redirects de checkout.
+- Hosts no confiables tambien caen al fallback publico.
+
+Runtime env requerida para checkout por plan:
+
+- `LEMON_SQUEEZY_STORE_ID`
+- `LEMON_SQUEEZY_API_KEY` o `LEMONSQUEEZY_API_KEY`
+- `LEMON_STARTER_VARIANT_ID`
+- `LEMON_PROFESSIONAL_VARIANT_ID`
+- `LEMON_MSP_VARIANT_ID`
+
+Estado produccion observado antes del fix:
+
+- GET de las tres rutas: 200.
+- POST de las tres rutas: `error=not_configured`.
+- No se creo checkout externo Lemon.
+- No se activaron pagos live.
+
+Verificacion Hostinger:
+
+- No hay `HOSTINGER_API_TOKEN` disponible localmente para lectura por API desde
+  Codex.
+- Por seguridad no se imprimieron ni copiaron valores de env vars.
+- La respuesta `not_configured` indica que, para el runtime que atendio el POST,
+  falta al menos una variable requerida por plan o el proceso todavia no tomo el
+  entorno esperado.
+
+## 14. Rollback
 
 Revertir el commit de BILLING-2 elimina:
 

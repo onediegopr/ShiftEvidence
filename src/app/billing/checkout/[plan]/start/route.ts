@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getBillingPlanByCheckoutSlug } from "../../../../../config/billing";
+import { getCheckoutPublicOrigin } from "../../../../../server/billing/checkoutOrigin";
 import { createLemonSqueezyCheckout } from "../../../../../server/billing/lemonSqueezyCheckout";
 
 type BillingCheckoutStartRouteContext = {
@@ -8,8 +9,8 @@ type BillingCheckoutStartRouteContext = {
   }>;
 };
 
-function redirectToCheckoutPage(request: NextRequest, planSlug: string, params: Record<string, string>) {
-  const url = new URL(`/billing/checkout/${planSlug}`, request.url);
+function redirectToCheckoutPage(origin: string, planSlug: string, params: Record<string, string>) {
+  const url = new URL(`/billing/checkout/${planSlug}`, origin);
 
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.set(key, value);
@@ -21,15 +22,16 @@ function redirectToCheckoutPage(request: NextRequest, planSlug: string, params: 
 export async function POST(request: NextRequest, context: BillingCheckoutStartRouteContext) {
   const { plan: planSlug } = await context.params;
   const plan = getBillingPlanByCheckoutSlug(planSlug);
+  const publicOrigin = getCheckoutPublicOrigin(request.headers);
 
   if (!plan) {
-    return redirectToCheckoutPage(request, planSlug, { error: "unsupported_plan" });
+    return redirectToCheckoutPage(publicOrigin, planSlug, { error: "unsupported_plan" });
   }
 
-  const result = await createLemonSqueezyCheckout(plan, request.url);
+  const result = await createLemonSqueezyCheckout(plan, publicOrigin);
 
   if (!result.ok) {
-    return redirectToCheckoutPage(request, planSlug, { error: result.reason });
+    return redirectToCheckoutPage(publicOrigin, planSlug, { error: result.reason });
   }
 
   return NextResponse.redirect(result.url, 303);

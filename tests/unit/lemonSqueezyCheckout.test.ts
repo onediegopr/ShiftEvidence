@@ -10,6 +10,7 @@ const trackedEnvNames = [
   "LEMONSQUEEZY_API_KEY",
   "LEMON_STARTER_VARIANT_ID",
   "LEMON_SQUEEZY_CHECKOUT_MODE",
+  "LEMON_SQUEEZY_CHECKOUT_ENABLED",
 ] as const;
 const originalEnv = Object.fromEntries(trackedEnvNames.map((name) => [name, process.env[name]]));
 
@@ -78,6 +79,21 @@ describe("Lemon Squeezy checkout creation", () => {
     expect(body.data.attributes.test_mode).toBe(true);
     expect(body.data.relationships.store.data.id).toBe("393386");
     expect(body.data.relationships.variant.data.id).toBe("123");
+  });
+
+  it("does not call Lemon when checkout is explicitly disabled", async () => {
+    process.env.LEMON_SQUEEZY_STORE_ID = "393386";
+    process.env.LEMONSQUEEZY_API_KEY = "test-key";
+    process.env.LEMON_STARTER_VARIANT_ID = "123";
+    process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED = "false";
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createLemonSqueezyCheckout(starterPlan, "https://shiftevidence.com/billing/checkout/starter");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("checkout_disabled");
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it("defaults to test checkout mode unless live mode is explicit", () => {

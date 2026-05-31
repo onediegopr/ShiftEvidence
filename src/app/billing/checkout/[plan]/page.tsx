@@ -56,6 +56,8 @@ function errorMessage(error: string | undefined) {
   switch (error) {
     case "not_configured":
       return "Checkout is missing one or more server-side Lemon Squeezy variables.";
+    case "checkout_disabled":
+      return "Checkout is temporarily disabled. Please request an invoice instead.";
     case "invalid_variant":
       return "The configured Lemon Squeezy variant ID is invalid.";
     case "lemon_api_error":

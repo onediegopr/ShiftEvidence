@@ -182,3 +182,46 @@ Still not implemented:
 - subscription reconciliation;
 - production payment smoke;
 - full public launch declaration.
+
+## 14. Production smoke and redirect origin hardening
+
+Date: 2026-05-31
+
+BILLING-2.7 production smoke observed:
+
+- `/billing/checkout/starter`: GET 200.
+- `/billing/checkout/professional`: GET 200.
+- `/billing/checkout/msp`: GET 200.
+- POST start routes returned `error=not_configured`.
+- No external Lemon checkout was created.
+- No live payment was attempted.
+
+Issue:
+
+- Fallback POST redirects used an internal origin: `https://0.0.0.0:3000/...`.
+
+Cause:
+
+- The route used the raw request URL as redirect base, and Hostinger/Next can
+  expose the internal listener origin to the app runtime.
+
+Fix strategy:
+
+- Resolve checkout origin server-side from trusted public env vars first.
+- Sanitize forwarded host/proto headers.
+- Reject internal hosts.
+- Fall back to `https://shiftevidence.com`.
+
+Required runtime variables remain:
+
+- `LEMON_SQUEEZY_STORE_ID`
+- `LEMON_SQUEEZY_API_KEY` or `LEMONSQUEEZY_API_KEY`
+- `LEMON_STARTER_VARIANT_ID`
+- `LEMON_PROFESSIONAL_VARIANT_ID`
+- `LEMON_MSP_VARIANT_ID`
+
+Hostinger verification note:
+
+- Codex did not have a local `HOSTINGER_API_TOKEN`, so Hostinger env vars could
+  not be read through the Hostinger API in this pass.
+- No env values or secrets were printed or stored.

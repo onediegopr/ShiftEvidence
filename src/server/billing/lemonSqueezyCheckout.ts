@@ -1,4 +1,5 @@
 import type { BillingPlanConfig } from "../../config/billing";
+import { normalizeCheckoutOrigin } from "./checkoutOrigin";
 
 const LEMON_SQUEEZY_CHECKOUTS_API_URL = "https://api.lemonsqueezy.com/v1/checkouts";
 
@@ -21,7 +22,7 @@ export type LemonCheckoutResult =
     }
   | {
       ok: false;
-      reason: "not_eligible" | "not_configured" | "invalid_variant" | "lemon_api_error";
+      reason: "not_eligible" | "checkout_disabled" | "not_configured" | "invalid_variant" | "lemon_api_error";
       detail: string;
       statusCode?: number;
     };
@@ -39,16 +40,12 @@ export function getLemonSqueezyCheckoutMode() {
   return readEnv("LEMON_SQUEEZY_CHECKOUT_MODE") === "live" ? "live" : "test";
 }
 
-function getPlanVariantId(plan: BillingPlanConfig) {
-  return plan.lemonVariantEnvName ? readEnv(plan.lemonVariantEnvName) : null;
+function isLemonSqueezyCheckoutDisabled() {
+  return readEnv("LEMON_SQUEEZY_CHECKOUT_ENABLED") === "false";
 }
 
-function getRedirectOrigin(origin: string) {
-  try {
-    return new URL(origin).origin;
-  } catch {
-    return null;
-  }
+function getPlanVariantId(plan: BillingPlanConfig) {
+  return plan.lemonVariantEnvName ? readEnv(plan.lemonVariantEnvName) : null;
 }
 
 export async function createLemonSqueezyCheckout(plan: BillingPlanConfig, origin: string): Promise<LemonCheckoutResult> {
@@ -60,10 +57,18 @@ export async function createLemonSqueezyCheckout(plan: BillingPlanConfig, origin
     };
   }
 
+  if (isLemonSqueezyCheckoutDisabled()) {
+    return {
+      ok: false,
+      reason: "checkout_disabled",
+      detail: "Lemon Squeezy checkout is disabled by runtime configuration.",
+    };
+  }
+
   const storeId = readEnv("LEMON_SQUEEZY_STORE_ID");
   const apiKey = readLemonSqueezyApiKey();
   const variantId = getPlanVariantId(plan);
-  const redirectOrigin = getRedirectOrigin(origin);
+  const redirectOrigin = normalizeCheckoutOrigin(origin);
 
   if (!storeId || !apiKey || !variantId || !redirectOrigin) {
     return {
