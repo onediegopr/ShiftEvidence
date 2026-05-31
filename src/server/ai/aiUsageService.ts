@@ -75,9 +75,10 @@ function sanitizeMetadata(value: unknown): Prisma.InputJsonValue | undefined {
   }
 
   const unsafeKeys = /key|secret|token|cookie|password|authorization|database_url|direct_url|storage|path|prompt|response/i;
+  const explicitSafeKeys = new Set(["methodologyTokenEstimate"]);
   const safe: Record<string, Prisma.InputJsonValue> = {};
   for (const [key, item] of Object.entries(value)) {
-    if (unsafeKeys.test(key)) {
+    if (!explicitSafeKeys.has(key) && unsafeKeys.test(key)) {
       continue;
     }
 
@@ -85,6 +86,13 @@ function sanitizeMetadata(value: unknown): Prisma.InputJsonValue | undefined {
       safe[key] = item.slice(0, 160);
     } else if (typeof item === "number" || typeof item === "boolean" || item === null) {
       safe[key] = item;
+    } else if (
+      Array.isArray(item) &&
+      item.every((entry) => typeof entry === "string" || typeof entry === "number" || typeof entry === "boolean")
+    ) {
+      safe[key] = item.slice(0, 20).map((entry) =>
+        typeof entry === "string" ? entry.slice(0, 160) : entry,
+      ) as Prisma.InputJsonArray;
     }
   }
 

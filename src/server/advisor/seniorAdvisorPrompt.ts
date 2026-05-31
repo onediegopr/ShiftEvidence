@@ -7,6 +7,7 @@ export function buildSeniorAdvisorPrompt(params: {
   context: SeniorAdvisorContextPayload;
   userQuestion: string;
   recentMessages?: SeniorAdvisorMessageView[];
+  methodologyContext?: string | null;
 }) {
   const { projectMemory, ...assessmentContext } = params.context;
   const memoryContext = projectMemory ?? {
@@ -70,6 +71,12 @@ export function buildSeniorAdvisorPrompt(params: {
     "- Never expose hidden/system memory metadata to the user.",
     "- Keep memory-based answers concise and actionable.",
     "",
+    ...(params.methodologyContext
+      ? [
+          params.methodologyContext,
+          "",
+        ]
+      : []),
     "Response format:",
     "- Plain English.",
     "- Use bullets when they improve clarity.",

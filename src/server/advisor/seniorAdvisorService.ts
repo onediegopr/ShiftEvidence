@@ -23,6 +23,11 @@ import { compactAdvisorMemoryPromptContext } from "./advisorMemoryPromptContext"
 import { runAdvisorMemoryAutoExtraction, type AdvisorMemoryAutoExtractionResult } from "./advisorMemoryExtractionService";
 import { getAdvisorMemoryPanelState } from "./advisorMemoryService";
 import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
+import {
+  buildSeniorAdvisorMethodologyAuditMetadata,
+  buildSeniorAdvisorMethodologyContext,
+  buildSeniorAdvisorMethodologyUsageMetadata,
+} from "./seniorAdvisorMethodologyContext";
 import { buildSeniorAdvisorContextPayloadWithMemory, summarizeSeniorAdvisorContextSections } from "./seniorAdvisorContextService";
 import {
   buildSeniorAdvisorUsageState,
@@ -290,6 +295,7 @@ function buildBoundedPrompt(params: {
   userQuestion: string;
   recentMessages: SeniorAdvisorMessageView[];
   maxPromptChars: number;
+  methodologyContext?: string | null;
 }) {
   const candidates = [
     params.context,
@@ -308,6 +314,7 @@ function buildBoundedPrompt(params: {
         context,
         userQuestion: params.userQuestion,
         recentMessages,
+        methodologyContext: params.methodologyContext,
       });
       if (prompt.length <= params.maxPromptChars) {
         return { prompt, contextUsed: context, reduced: context !== params.context || recentMessages.length !== params.recentMessages.slice(-8).length };
@@ -319,6 +326,7 @@ function buildBoundedPrompt(params: {
     context: minimalAdvisorContext(params.context),
     userQuestion: params.userQuestion.slice(0, 1_200),
     recentMessages: [],
+    methodologyContext: params.methodologyContext,
   }).slice(0, params.maxPromptChars);
   return { prompt, contextUsed: minimalAdvisorContext(params.context), reduced: true };
 }
@@ -1017,6 +1025,19 @@ export async function sendSeniorAdvisorMessage(
     assessment,
     userId: params.userId,
   });
+  const methodologyContext = buildSeniorAdvisorMethodologyContext({
+    context,
+    userQuestion: security.sanitizedText,
+  });
+  const methodologyUsageMetadata = buildSeniorAdvisorMethodologyUsageMetadata(methodologyContext);
+  const methodologyAuditMetadata = buildSeniorAdvisorMethodologyAuditMetadata(methodologyContext);
+  if (methodologyContext.status === "error") {
+    logger.warn("advisor_methodology_context_preview_failed", {
+      assessmentId: assessment.id,
+      userId: params.userId,
+      errorCode: methodologyContext.errorCode,
+    });
+  }
   const conversation = await getOrCreateAdvisorConversation({
     assessment,
     userId: params.userId,
@@ -1039,6 +1060,7 @@ export async function sendSeniorAdvisorMessage(
       usageState.limits.maxPromptInputChars,
       config.maxInputChars > 0 ? config.maxInputChars : usageState.limits.maxPromptInputChars,
     ),
+    methodologyContext: methodologyContext.promptSection,
   });
   const contextSections = summarizeSeniorAdvisorContextSections(boundedPrompt.contextUsed);
   const memoryUsageMetadata = buildSeniorAdvisorMemoryUsageMetadata(contextSections);
@@ -1078,6 +1100,7 @@ export async function sendSeniorAdvisorMessage(
         reason: "ai_disabled",
         contextReduced: boundedPrompt.reduced,
         ...memoryUsageMetadata,
+        ...methodologyUsageMetadata,
       },
     });
     await recordAdvisorAuditEvent({
@@ -1085,7 +1108,11 @@ export async function sendSeniorAdvisorMessage(
       assessment,
       eventType: "advisor_message_ai_disabled",
       message: "Senior Migration Advisor message was blocked because AI is disabled.",
-      metadataJson: { provider: config.provider, model: config.model },
+      metadataJson: {
+        provider: config.provider,
+        model: config.model,
+        ...methodologyAuditMetadata,
+      },
     });
     return {
       ok: true,
@@ -1138,6 +1165,7 @@ export async function sendSeniorAdvisorMessage(
         reason: operationalCheck.code,
         contextReduced: boundedPrompt.reduced,
         ...memoryUsageMetadata,
+        ...methodologyUsageMetadata,
       },
     });
     await recordAdvisorAuditEvent({
@@ -1145,7 +1173,10 @@ export async function sendSeniorAdvisorMessage(
       assessment,
       eventType: mapped.eventType,
       message: "Senior Migration Advisor message was blocked by operational controls.",
-      metadataJson: { reason: operationalCheck.code },
+      metadataJson: {
+        reason: operationalCheck.code,
+        ...methodologyAuditMetadata,
+      },
     });
     return {
       ok: true,
@@ -1240,6 +1271,7 @@ export async function sendSeniorAdvisorMessage(
         contextReduced: boundedPrompt.reduced,
         contextSections: Object.values(contextSections).filter(Boolean).length,
         ...memoryUsageMetadata,
+        ...methodologyUsageMetadata,
         ...buildAdvisorMemoryExtractionUsageMetadata(memoryExtraction),
         creditCost: 1,
       },
@@ -1254,6 +1286,7 @@ export async function sendSeniorAdvisorMessage(
         model: providerResult.model,
         fallbackUsed: providerResult.fallbackUsed,
         creditCost: 1,
+        ...methodologyAuditMetadata,
       },
     });
     const refreshedUsage = buildSeniorAdvisorUsageState({
@@ -1333,6 +1366,7 @@ export async function sendSeniorAdvisorMessage(
         ...providerErrorMetadata,
         contextReduced: boundedPrompt.reduced,
         ...memoryUsageMetadata,
+        ...methodologyUsageMetadata,
         ...buildAdvisorMemoryExtractionUsageMetadata(memoryExtraction),
       },
     });
@@ -1344,6 +1378,7 @@ export async function sendSeniorAdvisorMessage(
       metadataJson: {
         ...providerErrorMetadata,
         contextReduced: boundedPrompt.reduced,
+        ...methodologyAuditMetadata,
       },
     });
     return {
