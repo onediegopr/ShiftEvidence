@@ -12,6 +12,7 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
 import Footer from "../components/Footer";
+import { marketingPlans, paymentOptionsCopy } from "../lib/pricingPlans";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 import {
@@ -188,7 +189,7 @@ const landingFaqsGrouped = {
     },
     {
       q: "Is Storage included in every plan?",
-      a: "Storage Destination Readiness analysis is a premium capability included in the Readiness Report Pro and custom Migration Blueprints.",
+      a: "Storage Destination Readiness analysis is included in Professional Assessment and scoped Migration Blueprint work.",
     },
   ],
   advisor: [
@@ -212,27 +213,27 @@ const landingFaqsGrouped = {
   pricing: [
     {
       q: "Do I need a credit card to start?",
-      a: "No. You can start with the Free Readiness Check. Paid reports and Pro features are selected when you decide to unlock deeper analysis or delivery outputs.",
+      a: "No. You can start the intake first. Starter and Professional payment flows will support card checkout, while business customers can request bank transfer invoices.",
     },
     {
-      q: "What happens after I buy a report?",
-      a: "Your workspace is upgraded instantly. The platform applies the pricing/licensing engine to all uploaded evidence, unlocking downloadable executive summaries and VM matrix details.",
+      q: "How do payments work?",
+      a: paymentOptionsCopy.faq,
     },
     {
       q: "Can I upgrade later?",
-      a: "Yes. You can upgrade from Free to the Readiness Report, or to the Pro plan for storage and AI features at any point during your planning cycle.",
+      a: "Yes. You can move from Starter Readiness into a Professional Assessment, request a scoped Migration Blueprint, or discuss an MSP Partner agreement.",
     },
     {
       q: "Which plan includes Storage?",
-      a: "The Readiness Report Pro and custom Migration Blueprints include Storage Destination Readiness analysis.",
+      a: "Professional Assessment and Migration Blueprint include Storage Destination Readiness analysis.",
     },
     {
       q: "Which plan includes the Advisor?",
-      a: "The Senior Migration Advisor and Project Memory Vault access are included in the Readiness Report Pro.",
+      a: "The Senior Migration Advisor and Project Memory Vault access are included in Professional Assessment, Blueprint and eligible MSP Partner agreements.",
     },
     {
       q: "Can I request an invoice?",
-      a: "Yes. Corporate billing support is available for purchasing, invoice generation, or purchase order routing.",
+      a: "Yes. Bank transfer invoices are available for business customers, especially for Professional, Blueprint and MSP agreements.",
     },
   ],
   support: [
@@ -256,6 +257,7 @@ export default function LandingPage() {
   const [selectedEvaluationId, setSelectedEvaluationId] = useState<string | null>(null);
   const [faqCategory, setFaqCategory] = useState<keyof typeof landingFaqsGrouped>("product");
   const selectedEvaluation = industryEvaluations.find((evaluation) => evaluation.id === selectedEvaluationId);
+  const landingPricingPlans = marketingPlans.slice(0, 3);
 
   const handleOpenScanner = () => {
     window.location.href = "/sign-up";
@@ -945,7 +947,7 @@ export default function LandingPage() {
               <span className="badge badge-cyan" style={{ marginBottom: "1rem" }}>Plans & Pricing</span>
               <h2 style={{ fontSize: "2.25rem", color: "white", marginBottom: "1rem" }}>Transparent, modular pricing models.</h2>
               <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "0 auto 2.5rem", fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Start with a Free Readiness Check. Upgrade to unlock detailed licensing summaries, VM matrix breakdowns, or premium Storage readiness and Senior AI Advisor review.
+                Start with a focused readiness assessment. Use card checkout when available, or request a bank transfer invoice for business purchasing.
               </p>
 
               <div 
@@ -959,21 +961,20 @@ export default function LandingPage() {
                   paddingBottom: "2.5rem"
                 }}
               >
-                <div style={{ textAlign: "center" }}>
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Check</span>
-                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 0</div>
-                </div>
-                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} />
-                <div style={{ textAlign: "center" }}>
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Report</span>
-                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 249</div>
-                </div>
-                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} />
-                <div style={{ textAlign: "center" }}>
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Pro (AI/Storage)</span>
-                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 690</div>
-                </div>
+                {landingPricingPlans.map((plan, index) => (
+                  <div key={plan.id} style={{ display: "contents" }}>
+                    {index > 0 ? <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} /> : null}
+                    <div style={{ textAlign: "center" }}>
+                      <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>{plan.name}</span>
+                      <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>{plan.price}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
+
+              <p className="assessment-inline-note" style={{ margin: "-1rem auto 2rem", maxWidth: "680px" }}>
+                {paymentOptionsCopy.notActive} {paymentOptionsCopy.bankTransfer}
+              </p>
 
               <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
                 <a href="/pricing" className="btn btn-primary btn-glow" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>

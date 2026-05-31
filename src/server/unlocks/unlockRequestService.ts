@@ -85,28 +85,28 @@ const unlockTypeConfig: Record<
   }
 > = {
   readiness_report: {
-    title: "Readiness Report",
+    title: "Starter Readiness",
     entitlementKeys: ["full_report_unlocked"],
-    defaultAmountCents: 79000,
-    defaultDetail: "Manual review unlock for the full readiness report.",
+    defaultAmountCents: 49000,
+    defaultDetail: "Manual review request for Starter Readiness access.",
   },
   readiness_report_pro: {
-    title: "Readiness Report Pro",
+    title: "Professional Assessment",
     entitlementKeys: ["full_report_unlocked", "pro_matrix_unlocked"],
-    defaultAmountCents: 149000,
-    defaultDetail: "Manual review unlock for the pro-level report package.",
+    defaultAmountCents: 150000,
+    defaultDetail: "Manual review request for the Professional Assessment package.",
   },
   storage_addon: {
-    title: "Storage Add-on",
+    title: "Storage Scope Review",
     entitlementKeys: ["storage_readiness_unlocked"],
-    defaultAmountCents: 29000,
-    defaultDetail: "Manual review unlock for the storage add-on.",
+    defaultAmountCents: null,
+    defaultDetail: "Manual review request for storage scope and invoice routing.",
   },
   technical_review: {
     title: "Technical Review",
     entitlementKeys: ["review_call_unlocked"],
-    defaultAmountCents: 99000,
-    defaultDetail: "Manual review unlock for the technical review path.",
+    defaultAmountCents: null,
+    defaultDetail: "Manual review request for a scoped technical review path.",
   },
 };
 
@@ -629,7 +629,7 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
     }),
     buildCommercialModule({
       key: "readiness_report",
-      title: "Readiness Report",
+      title: "Starter Readiness",
       unlocked: hasFullReportUnlocked,
       statusLabel: hasFullReportUnlocked
         ? "Unlocked"
@@ -652,18 +652,18 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
       detail: hasFullReportUnlocked
         ? "Entitlement granted. Full report sections are available."
         : latestRequests.readiness_report?.status === "pending"
-          ? "Request received. We'll contact you to complete payment and unlock this report."
+          ? "Request received. We'll contact you to confirm payment options and access."
           : latestRequests.readiness_report?.status === "approved"
             ? "Approved manually. Waiting for fulfillment."
             : latestRequests.readiness_report?.status === "rejected"
               ? "The request was rejected."
               : latestRequests.readiness_report?.status === "cancelled"
                 ? "The request was cancelled."
-                : "Request unlock to open the full report.",
+                : "Request Starter Readiness access to open the assessment baseline.",
     }),
     buildCommercialModule({
       key: "readiness_report_pro",
-      title: "Readiness Report Pro",
+      title: "Professional Assessment",
       unlocked: hasFullReportUnlocked && hasProUnlocked,
       statusLabel:
         hasFullReportUnlocked && hasProUnlocked
@@ -696,11 +696,11 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
                 ? "The request was rejected."
                 : latestRequests.readiness_report_pro?.status === "cancelled"
                   ? "The request was cancelled."
-                  : "Request unlock to open the pro report.",
+                  : "Request Professional Assessment access for advanced sections.",
     }),
     buildCommercialModule({
       key: "storage_addon",
-      title: "Storage Add-on",
+      title: "Storage Scope Review",
       unlocked: hasStorageAddonUnlocked,
       statusLabel: hasStorageAddonUnlocked
         ? "Unlocked"
@@ -725,18 +725,18 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
             ? "danger"
             : "neutral",
       detail: hasStorageAddonUnlocked
-        ? "Storage add-on entitlement granted."
+        ? "Storage scope entitlement granted."
         : hasStorageAddonAvailable
-          ? "Storage add-on is selected but not manually unlocked yet."
+          ? "Storage scope is selected but not manually unlocked yet."
         : latestRequests.storage_addon?.status === "pending"
-          ? "Request received. We'll contact you to complete payment and unlock the storage add-on."
+          ? "Request received. We'll contact you to discuss scope and invoice routing."
           : latestRequests.storage_addon?.status === "approved"
             ? "Approved manually. Waiting for fulfillment."
             : latestRequests.storage_addon?.status === "rejected"
               ? "The request was rejected."
               : latestRequests.storage_addon?.status === "cancelled"
                 ? "The request was cancelled."
-                : "Request unlock to add the storage module.",
+                : "Request storage scope review.",
     }),
     buildCommercialModule({
       key: "technical_review",
@@ -763,7 +763,7 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
       detail: hasTechnicalReviewUnlocked
         ? "Technical review entitlement granted."
         : latestRequests.technical_review?.status === "pending"
-          ? "Request received. We'll contact you to complete payment and book a manual review."
+          ? "Request received. We'll contact you to confirm scope and payment options."
           : latestRequests.technical_review?.status === "approved"
             ? "Approved manually. Waiting for fulfillment."
             : latestRequests.technical_review?.status === "rejected"
@@ -786,13 +786,13 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
     modules[0];
 
   const primaryLabel = hasProUnlocked
-    ? "Readiness Report Pro unlocked"
+    ? "Professional Assessment unlocked"
     : hasFullReportUnlocked
-      ? "Readiness Report unlocked"
+      ? "Starter Readiness unlocked"
       : hasStorageAddonUnlocked
-        ? "Storage Add-on unlocked"
+        ? "Storage Scope Review unlocked"
         : hasStorageAddonAvailable
-          ? "Storage Add-on selected"
+          ? "Storage Scope Review selected"
         : hasTechnicalReviewUnlocked
           ? "Technical Review unlocked"
           : primaryModule.statusLabel === "Pending manual review"
@@ -806,13 +806,13 @@ export function getCommercialStatusForAssessment(assessment: AssessmentDetail): 
       : primaryModule.tone;
 
   const primaryDetail = hasProUnlocked
-    ? "The pro-level report path is unlocked."
+    ? "The Professional Assessment path is unlocked."
     : hasFullReportUnlocked
-      ? "The full readiness report is unlocked."
-      : hasStorageAddonUnlocked
-        ? "The storage add-on is unlocked."
+      ? "The Starter Readiness path is unlocked."
+    : hasStorageAddonUnlocked
+        ? "The storage scope review is unlocked."
         : hasStorageAddonAvailable
-          ? "The storage add-on is selected in this assessment."
+          ? "Storage scope review is selected in this assessment."
         : hasTechnicalReviewUnlocked
           ? "The technical review path is unlocked."
           : primaryModule.detail;

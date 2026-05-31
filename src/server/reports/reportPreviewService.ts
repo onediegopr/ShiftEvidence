@@ -135,11 +135,11 @@ export type ReportPreviewData = {
 function getPlanLabel(plan: string | null | undefined) {
   switch (plan) {
     case "readiness_report":
-      return "Readiness Report";
+      return "Starter Readiness";
     case "readiness_report_pro":
-      return "Readiness Report Pro";
+      return "Professional Assessment";
     case "custom_blueprint":
-      return "Custom Blueprint";
+      return "Migration Blueprint";
     case "partner":
       return "Partner";
     default:
@@ -464,11 +464,11 @@ export function getUpgradeRecommendations(assessment: AssessmentDetail) {
   }
 
   if ((assessment.riskFindings?.length ?? 0) > 0) {
-    recommendations.add("Use the preliminary findings to decide whether a Readiness Report Pro is justified.");
+    recommendations.add("Use the preliminary findings to decide whether a Professional Assessment is justified.");
   }
 
   if (!commercialStatus.hasFullReportUnlocked) {
-    recommendations.add("Request a manual unlock to open the full readiness report.");
+    recommendations.add("Request Starter Readiness or Professional Assessment access when evidence is sufficient.");
   }
 
   return [...recommendations];
@@ -807,21 +807,21 @@ export async function getReportPreviewData(
     upgradeButtons: [
       {
         triggerType: "unlock_report_clicked",
-        title: "Readiness Report",
-        description: "Unlock the full readiness report to turn the preview into a shareable migration narrative.",
-        ctaLabel: "Unlock Readiness Report",
+        title: "Starter Readiness",
+        description: "Request Starter Readiness access to turn the preview into a shareable assessment baseline.",
+        ctaLabel: "Request Starter Readiness",
       },
       {
         triggerType: "unlock_pro_clicked",
-        title: "Readiness Report Pro",
-        description: "Unlock the full VM matrix and deeper technical sections for larger assessments.",
-        ctaLabel: "Unlock Pro Report",
+        title: "Professional Assessment",
+        description: "Request Professional Assessment access for the full VM matrix and deeper technical sections.",
+        ctaLabel: "Book Professional Assessment",
       },
       {
         triggerType: "storage_addon_clicked",
-        title: "Storage Add-on",
-        description: "Add deeper Storage Destination Readiness for target architecture validation.",
-        ctaLabel: "Add Storage Readiness",
+        title: "Storage Scope Review",
+        description: "Request storage scope review when target architecture validation needs more depth.",
+        ctaLabel: "Discuss storage scope",
       },
       {
         triggerType: "review_call_clicked",

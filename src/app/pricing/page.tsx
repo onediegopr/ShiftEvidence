@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { ArrowRight, Check, Minus, Brain } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { marketingPlans, marketingAddOns } from "../../lib/pricingPlans";
+import {
+  getBillingCadenceLabel,
+  getPaymentOptionLabel,
+  marketingAddOns,
+  marketingPlans,
+  paymentOptionsCopy,
+} from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
   title: "Pricing Plans | Shift Evidence",
@@ -10,6 +16,9 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  const corePlans = marketingPlans.filter((plan) => plan.id !== "msp_partner");
+  const partnerPlan = marketingPlans.find((plan) => plan.id === "msp_partner") ?? marketingPlans[marketingPlans.length - 1];
+
   return (
     <>
       <Navbar />
@@ -23,7 +32,10 @@ export default function PricingPage() {
                 Transparent, modular pricing for infrastructure teams.
               </h1>
               <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", lineHeight: "1.6" }}>
-                Start with our Free Readiness Check. Unlock detailed reports or include premium storage and AI advisor tools as needed. No credit card required to start.
+                Choose a readiness assessment path, then pay by card when checkout is available or request a business invoice for bank transfer.
+              </p>
+              <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
+                {paymentOptionsCopy.notActive} {paymentOptionsCopy.cardCheckout}
               </p>
             </div>
           </div>
@@ -41,7 +53,7 @@ export default function PricingPage() {
                 margin: "0 auto"
               }}
             >
-              {marketingPlans.slice(0, 4).map((plan) => (
+              {corePlans.map((plan) => (
                 <article 
                   key={plan.name} 
                   className={`glass-card sr-plan-card sr-plan-${plan.accent}`}
@@ -73,6 +85,14 @@ export default function PricingPage() {
                         <span>Storage Target & AI Advisor Integrated</span>
                       </div>
                     )}
+
+                    <div className="assessment-status-row" style={{ marginBottom: "1.25rem" }}>
+                      <span className="assessment-chip assessment-chip-neutral">{getBillingCadenceLabel(plan.billingCadence)}</span>
+                      <span className="assessment-chip assessment-chip-good">Recommended: {getPaymentOptionLabel(plan.recommendedPayment)}</span>
+                    </div>
+                    <p className="assessment-inline-note" style={{ marginBottom: "1rem" }}>
+                      {plan.paymentNote}
+                    </p>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "1.5rem" }}>
                       <div>
@@ -115,6 +135,13 @@ export default function PricingPage() {
                       {plan.cta.label}
                       <ArrowRight size={16} />
                     </a>
+                    <a
+                      href={plan.secondaryCta.href}
+                      className="btn btn-secondary"
+                      style={{ width: "100%", justifyContent: "center", marginTop: "0.75rem" }}
+                    >
+                      {plan.secondaryCta.label}
+                    </a>
                   </div>
                 </article>
               ))}
@@ -138,17 +165,20 @@ export default function PricingPage() {
                   <div style={{ maxWidth: "650px" }}>
                     <div className="badge badge-cyan" style={{ marginBottom: "0.5rem" }}>Service Providers</div>
                     <h2 style={{ fontSize: "1.75rem", color: "white", margin: 0 }}>
-                      {marketingPlans[4].name}
+                      {partnerPlan.name}
                     </h2>
                     <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", fontSize: "1rem", lineHeight: "1.5" }}>
-                      {marketingPlans[4].bestFor}
+                      {partnerPlan.bestFor}
+                    </p>
+                    <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
+                      {partnerPlan.paymentNote}
                     </p>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginTop: "1.5rem" }}>
                       <div>
                         <h4 style={{ color: "var(--text-cyan)", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>Includes</h4>
                         <ul style={{ display: "grid", gap: "0.5rem" }}>
-                          {marketingPlans[4].includes.slice(0, 4).map((item) => (
+                          {partnerPlan.includes.slice(0, 4).map((item) => (
                             <li key={item} style={{ display: "flex", gap: "0.4rem", fontSize: "0.85rem" }}>
                               <Check size={12} className="text-cyan" />
                               <span>{item}</span>
@@ -159,7 +189,7 @@ export default function PricingPage() {
                       <div>
                         <h4 style={{ color: "#ef4444", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>Excludes</h4>
                         <ul style={{ display: "grid", gap: "0.5rem" }}>
-                          {marketingPlans[4].excludes.slice(0, 2).map((item) => (
+                          {partnerPlan.excludes.slice(0, 2).map((item) => (
                             <li key={item} style={{ display: "flex", gap: "0.4rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
                               <Minus size={12} />
                               <span>{item}</span>
@@ -172,16 +202,23 @@ export default function PricingPage() {
 
                   <div style={{ textAlign: "center", minWidth: "220px", display: "flex", flexDirection: "column", gap: "1rem" }}>
                     <div style={{ fontSize: "2rem", fontWeight: "bold", color: "white" }}>
-                      {marketingPlans[4].price}
+                      {partnerPlan.price}
                     </div>
-                    <a href={marketingPlans[4].cta.href} className="btn btn-primary btn-glow" style={{ justifyContent: "center" }}>
-                      {marketingPlans[4].cta.label}
+                    <a href={partnerPlan.cta.href} className="btn btn-primary btn-glow" style={{ justifyContent: "center" }}>
+                      {partnerPlan.cta.label}
                       <ArrowRight size={16} />
+                    </a>
+                    <a href={partnerPlan.secondaryCta.href} className="btn btn-secondary" style={{ justifyContent: "center" }}>
+                      {partnerPlan.secondaryCta.label}
                     </a>
                   </div>
                 </div>
               </article>
             </div>
+
+            <p className="assessment-inline-note" style={{ maxWidth: "1000px", margin: "2rem auto 0", textAlign: "center" }}>
+              {paymentOptionsCopy.pricingNote} No public checkout is active yet.
+            </p>
           </div>
         </section>
 

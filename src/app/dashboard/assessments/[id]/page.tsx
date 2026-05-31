@@ -1852,8 +1852,8 @@ export default async function AssessmentDetailPage({
                 </ul>
               </article>
               <article className="glass-card assessment-subcard">
-                <h3>Upgrade intent</h3>
-                <p>Upgrade CTA clicks are tracked, but billing and checkout are not active yet.</p>
+                <h3>Assessment package interest</h3>
+                <p>Package CTA clicks are tracked, but billing and checkout are not active yet.</p>
                 <Link href={`/dashboard/assessments/${assessment.id}/report`} className="btn btn-primary btn-glow">
                   <FileText size={16} />
                   View Report Preview
@@ -2118,8 +2118,8 @@ export default async function AssessmentDetailPage({
             <SectionTitle
               icon={<CircleAlert size={18} />}
               eyebrow="Locked insights"
-              title="Upgrade hooks for the full readiness report"
-              description="These insights stay locked until a fuller report path exists. They are visual hooks only; no checkout is implemented."
+              title="Assessment package hooks"
+              description="These insights stay locked until the matching assessment package exists. They are visual hooks only; no checkout is implemented."
             />
 
             <div className="assessment-locked-grid">
@@ -2134,7 +2134,7 @@ export default async function AssessmentDetailPage({
                 <article key={item} className="assessment-locked-card glass-card assessment-subcard">
                   <span className="assessment-locked-label">Locked insight</span>
                   <strong>{item}</strong>
-                  <p>Unlock the full readiness report to turn these findings into a migration decision plan.</p>
+                  <p>Request the right assessment package to turn these findings into a migration decision plan.</p>
                   <Link href="/shiftreadiness" className="dashboard-card-link">
                     Explore plans <ArrowRight size={16} />
                   </Link>

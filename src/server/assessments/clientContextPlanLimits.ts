@@ -21,7 +21,7 @@ const DEFAULT_AVERAGE_CHARS_PER_WORD = 10;
 
 const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "planKey">> = {
   starter: {
-    label: "Starter",
+    label: "Starter Readiness",
     maxWords: 5_000,
     maxCharacters: 5_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxFiles: 1,
@@ -31,7 +31,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     pdfFullSectionEnabled: false,
   },
   readiness_report: {
-    label: "Readiness Report",
+    label: "Starter Readiness",
     maxWords: 15_000,
     maxCharacters: 15_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxFiles: 3,
@@ -41,7 +41,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     pdfFullSectionEnabled: false,
   },
   pro: {
-    label: "Readiness Report Pro",
+    label: "Professional Assessment",
     maxWords: 25_000,
     maxCharacters: 25_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxFiles: 8,
@@ -51,7 +51,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     pdfFullSectionEnabled: false,
   },
   blueprint: {
-    label: "Blueprint",
+    label: "Migration Blueprint",
     maxWords: 50_000,
     maxCharacters: 50_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxFiles: 20,
@@ -61,7 +61,7 @@ const PLAN_LIMITS: Record<ClientContextPlanKey, Omit<ClientContextPlanLimits, "p
     pdfFullSectionEnabled: false,
   },
   partner: {
-    label: "Partner / MSP",
+    label: "MSP Partner",
     maxWords: 50_000,
     maxCharacters: 50_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxFiles: 25,

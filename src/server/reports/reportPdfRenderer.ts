@@ -1877,7 +1877,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     bulletList(doc, [
       "Upload more evidence and regenerate the report.",
       "Review missing evidence with infrastructure and application owners.",
-      "Request manual unlock for the full Readiness Report when evidence is sufficient.",
+      "Request Starter Readiness or Professional Assessment access when evidence is sufficient.",
       "Prepare a pilot wave before any production migration.",
       "Request a Migration Blueprint only after target architecture and dependency evidence are available.",
     ]);

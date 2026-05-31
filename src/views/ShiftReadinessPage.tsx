@@ -15,7 +15,13 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
-import { marketingPlans as plans, marketingAddOns as addOns } from "../lib/pricingPlans";
+import {
+  getBillingCadenceLabel,
+  getPaymentOptionLabel,
+  marketingAddOns as addOns,
+  marketingPlans as plans,
+  paymentOptionsCopy,
+} from "../lib/pricingPlans";
 
 const flowSteps = [
   "Start Free Readiness Check",
@@ -459,7 +465,7 @@ export default function ShiftReadinessPage() {
                 </div>
                 <div className="sr-comparison-metric sr-comparison-metric-cyan">
                   <label>Typical Cost</label>
-                  <span>Free preview, professional reports from $249</span>
+                  <span>Starter readiness from USD 490</span>
                 </div>
               </div>
               <ul className="sr-comparison-list sr-comparison-list-cyan">
@@ -505,8 +511,11 @@ export default function ShiftReadinessPage() {
               <strong>Get consulting-grade insights at a fraction of the cost.</strong>
             </p>
             <p>
-              Start small, unlock the full report when needed, and add storage analysis only when
-              the target architecture deserves deeper validation.
+              Start with a focused readiness assessment, request invoice support for larger engagements,
+              and keep payment expectations clear before checkout is activated.
+            </p>
+            <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
+              {paymentOptionsCopy.general} {paymentOptionsCopy.notActive}
             </p>
           </div>
 
@@ -520,6 +529,14 @@ export default function ShiftReadinessPage() {
                   </div>
                   <div className="sr-plan-price">{plan.price}</div>
                 </div>
+
+                <div className="assessment-status-row" style={{ marginBottom: "1rem" }}>
+                  <span className="assessment-chip assessment-chip-neutral">{getBillingCadenceLabel(plan.billingCadence)}</span>
+                  <span className="assessment-chip assessment-chip-good">Recommended: {getPaymentOptionLabel(plan.recommendedPayment)}</span>
+                </div>
+                <p className="assessment-inline-note" style={{ marginBottom: "1rem" }}>
+                  {plan.paymentNote}
+                </p>
 
                 <div className="sr-plan-columns">
                   <div>
@@ -549,6 +566,10 @@ export default function ShiftReadinessPage() {
                 <p className="sr-plan-upsell">{plan.upsell}</p>
                 <a href={plan.cta.href} className="btn btn-primary btn-glow sr-plan-cta">
                   {plan.cta.label}
+                  <ArrowRight size={16} />
+                </a>
+                <a href={plan.secondaryCta.href} className="btn btn-secondary sr-plan-cta">
+                  {plan.secondaryCta.label}
                   <ArrowRight size={16} />
                 </a>
               </article>

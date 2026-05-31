@@ -9,7 +9,7 @@ const PLAN_LIMITS: Record<
   Omit<SeniorAdvisorPlanLimits, "planKey">
 > = {
   starter: {
-    label: "Starter / Free Preview",
+    label: "Starter Readiness",
     enabled: false,
     messageLimit: 0,
     maxUserMessageChars: 0,
@@ -37,7 +37,7 @@ const PLAN_LIMITS: Record<
     requestMoreCreditsMode: "contact_us",
   },
   readiness_report: {
-    label: "Professional",
+    label: "Starter Readiness",
     enabled: true,
     messageLimit: 25,
     maxUserMessageChars: 3_000,
@@ -51,7 +51,7 @@ const PLAN_LIMITS: Record<
     requestMoreCreditsMode: "contact_us",
   },
   pro: {
-    label: "Readiness Report Pro",
+    label: "Professional Assessment",
     enabled: true,
     messageLimit: 40,
     maxUserMessageChars: 4_000,
@@ -65,7 +65,7 @@ const PLAN_LIMITS: Record<
     requestMoreCreditsMode: "contact_us",
   },
   blueprint: {
-    label: "Blueprint",
+    label: "Migration Blueprint",
     enabled: true,
     messageLimit: 150,
     maxUserMessageChars: 6_000,
@@ -79,7 +79,7 @@ const PLAN_LIMITS: Record<
     requestMoreCreditsMode: "contact_us",
   },
   partner: {
-    label: "Partner / MSP",
+    label: "MSP Partner",
     enabled: true,
     messageLimit: 100,
     maxUserMessageChars: 5_000,

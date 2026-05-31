@@ -1202,9 +1202,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <select name="source" className="form-input" defaultValue="admin">
                       <option value="admin">Administrador</option>
                       <option value="manual">Manual</option>
-                      <option value="wise">Wise</option>
-                      <option value="transfer">Transferencia</option>
-                      <option value="stripe">Stripe</option>
+                      <option value="bank_transfer_invoice">Bank transfer invoice</option>
+                      <option value="business_invoice">Business invoice</option>
+                      <option value="card_checkout_future">Card checkout future</option>
                       <option value="unknown">Desconocido</option>
                     </select>
                   </label>

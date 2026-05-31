@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { marketingPlans } from "../../lib/pricingPlans";
+import { getPaymentOptionLabel, marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
   title: "VMware to Proxmox Migration Readiness Assessment | Shift Evidence",
@@ -82,6 +82,7 @@ const pricingPackages = marketingPlans.map((plan) => ({
   name: plan.name,
   price: plan.price,
   fit: plan.bestFor,
+  payment: `${getPaymentOptionLabel(plan.recommendedPayment)} recommended`,
   includes: plan.includes.slice(0, 5).join(", ") + "...",
 }));
 
@@ -97,23 +98,23 @@ const notAList = [
 const faqs = [
   [
     "Do I need a credit card to start?",
-    "No. You can start with the Free Readiness Check. Paid reports and Pro features are selected when you decide to unlock deeper analysis or delivery outputs.",
+    "No. You can start the intake and choose a payment path during follow-up. Card checkout will be available for fast starts, and bank transfer invoices are available for business customers.",
   ],
   [
-    "What happens after I buy a report?",
-    "Your assessment workspace is upgraded to the selected report level. The platform uses the evidence you uploaded to generate the corresponding readiness outputs, and you can continue adding evidence to improve confidence where supported.",
+    "How do payments work?",
+    paymentOptionsCopy.faq,
   ],
   [
     "Can I upgrade later?",
-    "Yes. You can start with a free assessment and upgrade when you need a full report, storage readiness, Advisor access or blueprint-level planning.",
+    "Yes. You can start with Starter Readiness and move into Professional Assessment, a scoped Blueprint, or an MSP Partner agreement when the business case is clear.",
   ],
   [
     "Is Storage Readiness included?",
-    "Storage Destination Readiness is included in Pro-level analysis or higher, depending on the selected plan. It can use manual, agentless Proxmox/Ceph/PBS evidence to improve confidence.",
+    "Storage Destination Readiness is included in Professional Assessment and Blueprint-level work. It can use manual, agentless Proxmox/Ceph/PBS evidence to improve confidence.",
   ],
   [
     "Is the Senior Migration Advisor included?",
-    "The Senior Migration Advisor is available in Pro or higher plans, where it can use assessment context, storage evidence and approved project memory to help explain findings and next steps.",
+    "The Senior Migration Advisor is available in Professional Assessment, Blueprint and eligible MSP Partner agreements, where it can use assessment context, storage evidence and approved project memory to help explain findings and next steps.",
   ],
   [
     "Can MSPs or consultants use Shift Evidence with clients?",
@@ -329,8 +330,7 @@ export default function VMwareToProxmoxReadinessPage() {
             <div className="badge badge-cyan">Pricing preview</div>
             <h2>Simple packages for companies, consultants and MSPs.</h2>
             <p>
-              Pricing is a preview for broader invited beta. Payments and access are handled manually; no public
-              checkout or automatic billing is active.
+              Pricing is a preview for broader invited beta. {paymentOptionsCopy.notActive}
             </p>
           </div>
           <div className="sales-pricing-grid">
@@ -339,13 +339,14 @@ export default function VMwareToProxmoxReadinessPage() {
                 <span>{pkg.name}</span>
                 <strong>{pkg.price}</strong>
                 <p>{pkg.fit}</p>
+                <small>{pkg.payment}</small>
                 <small>{pkg.includes}</small>
               </article>
             ))}
           </div>
           <div className="shiftreadiness-actions sales-centered-actions">
             <Link href="/sign-up" className="btn btn-primary btn-glow">
-              Start Free Assessment
+              Start readiness assessment
               <ArrowRight size={18} />
             </Link>
             <Link href="/shiftreadiness#pricing" className="btn btn-secondary">

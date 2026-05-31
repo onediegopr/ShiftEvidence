@@ -39,11 +39,11 @@ export function getLatestReportForAssessment(assessment: ReportLikeAssessment) {
 export function getReportTypeLabel(reportType: ReportType) {
   switch (reportType) {
     case ReportType.readiness_report:
-      return "Readiness Report";
+      return "Starter Readiness Report";
     case ReportType.readiness_report_pro:
-      return "Readiness Report Pro";
+      return "Professional Assessment Report";
     case ReportType.blueprint:
-      return "Blueprint";
+      return "Migration Blueprint";
     default:
       return "PDF Preview";
   }
@@ -99,4 +99,3 @@ export function getReportPreviewStatusFromReports(assessment: ReportLikeAssessme
 
   return "not_generated" as const;
 }
-

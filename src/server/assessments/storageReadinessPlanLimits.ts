@@ -23,7 +23,7 @@ const PLAN_LIMITS: Record<
   Omit<StorageReadinessPlanLimits, "planKey">
 > = {
   starter: {
-    label: "Starter",
+    label: "Starter Readiness",
     maxStorageContextWords: 1_500,
     maxStorageContextCharacters: 1_500 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxStorageEvidenceFiles: 1,
@@ -32,7 +32,7 @@ const PLAN_LIMITS: Record<
     aiStorageAnalysisEnabled: false,
   },
   readiness_report: {
-    label: "Readiness Report",
+    label: "Starter Readiness",
     maxStorageContextWords: 8_000,
     maxStorageContextCharacters: 8_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxStorageEvidenceFiles: 3,
@@ -41,7 +41,7 @@ const PLAN_LIMITS: Record<
     aiStorageAnalysisEnabled: true,
   },
   pro: {
-    label: "Readiness Report Pro",
+    label: "Professional Assessment",
     maxStorageContextWords: 12_000,
     maxStorageContextCharacters: 12_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxStorageEvidenceFiles: 5,
@@ -50,7 +50,7 @@ const PLAN_LIMITS: Record<
     aiStorageAnalysisEnabled: true,
   },
   blueprint: {
-    label: "Blueprint",
+    label: "Migration Blueprint",
     maxStorageContextWords: 40_000,
     maxStorageContextCharacters: 40_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxStorageEvidenceFiles: 15,
@@ -59,7 +59,7 @@ const PLAN_LIMITS: Record<
     aiStorageAnalysisEnabled: true,
   },
   partner: {
-    label: "Partner / MSP",
+    label: "MSP Partner",
     maxStorageContextWords: 50_000,
     maxStorageContextCharacters: 50_000 * DEFAULT_AVERAGE_CHARS_PER_WORD,
     maxStorageEvidenceFiles: 25,

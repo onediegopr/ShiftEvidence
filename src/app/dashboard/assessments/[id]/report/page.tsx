@@ -200,18 +200,18 @@ function getUpgradeCopy(triggerType: string) {
   switch (triggerType) {
     case "unlock_report_clicked":
       return {
-        title: "Unlock Readiness Report",
-        description: "Open the full report structure for executive-ready output and deeper technical narrative.",
+        title: "Request Starter Readiness",
+        description: "Request the Starter Readiness package for executive-ready output and a structured assessment baseline.",
       };
     case "unlock_pro_clicked":
       return {
-        title: "Unlock Pro Report",
-        description: "Unlock the full VM-by-VM matrix and the deeper operational sections reserved for larger assessments.",
+        title: "Book Professional Assessment",
+        description: "Request the Professional Assessment package for the full VM-by-VM matrix and deeper operational review.",
       };
     case "storage_addon_clicked":
       return {
-        title: "Add Storage Readiness",
-        description: "Request the storage-specific add-on when target architecture validation needs more depth.",
+        title: "Discuss Storage Scope",
+        description: "Request a storage scope review when target architecture validation needs more depth.",
       };
     case "review_call_clicked":
       return {
@@ -220,7 +220,7 @@ function getUpgradeCopy(triggerType: string) {
       };
     default:
       return {
-        title: "Upgrade intent recorded",
+        title: "Package request recorded",
         description: "This request was tracked without activating checkout.",
       };
   }
@@ -424,7 +424,7 @@ export default async function ReportPreviewPage({
   const generated = query?.generated === "1";
   const deleted = query?.deleted === "1";
   const unlock = query?.unlock ?? null;
-  const upgradeMessage = upgrade ? "Upgrade intent captured. Checkout is not available yet." : null;
+  const upgradeMessage = upgrade ? "Package request captured. Checkout is not available yet." : null;
   const generatedMessage = generated ? "PDF Preview generated and stored privately." : null;
   const deletedMessage = deleted ? "PDF Preview deleted and removed from private storage." : null;
   const unlockMessage =
@@ -551,7 +551,7 @@ export default async function ReportPreviewPage({
           icon={<BadgePercent size={18} />}
           eyebrow="Commercial status"
           title="Free vs paid boundaries"
-          description="Manual unlock requests, entitlements and current access state are tracked here. No checkout is active yet."
+          description="Manual requests, entitlements and current access state are tracked here. No checkout or automatic billing is active yet."
         />
         <div className="assessment-status-row">
           {report.commercialStatus.chips.map((chip) => (
@@ -1257,8 +1257,8 @@ export default async function ReportPreviewPage({
         <SectionTitle
           icon={<Sparkles size={18} />}
           eyebrow="Upgrade"
-          title="Upgrade options"
-          description="The CTAs below track upgrade intent only. No checkout or billing flow is active yet."
+          title="Assessment package requests"
+          description="The CTAs below track assessment package interest only. No checkout or automatic billing flow is active yet."
         />
         <div className="report-upgrade-grid">
           {report.upgradeButtons.map((button) => {

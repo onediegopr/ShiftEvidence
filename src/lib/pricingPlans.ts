@@ -1,8 +1,46 @@
+export type BillingCadence = "one_time" | "monthly" | "scoped";
+
+export type PaymentOption = "card_checkout" | "bank_transfer_invoice";
+
+export type PaymentProvider = "lemon_squeezy" | "stripe";
+
+export type PlanId =
+  | "starter_readiness"
+  | "professional_assessment"
+  | "migration_blueprint"
+  | "msp_partner";
+
 export interface Plan {
+  id: PlanId;
+  name: string;
+  price: string;
+  priceAmountUsd: number;
+  pricePrefix?: "from";
+  billingCadence: BillingCadence;
+  bestFor: string;
+  accent: "core" | "pro" | "blueprint" | "partner";
+  recommendedPayment: PaymentOption;
+  paymentOptions: PaymentOption[];
+  futureProvider: PaymentProvider;
+  disabledProvider: PaymentProvider;
+  cta: {
+    label: string;
+    href: string;
+  };
+  secondaryCta: {
+    label: string;
+    href: string;
+  };
+  paymentNote: string;
+  includes: string[];
+  excludes: string[];
+  upsell?: string;
+}
+
+export interface AddOn {
   name: string;
   price: string;
   bestFor: string;
-  accent: "free" | "core" | "pro" | "blueprint" | "partner";
   cta: {
     label: string;
     href: string;
@@ -12,100 +50,138 @@ export interface Plan {
   upsell?: string;
 }
 
+export const paymentOptionsCopy = {
+  cardCheckout: "Secure card checkout will be available through Lemon Squeezy.",
+  bankTransfer: "Bank transfer invoices are available for business customers.",
+  general: "Card checkout will be available through secure checkout. Bank transfer invoices are available for business customers.",
+  pricingNote:
+    "Card checkout is planned for fast starts. Bank transfer invoices are available for Professional, Blueprint and MSP agreements.",
+  faq:
+    "Card checkout will support fast starts when activated. Bank transfer invoices are available for business customers and are especially recommended for larger assessments, blueprints and MSP agreements.",
+  blueprint:
+    "Blueprint engagements are scoped before payment. Request an invoice after confirming project scope.",
+  msp:
+    "MSP partner plans can be billed monthly by card or handled through business invoice depending on agreement size.",
+  notActive:
+    "Payments are not processed automatically yet. Requests are routed for manual follow-up until checkout is activated.",
+} as const;
+
+export function getPaymentOptionLabel(option: PaymentOption) {
+  switch (option) {
+    case "card_checkout":
+      return "Card checkout";
+    case "bank_transfer_invoice":
+      return "Bank transfer invoice";
+  }
+}
+
+export function getBillingCadenceLabel(cadence: BillingCadence) {
+  switch (cadence) {
+    case "one_time":
+      return "One-time";
+    case "monthly":
+      return "Monthly";
+    case "scoped":
+      return "Scoped before payment";
+  }
+}
+
 export const marketingPlans: Plan[] = [
   {
-    name: "Free Readiness Check",
-    price: "USD 0",
-    bestFor: "Teams that want a first signal before committing budget.",
-    accent: "free",
-    cta: { label: "Start Free Assessment", href: "/sign-up" },
+    id: "starter_readiness",
+    name: "Starter Readiness",
+    price: "USD 490",
+    priceAmountUsd: 490,
+    billingCadence: "one_time",
+    bestFor: "Teams that want a clear first assessment before committing to a larger migration plan.",
+    accent: "core",
+    recommendedPayment: "card_checkout",
+    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    futureProvider: "lemon_squeezy",
+    disabledProvider: "stripe",
+    cta: { label: "Start Starter Assessment", href: "/sign-up?plan=starter_readiness" },
+    secondaryCta: {
+      label: "Request bank transfer invoice",
+      href: "/support?category=billing_question&subject=Starter%20Readiness%20Bank%20Transfer%20Invoice",
+    },
+    paymentNote: "Fast-start card checkout first. Bank transfer invoice available on request for business customers.",
     includes: [
-      "RVTools upload / guided intake",
-      "Initial evidence coverage",
-      "Basic readiness snapshot",
-      "Limited risk preview",
+      "Guided VMware readiness intake",
+      "RVTools upload / guided evidence review",
+      "Initial licensing and readiness signal",
+      "Basic executive-ready assessment output",
       "Missing evidence checklist",
       "Client workspace",
     ],
     excludes: [
-      "Full downloadable report",
-      "VM-by-VM risk matrix",
-      "Editable assumptions",
-      "Deep recommendations",
-      "Storage Destination Readiness",
-      "Target architecture recommendation",
-      "Review call",
-    ],
-    upsell: "Unlock the full Readiness Report to see detailed cost/risk, prioritized recommendations, and downloadable executive/technical output.",
-  },
-  {
-    name: "Readiness Report",
-    price: "USD 249",
-    bestFor: "Teams that need a complete migration readiness report before taking action.",
-    accent: "core",
-    cta: { label: "Unlock Readiness Report", href: "/sign-up?plan=readiness-report" },
-    includes: [
-      "Everything in Free Readiness Check",
-      "Full Cost / Risk Engine",
-      "Downloadable report",
-      "Executive summary",
-      "Technical summary",
-      "Detailed scoring",
-      "Editable assumptions",
-      "Prioritized recommendations",
-      "Full risk findings",
-      "Evidence confidence",
-      "Annual and 3-year savings",
-      "Subscription delta",
-    ],
-    excludes: [
-      "Deep Storage Destination Readiness",
-      "SAN / NAS / ZFS / Ceph / Hybrid target recommendation",
+      "Deep migration blueprint",
       "Implementation design",
-      "Migration runbook",
-      "Review call",
-      "Automatic migration",
+      "Managed migration",
+      "Final architecture sign-off",
+      "Ongoing MSP workspace",
     ],
-    upsell: "Upgrade to Readiness Report Pro to include deep storage analysis, Ceph suitability signals, and the AI Senior Advisor.",
+    upsell: "Use Starter Readiness to confirm whether a deeper Professional Assessment or Migration Blueprint is justified.",
   },
   {
-    name: "Readiness Report Pro",
-    price: "USD 690",
-    bestFor: "MSPs, consultants and larger teams that need deeper technical segmentation and AI advice.",
+    id: "professional_assessment",
+    name: "Professional Assessment",
+    price: "USD 1,500",
+    priceAmountUsd: 1_500,
+    billingCadence: "one_time",
+    bestFor: "Infrastructure teams that need a fuller migration readiness assessment and stakeholder-ready report.",
     accent: "pro",
-    cta: { label: "Upgrade to Pro", href: "/sign-up?plan=readiness-report-pro" },
+    recommendedPayment: "card_checkout",
+    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    futureProvider: "lemon_squeezy",
+    disabledProvider: "stripe",
+    cta: { label: "Book Professional Assessment", href: "/sign-up?plan=professional_assessment" },
+    secondaryCta: {
+      label: "Request invoice",
+      href: "/support?category=billing_question&subject=Professional%20Assessment%20Invoice",
+    },
+    paymentNote: "Card checkout or bank transfer invoice. Business invoice support is available for procurement workflows.",
     includes: [
-      "Everything in Readiness Report",
-      "Storage Destination Readiness Analysis",
-      "Ceph suitability signals",
-      "Proxmox/Ceph/PBS agentless evidence guidance",
+      "Everything in Starter Readiness",
+      "Full licensing and cost exposure review",
+      "Storage Destination Readiness analysis",
       "Senior Migration Advisor access",
       "Project Memory Vault access",
       "VM-by-VM risk matrix",
-      "Filters by criticality, size, host, cluster and datastore",
-      "Migration complexity bands",
-      "Workload group recommendations",
-      "Remediation priority",
-      "Advanced assumptions",
-      "Executive and technical outputs",
+      "Executive and technical report output",
+      "Prioritized recommendations",
     ],
     excludes: [
       "Final signed architecture design",
-      "Implementation",
-      "Production validation",
-      "Managed migration",
-      "Review call unless purchased",
+      "Implementation execution",
+      "Managed migration operations",
+      "Ongoing production support",
     ],
-    upsell: "Add a Technical Review Call or request a custom Migration Blueprint for guided wave execution planning.",
+    upsell: "Request a Migration Blueprint when the assessment needs scoped wave planning, rollback design and architecture alignment.",
   },
   {
+    id: "migration_blueprint",
     name: "Migration Blueprint",
-    price: "From USD 1,500",
-    bestFor: "Teams preparing a serious migration plan with wave scheduling and rollbacks.",
+    price: "From USD 3,500",
+    priceAmountUsd: 3_500,
+    pricePrefix: "from",
+    billingCadence: "scoped",
+    bestFor: "Teams preparing a serious migration plan with scope, waves, validation gates and rollback expectations.",
     accent: "blueprint",
-    cta: { label: "Request Migration Blueprint", href: "/support?category=partner_msp_inquiry&subject=Migration%20Blueprint" },
+    recommendedPayment: "bank_transfer_invoice",
+    paymentOptions: ["bank_transfer_invoice"],
+    futureProvider: "lemon_squeezy",
+    disabledProvider: "stripe",
+    cta: {
+      label: "Request Migration Blueprint",
+      href: "/support?category=partner_msp_inquiry&subject=Migration%20Blueprint%20Scope",
+    },
+    secondaryCta: {
+      label: "Discuss scope",
+      href: "/support?category=assessment_report_question&subject=Migration%20Blueprint%20Scope%20Discussion",
+    },
+    paymentNote: paymentOptionsCopy.blueprint,
     includes: [
-      "Everything in Readiness Report Pro",
+      "Everything in Professional Assessment",
       "Migration wave planning",
       "Pilot candidate selection",
       "Remediation roadmap",
@@ -119,14 +195,27 @@ export const marketingPlans: Plan[] = [
       "Managed migration operations",
       "Ongoing production support",
     ],
-    upsell: "Review the blueprint with your internal architecture board and external stakeholders.",
+    upsell: "Blueprint engagements are scoped before payment so the invoice matches the real migration planning effort.",
   },
   {
-    name: "MSP / Partner",
+    id: "msp_partner",
+    name: "MSP Partner",
     price: "From USD 399/month",
-    bestFor: "Consultants, MSPs and integrators who need repeatable assessments for clients.",
+    priceAmountUsd: 399,
+    pricePrefix: "from",
+    billingCadence: "monthly",
+    bestFor: "Consultants, MSPs and integrators who need repeatable assessments for client conversations.",
     accent: "partner",
-    cta: { label: "Become a Partner", href: "/partners" },
+    recommendedPayment: "card_checkout",
+    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    futureProvider: "lemon_squeezy",
+    disabledProvider: "stripe",
+    cta: { label: "Become a partner", href: "/partners" },
+    secondaryCta: {
+      label: "Request partner invoice",
+      href: "/support?category=partner_msp_inquiry&subject=MSP%20Partner%20Invoice",
+    },
+    paymentNote: paymentOptionsCopy.msp,
     includes: [
       "Reusable methodology",
       "Client-ready PDFs",
@@ -137,46 +226,18 @@ export const marketingPlans: Plan[] = [
     ],
     excludes: [
       "Direct client end-user support",
-      "Automatic checkout endpoints",
+      "Automatic public checkout activation before agreement",
     ],
-    upsell: "Request Partner Access to unlock dedicated multi-client dashboards.",
+    upsell: "Request Partner Access to discuss client volume, invoice terms and workspace requirements.",
   },
 ];
 
-export const marketingAddOns = [
-  {
-    name: "Storage Destination Readiness",
-    price: "USD 290",
-    bestFor: "Teams that need to understand whether their target storage architecture is reasonable before migration.",
-    cta: { label: "Add Storage Readiness", href: "/support?category=billing_question&subject=Storage%20Readiness%20Addon" },
-    includes: [
-      "Current storage review",
-      "Target storage architecture analysis",
-      "Agnostic destination recommendation",
-      "SAN / NAS / NFS / iSCSI / ZFS / Ceph / Hybrid scenarios",
-      "Ceph Suitability & Operations Readiness when relevant",
-      "Storage risk level",
-      "Proxmox compatibility considerations",
-      "Missing storage evidence",
-      "Migration impact",
-      "Additional report section",
-    ],
-    excludes: [
-      "Final implementation design",
-      "Production benchmark",
-      "Hardware procurement",
-      "Storage configuration",
-      "Managed operation",
-      "Guaranteed performance validation",
-      "Ceph as a default recommendation",
-    ],
-    upsell: "Included by default in the Readiness Report Pro.",
-  },
+export const marketingAddOns: AddOn[] = [
   {
     name: "Technical Review Call",
-    price: "USD 390",
+    price: "Quoted with assessment scope",
     bestFor: "Teams that want a human review of the readiness findings before making a decision.",
-    cta: { label: "Book Technical Review", href: "/support?category=general_question&subject=Technical%20Review%20Call" },
+    cta: { label: "Book Technical Review", href: "/support?category=assessment_report_question&subject=Technical%20Review%20Call" },
     includes: [
       "Report walkthrough",
       "Risk discussion",

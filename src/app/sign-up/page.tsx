@@ -948,7 +948,7 @@ export default function SignUpPage() {
                     }}
                   >
                     <ShieldCheck size={18} />
-                    Get Full Readiness Report
+                    Request assessment package
                   </button>
                 </div>
               </>

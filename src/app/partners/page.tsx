@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Building2, Handshake, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
   title: "Partners | Shift Evidence",
@@ -22,6 +23,9 @@ export default function PartnersPage() {
               <p>
                 Shift Evidence can help partner teams structure assessment intake, evidence review, and
                 client-facing migration readiness conversations.
+              </p>
+              <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
+                {marketingPlans.find((plan) => plan.id === "msp_partner")?.paymentNote ?? paymentOptionsCopy.msp}
               </p>
             </div>
             <div className="assessment-summary-grid" style={{ marginTop: "2rem" }}>
