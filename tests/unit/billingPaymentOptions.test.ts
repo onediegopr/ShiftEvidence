@@ -17,8 +17,8 @@ describe("billing payment options foundation", () => {
 
   it("uses Lemon Squeezy only as a future card checkout provider", () => {
     expect(marketingPlans.every((plan) => plan.futureProvider === "lemon_squeezy")).toBe(true);
-    expect(paymentOptionsCopy.cardCheckout).toContain("will be available through Lemon Squeezy");
-    expect(paymentOptionsCopy.notActive).toContain("not processed automatically yet");
+    expect(paymentOptionsCopy.cardCheckout).toContain("Lemon Squeezy");
+    expect(paymentOptionsCopy.notActive).toContain("manual follow-up");
   });
 
   it("keeps Stripe deferred and out of public payment labels", () => {

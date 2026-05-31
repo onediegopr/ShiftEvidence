@@ -57,19 +57,19 @@ export interface AddOn {
 }
 
 export const paymentOptionsCopy = {
-  cardCheckout: "Secure card checkout will be available through Lemon Squeezy.",
+  cardCheckout: "Secure card checkout is routed through Lemon Squeezy when the plan is configured.",
   bankTransfer: "Bank transfer invoices are available for business customers.",
-  general: "Card checkout will be available through secure checkout. Bank transfer invoices are available for business customers.",
+  general: "Card checkout uses secure checkout when configured. Bank transfer invoices are available for business customers.",
   pricingNote:
-    "Card checkout is planned for fast starts. Bank transfer invoices are available for Professional, Blueprint and MSP agreements.",
+    "Card checkout is available for configured fast-start plans. Bank transfer invoices are available for Professional, Blueprint and MSP agreements.",
   faq:
-    "Card checkout will support fast starts when activated. Bank transfer invoices are available for business customers and are especially recommended for larger assessments, blueprints and MSP agreements.",
+    "Card checkout supports configured fast starts. Bank transfer invoices are available for business customers and are especially recommended for larger assessments, blueprints and MSP agreements.",
   blueprint:
     "Blueprint engagements are scoped before payment. Request an invoice after confirming project scope.",
   msp:
     "MSP partner plans can be billed monthly by card or handled through business invoice depending on agreement size.",
   notActive:
-    "Payments are not processed automatically yet. Requests are routed for manual follow-up until checkout is activated.",
+    "If checkout is unavailable, requests are routed for manual follow-up and invoice handling.",
 } as const;
 
 export function getPaymentOptionLabel(option: PaymentOption) {
@@ -100,7 +100,7 @@ export const marketingPlans: Plan[] = [
     disabledProvider: "stripe_disabled",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is prepared for this plan but not active yet. Bank transfer invoice is available on request for business customers.",
+    paymentNote: "Card checkout is available when Lemon Squeezy is configured for this plan. Bank transfer invoice is available on request for business customers.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools upload / guided evidence review",
@@ -132,7 +132,7 @@ export const marketingPlans: Plan[] = [
     disabledProvider: "stripe_disabled",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is prepared for this plan but not active yet. Business invoice support is available for procurement workflows.",
+    paymentNote: "Card checkout is available when Lemon Squeezy is configured for this plan. Business invoice support is available for procurement workflows.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",

@@ -65,6 +65,7 @@ export const billingProviders = {
 export const billingEnvPlaceholders = [
   "LEMON_SQUEEZY_STORE_ID",
   "LEMON_SQUEEZY_API_KEY",
+  "LEMONSQUEEZY_API_KEY",
   "LEMON_STARTER_VARIANT_ID",
   "LEMON_PROFESSIONAL_VARIANT_ID",
   "LEMON_MSP_VARIANT_ID",

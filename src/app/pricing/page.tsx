@@ -32,7 +32,7 @@ export default function PricingPage() {
                 Transparent, modular pricing for infrastructure teams.
               </h1>
               <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", lineHeight: "1.6" }}>
-                Choose a readiness assessment path, then pay by card when checkout is available or request a business invoice for bank transfer.
+                Choose a readiness assessment path, then pay by card through secure checkout when configured or request a business invoice for bank transfer.
               </p>
               <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
                 {paymentOptionsCopy.notActive} {paymentOptionsCopy.cardCheckout}
@@ -217,7 +217,7 @@ export default function PricingPage() {
             </div>
 
             <p className="assessment-inline-note" style={{ maxWidth: "1000px", margin: "2rem auto 0", textAlign: "center" }}>
-              {paymentOptionsCopy.pricingNote} No public checkout is active yet.
+              {paymentOptionsCopy.pricingNote} Checkout availability is resolved securely at runtime.
             </p>
           </div>
         </section>

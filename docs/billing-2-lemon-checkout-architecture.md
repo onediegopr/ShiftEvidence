@@ -139,13 +139,63 @@ Para activar checkout real en un hito posterior:
 6. Mapear evento pago -> entitlement en transaccion auditada.
 7. Agregar smoke productivo controlado.
 
-## 11. Riesgos
+## 11. Update - Lemon checkout safe wiring
+
+Fecha: 2026-05-31
+
+Se agrego wiring server-side para crear checkouts Lemon Squeezy cuando el runtime
+tiene configuracion completa.
+
+Archivos:
+
+- `src/server/billing/lemonSqueezyCheckout.ts`
+- `src/app/billing/checkout/[plan]/start/route.ts`
+- `src/app/billing/checkout/[plan]/page.tsx`
+
+Comportamiento:
+
+- La UI publica sigue usando rutas internas por plan.
+- Los componentes no conocen URLs Lemon ni secrets.
+- El API key se lee solo en server runtime.
+- Se soportan ambos nombres de API key:
+  - `LEMON_SQUEEZY_API_KEY` para app/runtime.
+  - `LEMONSQUEEZY_API_KEY` para compatibilidad con MCP/local tooling.
+- Cada plan requiere su variant ID correspondiente:
+  - `LEMON_STARTER_VARIANT_ID`
+  - `LEMON_PROFESSIONAL_VARIANT_ID`
+  - `LEMON_MSP_VARIANT_ID`
+- Si falta store, API key o variant ID, la ruta degrada a invoice/support.
+- Por defecto los checkouts se crean en `test_mode`.
+- Para live checkout debe existir decision explicita y configurar
+  `LEMON_SQUEEZY_CHECKOUT_MODE=live`.
+
+Lo que NO se activo:
+
+- No webhooks.
+- No entitlement automatico.
+- No DB mutation.
+- No ledger.
+- No fulfillment automatico.
+- No deploy manual desde Codex.
+
+Fuente tecnica usada:
+
+- Lemon Squeezy Create Checkout API:
+  `https://docs.lemonsqueezy.com/api/checkouts/create-checkout`
+
+Riesgo operativo:
+
+- Crear un checkout no crea una orden por si solo; redirige al usuario al
+  hosted checkout. Sin webhooks/fulfillment, cualquier acceso posterior al pago
+  sigue siendo manual.
+
+## 12. Riesgos
 
 - Los usuarios pueden ver botones Pay by card / Subscribe, pero llegan a placeholder seguro.
 - Si env vars aparecen accidentalmente, el estado puede pasar a configured disabled, pero checkout sigue inactivo.
 - Activar pagos reales requiere un hito separado con seguridad, webhooks y fulfillment.
 
-## 12. Rollback
+## 13. Rollback
 
 Revertir el commit de BILLING-2 elimina:
 

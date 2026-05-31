@@ -948,7 +948,7 @@ export default function LandingPage() {
               <span className="badge badge-cyan" style={{ marginBottom: "1rem" }}>Plans & Pricing</span>
               <h2 style={{ fontSize: "2.25rem", color: "white", marginBottom: "1rem" }}>Transparent, modular pricing models.</h2>
               <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "0 auto 2.5rem", fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Start with a focused readiness assessment. Card checkout routes are prepared as safe placeholders, and bank transfer invoices remain available for business purchasing.
+                Start with a focused readiness assessment. Card checkout routes use Lemon Squeezy when configured, and bank transfer invoices remain available for business purchasing.
               </p>
 
               <div 

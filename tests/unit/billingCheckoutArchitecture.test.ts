@@ -9,12 +9,12 @@ import {
   getBillingCheckoutRouteState,
 } from "../../src/server/billing/billingConfiguration";
 
-const originalEnv = Object.fromEntries(
-  billingEnvPlaceholders.map((name) => [name, process.env[name]]),
-);
+const trackedEnvNames = [...billingEnvPlaceholders, "LEMON_SQUEEZY_CHECKOUT_ENABLED"] as const;
+
+const originalEnv = Object.fromEntries(trackedEnvNames.map((name) => [name, process.env[name]]));
 
 afterEach(() => {
-  billingEnvPlaceholders.forEach((name) => {
+  trackedEnvNames.forEach((name) => {
     const value = originalEnv[name];
     if (value === undefined) {
       delete process.env[name];
@@ -76,6 +76,30 @@ describe("billing checkout architecture", () => {
 
     expect(state.plan?.id).toBe("starter_readiness");
     expect(state.status).toBe("not_configured");
+    expect("lemon" in state ? state.lemon.checkoutActive : true).toBe(false);
+  });
+
+  it("marks checkout as ready when Lemon Squeezy env vars are configured", () => {
+    process.env.LEMON_SQUEEZY_STORE_ID = "393386";
+    process.env.LEMONSQUEEZY_API_KEY = "test-key";
+    process.env.LEMON_STARTER_VARIANT_ID = "123";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured");
+    expect("lemon" in state ? state.lemon.checkoutActive : false).toBe(true);
+    expect("lemon" in state ? state.lemon.env.apiKeyConfigured : false).toBe(true);
+  });
+
+  it("allows checkout to be disabled explicitly without removing credentials", () => {
+    process.env.LEMON_SQUEEZY_STORE_ID = "393386";
+    process.env.LEMON_SQUEEZY_API_KEY = "test-key";
+    process.env.LEMON_STARTER_VARIANT_ID = "123";
+    process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED = "false";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured_but_disabled");
     expect("lemon" in state ? state.lemon.checkoutActive : true).toBe(false);
   });
 

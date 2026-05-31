@@ -10,6 +10,7 @@ import {
 export type BillingCheckoutRuntimeStatus =
   | "not_configured"
   | "configured_but_disabled"
+  | "configured"
   | "invoice_only"
   | "unsupported_plan";
 
@@ -21,17 +22,27 @@ function hasEnv(name: string | null) {
   return name ? isPresent(process.env[name]) : false;
 }
 
+function hasLemonSqueezyApiKey() {
+  return hasEnv("LEMON_SQUEEZY_API_KEY") || hasEnv("LEMONSQUEEZY_API_KEY");
+}
+
+function isCheckoutExplicitlyDisabled() {
+  return process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
+}
+
 export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
   const storeConfigured = hasEnv("LEMON_SQUEEZY_STORE_ID");
-  const apiKeyConfigured = hasEnv("LEMON_SQUEEZY_API_KEY");
+  const apiKeyConfigured = hasLemonSqueezyApiKey();
   const variantConfigured = hasEnv(plan.lemonVariantEnvName);
   const configured = storeConfigured && apiKeyConfigured && variantConfigured;
+  const checkoutActive = configured && !isCheckoutExplicitlyDisabled();
+  const status = configured ? (checkoutActive ? "configured" : "configured_but_disabled") : "not_configured";
 
   return {
     provider: billingProviders.lemonSqueezy.displayName,
-    checkoutActive: false,
+    checkoutActive,
     configured,
-    status: configured ? "configured_but_disabled" : "not_configured",
+    status,
     env: {
       storeConfigured,
       apiKeyConfigured,
@@ -40,9 +51,9 @@ export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
     },
   } satisfies {
     provider: string;
-    checkoutActive: false;
+    checkoutActive: boolean;
     configured: boolean;
-    status: Extract<BillingCheckoutRuntimeStatus, "not_configured" | "configured_but_disabled">;
+    status: Extract<BillingCheckoutRuntimeStatus, "not_configured" | "configured_but_disabled" | "configured">;
     env: {
       storeConfigured: boolean;
       apiKeyConfigured: boolean;
@@ -79,9 +90,11 @@ export function getBillingCheckoutRouteState(slug: string) {
     plan,
     lemon,
     status: lemon.status,
-    headline: "Checkout coming soon",
+    headline: lemon.checkoutActive ? "Secure card checkout" : "Checkout coming soon",
     detail:
-      "Lemon Squeezy checkout is wired as a safe placeholder only. No payment is processed and no order is created.",
+      lemon.checkoutActive
+        ? "This route creates a Lemon Squeezy checkout session server-side and redirects to secure checkout."
+        : "Lemon Squeezy checkout is not fully configured yet. No payment is processed and no order is created.",
   };
 }
 
@@ -100,17 +113,29 @@ export function getBillingAdminStatus() {
     };
   });
 
-  const lemonConfiguredForAnyCheckoutPlan = planStates.some(
-    (plan) => plan.checkoutEligible && plan.checkoutStatus === "configured_but_disabled",
+  const lemonCheckoutActiveForAnyPlan = planStates.some(
+    (plan) => plan.checkoutEligible && plan.checkoutStatus === "configured",
   );
+  const lemonConfiguredForAnyCheckoutPlan = planStates.some((plan) => {
+    return (
+      plan.checkoutEligible &&
+      (plan.checkoutStatus === "configured" || plan.checkoutStatus === "configured_but_disabled")
+    );
+  });
 
   return {
     providers: [
       {
         id: billingProviders.lemonSqueezy.id,
         label: billingProviders.lemonSqueezy.displayName,
-        status: lemonConfiguredForAnyCheckoutPlan ? "Configured, disabled" : "Not Configured",
-        detail: "Prepared for future checkout. No Lemon API calls are made.",
+        status: lemonCheckoutActiveForAnyPlan
+          ? "Configured"
+          : lemonConfiguredForAnyCheckoutPlan
+            ? "Configured, disabled"
+            : "Not Configured",
+        detail: lemonCheckoutActiveForAnyPlan
+          ? "Server-side checkout creation is available for configured plans. No entitlement automation is active."
+          : "Prepared for checkout. Lemon API calls are made only from checkout start routes when fully configured.",
       },
       {
         id: billingProviders.bankTransfer.id,
@@ -128,7 +153,7 @@ export function getBillingAdminStatus() {
     envPlaceholders: billingEnvPlaceholders.map((name) => ({
       name,
       configured: hasEnv(name),
-      secret: name === "LEMON_SQUEEZY_API_KEY",
+      secret: name === "LEMON_SQUEEZY_API_KEY" || name === "LEMONSQUEEZY_API_KEY",
     })),
     planStates,
   };
