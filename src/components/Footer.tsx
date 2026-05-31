@@ -71,10 +71,10 @@ export default function Footer() {
                 <a href="#features">Core Features</a>
               </li>
               <li>
-                <a href="/shiftreadiness#pricing">Pricing</a>
+                <a href="/pricing">Pricing</a>
               </li>
               <li>
-                <a href="/support#security">Security</a>
+                <a href="/security">Security</a>
               </li>
             </ul>
           </div>
@@ -89,7 +89,7 @@ export default function Footer() {
                 <a href="/support">Support</a>
               </li>
               <li>
-                <a href="/support#partners">Partners</a>
+                <a href="/partners">Partners</a>
               </li>
               <li>
                 <a href="/contact">Contact</a>

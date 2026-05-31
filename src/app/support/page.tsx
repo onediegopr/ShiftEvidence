@@ -106,9 +106,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   <p>Use the form for normal requests or email the relevant inbox for routing.</p>
                 </div>
                 <ul className="assessment-bullet-list">
-                  <li><Mail size={14} /> General support: {SUPPORT_CONTACTS.general}</li>
-                  <li><Lock size={14} /> Security: {SUPPORT_CONTACTS.security}</li>
-                  <li><ShieldCheck size={14} /> Privacy: {SUPPORT_CONTACTS.privacy}</li>
+                  <li><Mail size={14} /> General inquiries: {SUPPORT_CONTACTS.info}</li>
+                  <li><Lock size={14} /> Support: {SUPPORT_CONTACTS.support}</li>
+                  <li><ShieldCheck size={14} /> Billing questions: {SUPPORT_CONTACTS.billing}</li>
                   <li id="partners"><LifeBuoy size={14} /> Partners: {SUPPORT_CONTACTS.partners}</li>
                 </ul>
                 <p className="assessment-inline-note">

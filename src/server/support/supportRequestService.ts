@@ -11,10 +11,10 @@ import { recordAdminAuditEvent } from "../admin/adminOpsService";
 import { INPUT_LIMITS } from "../validation/inputLimits";
 
 export const SUPPORT_CONTACTS = {
-  general: "support@infrashift.dev",
-  security: "security@infrashift.dev",
-  privacy: "privacy@infrashift.dev",
-  partners: "partners@infrashift.dev",
+  info: "info@shiftevidence.com",
+  support: "support@shiftevidence.com",
+  billing: "billing@shiftevidence.com",
+  partners: "partners@shiftevidence.com",
 } as const;
 
 export const SUPPORT_CATEGORY_OPTIONS = [
