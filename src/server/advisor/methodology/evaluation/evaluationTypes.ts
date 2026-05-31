@@ -33,6 +33,7 @@ export type EvaluationResult = {
   unexpectedForbiddenBlockIds: MethodologyBlockId[];
   missingGuardrails: string[];
   forbiddenPhraseHits: string[];
+  globalForbiddenPhraseHits: string[];
   missingExpectedWarnings: string[];
   tokenBudgetOk: boolean;
   restrictedExposureOk: boolean;

@@ -3,6 +3,21 @@ import type { MethodologyBlockId } from "../methodologyTypes";
 import { GOLDEN_QUESTIONS } from "./goldenQuestions";
 import type { EvaluationResult, EvaluationSuiteResult, GoldenQuestionCase } from "./evaluationTypes";
 
+export const GLOBAL_FORBIDDEN_OVERCLAIM_PHRASES = [
+  "guaranteed safe",
+  "zero downtime guaranteed",
+  "no risk",
+  "migration is guaranteed",
+  "backup is not required",
+  "Ceph is always best",
+  "all workloads can migrate",
+  "you can ignore missing evidence",
+  "application dependencies are not needed",
+  "financial impact is $",
+  "exact downtime will be",
+  "production is safe to move now",
+] as const;
+
 function normalizeText(value: string) {
   return value
     .toLowerCase()
@@ -30,6 +45,17 @@ function getNeedsReviewContents(testCase: GoldenQuestionCase) {
     .filter(Boolean);
 }
 
+export function assertNoGlobalOverclaims(previewText: string) {
+  const actionableText = previewText
+    .split("\n")
+    .filter((line) => !line.toLowerCase().includes("unsafe claims to avoid:"))
+    .join("\n");
+
+  return GLOBAL_FORBIDDEN_OVERCLAIM_PHRASES.filter((phrase) =>
+    containsPhrase(actionableText, phrase),
+  );
+}
+
 function buildFailureSummary(params: {
   testCase: GoldenQuestionCase;
   missingExpectedBlockIds: MethodologyBlockId[];
@@ -37,6 +63,7 @@ function buildFailureSummary(params: {
   unexpectedForbiddenBlockIds: MethodologyBlockId[];
   missingGuardrails: string[];
   forbiddenPhraseHits: string[];
+  globalForbiddenPhraseHits: string[];
   missingExpectedWarnings: string[];
   tokenBudgetOk: boolean;
   restrictedExposureOk: boolean;
@@ -58,6 +85,9 @@ function buildFailureSummary(params: {
       : null,
     params.forbiddenPhraseHits.length
       ? `forbidden phrases found: ${params.forbiddenPhraseHits.join(" | ")}`
+      : null,
+    params.globalForbiddenPhraseHits.length
+      ? `global overclaim phrases found: ${params.globalForbiddenPhraseHits.join(" | ")}`
       : null,
     params.missingExpectedWarnings.length
       ? `missing expected warnings: ${params.missingExpectedWarnings.join(" | ")}`
@@ -87,6 +117,7 @@ export function evaluateGoldenQuestionCase(testCase: GoldenQuestionCase): Evalua
     retrievalHints: testCase.retrievalHints,
     options: {
       maxMethodologyBlocks: testCase.maxBlocks ?? 3,
+      maxMethodologyTokens: maxTotalPreviewTokens,
       maxTotalPreviewTokens,
     },
   });
@@ -113,6 +144,7 @@ export function evaluateGoldenQuestionCase(testCase: GoldenQuestionCase): Evalua
   const forbiddenPhraseHits = testCase.forbiddenPhrases.filter((phrase) =>
     containsPhrase(previewText, phrase),
   );
+  const globalForbiddenPhraseHits = assertNoGlobalOverclaims(previewText);
   const missingExpectedWarnings = (testCase.expectedWarnings ?? []).filter(
     (warning) => !preview.warnings.some((candidate) => containsPhrase(candidate, warning)),
   );
@@ -136,6 +168,7 @@ export function evaluateGoldenQuestionCase(testCase: GoldenQuestionCase): Evalua
     unexpectedForbiddenBlockIds.length === 0 &&
     missingGuardrails.length === 0 &&
     forbiddenPhraseHits.length === 0 &&
+    globalForbiddenPhraseHits.length === 0 &&
     missingExpectedWarnings.length === 0 &&
     tokenBudgetOk &&
     restrictedExposureOk &&
@@ -151,6 +184,7 @@ export function evaluateGoldenQuestionCase(testCase: GoldenQuestionCase): Evalua
     unexpectedForbiddenBlockIds,
     missingGuardrails,
     forbiddenPhraseHits,
+    globalForbiddenPhraseHits,
     missingExpectedWarnings,
     tokenBudgetOk,
     restrictedExposureOk,
@@ -165,6 +199,7 @@ export function evaluateGoldenQuestionCase(testCase: GoldenQuestionCase): Evalua
       unexpectedForbiddenBlockIds,
       missingGuardrails,
       forbiddenPhraseHits,
+      globalForbiddenPhraseHits,
       missingExpectedWarnings,
       tokenBudgetOk,
       restrictedExposureOk,

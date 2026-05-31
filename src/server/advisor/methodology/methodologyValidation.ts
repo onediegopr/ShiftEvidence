@@ -38,6 +38,10 @@ function normalizedArray(values: string[]) {
   return values.map((value) => value.trim().toLowerCase()).filter(Boolean);
 }
 
+function optionalArrayHasText(values: string[] | undefined) {
+  return !values || values.every((value) => value.trim().length > 0);
+}
+
 function pushBannedContentErrors(params: {
   errors: string[];
   block: MethodologyBlock;
@@ -113,6 +117,18 @@ export function validateMethodologyRegistry(
 
     if (keywords.length === 0) {
       errors.push(`Block ${block.id} must define at least one keyword.`);
+    }
+
+    if (!optionalArrayHasText(block.safeResponsePatterns)) {
+      errors.push(`Block ${block.id} has empty safe response patterns.`);
+    }
+
+    if (!optionalArrayHasText(block.unsafeClaims)) {
+      errors.push(`Block ${block.id} has empty unsafe claims.`);
+    }
+
+    if (!optionalArrayHasText(block.evidenceRequired)) {
+      errors.push(`Block ${block.id} has empty evidence requirements.`);
     }
 
     if (new Set(tags).size !== tags.length) {

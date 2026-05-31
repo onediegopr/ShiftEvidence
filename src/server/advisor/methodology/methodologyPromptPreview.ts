@@ -438,7 +438,16 @@ function buildMethodologyContext(
       `  exposure: ${block.exposureLevel}`,
       `  summary: ${block.summary}`,
       `  guidance excerpt: ${block.content}`,
-    ].join("\n")),
+      block.evidenceRequired?.length
+        ? `  evidence required: ${block.evidenceRequired.join("; ")}`
+        : null,
+      block.safeResponsePatterns?.length
+        ? `  safe response patterns: ${block.safeResponsePatterns.join(" | ")}`
+        : null,
+      block.unsafeClaims?.length
+        ? `  unsafe claims to avoid: ${block.unsafeClaims.join(" | ")}`
+        : null,
+    ].filter(Boolean).join("\n")),
   ].join("\n");
 }
 

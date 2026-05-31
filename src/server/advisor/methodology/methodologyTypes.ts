@@ -69,6 +69,9 @@ export type MethodologyBlock = {
   exposureLevel: MethodologyExposureLevel;
   allowedUse: MethodologyUseCase[];
   notAllowedUse: string[];
+  safeResponsePatterns?: string[];
+  unsafeClaims?: string[];
+  evidenceRequired?: string[];
   relatedBlockIds: MethodologyBlockId[];
   lastReviewedAt: string;
   source: string;
