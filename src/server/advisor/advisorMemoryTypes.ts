@@ -22,6 +22,7 @@ export type AdvisorMemoryCreateInput = {
   type: AdvisorMemoryItemType;
   sourceType: AdvisorMemorySourceType;
   truthStatus: AdvisorMemoryTruthStatus;
+  status?: AdvisorMemoryItemStatus;
   title: string;
   summary: string;
   details?: Record<string, unknown> | null;

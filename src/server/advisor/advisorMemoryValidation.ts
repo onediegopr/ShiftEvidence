@@ -135,6 +135,17 @@ export function validateAdvisorMemoryCreateInput(params: {
     };
   }
 
+  if (
+    params.input.status !== undefined &&
+    !includesValue(ADVISOR_MEMORY_ITEM_STATUSES, params.input.status)
+  ) {
+    return {
+      ok: false,
+      code: "invalid_status",
+      message: "Invalid Advisor memory status.",
+    };
+  }
+
   const title = sanitizeAdvisorMemoryTitle(params.input.title);
   const summary = sanitizeAdvisorMemorySummary(params.input.summary);
 
@@ -176,6 +187,7 @@ export function validateAdvisorMemoryCreateInput(params: {
       workspaceId: params.input.workspaceId.trim(),
       title,
       summary,
+      status: params.input.status,
       confidence: params.input.confidence ?? null,
     },
   };

@@ -125,6 +125,8 @@ function safeAuditMetadata(item: {
   status: string;
   truthStatus: string;
   sourceType: string;
+  sourceMessageId?: string | null;
+  autoExtracted?: boolean | null;
 }) {
   return {
     memoryItemId: item.id,
@@ -134,6 +136,8 @@ function safeAuditMetadata(item: {
     status: item.status,
     truthStatus: item.truthStatus,
     sourceType: item.sourceType,
+    sourceMessageId: item.sourceMessageId ?? null,
+    autoExtracted: item.autoExtracted ?? null,
   };
 }
 
@@ -356,9 +360,10 @@ export async function createAdvisorMemoryItem(params: {
       createdByUserId: normalized.createdByUserId ?? params.userId,
       type: normalized.type,
       status:
-        normalized.truthStatus === "confirmed" || normalized.truthStatus === "customer_reported"
+        normalized.status ??
+        (normalized.truthStatus === "confirmed" || normalized.truthStatus === "customer_reported"
           ? "active"
-          : "needs_review",
+          : "needs_review"),
       sourceType: normalized.sourceType,
       truthStatus: normalized.truthStatus,
       title: normalized.title,
@@ -376,7 +381,13 @@ export async function createAdvisorMemoryItem(params: {
     workspaceId: assessment.workspaceId,
     eventType: "advisor_memory_item_created",
     message: "Advisor memory item created.",
-    metadataJson: safeAuditMetadata(created),
+    metadataJson: safeAuditMetadata({
+      ...created,
+      autoExtracted:
+        typeof params.input.details?.autoExtracted === "boolean"
+          ? params.input.details.autoExtracted
+          : null,
+    }),
   });
 
   return mapMemoryItem(created);

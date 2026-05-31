@@ -116,11 +116,12 @@ Read these to understand:
 - [Advisor Project Memory Vault Release Migration + Smoke](./hito-advisor-2d-project-memory-vault-release-migration-smoke.md)
 - [Advisor Project Memory Vault User-Attested Authenticated Smoke](./hito-advisor-2e-user-attested-project-memory-vault-authenticated-smoke.md)
 - [Advisor Project Memory Vault Final Documentation](./hito-advisor-2-close-project-memory-vault-final-documentation.md)
+- [Advisor Project Memory Auto-Extraction Lite](./hito-advisor-2f-project-memory-auto-extraction-lite.md)
 
 Recommended next Advisor milestones:
 
-- ADVISOR-2F Auto-Extraction Lite.
-- ADVISOR-3 RAG / Methodology KB after memory review workflows mature.
+- ADVISOR-2F-RELEASE/SMOKE if production verification is required.
+- ADVISOR-3 RAG / Methodology KB after auto-extraction review workflows mature.
 
 ## Hostinger / Production Ops
 

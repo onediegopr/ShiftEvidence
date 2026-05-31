@@ -20,6 +20,7 @@ import { assertCanUseAi, getEffectiveUserEntitlement } from "../admin/runtimeSet
 import { ensureAssessmentOwnership, type AssessmentDetail } from "../assessments/assessmentService";
 import { logger } from "../logging/logger";
 import { compactAdvisorMemoryPromptContext } from "./advisorMemoryPromptContext";
+import { runAdvisorMemoryAutoExtraction, type AdvisorMemoryAutoExtractionResult } from "./advisorMemoryExtractionService";
 import { getAdvisorMemoryPanelState } from "./advisorMemoryService";
 import type { AdvisorMemoryPanelState } from "./advisorMemoryTypes";
 import { buildSeniorAdvisorContextPayloadWithMemory, summarizeSeniorAdvisorContextSections } from "./seniorAdvisorContextService";
@@ -331,6 +332,41 @@ export function buildSeniorAdvisorMemoryUsageMetadata(
     memoryContextChars: contextSections.memoryContextChars,
     memoryFallbackReason: contextSections.memoryFallbackReason,
   };
+}
+
+function buildAdvisorMemoryExtractionUsageMetadata(
+  result: AdvisorMemoryAutoExtractionResult | null,
+) {
+  return {
+    memoryCandidatesGenerated: result?.generated ?? 0,
+    memoryCandidatesSkipped: result?.skipped ?? 0,
+    memoryExtractionStatus: result?.status ?? "disabled",
+  };
+}
+
+async function runAdvisorMemoryAutoExtractionSafely(params: {
+  userId: string;
+  assessment: AssessmentDetail;
+  conversationId: string;
+  userMessage: { id: string; content: string; status: "completed" | "failed" | "blocked" };
+  assistantMessage: { id: string; content: string; status: "completed" | "failed" | "blocked" };
+}) {
+  try {
+    return await runAdvisorMemoryAutoExtraction(params);
+  } catch (error) {
+    logger.warn("advisor_memory_auto_extraction_failed", {
+      assessmentId: params.assessment.id,
+      userId: params.userId,
+      error,
+    });
+    return {
+      status: "failed",
+      generated: 0,
+      skipped: 0,
+      failed: 1,
+      reasons: ["extraction_failed"],
+    } satisfies AdvisorMemoryAutoExtractionResult;
+  }
 }
 
 function buildMockAdvisorAnswer(params: {
@@ -811,8 +847,8 @@ async function persistAdvisorExchange(params: {
   referencedContextJson?: unknown;
 }) {
   const now = new Date();
-  const assistant = await prisma.$transaction(async (tx) => {
-    await tx.assessmentAdvisorMessage.create({
+  const exchange = await prisma.$transaction(async (tx) => {
+    const userMessage = await tx.assessmentAdvisorMessage.create({
       data: {
         conversationId: params.conversationId,
         assessmentId: params.assessment.id,
@@ -867,10 +903,13 @@ async function persistAdvisorExchange(params: {
       },
     });
 
-    return assistantMessage;
+    return { userMessage, assistantMessage };
   });
 
-  return mapMessageView(assistant);
+  return {
+    userMessage: mapMessageView(exchange.userMessage),
+    assistantMessage: mapMessageView(exchange.assistantMessage),
+  };
 }
 
 export async function sendSeniorAdvisorMessage(
@@ -1007,7 +1046,7 @@ export async function sendSeniorAdvisorMessage(
 
   if (!config.enabled || config.provider === "none" || config.provider === "disabled") {
     const assistantText = "Senior Migration Advisor is currently unavailable because AI is disabled. Deterministic assessment sections remain available.";
-    const assistantMessage = await persistAdvisorExchange({
+    const exchange = await persistAdvisorExchange({
       assessment,
       conversationId: conversation.id,
       userId: params.userId,
@@ -1050,7 +1089,7 @@ export async function sendSeniorAdvisorMessage(
     });
     return {
       ok: true,
-      assistantMessage,
+      assistantMessage: exchange.assistantMessage,
       usage: usageState.usage,
     };
   }
@@ -1067,7 +1106,7 @@ export async function sendSeniorAdvisorMessage(
   if (!operationalCheck.allowed) {
     const mapped = mapBlockedCode(operationalCheck.code);
     const assistantText = operationalCheck.message;
-    const assistantMessage = await persistAdvisorExchange({
+    const exchange = await persistAdvisorExchange({
       assessment,
       conversationId: conversation.id,
       userId: params.userId,
@@ -1110,7 +1149,7 @@ export async function sendSeniorAdvisorMessage(
     });
     return {
       ok: true,
-      assistantMessage,
+      assistantMessage: exchange.assistantMessage,
       usage: usageState.usage,
     };
   }
@@ -1149,7 +1188,7 @@ export async function sendSeniorAdvisorMessage(
       inputTokens: estimatedInputTokens,
       outputTokens: estimatedOutputTokens,
     });
-    const assistantMessage = await persistAdvisorExchange({
+    const exchange = await persistAdvisorExchange({
       assessment,
       conversationId: conversation.id,
       userId: params.userId,
@@ -1163,6 +1202,21 @@ export async function sendSeniorAdvisorMessage(
       creditCost: 1,
       safetyFlags: security.safetyFlags,
       referencedContextJson: contextSections,
+    });
+    const memoryExtraction = await runAdvisorMemoryAutoExtractionSafely({
+      userId: params.userId,
+      assessment,
+      conversationId: conversation.id,
+      userMessage: {
+        id: exchange.userMessage.id,
+        content: exchange.userMessage.content,
+        status: exchange.userMessage.status,
+      },
+      assistantMessage: {
+        id: exchange.assistantMessage.id,
+        content: exchange.assistantMessage.content,
+        status: exchange.assistantMessage.status,
+      },
     });
     await recordAiUsageEvent({
       assessmentId: assessment.id,
@@ -1186,6 +1240,7 @@ export async function sendSeniorAdvisorMessage(
         contextReduced: boundedPrompt.reduced,
         contextSections: Object.values(contextSections).filter(Boolean).length,
         ...memoryUsageMetadata,
+        ...buildAdvisorMemoryExtractionUsageMetadata(memoryExtraction),
         creditCost: 1,
       },
     });
@@ -1208,7 +1263,7 @@ export async function sendSeniorAdvisorMessage(
 
     return {
       ok: true,
-      assistantMessage,
+      assistantMessage: exchange.assistantMessage,
       usage: refreshedUsage,
     };
   } catch (error) {
@@ -1230,7 +1285,7 @@ export async function sendSeniorAdvisorMessage(
       responseFinishReason: providerErrorMetadata.responseFinishReason ?? null,
     });
     const assistantText = buildSeniorAdvisorProviderFallbackMessage(error);
-    const assistantMessage = await persistAdvisorExchange({
+    const exchange = await persistAdvisorExchange({
       assessment,
       conversationId: conversation.id,
       userId: params.userId,
@@ -1246,6 +1301,21 @@ export async function sendSeniorAdvisorMessage(
       creditCost: 0,
       safetyFlags: security.safetyFlags,
       referencedContextJson: contextSections,
+    });
+    const memoryExtraction = await runAdvisorMemoryAutoExtractionSafely({
+      userId: params.userId,
+      assessment,
+      conversationId: conversation.id,
+      userMessage: {
+        id: exchange.userMessage.id,
+        content: exchange.userMessage.content,
+        status: exchange.userMessage.status,
+      },
+      assistantMessage: {
+        id: exchange.assistantMessage.id,
+        content: exchange.assistantMessage.content,
+        status: exchange.assistantMessage.status,
+      },
     });
     await recordAiUsageEvent({
       assessmentId: assessment.id,
@@ -1263,6 +1333,7 @@ export async function sendSeniorAdvisorMessage(
         ...providerErrorMetadata,
         contextReduced: boundedPrompt.reduced,
         ...memoryUsageMetadata,
+        ...buildAdvisorMemoryExtractionUsageMetadata(memoryExtraction),
       },
     });
     await recordAdvisorAuditEvent({
@@ -1277,7 +1348,7 @@ export async function sendSeniorAdvisorMessage(
     });
     return {
       ok: true,
-      assistantMessage,
+      assistantMessage: exchange.assistantMessage,
       usage: usageState.usage,
     };
   }
