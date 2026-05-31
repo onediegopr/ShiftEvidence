@@ -40,6 +40,7 @@ import {
 } from "./storageReadinessScoringService";
 import { resolveStorageReadinessPlanLimits } from "./storageReadinessPlanLimits";
 import { buildStorageReadinessAuditMetadata } from "./storageReadinessValidation";
+import { isHighUsageDatastore } from "./storageThresholds";
 
 type ActorParams = {
   userId: string;
@@ -467,19 +468,11 @@ function getParsedStorageSignals(assessment: AssessmentDetail) {
     sumNumbers(datastores.map((datastore) => datastore.usedGb)) ??
     sumNumbers(summaries.map((summary) => summary.totalUsedGb));
   const lowFreeCapacityDatastoreCount = datastores.filter((datastore) => {
-    if (typeof datastore.usagePercent === "number") {
-      return datastore.usagePercent >= 85;
-    }
-
-    if (
-      typeof datastore.capacityGb === "number" &&
-      datastore.capacityGb > 0 &&
-      typeof datastore.freeGb === "number"
-    ) {
-      return datastore.freeGb / datastore.capacityGb <= 0.15;
-    }
-
-    return false;
+    return isHighUsageDatastore({
+      usagePercent: datastore.usagePercent,
+      capacityGb: datastore.capacityGb,
+      freeGb: datastore.freeGb,
+    });
   }).length;
   const largestVmGb =
     Math.max(

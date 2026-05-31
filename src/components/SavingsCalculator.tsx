@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import {
   Percent,
@@ -14,27 +14,57 @@ import {
 } from "lucide-react";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
+import {
+  STATIC_EUR_USD_RATE,
+  getLicensingPriceItem,
+} from "../lib/licensing/pricingSource";
+import { calculateLicensingComparison } from "../lib/licensing/licensingCostModel";
 
 
 type VmwareTier = "standard" | "vvf" | "vcf";
 type ProxmoxTier = "community" | "basic" | "standard" | "premium";
 
-type FxStatus = "loading" | "live" | "fallback";
+type FxStatus = "static";
+
+function requirePrice(vendor: "vmware" | "proxmox", tier: string) {
+  const item = getLicensingPriceItem(vendor, tier);
+  if (!item) {
+    throw new Error(`Missing central licensing price for ${vendor}/${tier}.`);
+  }
+  return item;
+}
+
+const VMWARE_PRICES = {
+  standard: requirePrice("vmware", "standard"),
+  vvf: requirePrice("vmware", "vvf"),
+  vcf: requirePrice("vmware", "vcf"),
+};
+
+const PROXMOX_PRICES = {
+  community: requirePrice("proxmox", "community"),
+  basic: requirePrice("proxmox", "basic"),
+  standard: requirePrice("proxmox", "standard"),
+  premium: requirePrice("proxmox", "premium"),
+};
 
 const VMWARE_DEFAULTS: Record<
   VmwareTier,
   { label: string; price: number; sublabel: string }
 > = {
-  standard: { label: "vSphere Standard", price: 50, sublabel: "$50/core/year" },
+  standard: {
+    label: "vSphere Standard",
+    price: VMWARE_PRICES.standard.normalizedUnitPrice.amount,
+    sublabel: `$${VMWARE_PRICES.standard.normalizedUnitPrice.amount}/core/year`,
+  },
   vvf: {
     label: "vSphere Foundation (VVF)",
-    price: 135,
-    sublabel: "$135/core/year",
+    price: VMWARE_PRICES.vvf.normalizedUnitPrice.amount,
+    sublabel: `$${VMWARE_PRICES.vvf.normalizedUnitPrice.amount}/core/year`,
   },
   vcf: {
     label: "Cloud Foundation (VCF)",
-    price: 350,
-    sublabel: "$350/core/year",
+    price: VMWARE_PRICES.vcf.normalizedUnitPrice.amount,
+    sublabel: `$${VMWARE_PRICES.vcf.normalizedUnitPrice.amount}/core/year`,
   },
 };
 
@@ -42,16 +72,25 @@ const PROXMOX_DEFAULTS: Record<
   ProxmoxTier,
   { label: string; priceEur: number }
 > = {
-  community: { label: "Community", priceEur: 120 },
-  basic: { label: "Basic", priceEur: 370 },
-  standard: { label: "Standard", priceEur: 550 },
-  premium: { label: "Premium", priceEur: 1100 },
+  community: {
+    label: "Community",
+    priceEur: PROXMOX_PRICES.community.unitPrice.amount,
+  },
+  basic: {
+    label: "Basic",
+    priceEur: PROXMOX_PRICES.basic.unitPrice.amount,
+  },
+  standard: {
+    label: "Standard",
+    priceEur: PROXMOX_PRICES.standard.unitPrice.amount,
+  },
+  premium: {
+    label: "Premium",
+    priceEur: PROXMOX_PRICES.premium.unitPrice.amount,
+  },
 };
 
 const CORES_OPTIONS = [16, 24, 32, 48, 64];
-const FX_FALLBACK_USD_PER_EUR = 1.08;
-const FX_RATE_URL =
-  "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD";
 
 export default function SavingsCalculator() {
   // --- Environment ---
@@ -72,8 +111,8 @@ export default function SavingsCalculator() {
   );
 
   // --- FX ---
-  const [usdPerEur, setUsdPerEur] = useState(FX_FALLBACK_USD_PER_EUR);
-  const [fxStatus, setFxStatus] = useState<FxStatus>("loading");
+  const usdPerEur = STATIC_EUR_USD_RATE.rate;
+  const fxStatus: FxStatus = "static";
 
   // --- Options ---
   const [includeEscalation, setIncludeEscalation] = useState(false);
@@ -84,67 +123,39 @@ export default function SavingsCalculator() {
   const [vms, setVms] = useState(120);
   const [storage, setStorage] = useState(80);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const loadFxRate = async () => {
-      try {
-        const response = await fetch(FX_RATE_URL, {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error(`FX request failed with ${response.status}`);
-        }
-
-        const data: { rates?: { USD?: number } } = await response.json();
-        const liveRate = data.rates?.USD;
-
-        if (typeof liveRate !== "number" || !Number.isFinite(liveRate)) {
-          throw new Error("FX response missing USD rate");
-        }
-
-        setUsdPerEur(liveRate);
-        setFxStatus("live");
-      } catch {
-        if (!controller.signal.aborted) {
-          setUsdPerEur(FX_FALLBACK_USD_PER_EUR);
-          setFxStatus("fallback");
-        }
-      }
-    };
-
-    loadFxRate();
-
-    return () => controller.abort();
-  }, []);
-
   // ===================== CALCULATIONS =====================
 
-  const totalSockets = servers * socketsPerServer;
-  // VMware licenses physical cores with a 16-core minimum per CPU socket
-  const licensedCores =
-    servers * socketsPerServer * Math.max(coresPerSocket, 16);
+  const calculation = calculateLicensingComparison({
+    hosts: servers,
+    socketsPerHost: socketsPerServer,
+    coresPerSocket,
+    vmwareTier,
+    proxmoxTier,
+    includeVmwareEscalation: includeEscalation,
+    priceOverrides: {
+      vmwareUnitPriceUsd: vmwarePricePerCore,
+      proxmoxUnitPriceUsd: proxmoxPriceEur * usdPerEur,
+    },
+  });
+  const totalSockets = calculation.vmware.sockets;
+  const licensedCores = calculation.vmware.billableCores;
   const coresBumped = coresPerSocket < 16;
 
   // --- Annual ---
-  const vmwareAnnual = licensedCores * vmwarePricePerCore;
-  const proxmoxPriceUsd = proxmoxPriceEur * usdPerEur;
-  const proxmoxAnnualUsd = totalSockets * proxmoxPriceUsd;
+  const vmwareAnnual = calculation.vmware.annualCost.amount;
+  const proxmoxAnnualUsd = calculation.proxmox.annualCost.amount;
 
   // --- 3-Year ---
   // Broadcom escalation: +10% YoY when enabled
   const escalationFactor = includeEscalation ? 1 + 1.1 + 1.21 : 3;
-  const vmware3Year = vmwareAnnual * escalationFactor;
-  const proxmox3Year = proxmoxAnnualUsd * 3;
+  const vmware3Year = calculation.comparison.projections.find((item) => item.years === 3)?.vmwareCost.amount ?? vmwareAnnual * escalationFactor;
+  const proxmox3Year = calculation.comparison.projections.find((item) => item.years === 3)?.proxmoxCost.amount ?? proxmoxAnnualUsd * 3;
 
   // --- Savings ---
-  const annualSavings = vmwareAnnual - proxmoxAnnualUsd;
-  const annualSavingsPercent =
-    vmwareAnnual > 0 ? (annualSavings / vmwareAnnual) * 100 : 0;
-  const threeYearSavings = vmware3Year - proxmox3Year;
-  const threeYearSavingsPercent =
-    vmware3Year > 0 ? (threeYearSavings / vmware3Year) * 100 : 0;
+  const annualSavings = calculation.comparison.annualSavings.amount;
+  const annualSavingsPercent = calculation.comparison.savingsPercent;
+  const threeYearSavings = calculation.comparison.threeYearSavings.amount;
+  const threeYearSavingsPercent = vmware3Year > 0 ? (threeYearSavings / vmware3Year) * 100 : 0;
 
   // Relative bar width: Proxmox bar proportional to VMware (max = 100%)
   const barProxmoxWidth =
@@ -399,8 +410,8 @@ export default function SavingsCalculator() {
                     </span>
                 </label>
                 <p className="fx-note" style={{ marginTop: "0.75rem" }}>
-                  FX conversion is automatic. Current source: {" "}
-                  {fxStatus === "live" ? "live feed" : "fallback rate"}.
+                  FX conversion uses the central static assumption: {usdPerEur} USD per EUR
+                  ({fxStatus}, {STATIC_EUR_USD_RATE.effectiveDate}).
                 </p>
               </div>
             )}
@@ -434,8 +445,8 @@ export default function SavingsCalculator() {
                 )}
               </div>
               <p className="fx-note">
-                Converted automatically to USD from a live FX feed, with a
-                fixed fallback if the feed is unavailable.
+                Converted to USD with the central static FX assumption. Original
+                Proxmox list prices remain modeled in EUR.
               </p>
             </div>
 
@@ -545,7 +556,7 @@ export default function SavingsCalculator() {
                   public reference pricing and licensed core calculations
                   (16-core minimum per physical CPU for VCF/VVF). Proxmox
                   pricing reflects the selected subscription tier, total CPU
-                  sockets, and automatic USD conversion.
+                  sockets, and the central USD conversion metadata.
                   {includeEscalation &&
                     " VMware estimate includes 10% YoY Broadcom escalation."}
                 </p>

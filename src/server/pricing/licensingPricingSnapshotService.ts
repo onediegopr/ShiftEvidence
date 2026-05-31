@@ -13,6 +13,11 @@ import {
   validatePricingSnapshotInput,
   validateSnapshotCanBeApproved,
 } from "./licensingPricingValidation";
+import {
+  STATIC_EUR_USD_RATE,
+  buildPricingSourceNote,
+  listLicensingPriceItems,
+} from "../../lib/licensing/pricingSource";
 
 export const PRICING_INTELLIGENCE_ENABLED_KEY = "pricing_intelligence.enabled";
 
@@ -491,6 +496,9 @@ export async function runManualPricingRefresh(params: AdminActor) {
     return completedRun;
   }
 
+  const vmwareItems = listLicensingPriceItems("vmware");
+  const proxmoxItems = listLicensingPriceItems("proxmox");
+
   const snapshots = await Promise.all([
     createDraftPricingSnapshot({
       actorUserId: params.actorUserId,
@@ -498,33 +506,26 @@ export async function runManualPricingRefresh(params: AdminActor) {
       vendor: "vmware",
       status: "pending_review",
       currency: "USD",
-      sourceName: "VMware/Broadcom Benchmark Estimates",
+      sourceName: vmwareItems[0]?.metadata.sourceName ?? "VMware/Broadcom Benchmark Estimates",
       sourceType: "market_estimate",
       lastCheckedAt: checkedAt,
-      notesInternal: "Cargado por refresh administrativo. Valores de mercado estimativos por core para modelado financiero.",
-      metadataJson: { refreshRunId: run.id, approvedAutomatically: false },
-      items: [
-        {
-          vendor: "vmware",
-          productName: "VMware Cloud Foundation (VCF)",
-          edition: "Enterprise",
-          metric: "core",
-          unitPriceUsd: new Prisma.Decimal(350.00),
-          minUnits: 16,
-          termMonths: 12,
-          sourceNote: "VCF list price estimate per core per year.",
-        },
-        {
-          vendor: "vmware",
-          productName: "VMware vSphere Foundation (VVF)",
-          edition: "Standard",
-          metric: "core",
-          unitPriceUsd: new Prisma.Decimal(135.00),
-          minUnits: 16,
-          termMonths: 12,
-          sourceNote: "VVF list price estimate per core per year.",
-        },
-      ],
+      notesInternal: "Cargado por refresh administrativo desde fuente central de pricing. Valores estimativos por core para modelado financiero.",
+      metadataJson: {
+        refreshRunId: run.id,
+        approvedAutomatically: false,
+        pricingSource: "src/lib/licensing/pricingSource.ts",
+        normalizedCurrency: "USD",
+      },
+      items: vmwareItems.map((item) => ({
+        vendor: "vmware" as const,
+        productName: item.product,
+        edition: item.tier.toUpperCase(),
+        metric: item.billingMetric === "cpu" ? "socket" as const : item.billingMetric,
+        unitPriceUsd: new Prisma.Decimal(item.normalizedUnitPrice.amount),
+        minUnits: item.minUnits ?? null,
+        termMonths: 12,
+        sourceNote: buildPricingSourceNote(item),
+      })),
     }),
     createDraftPricingSnapshot({
       actorUserId: params.actorUserId,
@@ -532,43 +533,27 @@ export async function runManualPricingRefresh(params: AdminActor) {
       vendor: "proxmox",
       status: "pending_review",
       currency: "USD",
-      sourceName: "Proxmox VE Official List Pricing",
+      sourceName: proxmoxItems[0]?.metadata.sourceName ?? "Proxmox VE Official List Pricing",
       sourceType: "official",
       lastCheckedAt: checkedAt,
-      notesInternal: "Tarifas oficiales de Proxmox Server Solutions normalizadas de EUR a USD.",
-      metadataJson: { refreshRunId: run.id, approvedAutomatically: false },
-      items: [
-        {
-          vendor: "proxmox",
-          productName: "Proxmox VE Premium Subscription",
-          edition: "Premium",
-          metric: "socket",
-          unitPriceUsd: new Prisma.Decimal(1070.00),
-          minUnits: 1,
-          termMonths: 12,
-          sourceNote: "Official list price for 1 CPU socket per year (Premium Support).",
-        },
-        {
-          vendor: "proxmox",
-          productName: "Proxmox VE Standard Subscription",
-          edition: "Standard",
-          metric: "socket",
-          unitPriceUsd: new Prisma.Decimal(350.00),
-          minUnits: 1,
-          termMonths: 12,
-          sourceNote: "Official list price for 1 CPU socket per year (Standard Support).",
-        },
-        {
-          vendor: "proxmox",
-          productName: "Proxmox VE Community Subscription",
-          edition: "Community",
-          metric: "socket",
-          unitPriceUsd: new Prisma.Decimal(120.00),
-          minUnits: 1,
-          termMonths: 12,
-          sourceNote: "Official list price for 1 CPU socket per year (Community Support).",
-        },
-      ],
+      notesInternal: "Tarifas oficiales de Proxmox Server Solutions desde fuente central, normalizadas de EUR a USD con metadata FX.",
+      metadataJson: {
+        refreshRunId: run.id,
+        approvedAutomatically: false,
+        pricingSource: "src/lib/licensing/pricingSource.ts",
+        normalizedCurrency: "USD",
+        fx: STATIC_EUR_USD_RATE,
+      },
+      items: proxmoxItems.map((item) => ({
+        vendor: "proxmox" as const,
+        productName: item.product,
+        edition: item.tier.charAt(0).toUpperCase() + item.tier.slice(1),
+        metric: item.billingMetric === "cpu" ? "socket" as const : item.billingMetric,
+        unitPriceUsd: new Prisma.Decimal(item.normalizedUnitPrice.amount),
+        minUnits: item.minUnits ?? null,
+        termMonths: 12,
+        sourceNote: buildPricingSourceNote(item),
+      })),
     }),
   ]);
 

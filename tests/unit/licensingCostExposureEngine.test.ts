@@ -10,7 +10,12 @@ import type {
 
 const freshDate = new Date().toISOString();
 
-function snapshot(vendor: "vmware" | "proxmox", metric: "core" | "socket" | "host" | "subscription", unitPriceUsd: number): ApprovedPricingSnapshot {
+function snapshot(
+  vendor: "vmware" | "proxmox",
+  metric: "core" | "socket" | "host" | "subscription",
+  unitPriceUsd: number,
+  minUnits: number | null = null,
+): ApprovedPricingSnapshot {
   return {
     snapshotId: `${vendor}-approved`,
     vendor,
@@ -28,7 +33,7 @@ function snapshot(vendor: "vmware" | "proxmox", metric: "core" | "socket" | "hos
         edition: "Standard",
         metric,
         unitPriceUsd,
-        minUnits: null,
+        minUnits,
         termMonths: 12,
         sourceNote: "Unit test snapshot.",
       },
@@ -125,6 +130,23 @@ describe("licensing cost exposure engine", () => {
     expect(result.vmwareScenarios.mid?.annualUsd).toBe(64_000);
     expect(result.proxmoxScenarios.supported).toBeNull();
     expect(result.missingEvidence.some((item) => item.key === "approved_proxmox_pricing_snapshot")).toBe(true);
+  });
+
+  it("applies VMware 16-core minimum per socket when annualizing approved core snapshots", () => {
+    const result = runLicensingCostExposureAnalysis(
+      baseInput({
+        mode: "estimated_from_environment",
+        annualVmwareCostUsd: null,
+        hostCount: 1,
+        socketCount: 2,
+        coreCount: 16,
+        approvedVmwareSnapshots: [snapshot("vmware", "core", 500, 16)],
+        approvedProxmoxSnapshots: [],
+      }),
+    );
+
+    expect(result.vmwareScenarios.mid?.annualUsd).toBe(16_000);
+    expect(result.vmwareScenarios.mid?.assumptions.join(" ")).toContain("16-core minimum per socket");
   });
 
   it("warns when Proxmox comparison is community-only", () => {

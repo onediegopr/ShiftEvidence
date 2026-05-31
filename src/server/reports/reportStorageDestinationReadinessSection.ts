@@ -1,5 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import type { AssessmentDetail } from "../assessments/assessmentService";
+import {
+  STORAGE_HIGH_USAGE_THRESHOLD_PERCENT,
+  isHighUsageDatastore,
+} from "../assessments/storageThresholds";
 
 type JsonValue = Prisma.JsonValue | null | undefined;
 
@@ -352,7 +356,13 @@ function buildDatastoreSourceSummary(assessment: AssessmentDetail) {
 
   const totalCapacityGb = datastores.reduce((sum, item) => sum + (item.capacityGb ?? 0), 0);
   const totalUsedGb = datastores.reduce((sum, item) => sum + (item.usedGb ?? 0), 0);
-  const highUsageCount = datastores.filter((item) => (item.usagePercent ?? 0) >= 80).length;
+  const highUsageCount = datastores.filter((item) =>
+    isHighUsageDatastore({
+      usagePercent: item.usagePercent,
+      capacityGb: item.capacityGb,
+      freeGb: item.freeGb,
+    }),
+  ).length;
 
   const rows = [
     {
@@ -365,7 +375,7 @@ function buildDatastoreSourceSummary(assessment: AssessmentDetail) {
     },
     highUsageCount > 0
       ? {
-          item: `${highUsageCount} datastore${highUsageCount === 1 ? "" : "s"} above 80% usage`,
+          item: `${highUsageCount} datastore${highUsageCount === 1 ? "" : "s"} above ${STORAGE_HIGH_USAGE_THRESHOLD_PERCENT}% usage`,
           evidence: "High datastore utilization can constrain migration staging and storage target sizing.",
           confidence: "medium",
           source: "rvtools",

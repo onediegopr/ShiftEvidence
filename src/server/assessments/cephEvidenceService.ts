@@ -4,6 +4,7 @@ import type {
   CephEvidenceInput,
   CephStorageContextSignals,
 } from "./cephReadinessTypes";
+import { isHighUsageDatastore } from "./storageThresholds";
 
 type StorageAnalysisRecord = {
   cephSignals?: {
@@ -125,12 +126,11 @@ function buildRvtoolsDatastoreSummary(assessment: AssessmentDetail) {
       ? datastores.length
       : summaries.reduce((total, summary) => total + (summary.datastoreCount ?? 0), 0);
   const highUsageDatastoreCount = datastores.filter((datastore) => {
-    const usagePercent = asNumber(datastore.usagePercent);
-    if (usagePercent !== null) return usagePercent >= 85;
-
-    const capacityGb = asNumber(datastore.capacityGb);
-    const free = asNumber(datastore.freeGb);
-    return capacityGb !== null && capacityGb > 0 && free !== null && free / capacityGb <= 0.15;
+    return isHighUsageDatastore({
+      usagePercent: asNumber(datastore.usagePercent),
+      capacityGb: asNumber(datastore.capacityGb),
+      freeGb: asNumber(datastore.freeGb),
+    });
   }).length;
   const snapshotCount =
     parsedSnapshots.length > 0

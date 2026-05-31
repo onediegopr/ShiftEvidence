@@ -1811,6 +1811,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
 
     addContentPage(doc, "Section 4", "Readiness and Confidence Scores", "Interpret readiness separately from evidence strength");
     h2(doc, "Score interpretation");
+    const hasLicensingCostExposure = Boolean(preview.licensingCostExposure?.included);
     keyValueTable(doc, [
       ["Readiness score", preview.readinessScore !== null ? `${preview.readinessScore}/100 - ${getScoreLabel(preview.readinessScore, "readiness")}` : "Not available in current evidence"],
       ["Confidence score", preview.confidenceScore !== null ? `${preview.confidenceScore}/100 - ${getScoreLabel(preview.confidenceScore, "confidence")}` : `${preview.evidenceConfidenceLabel} - numeric score not available`],
@@ -1820,9 +1821,9 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
           ? "Confirmed remediation required. Evidence is strong enough to prioritize fixes."
           : "Pilot-first path. Use findings to define a controlled validation plan."],
       ["Risk level", titleCase(preview.costRiskPreview.riskLevel ?? "unknown")],
-      ["Annual subscription delta", money(preview.costRiskPreview.annualSubscriptionDelta)],
-      ["3-year subscription delta", money(preview.costRiskPreview.threeYearSubscriptionDelta)],
-      ["Estimated savings", percent(preview.costRiskPreview.savingsPercent)],
+      ["Annual subscription delta", hasLicensingCostExposure ? "See Licensing & Cost Exposure section" : money(preview.costRiskPreview.annualSubscriptionDelta)],
+      ["3-year subscription delta", hasLicensingCostExposure ? "See Licensing & Cost Exposure section" : money(preview.costRiskPreview.threeYearSubscriptionDelta)],
+      ["Estimated savings", hasLicensingCostExposure ? "See Licensing & Cost Exposure section" : percent(preview.costRiskPreview.savingsPercent)],
       ["Finding counts", `Critical: ${preview.findingCounts.critical}, High: ${preview.findingCounts.high}, Medium: ${preview.findingCounts.medium}, Low: ${preview.findingCounts.low}`],
     ]);
     callout(doc, "Readiness and confidence are separate. A workload can look technically simple while still requiring business validation.", "warning");

@@ -13,6 +13,10 @@ import type {
   PricingFreshnessStatus,
   SavingsQuality,
 } from "./licensingCostExposureTypes";
+import {
+  calculateVmwareBillableCoresFromTotals,
+} from "../../lib/licensing/licensingCostModel";
+import { VMWARE_MIN_CORES_PER_SOCKET } from "../../lib/licensing/pricingSource";
 
 function roundCurrency(value: number | null) {
   if (value === null || !Number.isFinite(value)) return null;
@@ -76,7 +80,14 @@ function annualizeItem(item: ApprovedPricingItem, counts: {
   if (item.unitPriceUsd === null) return null;
 
   let units: number | null = null;
-  if (item.metric === "core") units = counts.coreCount;
+  if (item.metric === "core") {
+    units = item.vendor === "vmware" && counts.socketCount !== null && counts.coreCount !== null
+      ? calculateVmwareBillableCoresFromTotals({
+          socketCount: counts.socketCount,
+          coreCount: counts.coreCount,
+        }).billableCores
+      : counts.coreCount;
+  }
   if (item.metric === "socket") units = counts.socketCount;
   if (item.metric === "host" || item.metric === "node") units = counts.hostCount;
   if (item.metric === "year" || item.metric === "subscription" || item.metric === "manual" || item.metric === "rule") {
@@ -84,6 +95,9 @@ function annualizeItem(item: ApprovedPricingItem, counts: {
   }
 
   if (units === null || units <= 0) return null;
+  if (item.minUnits !== null && item.minUnits > 0) {
+    units = Math.max(units, item.minUnits);
+  }
   const termMonths = item.termMonths && item.termMonths > 0 ? item.termMonths : 12;
   return roundCurrency(item.unitPriceUsd * units * (12 / termMonths));
 }
@@ -96,6 +110,12 @@ function itemAssumptions(item: ApprovedPricingItem, annualUsd: number | null) {
 
   if (item.termMonths) {
     assumptions.push(`Term normalized from ${item.termMonths} months to annual USD.`);
+  }
+
+  if (item.vendor === "vmware" && item.metric === "core" && item.minUnits === VMWARE_MIN_CORES_PER_SOCKET) {
+    assumptions.push("VMware core pricing applies the 16-core minimum per socket before annualizing.");
+  } else if (item.minUnits && item.minUnits > 1) {
+    assumptions.push(`Minimum billable units applied: ${item.minUnits}.`);
   }
 
   if (annualUsd === null) {
