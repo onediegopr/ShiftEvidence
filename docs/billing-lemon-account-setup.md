@@ -144,6 +144,57 @@ Recommended next hito after manual activation:
 
 BILLING-2.5D - Lemon products and variants creation, no app integration.
 
+## 12.1 BILLING-2.5D products and variants
+
+Date: 2026-05-31
+
+Status: COMPLETE.
+
+Execution channel: Codex in-app browser, using the authenticated Lemon Squeezy
+dashboard session.
+
+Store settings update:
+
+- Store currency changed from `EUR - Euro` to `USD - US Dollar` before creating
+  products, because Shift Evidence pricing is defined in USD.
+- Store remains in Lemon test mode / activation review state.
+- No live payment was attempted.
+
+Products created:
+
+| Product | Product ID | Variant ID | Price | Type | Status | Test mode |
+| --- | ---: | ---: | ---: | --- | --- | --- |
+| Starter Readiness | `1104338` | `1729500` | USD 490 | One-time payment | Published | Yes |
+| Professional Assessment | `1104341` | `1729505` | USD 1,500 | One-time payment | Published | Yes |
+| MSP Partner | `1104343` | `1729507` | USD 399/month | Monthly subscription | Published | Yes |
+
+Checkout links captured from Lemon Share UI:
+
+| Product | Checkout link |
+| --- | --- |
+| Starter Readiness | `https://shiftevidence.lemonsqueezy.com/checkout/buy/9e17f01b-0b71-49bf-8529-8f35769942f4` |
+| Professional Assessment | `https://shiftevidence.lemonsqueezy.com/checkout/buy/5dd5eb33-f338-4fcc-9f56-e393afb851b9` |
+| MSP Partner | `https://shiftevidence.lemonsqueezy.com/checkout/buy/e53ba505-2df4-4b2f-bb38-dfd13d37b2eb` |
+
+Runtime env values to configure outside Git/docs:
+
+| Env var | Value |
+| --- | --- |
+| `LEMON_SQUEEZY_STORE_ID` | `393386` |
+| `LEMON_STARTER_VARIANT_ID` | `1729500` |
+| `LEMON_PROFESSIONAL_VARIANT_ID` | `1729505` |
+| `LEMON_MSP_VARIANT_ID` | `1729507` |
+
+Safety confirmation:
+
+- No API key was printed or written.
+- No webhooks were created.
+- No DB changes were made.
+- No Hostinger changes were made.
+- No app code was changed.
+- No live checkout mode was enabled.
+- No payment or test payment was completed.
+
 ## 13. Runtime env update
 
 Date: 2026-05-31
@@ -225,3 +276,129 @@ Hostinger verification note:
 - Codex did not have a local `HOSTINGER_API_TOKEN`, so Hostinger env vars could
   not be read through the Hostinger API in this pass.
 - No env values or secrets were printed or stored.
+
+## 15. BILLING-2.8 production Lemon test-mode checkout smoke
+
+Date: 2026-05-31
+
+Status: BLOCKED / NOT CONFIGURED IN PRODUCTION RUNTIME.
+
+Goal:
+
+- Verify production can create Lemon Squeezy checkout sessions in test mode
+  after Hostinger env vars were added manually.
+
+GET production routes:
+
+| Route | Result | Notes |
+| --- | --- | --- |
+| `/billing/checkout/starter` | 200 OK | Page loaded, runtime state still `Not configured`. |
+| `/billing/checkout/professional` | 200 OK | Page loaded, runtime state still `Not configured`. |
+| `/billing/checkout/msp` | 200 OK | Page loaded, runtime state still `Not configured`. |
+
+POST start routes:
+
+| Route | Result | Redirect |
+| --- | --- | --- |
+| `/billing/checkout/starter/start` | 303 See Other | `/billing/checkout/starter?error=not_configured` |
+| `/billing/checkout/professional/start` | 303 See Other | `/billing/checkout/professional?error=not_configured` |
+| `/billing/checkout/msp/start` | 303 See Other | `/billing/checkout/msp?error=not_configured` |
+
+Findings:
+
+- Production did not create external Lemon checkout sessions.
+- Production still reports missing server-side Lemon configuration.
+- Because all three plans fail before reaching Lemon, test mode and checkout
+  prices could not be confirmed from a hosted Lemon checkout page.
+- The old internal-origin issue is fixed: no `0.0.0.0` redirect was observed.
+- Public checkout HTML did not expose Lemon API keys, bearer tokens, JWTs, or
+  secret-looking values.
+
+Likely next checks:
+
+- Confirm the production runtime process has the updated env vars loaded, not
+  only saved in Hostinger settings.
+- Confirm `LEMON_SQUEEZY_API_KEY` is available to the runtime without printing
+  its value.
+- Confirm a redeploy/restart occurred after adding:
+  - `LEMON_SQUEEZY_STORE_ID=393386`
+  - `LEMON_STARTER_VARIANT_ID=1729500`
+  - `LEMON_PROFESSIONAL_VARIANT_ID=1729505`
+  - `LEMON_MSP_VARIANT_ID=1729507`
+  - `LEMON_SQUEEZY_CHECKOUT_MODE=test`
+  - `NEXT_PUBLIC_APP_URL=https://shiftevidence.com`
+  - `BETTER_AUTH_URL=https://shiftevidence.com`
+
+Safety confirmation:
+
+- No live mode was enabled.
+- No payment was attempted.
+- No card data was entered.
+- No webhooks, DB changes, Hostinger changes, deploys, entitlements, code
+  changes, commits, or pushes were performed.
+
+## 16. BILLING-2.8A Hostinger runtime env reload and checkout smoke
+
+Date: 2026-05-31
+
+Status: COMPLETE.
+
+Execution channel:
+
+- Hostinger hPanel through Codex in-app browser.
+- No Hostinger API token was used.
+- No secrets were printed or written to docs.
+
+Initial production issue:
+
+- GET checkout pages returned 200.
+- POST checkout start routes returned `error=not_configured`.
+
+Hostinger env verification:
+
+| Variable | Status |
+| --- | --- |
+| `LEMON_SQUEEZY_STORE_ID` | Present, expected value confirmed. |
+| `LEMON_SQUEEZY_API_KEY` | Present, configured. Value not copied. |
+| `LEMONSQUEEZY_API_KEY` | Present, configured. Value not copied. |
+| `LEMON_STARTER_VARIANT_ID` | Missing initially; added with approved non-secret variant id. |
+| `LEMON_PROFESSIONAL_VARIANT_ID` | Missing initially; added with approved non-secret variant id. |
+| `LEMON_MSP_VARIANT_ID` | Missing initially; added with approved non-secret variant id. |
+| `LEMON_SQUEEZY_CHECKOUT_MODE` | Missing initially; added as `test`. |
+| `NEXT_PUBLIC_APP_URL` | Present, expected value confirmed. |
+| `BETTER_AUTH_URL` | Present, expected value confirmed. |
+
+Action:
+
+- Added the missing Lemon variant and checkout-mode env vars in Hostinger.
+- Ran `Guardar y hacer redeploy` from hPanel.
+- New deployment completed and became current.
+
+Post-redeploy smoke:
+
+| Route | GET | POST start |
+| --- | --- | --- |
+| `/billing/checkout/starter` | 200, ready state | 303 to Lemon checkout |
+| `/billing/checkout/professional` | 200, ready state | 303 to Lemon checkout |
+| `/billing/checkout/msp` | 200, ready state | 303 to Lemon checkout |
+
+Lemon checkout verification:
+
+| Plan | Lemon checkout | Test mode | Price |
+| --- | --- | --- | --- |
+| Starter Readiness | Created | Confirmed | `490,00 US$` |
+| Professional Assessment | Created | Confirmed | `1500,00 US$` |
+| MSP Partner | Created | Confirmed | `399,00 US$` billed monthly |
+
+Safety confirmation:
+
+- Live mode was not enabled.
+- No payment was completed.
+- No card data was entered.
+- No webhooks were created.
+- No DB changes were made.
+- No entitlement automation was added.
+- No code was changed.
+- No `0.0.0.0` origin was observed.
+- Public checkout pages did not expose API keys, bearer tokens, JWTs, or
+  secret-looking values.

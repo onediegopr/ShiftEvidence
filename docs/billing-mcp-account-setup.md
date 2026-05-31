@@ -275,6 +275,52 @@ Safety confirmation:
 - No products, checkouts, recipients, quotes, transfers, DB changes, Hostinger
   changes, deploys, commits, or pushes were performed.
 
+## Lemon Squeezy MCP connection verified
+
+Date: 2026-05-31
+
+Status: connected / read-only verified.
+
+Setup applied:
+
+- `LEMONSQUEEZY_API_KEY` is stored as a Windows user environment variable.
+- Codex MCP config uses `LEMONSQUEEZY_API_KEY_COMMAND` to read the key from the
+  Windows user environment.
+- The raw key is not stored in `.codex/config.toml`.
+- Guardrails remain enabled:
+  - `LEMONSQUEEZY_DISABLE_CLASSES=money,recurring,key,webhook`
+  - `LEMONSQUEEZY_DESTRUCTIVE_RATE_LIMIT=2`
+  - `LEMONSQUEEZY_LOG=audit`
+
+Read-only MCP verification:
+
+- MCP server package: `@yawlabs/lemonsqueezy-mcp`
+- Tools discovered: 64
+- Required read-only tools available:
+  - `ls_get_user`
+  - `ls_list_stores`
+  - `ls_list_products`
+- Authenticated user detected: yes
+- Store detected: yes
+- Store id: `393386`
+- Store name: `Shift Evidence`
+- Store slug: `shiftevidence`
+- Existing products: none
+
+Current Codex session note:
+
+- The active in-thread MCP instance was started before the credential command was
+  added, so it may still report a missing Lemon credential until Codex is fully
+  restarted.
+- A fresh MCP process was launched with the configured environment command and
+  passed read-only verification.
+
+Next recommended step:
+
+- Restart Codex before using Lemon MCP tools directly in a new task.
+- Proceed to BILLING-2.5B Wise read-only verification, or BILLING-2.5C Lemon
+  product planning, without creating products until pricing is approved.
+
 ## BILLING-2.5C browser setup attempt
 
 Date: 2026-05-31
@@ -342,3 +388,46 @@ The MCP package remains expected to use:
 - `LEMONSQUEEZY_API_KEY`
 
 No secret value was documented.
+
+## BILLING-2.5D in-app browser product creation
+
+Date: 2026-05-31
+
+Status: complete.
+
+Execution channel:
+
+- Codex in-app browser.
+- Authenticated Lemon Squeezy dashboard session.
+- Lemon MCP was not used for creation in this pass.
+
+Store:
+
+- Store id: `393386`
+- Store name: `Shift Evidence`
+- Store URL: `https://shiftevidence.lemonsqueezy.com/`
+- Store currency verified/updated to `USD - US Dollar`.
+- Lemon product state observed as test mode.
+
+Products and variants:
+
+| Product | Product ID | Variant ID | Price | Type | Checkout link |
+| --- | ---: | ---: | ---: | --- | --- |
+| Starter Readiness | `1104338` | `1729500` | USD 490 | One-time payment | `https://shiftevidence.lemonsqueezy.com/checkout/buy/9e17f01b-0b71-49bf-8529-8f35769942f4` |
+| Professional Assessment | `1104341` | `1729505` | USD 1,500 | One-time payment | `https://shiftevidence.lemonsqueezy.com/checkout/buy/5dd5eb33-f338-4fcc-9f56-e393afb851b9` |
+| MSP Partner | `1104343` | `1729507` | USD 399/month | Monthly subscription | `https://shiftevidence.lemonsqueezy.com/checkout/buy/e53ba505-2df4-4b2f-bb38-dfd13d37b2eb` |
+
+Safe runtime configuration names:
+
+- `LEMON_SQUEEZY_STORE_ID=393386`
+- `LEMON_STARTER_VARIANT_ID=1729500`
+- `LEMON_PROFESSIONAL_VARIANT_ID=1729505`
+- `LEMON_MSP_VARIANT_ID=1729507`
+
+Security confirmation:
+
+- No API key or bearer token value was written to docs.
+- No checkout was completed.
+- No payment was attempted.
+- No webhooks, DB changes, Hostinger changes, deploys, or entitlement changes
+  were performed.
