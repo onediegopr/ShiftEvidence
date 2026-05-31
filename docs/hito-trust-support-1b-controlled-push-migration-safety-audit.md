@@ -71,8 +71,12 @@
 
 ## 7. Resultado del push
 
-- Pendiente al momento de crear este documento.
-- Se debe completar con el hash final y confirmacion de `origin/main` sincronizado.
+- Push controlado realizado a `origin/main`.
+- Commit base auditado: `3451168 feat: add support and public trust layer`.
+- Commit hotfix pre-push: `4269fca fix: stabilize trust support layer before push`.
+- `origin/main` quedo sincronizado con el hotfix validado.
+- No se uso force push.
+- No se hizo deploy.
 
 ## 8. Riesgos pendientes
 
@@ -84,4 +88,4 @@
 
 ## 9. Proximo paso
 
-- Push controlado a `origin/main` si el hotfix queda validado y commiteado.
+- Definir hito separado para aplicar la migracion productiva de soporte con controles Neon/Prisma.
