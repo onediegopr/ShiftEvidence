@@ -28,6 +28,9 @@ model User {
   reports               Report[]
   unlockRequests        UnlockRequest[]
   supportRequests       SupportRequest[]
+  billingOrders         BillingOrder[]
+  billingSubscriptions  BillingSubscription[]
+  billingEntitlementGrants BillingEntitlementGrant[]
   createdAdvisorConversations AssessmentAdvisorConversation[] @relation("AssessmentAdvisorConversationCreatedBy")
   advisorMessages       AssessmentAdvisorMessage[] @relation("AssessmentAdvisorMessageUser")
   createdAdvisorMemoryItems AssessmentAdvisorMemoryItem[] @relation("AssessmentAdvisorMemoryItemCreatedBy")
@@ -140,6 +143,9 @@ model Workspace {
   reports        Report[]
   unlockRequests UnlockRequest[]
   supportRequests SupportRequest[]
+  billingOrders  BillingOrder[]
+  billingSubscriptions BillingSubscription[]
+  billingEntitlementGrants BillingEntitlementGrant[]
   advisorConversations AssessmentAdvisorConversation[]
   advisorMessages      AssessmentAdvisorMessage[]
   advisorMemoryItems   AssessmentAdvisorMemoryItem[]
@@ -204,6 +210,8 @@ model Assessment {
   reports                     Report[]
   unlockRequests              UnlockRequest[]
   supportRequests             SupportRequest[]
+  billingOrders               BillingOrder[]
+  billingEntitlementGrants    BillingEntitlementGrant[]
   advisorConversation         AssessmentAdvisorConversation?
   advisorMessages             AssessmentAdvisorMessage[]
   advisorMemoryItems          AssessmentAdvisorMemoryItem[]
@@ -1146,6 +1154,156 @@ model SupportRequest {
   @@index([createdAt])
 }
 
+model BillingEvent {
+  id               String             @id @default(cuid())
+  provider         BillingProvider
+  providerEventId  String
+  eventType        String
+  status           BillingEventStatus @default(pending)
+  idempotencyKey   String             @unique
+  rawPayloadHash   String
+  safePayloadJson  Json?
+  errorMessage     String?
+  receivedAt       DateTime           @default(now())
+  processedAt      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@unique([provider, providerEventId])
+  @@index([provider])
+  @@index([eventType])
+  @@index([status])
+  @@index([receivedAt])
+}
+
+model BillingOrder {
+  id                 String              @id @default(cuid())
+  provider           BillingProvider
+  providerOrderId    String?
+  providerCheckoutId String?
+  providerCustomerId String?
+  productId          String?
+  variantId          String?
+  planId             String
+  amountCents        Int
+  currency           String              @default("USD")
+  status             BillingOrderStatus  @default(pending)
+  customerEmail      String?
+  userId             String?
+  workspaceId        String?
+  assessmentId       String?
+  paidAt             DateTime?
+  refundedAt         DateTime?
+  cancelledAt        DateTime?
+  providerCreatedAt  DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace          Workspace?          @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment         Assessment?         @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  payments           BillingPayment[]
+  entitlementGrants  BillingEntitlementGrant[]
+
+  @@unique([provider, providerOrderId])
+  @@index([provider])
+  @@index([providerCheckoutId])
+  @@index([providerCustomerId])
+  @@index([customerEmail])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([assessmentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BillingPayment {
+  id                String               @id @default(cuid())
+  provider          BillingProvider
+  providerPaymentId String?
+  orderId           String
+  amountCents       Int
+  currency          String               @default("USD")
+  status            BillingPaymentStatus @default(pending)
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  order             BillingOrder         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerPaymentId])
+  @@index([provider])
+  @@index([orderId])
+  @@index([status])
+  @@index([paidAt])
+}
+
+model BillingSubscription {
+  id                     String                    @id @default(cuid())
+  provider               BillingProvider
+  providerSubscriptionId String?
+  providerCustomerId     String?
+  planId                 String
+  productId              String?
+  variantId              String?
+  status                 BillingSubscriptionStatus @default(active)
+  customerEmail          String?
+  userId                 String?
+  workspaceId            String?
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelledAt            DateTime?
+  expiredAt              DateTime?
+  paymentFailedAt        DateTime?
+  providerCreatedAt      DateTime?
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+  user                   User?                     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace              Workspace?                @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  entitlementGrants      BillingEntitlementGrant[]
+
+  @@unique([provider, providerSubscriptionId])
+  @@index([provider])
+  @@index([providerCustomerId])
+  @@index([customerEmail])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+}
+
+model BillingEntitlementGrant {
+  id                    String              @id @default(cuid())
+  billingOrderId        String?
+  billingSubscriptionId String?
+  userId                String?
+  workspaceId           String?
+  assessmentId          String?
+  entitlementKey        EntitlementKey
+  status                BillingGrantStatus  @default(pending_review)
+  source                String              @default("billing_ledger")
+  reviewNotes           String?
+  grantedAt             DateTime?
+  revokedAt             DateTime?
+  rejectedAt            DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  billingOrder          BillingOrder?       @relation(fields: [billingOrderId], references: [id], onDelete: SetNull)
+  billingSubscription   BillingSubscription? @relation(fields: [billingSubscriptionId], references: [id], onDelete: SetNull)
+  user                  User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace             Workspace?          @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment            Assessment?         @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+
+  @@index([billingOrderId])
+  @@index([billingSubscriptionId])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([assessmentId])
+  @@index([entitlementKey])
+  @@index([status])
+  @@index([createdAt])
+}
+
 enum WorkspacePlan {
   free
   readiness_report
@@ -1160,6 +1318,47 @@ enum BillingStatus {
   active
   past_due
   cancelled
+}
+
+enum BillingProvider {
+  lemon_squeezy
+  wise
+  stripe
+}
+
+enum BillingEventStatus {
+  pending
+  processed
+  failed
+  ignored
+}
+
+enum BillingOrderStatus {
+  pending
+  paid
+  refunded
+  cancelled
+}
+
+enum BillingPaymentStatus {
+  pending
+  paid
+  refunded
+  failed
+}
+
+enum BillingSubscriptionStatus {
+  active
+  cancelled
+  expired
+  payment_failed
+}
+
+enum BillingGrantStatus {
+  pending_review
+  granted
+  revoked
+  rejected
 }
 
 enum WorkspaceRole {
