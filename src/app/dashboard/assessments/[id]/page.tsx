@@ -1095,7 +1095,7 @@ export default async function AssessmentDetailPage({
                 ) : (
                   <>
                     <p className="assessment-storage-note">
-                      Storage readiness inputs will be expanded in a later milestone.
+                      Storage Destination Readiness is active. You can now configure target details and copy agentless commands in the **Storage** tab.
                     </p>
                     <form action={toggleStorageReadinessAction.bind(null, assessment.id)}>
                       <input type="hidden" name="currentTab" value="basics" />
@@ -1480,7 +1480,8 @@ export default async function AssessmentDetailPage({
               )}
             </div>
 
-            <article className="glass-card assessment-subcard">
+            <div>
+              <article className="glass-card assessment-subcard">
               <h3>Evidence history</h3>
               {evidenceFiles.length === 0 ? (
                 <p className="assessment-empty-note">No evidence uploaded yet.</p>
@@ -1553,6 +1554,20 @@ export default async function AssessmentDetailPage({
                 </div>
               )}
             </article>
+
+            <article className="glass-card assessment-subcard" style={{ marginTop: "1rem", border: "1px dashed rgba(6, 182, 212, 0.3)" }}>
+              <h3>💡 Proxmox, Ceph & PBS evidence</h3>
+              <p className="text-muted" style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
+                Looking to upload Proxmox node configurations, Ceph cluster status, or PBS datasets?
+              </p>
+              <p className="text-muted" style={{ fontSize: "0.85rem", lineHeight: "1.5", marginTop: "0.25rem" }}>
+                Go to the **Storage** tab to find the read-only command guidelines, upload options, and specific classifications.
+              </p>
+              <Link href={`/dashboard/assessments/${assessment.id}?tab=storage`} className="dashboard-card-link" style={{ marginTop: "0.5rem", display: "inline-flex", alignItems: "center" }}>
+                Go to Storage tab <ArrowRight size={14} style={{ marginLeft: "0.25rem" }} />
+              </Link>
+            </article>
+          </div>
           </div>
         </section>
       )}
