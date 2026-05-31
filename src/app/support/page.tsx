@@ -119,6 +119,28 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </Link>
               </aside>
             </div>
+
+            <section className="glass-card assessment-section" style={{ marginTop: "2rem" }}>
+              <div className="assessment-section-title">
+                <div className="assessment-section-eyebrow">
+                  <Lock size={18} />
+                  <span>Existing customers</span>
+                </div>
+                <h2>Already a customer?</h2>
+                <p>
+                  Sign in to your workspace to open assessment-specific support requests,
+                  continue existing assessments, and review support context tied to your account.
+                </p>
+              </div>
+              <div className="assessment-inline-actions">
+                <Link href="/client-login" className="btn btn-secondary">
+                  Client login
+                </Link>
+                <Link href="/dashboard" className="dashboard-card-link">
+                  Go to dashboard
+                </Link>
+              </div>
+            </section>
           </div>
         </section>
       </main>

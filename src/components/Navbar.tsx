@@ -77,6 +77,9 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar-actions">
+          <Link href="/client-login" className="nav-link">
+            Client login
+          </Link>
           <Link href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
             Start Free Check
           </Link>

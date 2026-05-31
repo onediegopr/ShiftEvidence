@@ -89,6 +89,9 @@ export default function Footer() {
                 <a href="/support">Support</a>
               </li>
               <li>
+                <a href="/client-login">Client login</a>
+              </li>
+              <li>
                 <a href="/partners">Partners</a>
               </li>
               <li>

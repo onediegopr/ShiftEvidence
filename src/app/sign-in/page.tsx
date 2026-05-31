@@ -75,9 +75,10 @@ export default function SignInPage() {
         </div>
 
         <div className="badge badge-cyan">Sign in</div>
-        <h1>Access your readiness workspace.</h1>
+        <h1>Welcome back.</h1>
         <p>
-          Sign in to review assessments, workspace context and readiness outputs.
+          Access your Shift Evidence workspace, continue assessments, review reports,
+          manage support requests, and return to your migration advisor.
         </p>
 
         <form onSubmit={onSubmit} className="auth-form">

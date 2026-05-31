@@ -811,6 +811,32 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section className="section" aria-labelledby="returning-user-title" style={{ paddingTop: "0" }}>
+          <div className="container">
+            <div className="glass-card assessment-section">
+              <div className="assessment-section-title">
+                <div className="assessment-section-eyebrow">
+                  <ShieldCheck size={18} />
+                  <span>Client access</span>
+                </div>
+                <h2 id="returning-user-title">Already have an account?</h2>
+                <p>
+                  Return to your workspace to continue an assessment, review uploaded evidence,
+                  access reports, manage support requests, or continue working with your migration advisor.
+                </p>
+              </div>
+              <div className="assessment-inline-actions">
+                <a href="/client-login" className="btn btn-secondary">
+                  Go to client login
+                </a>
+                <a href="/dashboard" className="dashboard-card-link">
+                  Return to dashboard <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {selectedEvaluation ? (
