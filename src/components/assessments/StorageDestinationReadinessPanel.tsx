@@ -1082,6 +1082,117 @@ export function StorageDestinationReadinessPanel({
         </div>
       ) : null}
 
+      <div className="assessment-section-title assessment-section-title-compact" style={{ marginTop: "3rem" }}>
+        <div className="assessment-section-eyebrow">
+          <Server size={18} />
+          <span>Optional destination evidence collector</span>
+        </div>
+        <h3>Optional destination evidence</h3>
+        <p>
+          You can improve storage readiness confidence by uploading read-only exports from your Proxmox, Ceph or Proxmox Backup Server environment.
+          These commands are optional, do not install agents, do not change production, and should be executed in a read-only context.
+        </p>
+      </div>
+
+      <div className="assessment-preview-columns">
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <Server size={14} />
+            <span>1. Proxmox cluster evidence</span>
+          </div>
+          <p className="assessment-inline-note">Run these commands on a cluster node to export overview data:</p>
+          <pre style={{ background: "rgba(0, 0, 0, 0.3)", padding: "0.75rem", borderRadius: "6px", fontSize: "0.75rem", overflowX: "auto", fontFamily: "monospace", margin: "0.5rem 0", color: "#e2e8f0" }}>
+            <code>
+{`pvesh get /cluster/resources --output-format json > proxmox-cluster-resources.json
+pvesh get /nodes --output-format json > proxmox-nodes.json
+pvesh get /cluster/status --output-format json > proxmox-cluster-status.json`}
+            </code>
+          </pre>
+        </article>
+
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <Database size={14} />
+            <span>2. Proxmox storage evidence</span>
+          </div>
+          <p className="assessment-inline-note">Run these to export storage configurations (replace &lt;NODE_NAME&gt; with your node name):</p>
+          <pre style={{ background: "rgba(0, 0, 0, 0.3)", padding: "0.75rem", borderRadius: "6px", fontSize: "0.75rem", overflowX: "auto", fontFamily: "monospace", margin: "0.5rem 0", color: "#e2e8f0" }}>
+            <code>
+{`pvesh get /storage --output-format json > proxmox-storage-config.json
+pvesh get /cluster/resources --type storage --output-format json > proxmox-storage-resources.json
+pvesh get /nodes/<NODE_NAME>/storage --output-format json > proxmox-node-storage.json`}
+            </code>
+          </pre>
+        </article>
+      </div>
+
+      <div className="assessment-preview-columns" style={{ marginTop: "1rem" }}>
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <Network size={14} />
+            <span>3. Ceph evidence</span>
+          </div>
+          <p className="assessment-inline-note">Run these on a Ceph monitor or controller node to export health, pools, and crush map details:</p>
+          <pre style={{ background: "rgba(0, 0, 0, 0.3)", padding: "0.75rem", borderRadius: "6px", fontSize: "0.75rem", overflowX: "auto", fontFamily: "monospace", margin: "0.5rem 0", color: "#e2e8f0" }}>
+            <code>
+{`ceph status --format json > ceph-status.json
+ceph df --format json > ceph-df.json
+ceph osd tree --format json > ceph-osd-tree.json
+ceph osd df --format json > ceph-osd-df.json
+ceph health detail --format json > ceph-health-detail.json
+ceph mon dump --format json > ceph-mon-dump.json
+ceph osd pool ls detail --format json > ceph-pools-detail.json`}
+            </code>
+          </pre>
+        </article>
+
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <Archive size={14} />
+            <span>4. Proxmox Backup Server (PBS) evidence</span>
+          </div>
+          <p className="assessment-inline-note">For PBS, export datastore configurations, backup groups, and job schedules from the CLI or management UI:</p>
+          <p style={{ fontSize: "0.8rem", margin: "0.5rem 0", color: "var(--text-muted)", lineHeight: "1.4" }}>
+            - Datastore used/available capacity<br />
+            - Backup groups and retention/prune policies<br />
+            - Sync, backup, and verify job status<br />
+            - Output format: JSON or TXT whenever possible
+          </p>
+          <div className="assessment-optional-module-meta" style={{ marginTop: "1rem", fontSize: "0.75rem" }}>
+            <span>Recommended upload file: <code>pbs-datastores.json</code></span>
+          </div>
+        </article>
+      </div>
+
+      <div className="assessment-preview-columns" style={{ marginTop: "1rem" }}>
+        <article className="glass-card assessment-subcard">
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+            <ListChecks size={14} />
+            <span>5. Upload guidance</span>
+          </div>
+          <ul className="assessment-bullet-list" style={{ fontSize: "0.8rem", margin: "0.5rem 0" }}>
+            <li>Format: Use <strong>JSON</strong> when available; fallback to <strong>TXT</strong> for raw terminal outputs.</li>
+            <li>One file per command (e.g. <code>ceph-status.json</code>, <code>proxmox-storage-config.json</code>).</li>
+            <li>Use descriptive, lowercase filenames representing the resource type.</li>
+            <li>Sanitize or redact any secrets/credentials before saving files.</li>
+          </ul>
+        </article>
+
+        <article className="glass-card assessment-subcard" style={{ border: "1px dashed rgba(239, 68, 68, 0.3)" }}>
+          <div className="assessment-section-eyebrow" style={{ fontSize: "0.85rem", color: "#fca5a5", marginBottom: "0.5rem" }}>
+            <ShieldAlert size={14} />
+            <span>6. Security notes</span>
+          </div>
+          <p className="assessment-inline-note" style={{ color: "#fca5a5", fontWeight: 500 }}>
+            ⚠️ Do not upload passwords, API tokens, private keys, SSH keys, database URLs or credential files.
+          </p>
+          <p style={{ fontSize: "0.8rem", marginTop: "0.5rem", color: "var(--text-muted)" }}>
+            These commands only export telemetry, configuration, and capacity metadata. Review files prior to upload.
+            Adding destination evidence improves scoring confidence for Ceph sizing, backup coverage, and Proxmox integration without transmitting active credentials.
+          </p>
+        </article>
+      </div>
+
       <div className="assessment-section-title assessment-section-title-compact">
         <div className="assessment-section-eyebrow">
           <Upload size={18} />

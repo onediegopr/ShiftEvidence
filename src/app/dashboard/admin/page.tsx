@@ -2067,13 +2067,41 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                         <td>{st.readinessScore !== null ? `${st.readinessScore}/100` : "-"}</td>
                         <td>{st.evidenceConfidence !== null ? `${st.evidenceConfidence}/100` : "-"}</td>
                         <td>
-                          {st.evidenceFilesCount > 0 ? (
-                            <span className="assessment-chip assessment-chip-good">
-                              {st.evidenceFilesCount} archivos
-                            </span>
-                          ) : (
-                            <span className="assessment-chip assessment-chip-danger">Sin archivos</span>
-                          )}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            {st.evidenceFilesCount > 0 ? (
+                              <span className="assessment-chip assessment-chip-good" style={{ alignSelf: "flex-start" }}>
+                                {st.evidenceFilesCount} archivos
+                              </span>
+                            ) : (
+                              <span className="assessment-chip assessment-chip-danger" style={{ alignSelf: "flex-start" }}>
+                                Sin archivos
+                              </span>
+                            )}
+                            {(() => {
+                              const destEvidence = st.evidence?.filter((item: { classification: string }) =>
+                                ["ceph_status", "ceph_osd_tree", "ceph_df", "pbs_backup_info"].includes(item.classification)
+                              ) || [];
+                              if (destEvidence.length > 0) {
+                                return (
+                                  <span style={{ fontSize: "0.7rem", color: "#22d3ee" }}>
+                                    ✓ Destination evidence uploaded ({destEvidence.length})
+                                  </span>
+                                );
+                              }
+                              if (st.evidenceFilesCount > 0) {
+                                return (
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                                    Manual collector evidence expected
+                                  </span>
+                                );
+                              }
+                              return (
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                                  No destination collector evidence uploaded
+                                </span>
+                              );
+                            })()}
+                          </div>
                         </td>
                       </tr>
                     );
