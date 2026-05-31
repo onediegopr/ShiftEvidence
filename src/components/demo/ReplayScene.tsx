@@ -233,11 +233,16 @@ function WavesScene() {
 function AdvisoryScene() {
   return (
     <div className="demo-advisory-layout">
-      <div className="demo-advisory-callout">
-        <ShieldCheck size={22} />
-        <p>
-          Backup evidence was not provided. Do not include critical workloads in early waves until restore points are validated.
-        </p>
+      <div className="demo-advisory-callout" style={{ borderLeft: "4px solid var(--text-cyan)", background: "rgba(6, 182, 212, 0.05)" }}>
+        <ShieldCheck size={22} style={{ color: "var(--text-cyan)", flexShrink: 0 }} />
+        <div>
+          <strong style={{ display: "block", color: "white", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.1rem" }}>
+            Project Memory Vault (Active)
+          </strong>
+          <p style={{ margin: 0, fontSize: "0.88rem" }}>
+            The Senior Advisor relies only on verified environment variables and user-approved assumptions.
+          </p>
+        </div>
       </div>
       <div className="demo-advisory-grid">
         {advisoryItems.map((item) => (
@@ -247,7 +252,7 @@ function AdvisoryScene() {
           </article>
         ))}
       </div>
-      <p className="demo-scene-note">AI Advisory supports the assessment. It does not replace deterministic readiness and confidence scores.</p>
+      <p className="demo-scene-note">The Senior Migration Advisor supports planning using strict facts. It does not replace deterministic sizing or compatibility scoring.</p>
     </div>
   );
 }
@@ -280,7 +285,12 @@ function ReportScene() {
         </div>
       </div>
       <div className="demo-does-not-mini">
-        <strong>Clear limitations</strong>
+        <strong>Security Boundaries</strong>
+        <span style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+          <ShieldCheck size={14} style={{ color: "var(--text-cyan)", flexShrink: 0 }} />
+          Secrets Scrubber Log (included)
+        </span>
+        <strong style={{ marginTop: "1rem" }}>Clear limitations</strong>
         {demoDoesNotDo.slice(0, 4).map((item) => (
           <span key={item}>
             <Minus size={14} />

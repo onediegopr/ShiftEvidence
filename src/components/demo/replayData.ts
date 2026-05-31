@@ -137,7 +137,7 @@ export const replaySteps: ReplayStep[] = [
     id: "sizing",
     eyebrow: "Scene 06",
     title: "Proxmox Target Sizing",
-    body: "Sizing is framed as planning input, not final architecture sign-off.",
+    body: "Sizing validates target storage (Ceph/PBS/SAN) suitability and node capacity requirements.",
     icon: Database,
   },
   {
@@ -150,8 +150,8 @@ export const replaySteps: ReplayStep[] = [
   {
     id: "advisory",
     eyebrow: "Scene 08",
-    title: "AI Advisory Notes",
-    body: "AI Advisory summarizes risks, gaps and next questions without replacing deterministic scores.",
+    title: "Senior Advisor & Memory Vault",
+    body: "The Advisor provides context-aware guidance restricted by decisions approved in your Project Memory Vault.",
     icon: Brain,
   },
   {
@@ -231,20 +231,20 @@ export const migrationWaves: MigrationWave[] = [
 
 export const advisoryItems: AdvisoryItem[] = [
   {
-    title: "Executive advisory",
-    body: "Northbridge has a viable first assessment path, but critical workloads should wait until backup and dependency evidence are validated.",
+    title: "[Approved Assumption] CPU Overcommit",
+    body: "CPU overcommit ratio of 2:1 was approved in the Memory Vault. Sizing recommendations adjusted.",
   },
   {
-    title: "Technical advisory",
-    body: "Large disks, multi-NIC systems and likely domain controllers need manual review before migration wave assignment.",
+    title: "[Pending Verification] Backup schedule",
+    body: "Backup evidence is missing. Workloads in Wave 3 (ERP, databases) are placed on Hold until verification.",
   },
   {
-    title: "Confidence impact",
-    body: "Evidence confidence is limited by missing backup coverage and application dependency mapping.",
+    title: "[Memory Log] Data completeness",
+    body: "Evidence confidence is evaluated at 64% due to missing network mapped interfaces and restore points.",
   },
   {
     title: "Recommended next actions",
-    body: "Provide backup evidence, identify application owners, and validate target networking before moving production workloads.",
+    body: "Upload backup verification logs or CLI configuration to unlock full advisory precision in the Memory Vault.",
   },
 ];
 
@@ -255,9 +255,11 @@ export const reportSections = [
   "Evidence Missing",
   "VM Risk Matrix",
   "Proxmox Sizing",
+  "Storage Target Suitability",
+  "Secrets Scrubber Log",
+  "Project Memory Logs",
   "Migration Waves",
-  "AI Advisory Notes",
-  "Required Validations",
+  "Senior Advisor Recommendations",
   "Next Steps",
 ];
 
@@ -268,8 +270,8 @@ export const whatYouGet = [
   { title: "Proxmox Sizing", icon: Server },
   { title: "Migration Wave Plan", icon: Waves },
   { title: "Evidence Missing Checklist", icon: CheckCircle2 },
-  { title: "AI Advisory Notes", icon: Brain },
-  { title: "PDF Report", icon: FileSpreadsheet },
+  { title: "Senior Migration Advisor", icon: Brain },
+  { title: "Executive PDF Report", icon: FileSpreadsheet },
 ];
 
 export const demoDoesNotDo = [

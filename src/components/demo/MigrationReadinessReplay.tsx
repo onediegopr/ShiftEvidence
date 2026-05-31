@@ -158,8 +158,8 @@ export default function MigrationReadinessReplay() {
               <a href="#final-report" className="btn btn-secondary" onClick={skipToReport} data-event="demo_skipped_to_report">
                 Skip to final report
               </a>
-              <Link href="/sign-up" className="btn btn-secondary" data-event="demo_cta_clicked">
-                Start free check
+              <Link href="/sign-up?plan=free" className="btn btn-secondary" data-event="demo_cta_clicked">
+                Start Free Assessment
                 <ArrowRight size={18} />
               </Link>
             </div>
@@ -431,17 +431,17 @@ export default function MigrationReadinessReplay() {
                 </p>
               </div>
               <div className="demo-conversion-actions-row">
-                <Link href="/sign-up" className="btn btn-primary btn-glow" style={{ width: '100%', justifyContent: 'center' }} data-event="demo_cta_clicked">
-                  Start Free Readiness Assessment
+                <Link href="/sign-up?plan=free" className="btn btn-primary btn-glow" style={{ width: '100%', justifyContent: 'center' }} data-event="demo_cta_clicked">
+                  Start Free Assessment
                   <ArrowRight size={18} />
                 </Link>
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                  <Link href="/contact" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                  <Link href="/support?category=general_question&subject=Technical%20Review%20Call" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
                     Book Technical Review
                     <ShieldCheck size={18} />
                   </Link>
-                  <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
-                    View Assessment Offer
+                  <Link href="/pricing" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                    View Pricing Plans
                     <ArrowRight size={18} />
                   </Link>
                 </div>
