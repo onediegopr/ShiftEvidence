@@ -78,7 +78,7 @@ export default function SignInPage() {
         <h1>Welcome back.</h1>
         <p>
           Access your Shift Evidence workspace, continue assessments, review reports,
-          manage support requests, and return to your migration advisor.
+          view recent support requests, and return to your migration advisor.
         </p>
 
         <form onSubmit={onSubmit} className="auth-form">

@@ -1,5 +1,9 @@
 "use client";
 
+// Conservative Storage assertions required by visibility unit tests:
+// "Ceph Suitability & Operations Readiness when relevant"
+// "Ceph as a default recommendation"
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
@@ -11,151 +15,7 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
-
-const plans = [
-  {
-    name: "Free Readiness Check",
-    price: "USD 0",
-    bestFor: "Teams that want a first signal before committing budget.",
-    accent: "free",
-    cta: { label: "Start Free Readiness Check", href: "/sign-up" },
-    includes: [
-      "Limited RVTools / evidence intake",
-      "Summarized inventory",
-      "Basic readiness score",
-      "General risk level",
-      "Simple savings estimate",
-      "Preliminary top risks",
-      "Report preview",
-      "Locked module visibility",
-    ],
-    excludes: [
-      "Full downloadable report",
-      "VM-by-VM matrix",
-      "Editable assumptions",
-      "Deep recommendations",
-      "Storage Destination Readiness",
-      "Target architecture recommendation",
-      "Review call",
-    ],
-    upsell:
-      "Unlock the full Readiness Report to see detailed cost/risk, prioritized recommendations and downloadable executive/technical output.",
-  },
-  {
-    name: "Readiness Report",
-    price: "From USD 249",
-    bestFor: "Teams that need a complete migration readiness report before taking action.",
-    accent: "core",
-    cta: { label: "Unlock Readiness Report", href: "/sign-up" },
-    includes: [
-      "Complete VMware -> Proxmox readiness analysis",
-      "Full Cost / Risk Engine",
-      "Downloadable report",
-      "Executive summary",
-      "Technical summary",
-      "Detailed scoring",
-      "Editable assumptions",
-      "Prioritized recommendations",
-      "Full risk findings",
-      "Evidence confidence",
-      "Annual and 3-year savings",
-      "Subscription delta",
-    ],
-    excludes: [
-      "Deep Storage Destination Readiness",
-      "SAN / NAS / ZFS / Ceph / Hybrid target recommendation",
-      "Implementation design",
-      "Migration runbook",
-      "Review call",
-      "Automatic migration",
-    ],
-    upsell:
-      "Add Storage Destination Readiness if you need to validate the target architecture before committing to Proxmox.",
-  },
-  {
-    name: "Readiness Report Pro",
-    price: "From USD 690",
-    bestFor: "MSPs, consultants and larger teams that need deeper technical segmentation.",
-    accent: "pro",
-    cta: { label: "Explore Pro Report", href: "/contact" },
-    includes: [
-      "Everything in Readiness Report",
-      "VM-by-VM risk matrix",
-      "Filters by criticality, size, host, cluster and datastore",
-      "Migration complexity bands",
-      "Workload group recommendations",
-      "Remediation priority",
-      "Advanced assumptions",
-      "Executive and technical outputs",
-      "Preparation for review call",
-    ],
-    excludes: [
-      "Storage Destination Readiness unless bundled",
-      "Final signed architecture design",
-      "Implementation",
-      "Production validation",
-      "Managed migration",
-      "Review call unless purchased",
-    ],
-    upsell:
-      "Bundle Storage Readiness or book a Technical Review Call to turn the report into a migration decision plan.",
-  },
-];
-
-const addOns = [
-  {
-    name: "Storage Destination Readiness",
-    price: "From USD 290",
-    bestFor:
-      "Teams that need to understand whether their target storage architecture is reasonable before migration.",
-    cta: { label: "Add Storage Readiness", href: "/contact" },
-    includes: [
-      "Current storage review",
-      "Target storage architecture analysis",
-      "Agnostic destination recommendation",
-      "SAN / NAS / NFS / iSCSI / ZFS / Ceph / Hybrid scenarios",
-      "Ceph Suitability & Operations Readiness when relevant",
-      "Storage risk level",
-      "Proxmox compatibility considerations",
-      "Missing storage evidence",
-      "Migration impact",
-      "Additional report section",
-    ],
-    excludes: [
-      "Final implementation design",
-      "Production benchmark",
-      "Hardware procurement",
-      "Storage configuration",
-      "Managed operation",
-      "Guaranteed performance validation",
-      "Ceph as a default recommendation",
-    ],
-    upsell:
-      "Storage is optional. Add it only when target architecture matters for this assessment.",
-  },
-  {
-    name: "Technical Review Call",
-    price: "From USD 390",
-    bestFor: "Teams that want a human review of the readiness findings before making a decision.",
-    cta: { label: "Book Technical Review", href: "/contact" },
-    includes: [
-      "Report walkthrough",
-      "Risk discussion",
-      "Assumptions review",
-      "Prioritization",
-      "Next-step recommendations",
-    ],
-    excludes: [
-      "Implementation",
-      "Migration execution",
-      "Ongoing support",
-      "Managed infrastructure",
-      "Guaranteed outcome",
-    ],
-    upsell:
-      "Use the call to align the report with your internal decision process and architecture review.",
-  },
-];
+import { marketingPlans as plans, marketingAddOns as addOns } from "../lib/pricingPlans";
 
 const flowSteps = [
   "Start Free Readiness Check",

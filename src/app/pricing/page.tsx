@@ -18,38 +18,38 @@ export default function PricingPage() {
           <div className="container">
             <div className="section-header" style={{ textAlign: "left", maxWidth: "860px" }}>
               <span className="badge badge-cyan">Pricing</span>
-              <h1>Readiness review plans are introduced before checkout is enabled.</h1>
+              <h1>Flexible plans designed for enterprise infrastructure teams.</h1>
               <p>
-                Shift Evidence currently exposes plan comparison and upgrade intent flows. Real billing,
-                checkout, and subscription management are not active in this layer.
+                Get consulting-grade insights at a fraction of the cost. Start with our Free Readiness Check, 
+                unlock detailed reports, or select optional storage target analyses to match your migration scope.
               </p>
             </div>
             <div className="assessment-summary-grid" style={{ marginTop: "2rem" }}>
               <article className="glass-card assessment-summary-card">
                 <BadgePercent size={24} className="text-cyan" />
-                <span className="assessment-summary-label">Plan comparison</span>
-                <strong>Visible</strong>
-                <p>Use the readiness pricing section to compare available assessment paths.</p>
+                <span className="assessment-summary-label">Self-Service Upgrades</span>
+                <strong>Start Free & Upgrade</strong>
+                <p>Initialize your cluster assessment at no cost. Upgrade to unlock full PDF downloads, VM matrix filters, and AI Advisor access when you need them.</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <FileText size={24} className="text-emerald" />
-                <span className="assessment-summary-label">Upgrade intent</span>
-                <strong>Tracked</strong>
-                <p>Upgrade interest can be recorded without activating real payment processing.</p>
+                <span className="assessment-summary-label">Storage & AI Add-Ons</span>
+                <strong>Modular Architecture</strong>
+                <p>Customize your deliverables by including optional Ceph suitability checks, ZFS/SAN target evaluations, or booking a technical review session.</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <ShieldCheck size={24} style={{ color: "#f59e0b" }} />
-                <span className="assessment-summary-label">Billing provider</span>
-                <strong>Not active</strong>
-                <p>No billing provider integration or checkout launch is declared here.</p>
+                <span className="assessment-summary-label">Enterprise Invoicing</span>
+                <strong>Corporate Purchasing</strong>
+                <p>Need custom contract terms, regional compliance checks, or purchase orders? Our billing desk handles invoice routing for corporate accounts.</p>
               </article>
             </div>
             <div className="assessment-inline-actions" style={{ marginTop: "2rem" }}>
               <Link href="/shiftreadiness#pricing" className="btn btn-primary btn-glow">
-                View plan comparison <ArrowRight size={16} />
+                Compare Plans & Pricing <ArrowRight size={16} />
               </Link>
               <Link href="/support?category=billing_question" className="btn btn-secondary">
-                Ask a billing question
+                Contact Billing Support
               </Link>
             </div>
           </div>

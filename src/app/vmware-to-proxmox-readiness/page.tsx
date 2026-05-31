@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { marketingPlans } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
   title: "VMware to Proxmox Migration Readiness Assessment | Shift Evidence",
@@ -77,33 +78,12 @@ const evidenceSources = [
   ["Performance history", "Future/high-confidence sizing"],
 ];
 
-const pricingPackages = [
-  {
-    name: "Starter Readiness",
-    price: "USD 490",
-    fit: "For first evaluation and smaller environments.",
-    includes: "RVTools analysis, evidence coverage, basic readiness score, top risks, preliminary sizing, PDF summary.",
-  },
-  {
-    name: "Professional Assessment",
-    price: "USD 1,500",
-    fit: "Most popular.",
-    includes:
-      "Context form, confidence score, full readiness score, VM-by-VM risk matrix, sizing, migration waves, executive + technical report.",
-  },
-  {
-    name: "Migration Blueprint",
-    price: "from USD 3,500",
-    fit: "For teams preparing a serious migration plan.",
-    includes: "Target architecture, pilot selection, migration day checklist, rollback framework, remediation roadmap.",
-  },
-  {
-    name: "MSP Partner",
-    price: "from USD 399/month",
-    fit: "For consultants, MSPs and integrators.",
-    includes: "Reusable methodology, client-ready PDFs, assessment templates and partner workflow.",
-  },
-];
+const pricingPackages = marketingPlans.map((plan) => ({
+  name: plan.name,
+  price: plan.price,
+  fit: plan.bestFor,
+  includes: plan.includes.slice(0, 5).join(", ") + "...",
+}));
 
 const notAList = [
   "It is not a VM migration tool.",
@@ -116,30 +96,32 @@ const notAList = [
 
 const faqs = [
   [
-    "Is this a migration tool?",
-    "No. It is a readiness and planning assessment. It helps identify migration risk before execution.",
-  ],
-  ["Do you need access to vCenter?", "No for the base assessment. You can start with an RVTools export."],
-  ["Do you touch production?", "No. The base workflow analyzes exported evidence only."],
-  [
-    "What if I only have RVTools?",
-    "You can start. The report will include confidence scoring and missing evidence.",
+    "Do I need a credit card to start?",
+    "No. You can start with the Free Readiness Check. Paid reports and Pro features are selected when you decide to unlock deeper analysis or delivery outputs.",
   ],
   [
-    "What do I receive?",
-    "A professional readiness assessment with VM risk classification, readiness/confidence scores, evidence gaps, Proxmox sizing, migration waves and executive/technical reports.",
+    "What happens after I buy a report?",
+    "Your assessment workspace is upgraded to the selected report level. The platform uses the evidence you uploaded to generate the corresponding readiness outputs, and you can continue adding evidence to improve confidence where supported.",
   ],
   [
-    "Can MSPs use it with clients?",
-    "Yes. The partner path is designed for MSPs, consultants and Proxmox integrators.",
+    "Can I upgrade later?",
+    "Yes. You can start with a free assessment and upgrade when you need a full report, storage readiness, Advisor access or blueprint-level planning.",
   ],
   [
-    "Does it guarantee zero downtime?",
-    "No. Zero downtime cannot be guaranteed without pilots, validation and execution planning.",
+    "Is Storage Readiness included?",
+    "Storage Destination Readiness is included in Pro-level analysis or higher, depending on the selected plan. It can use manual, agentless Proxmox/Ceph/PBS evidence to improve confidence.",
   ],
   [
-    "Can this replace a consultant?",
-    "It accelerates discovery, analysis and reporting. Complex migrations may still need human execution or partner support.",
+    "Is the Senior Migration Advisor included?",
+    "The Senior Migration Advisor is available in Pro or higher plans, where it can use assessment context, storage evidence and approved project memory to help explain findings and next steps.",
+  ],
+  [
+    "Can MSPs or consultants use Shift Evidence with clients?",
+    "Yes. Partner plans are designed for consultants, MSPs and integrators who need repeatable assessments, client-ready reports and a structured migration readiness workflow.",
+  ],
+  [
+    "Can I request an invoice or billing support?",
+    "Yes. Billing questions, invoices and enterprise purchasing requests can be routed through billing support.",
   ],
 ];
 
@@ -363,14 +345,14 @@ export default function VMwareToProxmoxReadinessPage() {
           </div>
           <div className="shiftreadiness-actions sales-centered-actions">
             <Link href="/sign-up" className="btn btn-primary btn-glow">
-              Request access
+              Start Free Assessment
               <ArrowRight size={18} />
             </Link>
-            <Link href="/contact" className="btn btn-secondary">
-              Book readiness review
+            <Link href="/shiftreadiness#pricing" className="btn btn-secondary">
+              Compare Plans & Add-ons
             </Link>
-            <Link href="/sign-up" className="btn btn-secondary">
-              Start assessment
+            <Link href="/sample-report" className="btn btn-secondary">
+              View Sample Report
             </Link>
           </div>
           <p className="sales-pricing-note">

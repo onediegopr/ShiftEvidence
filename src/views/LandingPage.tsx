@@ -48,12 +48,6 @@ const appCopy = {
   outputsBody: "Professional, boardroom-ready reports ready for engineering review and executive sign-off.",
   disclaimer: "Independent methodology. Not affiliated with, endorsed by or certified by VMware/Broadcom.",
   faqTitle: "Frequently Asked Questions",
-  q1: "Is this just an automatic parser that converts my configuration files?",
-  a1: "No. While other tools act as basic parsers or simple calculators, Shift Evidence is the first cognitive AI copilot specifically trained for VMware exits. It takes your RVTools or CSV inventory and combines it with a contextual intake form (workload policies, maintenance constraints, risk appetite) to generate a complete senior consulting assessment.",
-  q2: "How does this compare to traditional consulting firms or a VMware TAM?",
-  a2: "Traditional consulting (like IBM, Deloitte, or Accenture) relies on manual human interviews and static templates that take weeks and cost tens of thousands of dollars. Shift Evidence productizes this process, using guardrailed AI to evaluate storage configurations, license deltas, and risk roadmap waves in minutes at a fraction of the cost.",
-  q3: "Is this target storage recommendation only for Ceph?",
-  a3: "No. Shift Evidence is storage-agnostic first. It evaluates local ZFS, existing SAN/NAS/NFS and Ceph when relevant. Ceph is never treated as the default recommendation; it requires evidence for hardware, network, failure domains, backup and operational readiness.",
   ctaTitle: "Start Your VMware Readiness Assessment",
   ctaPain: "VMware exit decisions need evidence, not guesses.",
   ctaBody: "Initialize an evidence-backed audit of cost exposure, migration blockers, storage destination readiness and Ceph suitability today.",
@@ -70,6 +64,49 @@ const appCopy = {
   footerLegal:
     "Shift Evidence is an independent assessment service. It is not affiliated with, endorsed by or certified by VMware, Broadcom or Proxmox. VMware, Broadcom and Proxmox names may be trademarks of their respective owners and are used only to describe migration context and compatibility targets.",
 } as const;
+
+const landingFaqs = [
+  {
+    q: "Is this just an automatic parser that converts my configuration files?",
+    a: "No. While other tools act as basic parsers or simple calculators, Shift Evidence is the first cognitive AI copilot specifically trained for VMware exits. It takes your RVTools or CSV inventory and combines it with a contextual intake form (workload policies, maintenance constraints, risk appetite) to generate a complete senior consulting assessment.",
+  },
+  {
+    q: "How does this compare to traditional consulting firms or a VMware TAM?",
+    a: "Traditional consulting (like IBM, Deloitte, or Accenture) relies on manual human interviews and static templates that take weeks and cost tens of thousands of dollars. Shift Evidence productizes this process, using guardrailed AI to evaluate storage configurations, license deltas, and risk roadmap waves in minutes at a fraction of the cost.",
+  },
+  {
+    q: "Is this target storage recommendation only for Ceph?",
+    a: "No. Shift Evidence is storage-agnostic first. It evaluates local ZFS, existing SAN/NAS/NFS and Ceph when relevant. Ceph is never treated as the default recommendation; it requires evidence for hardware, network, failure domains, backup and operational readiness.",
+  },
+  {
+    q: "Do I need a credit card to start?",
+    a: "No. You can start with the Free Readiness Check. Paid reports and Pro features are selected when you decide to unlock deeper analysis or delivery outputs.",
+  },
+  {
+    q: "What happens after I buy a report?",
+    a: "Your assessment workspace is upgraded to the selected report level. The platform uses the evidence you uploaded to generate the corresponding readiness outputs, and you can continue adding evidence to improve confidence where supported.",
+  },
+  {
+    q: "Can I upgrade later?",
+    a: "Yes. You can start with a free assessment and upgrade when you need a full report, storage readiness, Advisor access or blueprint-level planning.",
+  },
+  {
+    q: "Is Storage Readiness included?",
+    a: "Storage Destination Readiness is included in Pro-level analysis or higher, depending on the selected plan. It can use manual, agentless Proxmox/Ceph/PBS evidence to improve confidence.",
+  },
+  {
+    q: "Is the Senior Migration Advisor included?",
+    a: "The Senior Migration Advisor is available in Pro or higher plans, where it can use assessment context, storage evidence and approved project memory to help explain findings and next steps.",
+  },
+  {
+    q: "Can MSPs or consultants use Shift Evidence with clients?",
+    a: "Yes. Partner plans are designed for consultants, MSPs and integrators who need repeatable assessments, client-ready reports and a structured migration readiness workflow.",
+  },
+  {
+    q: "Can I request an invoice or billing support?",
+    a: "Yes. Billing questions, invoices and enterprise purchasing requests can be routed through billing support.",
+  },
+];
 
 const industryEvaluations = [
   {
@@ -679,18 +716,12 @@ export default function LandingPage() {
               <h2 className="mb-4">{appCopy.faqTitle}</h2>
             </div>
             <div className="faq-list">
-              <div className="faq-item">
-                <div className="faq-q">{appCopy.q1}</div>
-                <div className="faq-a">{appCopy.a1}</div>
-              </div>
-              <div className="faq-item">
-                <div className="faq-q">{appCopy.q2}</div>
-                <div className="faq-a">{appCopy.a2}</div>
-              </div>
-              <div className="faq-item">
-                <div className="faq-q">{appCopy.q3}</div>
-                <div className="faq-a">{appCopy.a3}</div>
-              </div>
+              {landingFaqs.map((faq, index) => (
+                <div key={index} className="faq-item">
+                  <div className="faq-q">{faq.q}</div>
+                  <div className="faq-a">{faq.a}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -823,7 +854,7 @@ export default function LandingPage() {
                 <h2 id="returning-user-title">Already have an account?</h2>
                 <p>
                   Return to your workspace to continue an assessment, review uploaded evidence,
-                  access reports, manage support requests, or continue working with your migration advisor.
+                  access reports, view recent support requests, or continue working with your migration advisor.
                 </p>
               </div>
               <div className="assessment-inline-actions">
