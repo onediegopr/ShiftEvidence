@@ -106,6 +106,7 @@ function formatStatusLabel(value: string | null | undefined) {
     professional: "Professional",
     proposal_sent: "Propuesta enviada",
     revoked: "Revocado",
+    included: "Incluido",
     starter: "Starter",
     success: "Exitoso",
     timeout: "Timeout",
@@ -234,6 +235,7 @@ function getAdminTabSectionKeys(activeTab: string) {
     "ai_budget",
     "advanced_audit",
     "runtime_settings",
+    "advisor_methodology",
     "owner_emails",
     "ai_status",
     "ai_usage",
@@ -247,6 +249,7 @@ function getAdminTabSectionKeys(activeTab: string) {
     licenciamiento: ["assessments", "owner_emails"],
     "contexto-evidencias": ["assessments", "owner_emails"],
     "ia-consumo": ["ai_status", "ai_usage", "ai_budget"],
+    "advisor-metodologia": ["advisor_methodology", "ai_usage"],
     "configuracion-operativa": ["runtime_settings", "ai_status"],
     "accesos-planes": ["users", "entitlements"],
     oportunidades: ["commercial_opportunities"],
@@ -433,6 +436,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Contexto y Evidencias", "contexto-evidencias"],
     ["Storage/Ceph", "storage-ceph"],
     ["IA y Consumo", "ia-consumo"],
+    ["Advisor Metodologia", "advisor-metodologia"],
     ["Configuración Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
     ["Oportunidades", "oportunidades"],
@@ -486,6 +490,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
           <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Lanzamiento controlado" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
+          <MetricCard icon={<Bot size={22} />} label="Advisor metodologia" value={data.advisorMethodology.runtime.enabled ? "Activa" : "No activa"} note={`${data.advisorMethodology.kbHealth.activeBlocks} bloques activos; ${data.advisorMethodology.usageStats.includedCount} inclusiones 30d`} />
           <MetricCard icon={<HardDrive size={22} />} label="Storage Activo" value={data.storageCeph?.activeStorageAssessments ?? 0} note="Con módulo storage" />
           <MetricCard icon={<Server size={22} />} label="Ceph Solicitado" value={data.storageCeph?.cephRequested ?? 0} note="Preferencia Ceph o candidate" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Fallos IA Storage" value={(data.storageCeph?.aiAnalysisStatus?.failed ?? 0) + (data.storageCeph?.aiAnalysisStatus?.budget_blocked ?? 0) + (data.storageCeph?.aiAnalysisStatus?.plan_restricted ?? 0)} note="Fallados, bloqueados o restringidos" />
@@ -880,6 +885,149 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       <td>{event.errorCategory}</td>
                       <td>{formatDuration(event.durationMs)}</td>
                       <td>{formatDate(event.createdAt)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "advisor-metodologia" && (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            id="advisor-metodologia"
+            icon={<Bot size={18} />}
+            label="Senior Advisor"
+            title="Observabilidad de contexto metodologico"
+            description="Vista interna read-only del flag, salud de la KB y uso agregado. No expone prompts, secretos, bloques crudos ni evidencia de clientes."
+          />
+          <section className="assessment-summary-grid">
+            <MetricCard
+              icon={<Settings size={22} />}
+              label="Flag runtime"
+              value={data.advisorMethodology.runtime.enabled ? "Activo" : "Inactivo"}
+              note={`${data.advisorMethodology.runtime.flagName}; default off`}
+            />
+            <MetricCard
+              icon={<ShieldCheck size={22} />}
+              label="KB health"
+              value={data.advisorMethodology.kbHealth.ok ? "OK" : "Atencion"}
+              note={`${data.advisorMethodology.kbHealth.activeBlocks}/${data.advisorMethodology.kbHealth.totalBlocks} bloques activos`}
+            />
+            <MetricCard
+              icon={<FileText size={22} />}
+              label="Inclusiones 30d"
+              value={data.advisorMethodology.usageStats.includedCount}
+              note={`${data.advisorMethodology.usageStats.methodologyTrackedEvents} eventos con metadata metodologica`}
+            />
+            <MetricCard
+              icon={<Activity size={22} />}
+              label="Advisor 30d"
+              value={data.advisorMethodology.usageStats.totalAdvisorEvents}
+              note={`${data.advisorMethodology.usageStats.methodologyEnabledEvents} con flag habilitado`}
+            />
+            <MetricCard
+              icon={<AlertTriangle size={22} />}
+              label="Errores metodologia"
+              value={data.advisorMethodology.usageStats.errorCount}
+              note={`Warnings: ${data.advisorMethodology.usageStats.totalWarnings}; bloqueos: ${data.advisorMethodology.usageStats.totalBlockedReasons}`}
+            />
+            <MetricCard
+              icon={<Gauge size={22} />}
+              label="Bloques promedio"
+              value={data.advisorMethodology.usageStats.averageBlockCount}
+              note={`Ultimo evento: ${formatDate(data.advisorMethodology.usageStats.lastMethodologyEventAt)}`}
+            />
+          </section>
+
+          <div className="assessment-preview-grid">
+            <article className="glass-card report-history-card">
+              <h3>Activacion controlada</h3>
+              <div className="report-history-meta">
+                <span>Modo: {data.advisorMethodology.runtime.activationMode}</span>
+                <span>Valor presente: {data.advisorMethodology.runtime.rawValuePresent ? "Si" : "No"}</span>
+                <span>Estado seguro: {formatStatusLabel(data.advisorMethodology.runtime.valueDescription)}</span>
+                <span>Full public launch: No declarado</span>
+              </div>
+              <p className="assessment-inline-note">{data.advisorMethodology.runtime.productionSafeSummary}</p>
+              <p className="assessment-inline-note">Esta consola no cambia env vars, Hostinger ni deploys.</p>
+            </article>
+
+            <article className="glass-card report-history-card">
+              <h3>Salud de Knowledge Base</h3>
+              <div className="report-history-meta">
+                <span>Total: {data.advisorMethodology.kbHealth.totalBlocks}</span>
+                <span>Activos: {data.advisorMethodology.kbHealth.activeBlocks}</span>
+                <span>Draft: {data.advisorMethodology.kbHealth.draftBlocks}</span>
+                <span>Deprecated: {data.advisorMethodology.kbHealth.deprecatedBlocks}</span>
+                <span>Restricted: {data.advisorMethodology.kbHealth.restrictedCount}</span>
+                <span>Errores validacion: {data.advisorMethodology.kbHealth.validationErrorsCount}</span>
+                <span>Warnings validacion: {data.advisorMethodology.kbHealth.validationWarningsCount}</span>
+                <span>Ultimo chequeo: {formatDate(data.advisorMethodology.kbHealth.lastCheckedAt)}</span>
+              </div>
+              <p className="assessment-inline-note">Se listan IDs, titulos, versiones y exposicion; el contenido de bloques no se muestra.</p>
+            </article>
+
+            <article className="glass-card report-history-card">
+              <h3>Uso agregado</h3>
+              <div className="report-history-meta">
+                <span>Ventana: {data.advisorMethodology.usageStats.windowDays} dias</span>
+                <span>Desde: {formatDate(data.advisorMethodology.usageStats.since)}</span>
+                <span>Incluidos: {data.advisorMethodology.usageStats.includedCount}</span>
+                <span>Omitidos: {data.advisorMethodology.usageStats.skippedCount}</span>
+                <span>Desactivados: {data.advisorMethodology.usageStats.disabledCount}</span>
+              </div>
+              <div className="report-history-grid">
+                {data.advisorMethodology.usageStats.limitations.map((limitation) => (
+                  <p key={limitation} className="assessment-inline-note">{limitation}</p>
+                ))}
+              </div>
+            </article>
+
+            <article className="glass-card report-history-card">
+              <h3>Bloques mas usados</h3>
+              {data.advisorMethodology.usageStats.topBlockIds.length === 0 ? (
+                <p className="assessment-inline-note">Sin bloques metodologicos registrados en el rango.</p>
+              ) : (
+                <div className="report-history-meta">
+                  {data.advisorMethodology.usageStats.topBlockIds.map((item) => (
+                    <span key={item.id}>{item.id}: {item.count}</span>
+                  ))}
+                </div>
+              )}
+            </article>
+          </div>
+
+          <div className="assessment-table-wrap">
+            <table className="assessment-table">
+              <thead>
+                <tr>
+                  <th>Bloque</th>
+                  <th>Titulo</th>
+                  <th>Version</th>
+                  <th>Estado</th>
+                  <th>Exposicion</th>
+                  <th>Dominio</th>
+                  <th>Revision</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.advisorMethodology.kbHealth.blockSummaries.length === 0 ? (
+                  <tr>
+                    <td colSpan={7}>La KB metodologica no esta disponible en este runtime.</td>
+                  </tr>
+                ) : (
+                  data.advisorMethodology.kbHealth.blockSummaries.map((block) => (
+                    <tr key={block.id}>
+                      <td>{block.id}</td>
+                      <td>{block.title}</td>
+                      <td>{block.version}</td>
+                      <td>{formatStatusLabel(block.status)}</td>
+                      <td>{formatStatusLabel(block.exposureLevel)}</td>
+                      <td>{formatStatusLabel(block.domain)}</td>
+                      <td>{block.lastReviewedAt}</td>
                     </tr>
                   ))
                 )}

@@ -4,6 +4,10 @@ import { getAdminAiUsage } from "../ai/aiUsageService";
 import { getAiRuntimeStatus } from "../ai/aiRuntimeStatus";
 import { logger } from "../logging/logger";
 import {
+  getAdvisorMethodologyAdminSnapshot,
+  type AdvisorMethodologyAdminSnapshot,
+} from "./advisorMethodologyAdminService";
+import {
   getAdminAiBudgetSummary,
   getAdvancedAuditEvents,
   getCommercialOpportunities,
@@ -48,6 +52,7 @@ export type AdminSectionKey =
   | "ai_budget"
   | "advanced_audit"
   | "runtime_settings"
+  | "advisor_methodology"
   | "owner_emails"
   | "ai_status"
   | "ai_usage"
@@ -200,6 +205,54 @@ function createFallbackAiBudget(): AdminAiBudgetSummary {
         message: "La metrica de presupuesto IA no pudo cargarse; no bloquea el resto de la consola.",
       },
     ],
+  };
+}
+
+function createFallbackAdvisorMethodologySnapshot(): AdvisorMethodologyAdminSnapshot {
+  return {
+    runtime: {
+      enabled: false,
+      flagName: "ADVISOR_METHODOLOGY_CONTEXT_ENABLED",
+      activationMode: "env",
+      defaultEnabled: false,
+      rawValuePresent: false,
+      valueDescription: "disabled_default",
+      productionSafeSummary: "Methodology context status is unavailable in this runtime; default is disabled.",
+    },
+    kbHealth: {
+      ok: false,
+      totalBlocks: 0,
+      activeBlocks: 0,
+      draftBlocks: 0,
+      deprecatedBlocks: 0,
+      exposureCounts: {},
+      activeBlockIds: [],
+      versions: [],
+      validationErrorsCount: 0,
+      validationWarningsCount: 0,
+      restrictedCount: 0,
+      lastCheckedAt: new Date(0),
+      blockSummaries: [],
+    },
+    usageStats: {
+      windowDays: 30,
+      since: new Date(0),
+      totalAdvisorEvents: 0,
+      methodologyTrackedEvents: 0,
+      methodologyEnabledEvents: 0,
+      includedCount: 0,
+      skippedCount: 0,
+      errorCount: 0,
+      disabledCount: 0,
+      lastMethodologyEventAt: null,
+      averageBlockCount: 0,
+      totalWarnings: 0,
+      totalBlockedReasons: 0,
+      topBlockIds: [],
+      limitations: [
+        "Advisor methodology visibility is temporarily unavailable; no raw prompts or customer evidence are exposed.",
+      ],
+    },
   };
 }
 
@@ -644,6 +697,7 @@ export async function getAdminConsoleData(params?: {
     aiBudgetResult,
     advancedAuditEventsResult,
     runtimeSettingsResult,
+    advisorMethodologyResult,
     paginationCountsResult,
     storageCephResultPart,
   ] = await Promise.all([
@@ -727,6 +781,14 @@ export async function getAdminConsoleData(params?: {
       fallback: DEFAULT_RUNTIME_SETTINGS,
       load: getOperationalRuntimeSettings,
     }),
+    resolveAdminSection<AdvisorMethodologyAdminSnapshot>({
+      sectionKey: "advisor_methodology",
+      title: "Advisor metodologico",
+      errorKey: "admin_advisor_methodology_failed",
+      message: "No se pudo cargar la visibilidad segura del contexto metodologico.",
+      fallback: createFallbackAdvisorMethodologySnapshot(),
+      load: () => getAdvisorMethodologyAdminSnapshot({ windowDays: 30 }),
+    }),
     resolveAdminSection<Awaited<ReturnType<typeof loadPaginationCounts>>>({
       sectionKey: "summary_metrics",
       title: "Paginacion admin",
@@ -765,6 +827,7 @@ export async function getAdminConsoleData(params?: {
   const aiBudget = rememberSection(aiBudgetResult);
   const advancedAuditEvents = rememberSection(advancedAuditEventsResult);
   const runtimeSettings = rememberSection(runtimeSettingsResult);
+  const advisorMethodology = rememberSection(advisorMethodologyResult);
   const paginationCounts = rememberSection(paginationCountsResult);
   const storageCephResult = rememberSection(storageCephResultPart);
   const {
@@ -868,6 +931,7 @@ export async function getAdminConsoleData(params?: {
         "Costo estimado a partir de caracteres/tokens aproximados. Puede diferir de la facturacion real del proveedor.",
       budget: aiBudget,
     },
+    advisorMethodology,
     systemHealth: [
       {
         title: "Sistema general",

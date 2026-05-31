@@ -117,11 +117,19 @@ Read these to understand:
 - [Advisor Project Memory Vault User-Attested Authenticated Smoke](./hito-advisor-2e-user-attested-project-memory-vault-authenticated-smoke.md)
 - [Advisor Project Memory Vault Final Documentation](./hito-advisor-2-close-project-memory-vault-final-documentation.md)
 - [Advisor Project Memory Auto-Extraction Lite](./hito-advisor-2f-project-memory-auto-extraction-lite.md)
+- [Advisor Methodology KB Audit Spec](./hito-advisor-3-audit-spec-rag-methodology-kb.md)
+- [Advisor Static Methodology KB Registry](./hito-advisor-3a-static-methodology-kb-registry.md)
+- [Advisor Deterministic Retrieval + Prompt Preview](./hito-advisor-3b-deterministic-retrieval-prompt-preview.md)
+- [Advisor Methodology Prompt Integration Feature Flag](./hito-advisor-3c-prompt-integration-feature-flag.md)
+- [Advisor Methodology Evaluation Harness](./hito-advisor-3d-evaluation-harness-golden-questions.md)
+- [Advisor Methodology Controlled Smoke Flag On](./hito-advisor-3e-controlled-smoke-flag-on.md)
+- [Advisor Methodology User-Attested Flag-On Close](./hito-advisor-3e-user-attested-production-flag-on-close.md)
+- [Advisor Methodology Admin Visibility](./hito-advisor-3f-production-observation-admin-visibility.md)
 
 Recommended next Advisor milestones:
 
-- ADVISOR-2F-RELEASE/SMOKE if production verification is required.
-- ADVISOR-3 RAG / Methodology KB after auto-extraction review workflows mature.
+- ADVISOR-3F-SMOKE for authenticated admin visibility verification.
+- ADVISOR-3G controlled activation smoke or ADVISOR-3/RAG audit spec, without starting embeddings/vector DB until explicitly approved.
 
 ## Hostinger / Production Ops
 
