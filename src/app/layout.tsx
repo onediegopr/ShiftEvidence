@@ -5,6 +5,10 @@ import "../index.css";
 export const metadata: Metadata = {
   title: "Shift Evidence",
   description: "Infrastructure readiness before you migrate.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
