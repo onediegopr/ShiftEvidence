@@ -26,26 +26,30 @@ const reportStats = [
   ["19", "Snapshots"],
   ["64/100", "Readiness Score"],
   ["58/100", "Evidence Confidence"],
-  ["21", "Migration risks"],
-  ["8", "Missing evidence items"],
+  ["52/100", "Storage Readiness"],
+  ["$87.5K", "Annual savings estimate"],
+  ["23", "PDF pages"],
 ];
 
 const tocItems = [
   "Executive Summary",
-  "Evidence Received",
-  "Evidence Missing",
+  "Assessment Scope",
+  "Environment Overview",
   "Readiness Score",
   "Confidence Score",
+  "VMware -> Proxmox Technical Readiness",
+  "Storage Destination Readiness",
+  "Licensing & Cost Exposure",
+  "Business Continuity Risk",
   "VM Risk Matrix",
-  "Storage Risk",
-  "Network Risk",
-  "Backup Evidence",
-  "Application Dependency Gaps",
-  "Suggested Migration Waves",
-  "Pilot Candidates",
-  "Required Validations",
-  "AI Advisory Notes",
-  "Next Steps",
+  "Workload Classification",
+  "Proxmox Target / Sizing Preview",
+  "Recommended Migration Path",
+  "Remediation Roadmap",
+  "Senior AI Advisor Insights",
+  "Senior AI Advisor Q&A Highlights",
+  "Project Memory / Decisions Captured",
+  "Assumptions & Disclaimers",
 ];
 
 const evidenceRows = [
@@ -61,11 +65,10 @@ const evidenceRows = [
 const topRisks = [
   ["Backup evidence missing", "Critical"],
   ["Application dependencies missing", "High"],
-  ["Old snapshots detected", "High"],
-  ["Large disks above 2 TB", "High"],
-  ["Multi-NIC workloads", "Medium"],
-  ["Outdated VMware Tools", "Medium"],
   ["Datastores above 80%", "High"],
+  ["Old snapshots detected", "High"],
+  ["Storage target design incomplete", "High"],
+  ["Licensing exposure requires validation", "Medium"],
   ["Critical workloads require manual review", "Critical"],
 ];
 
@@ -75,6 +78,8 @@ const vmRows = [
   ["sql-prod-01", "Database", "High", "Manual review"],
   ["dc-main-01", "Domain Controller", "High", "Special plan"],
   ["erp-prod", "ERP", "Critical", "Hold"],
+  ["backup-proxy", "Backup service", "High", "Wave 0 validation"],
+  ["legacy-app", "Legacy app", "Medium", "Retire/rehost review"],
 ];
 
 const waveItems = [
@@ -93,13 +98,17 @@ const sizingItems = [
   ["Backup capacity", "90 TB"],
   ["HA readiness", "Conditional"],
   ["Network readiness", "Requires mapping"],
+  ["Ceph posture", "Conditional"],
+  ["Licensing model", "12 sockets / 288 cores"],
 ];
 
 const limitations = [
   "It does not migrate VMs.",
   "It does not guarantee zero downtime.",
   "It does not replace a pilot.",
+  "It is not a financial quote or vendor contract.",
   "It does not prove backup restorability without backup evidence.",
+  "It does not assume Ceph is the default target storage.",
   "It does not infer application dependencies that were not provided.",
   "It does not use customer data.",
 ];
@@ -113,15 +122,15 @@ export default function SampleReportPage() {
         <div className="bg-mesh" />
         <div className="container sample-report-hero-grid">
           <div className="demo-hero-copy">
-            <div className="badge badge-cyan">Synthetic public sample</div>
-            <h1>Sample Readiness Report</h1>
+            <div className="badge badge-cyan">Full premium synthetic sample</div>
+            <h1>Premium Sample Readiness Report</h1>
             <p className="demo-hero-subtitle">
-              See what a VMware -&gt; Proxmox readiness assessment looks like before uploading your own data.
+              See the premium VMware -&gt; Proxmox decision pack before uploading your own approved evidence.
             </p>
             <p className="demo-hero-body">
-              This public sample uses a synthetic VMware environment to show the type of executive and technical report
-              ShiftReadiness can generate: readiness score, confidence score, evidence gaps, VM risk classification,
-              Proxmox sizing, migration waves and AI Advisory notes.
+              This public sample uses a synthetic industrial VMware environment to show a fuller consulting-style
+              deliverable: readiness, storage destination, licensing exposure, continuity risk, VM matrix, migration
+              waves, Senior AI Advisor examples and Project Memory decisions.
             </p>
             <div className="demo-badge-row" aria-label="Sample report safety notes">
               <span>Synthetic sample</span>
@@ -132,7 +141,7 @@ export default function SampleReportPage() {
             </div>
             <div className="shiftreadiness-actions">
               <a href="#sample-structure" className="btn btn-primary btn-glow">
-                View sample structure
+                View premium sample structure
                 <ArrowRight size={18} />
               </a>
               <Link href="/demo" className="btn btn-secondary">
@@ -144,7 +153,7 @@ export default function SampleReportPage() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Download sample PDF
+                Download full sample PDF
               </a>
             </div>
           </div>
@@ -157,7 +166,7 @@ export default function SampleReportPage() {
               <strong>Report preview</strong>
             </div>
             <div className="sample-report-cover-body">
-              <span className="sample-report-kicker">Synthetic sample report</span>
+              <span className="sample-report-kicker">Premium synthetic sample report</span>
               <h2>Northbridge Industrial Group</h2>
               <p>VMware -&gt; Proxmox Migration Readiness Assessment</p>
               <div className="sample-report-score-strip">
@@ -179,10 +188,10 @@ export default function SampleReportPage() {
         <div className="container">
           <div className="shiftreadiness-section-heading">
             <div className="badge badge-cyan">Report foundation</div>
-            <h2>A compact view of the future 12-18 page report.</h2>
+            <h2>A premium view of the consulting-style readiness deliverable.</h2>
               <p>
-                The downloadable PDF is a synthetic public sample. This page shows the report structure and the decision
-                artifacts prospects should expect before uploading their own evidence.
+                The downloadable PDF is a synthetic public sample. It is intentionally richer than the basic preview so
+                prospects can understand the premium report, without exposing customer data or implying a quote.
               </p>
           </div>
 
@@ -220,10 +229,10 @@ export default function SampleReportPage() {
             </div>
             <p className="sample-report-summary">
               Northbridge Industrial has a medium migration readiness posture based on the evidence provided. The VMware
-              inventory is usable for an initial assessment, but backup evidence, application dependency mapping and
-              Proxmox target validation are missing or incomplete. Low-risk workloads may be candidates for a pilot,
-              while SQL, ERP, domain controller and storage-heavy workloads require manual validation before entering a
-              migration wave.
+              inventory is usable for planning, but backup restore evidence, application dependency mapping, storage
+              design and production go/no-go criteria remain incomplete. Low-risk workloads may be candidates for a
+              pilot, while SQL, ERP, domain controller and storage-heavy workloads require manual validation before
+              entering a production wave.
             </p>
           </article>
         </div>
@@ -267,7 +276,7 @@ export default function SampleReportPage() {
         <div className="container">
           <div className="shiftreadiness-section-heading">
             <div className="badge badge-cyan">Planning previews</div>
-            <h2>Waves and sizing are planning inputs, not execution guarantees.</h2>
+              <h2>Waves, sizing, storage and licensing are planning inputs, not execution guarantees.</h2>
           </div>
           <div className="sample-report-planning-grid">
             <article className="glass-card sample-report-panel">
@@ -300,7 +309,7 @@ export default function SampleReportPage() {
                 ))}
               </div>
               <p className="sample-report-disclaimer">
-                Based on allocation, not historical performance. Add monitoring data for higher confidence.
+                Based on synthetic allocation, not historical performance. Add monitoring data and target design for higher confidence.
               </p>
             </article>
           </div>
@@ -312,10 +321,11 @@ export default function SampleReportPage() {
           <article className="glass-card sample-report-panel sample-report-advisory">
             <div className="sample-report-panel-title">
               <Brain size={22} />
-              <h2>AI Advisory notes preview</h2>
+              <h2>Senior AI Advisor preview</h2>
             </div>
             <p>
-              AI Advisory supports the assessment. It does not replace deterministic readiness and confidence scores.
+              Senior AI Advisor examples show how the premium report turns evidence gaps into decision questions,
+              warnings and next actions. They are synthetic and do not replace deterministic scoring or expert review.
             </p>
             <blockquote>
               Backup evidence was not provided. Do not include critical workloads in early waves until restore points
@@ -348,7 +358,7 @@ export default function SampleReportPage() {
               <div className="badge badge-cyan">Assessment offer</div>
               <h2>Want to understand the full assessment?</h2>
               <p>
-                The sample report shows the deliverable. The offer page explains how the assessment works, what evidence
+                The premium sample report shows the deliverable. The offer page explains how the assessment works, what evidence
                 improves confidence and how to start with your own VMware environment.
               </p>
             </div>

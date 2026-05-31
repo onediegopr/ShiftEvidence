@@ -2635,7 +2635,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 href="/sample-report"
                 className="btn btn-secondary"
               >
-                View Sample Report
+                View Full Sample Report
                 <FileText size={18} className="text-cyan" />
               </a>
               <a

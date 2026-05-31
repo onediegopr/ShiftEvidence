@@ -157,7 +157,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 Watch readiness replay
               </Link>
               <Link href="/sample-report" className="btn btn-secondary">
-                View sample report
+                View full sample report
               </Link>
             </div>
           </div>
@@ -238,15 +238,15 @@ export default function VMwareToProxmoxReadinessPage() {
           <article className="glass-card sample-report-inline-cta sales-mini-cta">
             <div>
               <div className="badge badge-cyan">See the deliverable</div>
-              <h2>View the public sample report.</h2>
+              <h2>View the premium public sample report.</h2>
               <p>
-                The sample report shows the executive and technical output: scores, evidence matrix, risk findings,
-                migration waves and next steps.
+                The sample report shows the premium executive and technical output: scores, storage readiness,
+                licensing exposure, risk findings, advisor examples, migration waves and next steps.
               </p>
             </div>
             <div className="sales-inline-actions">
               <Link href="/sample-report" className="btn btn-primary btn-glow">
-                View sample report
+                View full sample report
                 <ArrowRight size={18} />
               </Link>
               <a
@@ -255,7 +255,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Download sample PDF
+                Download full sample PDF
               </a>
             </div>
           </article>
@@ -353,7 +353,7 @@ export default function VMwareToProxmoxReadinessPage() {
               Compare Plans & Add-ons
             </Link>
             <Link href="/sample-report" className="btn btn-secondary">
-              View Sample Report
+              View Full Sample Report
             </Link>
           </div>
           <p className="sales-pricing-note">
@@ -412,7 +412,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 <Waves size={17} />
               </Link>
               <Link href="/sample-report" className="btn btn-secondary">
-                View sample report
+                View full sample report
                 <BarChart3 size={17} />
               </Link>
             </div>

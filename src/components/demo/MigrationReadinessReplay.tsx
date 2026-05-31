@@ -140,8 +140,12 @@ export default function MigrationReadinessReplay() {
         <div className="container demo-hero-grid">
           <div className="demo-hero-copy">
             <div className="badge badge-cyan">Cognitive TAM Methodology</div>
-            <h1>Stop Guessing. Map Your VMware Exit with Precision.</h1>
-            <p className="demo-hero-subtitle">Transition from VMware to Proxmox with a productized risk-discovery engine.</p>
+            <h1 className="demo-hero-title">
+              Stop Guessing. Map Your <span className="demo-vmware-word">VMware</span> Exit with Precision.
+            </h1>
+            <p className="demo-hero-subtitle">
+              Transition from <span className="demo-vmware-inline">VMware</span> to <span className="demo-proxmox-inline">Proxmox</span> with a productized risk-discovery engine.
+            </p>
             <p className="demo-hero-body">
               ShiftReadiness applies our cognitive Target Architecture Mapping (TAM) methodology. We analyze your VMware export data to expose hidden configuration anomalies, flag hypervisor mismatches, and build a phased, risk-adjusted migration plan before you touch production.
             </p>
@@ -165,23 +169,46 @@ export default function MigrationReadinessReplay() {
             </div>
           </div>
 
-          <div className="glass-card demo-hero-panel">
+          <div className={`glass-card demo-hero-panel ${isPlaying ? "is-active" : "is-idle"}`}>
+            <div className="demo-terminal-aurora" aria-hidden="true" />
+            <div className="demo-terminal-scanline" aria-hidden="true" />
             <div className="demo-terminal-header">
-              <span className={`sr-mockup-dot ${isPlaying ? "green animate-pulse" : "yellow"}`} />
-              <span className="sr-mockup-dot green" />
-              <span className="sr-mockup-dot red" />
-              <strong>{isPlaying ? "ANALYSIS ACTIVE: MIGRATION TELEMETRY" : "TELEMETRY ENGINE: IDLE"}</strong>
+              <div className="demo-window-dots" aria-hidden="true">
+                <span className={`sr-mockup-dot ${isPlaying ? "green animate-pulse" : "yellow"}`} />
+                <span className="sr-mockup-dot green" />
+                <span className="sr-mockup-dot red" />
+              </div>
+              <strong className="demo-terminal-title">
+                <span className="demo-terminal-title-kicker">Telemetry engine</span>
+                <span>{isPlaying ? "Active migration telemetry" : "Idle, ready to ingest"}</span>
+              </strong>
+              <span className="demo-terminal-live-chip">
+                <span className="demo-terminal-live-dot" />
+                {isPlaying ? "Live stream" : "Standby"}
+              </span>
             </div>
             <div className="demo-terminal-body">
-              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", paddingBottom: "0.5rem", marginBottom: "0.5rem" }}>
-                <span>Status: <strong style={{ color: isPlaying ? "#22d3ee" : "#e2e8f0" }}>{isPlaying ? "STREAMING ENGINE" : "STANDBY"}</strong></span>
-                <span className="pulse-light" style={{ width: "10px", height: "10px", borderRadius: "50%", background: isPlaying ? "#22d3ee" : "#eab308", display: "inline-block" }} />
+              <div className="demo-terminal-status-row">
+                <span>
+                  Status: <strong>{isPlaying ? "STREAMING ENGINE" : "STANDBY"}</strong>
+                </span>
+                <span className="demo-orbit-light" aria-hidden="true" />
               </div>
-              <span>Target cluster: <strong style={{ color: "white" }}>{demoDataset.client}</strong></span>
-              <span>Source dataset: <strong style={{ color: "white" }}>{demoDataset.fileName}</strong></span>
-              <span>Inventory scope: <strong style={{ color: "white" }}>{demoDataset.vmCount} VMs / {demoDataset.hosts} Hosts / {demoDataset.clusters} Clusters</strong></span>
-              <span>Active scene: <strong style={{ color: "#8b5cf6" }}>{activeStep.title} ({activeStep.eyebrow})</strong></span>
-              <span style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.5rem" }}>
+              <div className="demo-terminal-spectrum" aria-hidden="true">
+                {Array.from({ length: 18 }).map((_, index) => (
+                  <i key={index} style={{ animationDelay: `${index * 0.08}s` }} />
+                ))}
+              </div>
+              <span>Target cluster: <strong>{demoDataset.client}</strong></span>
+              <span>Source dataset: <strong>{demoDataset.fileName}</strong></span>
+              <span>Inventory scope: <strong>{demoDataset.vmCount} VMs / {demoDataset.hosts} Hosts / {demoDataset.clusters} Clusters</strong></span>
+              <span>Active scene: <strong className="demo-active-scene">{activeStep.title} ({activeStep.eyebrow})</strong></span>
+              <div className="demo-terminal-metrics" aria-label="Telemetry metrics">
+                <span><strong>{demoDataset.vmCount}</strong> VMs</span>
+                <span><strong>{demoDataset.hosts}</strong> hosts</span>
+                <span><strong>{Math.round(progress)}%</strong> mapped</span>
+              </div>
+              <span className="demo-terminal-methodology">
                 Methodology: target architecture mapping, agentless, metadata-only
               </span>
             </div>
@@ -450,17 +477,17 @@ export default function MigrationReadinessReplay() {
 
             <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <div className="badge">Output Sample</div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 600, color: 'white', margin: '0.5rem 0' }}>See the final deliverable</h3>
+                <div className="badge">Premium Output Sample</div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 600, color: 'white', margin: '0.5rem 0' }}>See the full sample deliverable</h3>
                 <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                  Download a complete, executive-ready PDF report containing sizing benchmarks, migration wave definitions, and full VM risk matrixes.
+                  Download a premium synthetic PDF with storage readiness, licensing exposure, continuity risk, Advisor Q&A, memory decisions and migration waves.
                 </p>
               </div>
               
               <div className="demo-download-row">
                 <div className="demo-download-info">
-                  <strong>Northbridge Industrial Sample</strong>
-                  <span>PDF Report • 2.4 MB</span>
+                  <strong>Northbridge Industrial Premium Sample</strong>
+                  <span>Full synthetic PDF report</span>
                 </div>
                 <a 
                   href="/sample-reports/proxmox-migration-readiness-sample-report.pdf" 

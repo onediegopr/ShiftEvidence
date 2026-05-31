@@ -138,7 +138,7 @@ export default function ShiftReadinessPage() {
                 Watch the readiness replay
               </a>
               <a href="/sample-report" className="btn btn-secondary">
-                View sample report
+                View full sample report
               </a>
               <a href="/shiftreadiness#pricing" className="btn btn-secondary">
                 View plans and add-ons
