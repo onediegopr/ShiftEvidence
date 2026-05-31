@@ -6743,8 +6743,9 @@ p {
     --demo-amber: #f59e0b;
     --demo-red: #ef4444;
     --demo-violet: #8b5cf6;
-    --demo-vmware-red: #b8363b;
-    --demo-vmware-orange: #f59e0b;
+    --demo-vmware-cyan: #22d3ee;
+    --demo-vmware-blue: #38bdf8;
+    --demo-vmware-slate: #b8c5d1;
     --demo-proxmox-orange: #e57000;
     overflow-x: clip;
 }
@@ -6791,12 +6792,12 @@ p {
     display: inline-block;
     padding-inline: 0.04em;
     background:
-        linear-gradient(105deg, #fff5ea 0%, #ffb35c 22%, #e57000 46%, #b8363b 72%, #7dd3fc 100%);
+        linear-gradient(105deg, #f8fbff 0%, #b8c5d1 20%, #7dd3fc 42%, #22d3ee 64%, #38bdf8 84%, #e0faff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 34px rgba(229, 112, 0, 0.18);
+    text-shadow: 0 0 34px rgba(34, 211, 238, 0.18);
 }
 
 .demo-hero-title .demo-vmware-word::after {
@@ -6807,8 +6808,8 @@ p {
     bottom: 0.03em;
     height: 0.09em;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(184, 54, 59, 0.95), rgba(245, 158, 11, 0.95), rgba(34, 211, 238, 0.75));
-    box-shadow: 0 0 26px rgba(245, 158, 11, 0.34);
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.95), rgba(34, 211, 238, 0.95), rgba(184, 197, 209, 0.72));
+    box-shadow: 0 0 26px rgba(34, 211, 238, 0.32);
     transform: skewX(-14deg);
 }
 
@@ -6818,8 +6819,8 @@ p {
 }
 
 .demo-vmware-inline {
-    color: #ffb35c;
-    text-shadow: 0 0 18px rgba(229, 112, 0, 0.22);
+    color: #7dd3fc;
+    text-shadow: 0 0 18px rgba(34, 211, 238, 0.22);
 }
 
 .demo-proxmox-inline {
@@ -6874,7 +6875,7 @@ p {
     border-color: rgba(34, 211, 238, 0.24);
     background:
         linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(5, 10, 24, 0.9)),
-        radial-gradient(circle at 14% 0%, rgba(245, 158, 11, 0.2), transparent 32%),
+        radial-gradient(circle at 14% 0%, rgba(56, 189, 248, 0.16), transparent 32%),
         radial-gradient(circle at 88% 14%, rgba(34, 211, 238, 0.18), transparent 34%);
     box-shadow:
         0 0 0 1px rgba(34, 211, 238, 0.08),
@@ -6900,7 +6901,7 @@ p {
 
 .demo-terminal-aurora {
     background:
-        radial-gradient(circle at 94% 20%, rgba(245, 158, 11, 0.28), transparent 12%),
+        radial-gradient(circle at 94% 20%, rgba(34, 211, 238, 0.2), transparent 12%),
         radial-gradient(circle at 8% 10%, rgba(34, 211, 238, 0.18), transparent 22%),
         linear-gradient(115deg, transparent 0%, rgba(34, 211, 238, 0.08) 44%, transparent 58%);
     opacity: 0.95;
@@ -7019,7 +7020,8 @@ p {
 }
 
 .demo-terminal-status-row strong {
-    color: var(--demo-amber);
+    margin-left: 0.35rem;
+    color: #b8c5d1;
 }
 
 .demo-hero-panel.is-active .demo-terminal-status-row strong {
@@ -7027,13 +7029,17 @@ p {
 }
 
 .demo-orbit-light {
-    width: 2rem;
-    height: 2rem;
+    display: inline-block !important;
+    flex: 0 0 auto;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 !important;
+    border: 0 !important;
     border-radius: 999px;
-    background: radial-gradient(circle at 34% 30%, #fff7b8, var(--demo-amber) 44%, #b45309 72%);
+    background: radial-gradient(circle at 34% 30%, #e0faff, #38bdf8 44%, #0369a1 72%) !important;
     box-shadow:
-        0 0 28px rgba(245, 158, 11, 0.58),
-        0 0 0 10px rgba(245, 158, 11, 0.06);
+        0 0 24px rgba(34, 211, 238, 0.58),
+        0 0 0 8px rgba(34, 211, 238, 0.06);
     animation: demoOrbitLight 2.8s ease-in-out infinite;
 }
 
@@ -7060,7 +7066,7 @@ p {
     display: block;
     min-height: 0.32rem;
     border-radius: 999px 999px 0 0;
-    background: linear-gradient(180deg, var(--demo-cyan), rgba(245, 158, 11, 0.84));
+    background: linear-gradient(180deg, #e0faff, var(--demo-cyan) 48%, #38bdf8);
     opacity: 0.45;
     animation: demoSpectrum 1.4s ease-in-out infinite;
 }
@@ -7088,9 +7094,9 @@ p {
     padding: 0.7rem 0.5rem;
     text-align: center;
     color: #cbd5e1;
-    border-color: rgba(245, 158, 11, 0.16);
+    border-color: rgba(34, 211, 238, 0.16);
     background:
-        linear-gradient(180deg, rgba(245, 158, 11, 0.08), rgba(3, 7, 18, 0.36));
+        linear-gradient(180deg, rgba(34, 211, 238, 0.08), rgba(3, 7, 18, 0.36));
 }
 
 .demo-terminal-metrics strong {
