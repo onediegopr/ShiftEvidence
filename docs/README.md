@@ -113,6 +113,14 @@ Read these to understand:
 - [Advisor Project Memory Vault DB Models + Core Services](./hito-advisor-2a-project-memory-vault-db-models-core-services.md)
 - [Advisor Project Memory Vault UI Panel + Actions](./hito-advisor-2b-project-memory-vault-ui-panel-actions.md)
 - [Advisor Project Memory Vault Prompt Context Integration](./hito-advisor-2c-project-memory-vault-prompt-context-integration.md)
+- [Advisor Project Memory Vault Release Migration + Smoke](./hito-advisor-2d-project-memory-vault-release-migration-smoke.md)
+- [Advisor Project Memory Vault User-Attested Authenticated Smoke](./hito-advisor-2e-user-attested-project-memory-vault-authenticated-smoke.md)
+- [Advisor Project Memory Vault Final Documentation](./hito-advisor-2-close-project-memory-vault-final-documentation.md)
+
+Recommended next Advisor milestones:
+
+- ADVISOR-2F Auto-Extraction Lite.
+- ADVISOR-3 RAG / Methodology KB after memory review workflows mature.
 
 ## Hostinger / Production Ops
 
