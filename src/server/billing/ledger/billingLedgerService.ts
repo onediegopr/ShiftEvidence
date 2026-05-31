@@ -1,4 +1,5 @@
 import type {
+  BillingEventStatus,
   BillingOrderStatus,
   BillingPaymentStatus,
   BillingProvider,
@@ -33,6 +34,9 @@ export function buildBillingEventCreateData(params: {
   rawPayload: string | Buffer;
   safePayloadJson?: Prisma.InputJsonValue;
   idempotencyKey?: string | null;
+  status?: BillingEventStatus;
+  errorMessage?: string | null;
+  processedAt?: Date | null;
 }): Prisma.BillingEventUncheckedCreateInput {
   return {
     provider: params.provider,
@@ -46,7 +50,9 @@ export function buildBillingEventCreateData(params: {
       }),
     rawPayloadHash: hashBillingPayload(params.rawPayload),
     safePayloadJson: params.safePayloadJson,
-    status: "pending",
+    errorMessage: normalizeOptionalText(params.errorMessage),
+    processedAt: params.processedAt,
+    status: params.status ?? "pending",
   };
 }
 
