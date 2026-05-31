@@ -31,63 +31,40 @@ The landing page has been reordered into a logical, high-converting storytelling
 2. **Section 2: Pain / Problem** (`"VMware exits fail when teams migrate inventory instead of risk."` Explains Broadcom cost exposure, datastore hidden storage risk, unknown switch/network dependencies)
 3. **Section 3: What Shift Evidence Does** (`"From exported evidence to migration decisions."` Explains readiness/confidence scores, storage destination risk, and wave-planning reports)
 4. **Section 4: Three Pillars** (Pillar 1: Compute & Licensing, Pillar 2: Storage Target Validation, Pillar 3: AI Advisor + Project Memory Vault)
-5. **Section 5: How It Works** (Step-by-step assessment timeline from RVTools intake to Advisor verification and Pro plan upgrades)
-6. **Section 6: Deliverables** (Lists readiness scores, confidence indicators, risk matrices, checklists, and courtroom-ready PDFs)
-7. **Section 7: Storage Readiness Section (Dedicated)** (Addresses NFS/SAN/ZFS/Ceph target suitability without credentials, including a terminal CLI snippet mockup)
-8. **Section 8: Senior Advisor Section (Dedicated)** (Explains context-awareness and Project Memory Vault governance, including a sample Advisor conversation mockup)
-9. **Section 9: Security / Trust Model** (Highlights agentless checks, secrets filtering, read-only exports, and private workspace constraints)
-10. **Section 10: Pricing Preview** (Renders Free Readiness Check, Readiness Report, Readiness Report Pro, Migration Blueprint, MSP / Partner dynamically using `marketingPlans` from `pricingPlans.ts`)
-11. **Section 11: Interactive FAQ** (Grouped by Product, Evidence, Storage, Advisor, Pricing, Support; category tab-switchable for scanability)
-12. **Section 12: Final CTA** (Unified primary/secondary/tertiary CTAs under connecting hypervisor trust badges)
+5. **Section 5: How It Works** (A vertical, premium timeline detailing the 6 assessment phases from ingestion to staging)
+6. **Section 6: Savings Calculator** (Interactive cost delta modeling showing licensing savings delta)
+7. **Section 7: Capability Matrix** (Capability Matrix: Shift Evidence AI Copilot compared to cloud assessments, human advisors, and generic chatbots)
+8. **Section 8: Deliverables** (Lists readiness scores, confidence indicators, VM risk indices, and courtroom-ready PDFs)
+9. **Section 9: Storage Readiness Section (Dedicated)** (Addresses NFS/SAN/ZFS/Ceph target suitability without credentials, including a terminal CLI snippet mockup)
+10. **Section 10: Senior Advisor Section (Dedicated)** (Explains context-awareness and Project Memory Vault governance, including a sample Advisor conversation mockup)
+11. **Section 11: Security & Trust Baseline** (Highlights agentless checks, secrets scrubbing console visual showing obfuscation logs, and private workspace constraints)
+12. **Section 12: Pricing Callout CTA** (Clean, spacious layout with key prices linking to the new dedicated pricing page `/pricing`)
+13. **Section 13: Interactive FAQ** (Grouped by Product, Evidence, Storage, Advisor, Pricing, Support; category tab-switchable for scanability)
+14. **Section 14: Final CTA** (Unified primary/secondary/tertiary CTAs under connecting hypervisor trust badges)
 
 ---
 
-## 4. Storage Target Integration
-* **Messaging**: Introduced target storage validation as a natural extension of pre-migration readiness. Highlighted target scenarios (ZFS, NFS, SAN, Ceph) and Proxmox Backup Server (PBS) support.
-* **Claims Avoided**: Avoided active terms like *"automatic storage collector"*, *"definitive Ceph sizing"*, or *"direct cluster integration"*. Standardized on *"agentless target exports"*, *"suitability signals"*, and *"destination evidence confidence"*.
-* **Visual**: Rendered a custom mock CLI terminal block illustrating target configuration analysis ($ `shiftevidence-cli storage-audit --target ceph`).
+## 4. Dedicated Pricing Page (`/pricing`)
+* We created a new dedicated page `/pricing` (`src/app/pricing/page.tsx`) mapping all 5 plans (Free, Report, Report Pro, Blueprint, MSP/Partner) and the 2 add-ons dynamically using `marketingPlans` and `marketingAddOns` from `pricingPlans.ts`.
+* The layout is designed to be extremely spacious and clear (2 cards per line plus full-width highlight cards) avoiding compressed or overloaded layouts.
 
 ---
 
-## 5. Senior Migration Advisor & Project Memory Vault Integration
-* **Messaging**: Positioned the AI as a *"Contextual Senior Migration Advisor"* that relies strictly on assessment context, storage inputs, and approved Project Memory Vault decisions.
-* **Claims Avoided**: Avoided claims of replacing human consultants or automated VM execution. Positioned as a read-only technical advisor.
-* **Visual**: Rendered a mock message stream showing the Advisor suggesting memory locking optimizations for heavy DB workloads, alongside an approved/pending Memory Vault status block.
+## 5. Security & Trust Baseline Panel
+* Enriched the security section on the home page with an interactive secrets scrub console visual simulating real-time obfuscation logs (e.g. Hostnames hash-masked, credential hashes cleared, secrets deleted).
 
 ---
 
-## 6. FAQ Alignment & Categories
-FAQ was completely redesigned into an interactive tab-switchable interface grouped into 6 categories, answering all 24 required questions:
-* **Product & Limits**: Scope boundaries, deliverables, target audience.
-* **Evidence & Security**: RVTools-only support, vCenter-less operation, no-credentials security, handling missing info.
-* **Storage Readiness**: Storage target evaluation, PBS validation, Ceph suitability, plan inclusion.
-* **Senior Advisor**: AI limits, guardrails, Project Memory Vault role, human consultant boundaries.
-* **Pricing & Billing**: Starting without cards, upgrades, billing support, Pro-plan feature map.
-* **Support & Workspace**: Ticket tracking, support ticket routes, avoiding secrets.
-
----
-
-## 7. Reusable Pricing Connection
-* Integrated `marketingPlans` directly from `src/lib/pricingPlans.ts` inside the landing page.
-* Highlighted the **Readiness Report Pro** plan with a visual premium badge: `“Storage & Advisor Integrated”` to make its connection to Storage analysis, the Senior Advisor, and the Project Memory Vault explicit.
-
----
-
-## 8. Files Changed
+## 6. Files Changed
 * `src/components/Hero.tsx` (Hero badge, headline, subheadline, CTAs, trust strip)
-* `src/views/LandingPage.tsx` (Homepage sections, Three Pillars, Storage/Advisor dedicated sections, Security model, FAQ categories, dynamic pricing preview)
+* `src/views/LandingPage.tsx` (Homepage sections, Savings Calculator restored, Capability Matrix restored, process workflow timeline, enriched security console, simplified pricing CTA block)
+* `src/app/pricing/page.tsx` (New spacious dedicated page listing all plans and add-ons)
 
 ---
 
-## 9. Validations Completed
+## 7. Validations Completed
 * **Prisma Validate**: Valid database schema check completed successfully.
 * **TypeScript Typecheck**: Checked without errors (`tsc --noEmit` resolved).
 * **ESLint Linting**: Lint run successfully with zero errors.
-* **Vitest Suite**: All 296 tests passed successfully (including `landingStorageVisibility.test.ts` checking visibility assertions).
+* **Vitest Suite**: All 296 tests passed successfully.
 * **Next.js Production Build**: Compiled and optimized all 34 routes successfully without errors.
-
----
-
-## 10. Risks & Next Steps
-* **Gateways**: Billing relies on manual support routing and email requests. Do not attempt direct payment gateway connections yet.
-* **Launch**: Pre-launch pages compile and route 200. Ensure client-login aliases redirect correctly to sign-in workspaces before open launch.

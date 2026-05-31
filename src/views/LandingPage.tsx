@@ -10,6 +10,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import SavingsCalculator from "../components/SavingsCalculator";
 import Footer from "../components/Footer";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -31,9 +32,11 @@ import {
   Brain,
   Sliders,
   Lock,
-  Minus,
+  Cpu,
+  Boxes,
+  Briefcase,
+  DollarSign,
 } from "lucide-react";
-import { marketingPlans } from "../lib/pricingPlans";
 
 const privacyNote =
   "This is a representative, synthetic/anonymized-style evaluation example. It does not contain customer data and is not a public case study, testimonial, or verified customer review.";
@@ -445,55 +448,191 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section 5 — How it works */}
+        {/* Section 5 — How it works (Process Step-by-Step Workflow) */}
         <section className="section" style={{ position: "relative" }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="text-center mb-8">
-              <div className="badge">Process</div>
+              <div className="badge badge-cyan">Workflow</div>
               <h2 className="mb-4">The Pre-Migration Assessment Lifecycle</h2>
               <p className="mx-auto" style={{ maxWidth: "600px" }}>
-                A step-by-step workflow designed to translate raw cluster exports into structured migration decision packs.
+                A structured process designed to transition raw cluster data into clear, audit-ready decisions.
               </p>
             </div>
 
-            <div className="sr-flow-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>01</span>
-                <h3>Start assessment</h3>
-                <p>Initialize your workspace via guided email intake or raw RVTools upload.</p>
-              </div>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>02</span>
-                <h3>Add storage evidence</h3>
-                <p>Provide optional, agentless destination CLI snippets to validate target storage compatibility.</p>
-              </div>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>03</span>
-                <h3>Review scoring</h3>
-                <p>Inspect calculated readiness ranks and evidence confidence layers built from current inventory data.</p>
-              </div>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>04</span>
-                <h3>Generate decision pack</h3>
-                <p>Compile executive PDF reports, VM risk indices, and migration wave allocations.</p>
-              </div>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>05</span>
-                <h3>Query Senior Advisor</h3>
-                <p>Engage the contextual Advisor to trace risks and review architectural suggestions.</p>
-              </div>
-              <div className="glass-card sr-flow-step" style={{ padding: "2rem" }}>
-                <span style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>06</span>
-                <h3>Align assumptions</h3>
-                <p>Commit decisions to Project Memory Vault to prepare for physical wave staging.</p>
-              </div>
+            {/* Beautiful, responsive timeline workflow layout (top to bottom) */}
+            <div 
+              style={{ 
+                display: "grid", 
+                gridTemplateColumns: "1fr",
+                gap: "2rem", 
+                maxWidth: "850px", 
+                margin: "0 auto",
+                position: "relative" 
+              }}
+            >
+              {[
+                { step: "01", title: "Ingest VMware Config", desc: "Upload raw RVTools inventory sheets or complete our guided intake form. Fully offline, read-only process with zero agents." },
+                { step: "02", title: "Attach Storage Target Evidence", desc: "Optionally add Proxmox, Ceph, or PBS target storage configuration exports to confirm hardware and failure domain constraints." },
+                { step: "03", title: "Verify Readiness & Confidence", desc: "Review calculated sizing compatibilities and check evidence coverage metrics pointing out missing network or datastore facts." },
+                { step: "04", title: "Generate Migration Decision Pack", desc: "Download boardroom-ready PDF reports containing VM risk matrices, license calculations, and prioritized waves." },
+                { step: "05", title: "Consult Senior Advisor", desc: "Interact with our contextual advisor to trace risks, ask specific architectural questions, and understand limitations." },
+                { step: "06", title: "Staging Waves & Upgrades", desc: "Pin approved assumptions to the Project Memory Vault and prepare technical checklists for sandbox executions." }
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="glass-card feature-card"
+                  style={{ 
+                    display: "flex", 
+                    gap: "1.5rem", 
+                    padding: "2rem", 
+                    alignItems: "flex-start",
+                    borderLeft: "4px solid var(--text-cyan)"
+                  }}
+                >
+                  <div 
+                    style={{ 
+                      fontSize: "1.5rem", 
+                      fontWeight: "bold", 
+                      color: "var(--text-cyan)",
+                      background: "rgba(6, 182, 212, 0.1)",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0
+                    }}
+                  >
+                    {item.step}
+                  </div>
+                  <div>
+                    <h3 style={{ color: "white", fontSize: "1.25rem", margin: "0 0 0.5rem 0" }}>{item.title}</h3>
+                    <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "0.95rem", lineHeight: "1.5" }}>{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Restore Licensing TCO Savings Calculator & Savings Delta */}
+        <section id="licensing-calculator" className="section" style={{ position: "relative", background: "rgba(3, 7, 18, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="text-center mb-8">
+              <div className="badge badge-cyan">Cost delta modeling</div>
+              <h2 className="mb-4">Broadcom exit financial scenarios.</h2>
+              <p className="mx-auto" style={{ maxWidth: "650px" }}>
+                Interactive savings simulator combining raw socket allocation with destination hypervisor plans to forecast 3-year TCO improvements.
+              </p>
+            </div>
+            <SavingsCalculator />
+          </div>
+        </section>
+
+        {/* Restore Capability Matrix / How We Compare */}
+        <section id="comparison" className="section comparison-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="text-center mb-8">
+              <div className="badge badge-cyan">Capability Matrix</div>
+              <h2 className="mb-4">Market Landscape: How We Compare</h2>
+              <p className="mx-auto" style={{ maxWidth: "650px" }}>
+                Traditional assessments fall short of providing a concrete, actionable roadmap. Shift Evidence bridges the gap between raw data parsing and senior human expertise.
+              </p>
+            </div>
+
+            <div className="glass-card comparison-table-wrapper">
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Assessment Approach</th>
+                    <th>Core Focus & Method</th>
+                    <th>Key Gaps & Vulnerabilities</th>
+                    <th className="col-prox">
+                      <div className="cmp-th-brand">
+                        Shift Evidence AI Copilot
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="cmp-feat">
+                      <Cpu size={16} /> Generic Cloud Assessment
+                    </td>
+                    <td>Scans standard hardware allocation metrics.</td>
+                    <td>Fails to analyze Proxmox cluster configurations or network layers.</td>
+                    <td className="col-prox">
+                      Deep Proxmox VE specialized mapping
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cmp-feat">
+                      <Boxes size={16} /> Vendor-Locked Tools
+                    </td>
+                    <td>Optimizes to promote a specific hypervisor/license tier.</td>
+                    <td>Biased, incomplete recommendations ignoring alternative targets.</td>
+                    <td className="col-prox">
+                      100% Agnostic architecture target modeling
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cmp-feat">
+                      <Briefcase size={16} /> Template Human Advisory
+                    </td>
+                    <td>Manual consultant audits using standard static worksheets.</td>
+                    <td>Extremely slow, expensive ($10k+), and variable expert quality.</td>
+                    <td className="col-prox">
+                      Software execution speed + Senior TAM-grade engine
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cmp-feat">
+                      <DollarSign size={16} /> Basic TCO Calculators
+                    </td>
+                    <td>Spreadsheets calculating license comparisons.</td>
+                    <td>Ignores actual VM risks, migration bottlenecks, and constraints.</td>
+                    <td className="col-prox">
+                      Financial metrics bound to hardware risk findings
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cmp-feat">
+                      <FileText size={16} /> Raw Technical Parsers
+                    </td>
+                    <td>Converts configuration exports to basic HTML tables.</td>
+                    <td>No strategic roadmap, no business narrative, and no executive view.</td>
+                    <td className="col-prox">
+                      Audit-ready executive-grade boardroom reports
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                  <tr className="cmp-cost-row">
+                    <td className="cmp-feat">
+                      <Brain size={16} /> Generic Chatbots (LLMs)
+                    </td>
+                    <td>Processes standard prompts without hardware verification.</td>
+                    <td>Hallucinates configurations; lacks structured metrics checking.</td>
+                    <td className="col-prox">
+                      Guardrailed AI bound to validated infrastructure evidence
+                      <span className="cmp-check">{"✓"}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
 
         {/* Section 6 — What you receive */}
-        <section id="sample-output" className="section sample-output-section">
+        <section id="sample-output" className="section sample-output-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="text-center mb-8">
@@ -686,123 +825,171 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section 9 — Security / Trust model */}
+        {/* Section 9 — Security / Trust model (Visually Rich, Not Empty) */}
         <section className="section" style={{ position: "relative", background: "rgba(6, 9, 19, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
           <div className="bg-mesh"></div>
           <div className="container">
-            <div className="glass-card assessment-section" style={{ padding: "3rem" }}>
-              <div className="assessment-section-title text-center" style={{ maxWidth: "700px", margin: "0 auto 3rem" }}>
-                <div className="assessment-section-eyebrow" style={{ justifyContent: "center" }}>
-                  <ShieldCheck size={18} />
-                  <span>Security Baseline</span>
-                </div>
-                <h2 style={{ fontSize: "2rem" }}>Built for infrastructure teams that cannot expose production.</h2>
-                <p style={{ color: "var(--text-muted)" }}>
+            <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
+              <div>
+                <div className="badge badge-cyan">Security & Trust</div>
+                <h2 className="mb-4" style={{ fontSize: "2.25rem", color: "white", lineHeight: "1.2" }}>
+                  Built for infrastructure teams that cannot expose production.
+                </h2>
+                <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "1.5rem" }}>
                   Shift Evidence enforces strict operational boundaries to make sure your raw configuration details remain confidential and protected.
                 </p>
+
+                <div style={{ display: "grid", gap: "1.25rem" }}>
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <div style={{ background: "rgba(6, 182, 212, 0.1)", padding: "0.5rem", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", height: "fit-content" }}>
+                      <Lock size={18} className="text-cyan" />
+                    </div>
+                    <div>
+                      <strong style={{ color: "white", display: "block" }}>No agents, no credentials</strong>
+                      <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>We do not request production hypervisor credentials or install diagnostic packages on running hosts.</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <div style={{ background: "rgba(6, 182, 212, 0.1)", padding: "0.5rem", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", height: "fit-content" }}>
+                      <ShieldCheck size={18} className="text-cyan" />
+                    </div>
+                    <div>
+                      <strong style={{ color: "white", display: "block" }}>Customer-controlled evidence</strong>
+                      <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>All raw RVTools configuration data and context metrics stay restricted to your project workspace.</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <div style={{ background: "rgba(6, 182, 212, 0.1)", padding: "0.5rem", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", height: "fit-content" }}>
+                      <ShieldAlert size={18} className="text-cyan" />
+                    </div>
+                    <div>
+                      <strong style={{ color: "white", display: "block" }}>Secrets scrubbing</strong>
+                      <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Our support requests actively warn users to exclude passwords, tokens, or private details before transmission.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: "2rem" }}>
+                  <a href="/about" className="btn btn-secondary">
+                    Learn about our trust model
+                  </a>
+                </div>
               </div>
 
-              <div className="assessment-preview-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
-                <article className="assessment-preview-card">
-                  <span className="assessment-preview-label">Access controls</span>
-                  <strong>No agents, no credentials</strong>
-                  <p>We do not request production hypervisor credentials or install diagnostic packages on running hosts.</p>
-                </article>
+              {/* Right Side: Interactive Real-Time Secrets Scrubber Log Mockup */}
+              <div 
+                className="glass-card" 
+                style={{ 
+                  padding: "1.75rem", 
+                  background: "rgba(5, 7, 12, 0.98)", 
+                  border: "1px solid rgba(6, 182, 212, 0.3)",
+                  boxShadow: "0 0 30px rgba(6, 182, 212, 0.05)"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.75rem", marginBottom: "1.25rem" }}>
+                  <div style={{ display: "flex", gap: "0.35rem" }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444" }} />
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#f59e0b" }} />
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }} />
+                  </div>
+                  <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono)", color: "var(--text-cyan)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Scrubber Status: Active</span>
+                </div>
 
-                <article className="assessment-preview-card">
-                  <span className="assessment-preview-label">Data ownership</span>
-                  <strong>Customer-controlled evidence</strong>
-                  <p>All raw RVTools configuration data and context metrics stay restricted to your project workspace.</p>
-                </article>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.78rem", color: "#94a3b8", display: "grid", gap: "0.6rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "#e2e8f0" }}>
+                    <span>[INGESTION] vSphere Config upload</span>
+                    <span style={{ color: "#10b981" }}>SUCCESS</span>
+                  </div>
+                  <div style={{ color: "#38bdf8" }}>&gt; Initializing ruleset: TAM vSphere secrets filter</div>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <span style={{ color: "#eab308" }}>[FILTER]</span>
+                    <span>Stripping vCenter Server IPs... <span style={{ color: "#10b981" }}>[REMOVED]</span></span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <span style={{ color: "#eab308" }}>[FILTER]</span>
+                    <span>Obfuscating ESXi hostnames... <span style={{ color: "#10b981" }}>[HASHED]</span></span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <span style={{ color: "#eab308" }}>[FILTER]</span>
+                    <span>Searching for AD credential hashes... <span style={{ color: "#10b981" }}>[CLEAN]</span></span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <span style={{ color: "#eab308" }}>[FILTER]</span>
+                    <span>Purging local VM root user tokens... <span style={{ color: "#10b981" }}>[SHREDDED]</span></span>
+                  </div>
+                  <div style={{ borderTop: "1px dashed rgba(255,255,255,0.08)", paddingTop: "0.75rem", marginTop: "0.25rem", color: "#10b981", fontWeight: "bold" }}>
+                    [REPORT INTEGRITY] 🔒 Evidence Scrubbed. Ready for modeling.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                <article className="assessment-preview-card">
-                  <span className="assessment-preview-label">Leak protection</span>
-                  <strong>Secrets filtering</strong>
-                  <p>Our support requests actively warn users to exclude passwords, tokens, or private details before transmission.</p>
-                </article>
+        {/* Section 12 — Pricing Preview (Spacious, elegant CTA section) */}
+        <section className="section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div className="container">
+            <div 
+              className="glass-card" 
+              style={{ 
+                padding: "4rem 3rem", 
+                textAlign: "center", 
+                maxWidth: "950px", 
+                margin: "0 auto",
+                background: "linear-gradient(135deg, rgba(6, 9, 19, 0.8), rgba(139, 92, 246, 0.02))",
+                border: "1px solid rgba(255, 255, 255, 0.08)"
+              }}
+            >
+              <span className="badge badge-cyan" style={{ marginBottom: "1rem" }}>Plans & Pricing</span>
+              <h2 style={{ fontSize: "2.25rem", color: "white", marginBottom: "1rem" }}>Transparent, modular pricing models.</h2>
+              <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "0 auto 2.5rem", fontSize: "1.05rem", lineHeight: "1.6" }}>
+                Start with a Free Readiness Check. Upgrade to unlock detailed licensing summaries, VM matrix breakdowns, or premium Storage readiness and Senior AI Advisor review.
+              </p>
+
+              <div 
+                style={{ 
+                  display: "flex", 
+                  justifyContent: "center", 
+                  gap: "3rem", 
+                  flexWrap: "wrap",
+                  marginBottom: "3rem",
+                  borderBottom: "1px solid rgba(255,255,255,0.05)",
+                  paddingBottom: "2.5rem"
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Check</span>
+                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 0</div>
+                </div>
+                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} />
+                <div style={{ textAlign: "center" }}>
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Report</span>
+                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 249</div>
+                </div>
+                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} />
+                <div style={{ textAlign: "center" }}>
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Readiness Pro (AI/Storage)</span>
+                  <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>USD 690</div>
+                </div>
               </div>
 
-              <div className="assessment-inline-actions" style={{ justifyContent: "center", marginTop: "2.5rem" }}>
-                <a href="/about" className="btn btn-secondary">
-                  Learn about our trust model
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+                <a href="/pricing" className="btn btn-primary btn-glow" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                  View All Pricing Plans
+                  <ArrowRight size={18} />
+                </a>
+                <a href="/sign-up" className="btn btn-secondary">
+                  Start Free Assessment
                 </a>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 10 — Pricing preview */}
-        <section id="pricing" className="section shiftreadiness-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
-          <div className="container">
-            <div className="shiftreadiness-section-heading text-center mb-8">
-              <div className="badge badge-cyan">Pricing plans</div>
-              <h2>Choose the right plan for your assessment.</h2>
-              <p className="mx-auto" style={{ maxWidth: "600px" }}>
-                Start with a Free Readiness Check to map core inventory, or choose detailed packages for advanced storage and advisory tools.
-              </p>
-            </div>
-
-            <div className="sr-pricing-grid">
-              {marketingPlans.map((plan) => (
-                <article key={plan.name} className={`glass-card sr-plan-card sr-plan-${plan.accent}`} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                  <div>
-                    <div className="sr-plan-top">
-                      <div>
-                        <h3>{plan.name}</h3>
-                        <p className="sr-plan-bestfor">{plan.bestFor}</p>
-                      </div>
-                      <div className="sr-plan-price">{plan.price}</div>
-                    </div>
-
-                    {/* Pro Highlight Visual */}
-                    {plan.accent === "pro" && (
-                      <div className="badge badge-premium" style={{ width: "100%", justifyContent: "center", margin: "0.5rem 0 1rem" }}>
-                        <Brain size={12} className="shield-blink" />
-                        <span>Storage & Advisor Integrated</span>
-                      </div>
-                    )}
-
-                    <div className="sr-plan-columns">
-                      <div>
-                        <h4>Includes</h4>
-                        <ul className="sr-list sr-list-includes">
-                          {plan.includes.map((item) => (
-                            <li key={item}>
-                              <Check size={14} />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4>Does not include</h4>
-                        <ul className="sr-list sr-list-excludes">
-                          {plan.excludes.map((item) => (
-                            <li key={item}>
-                              <Minus size={14} />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    {plan.upsell && <p className="sr-plan-upsell" style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "1rem" }}>{plan.upsell}</p>}
-                    <a href={plan.cta.href} className="btn btn-primary btn-glow sr-plan-cta" style={{ width: "100%", justifyContent: "center", marginTop: "1rem" }}>
-                      {plan.cta.label}
-                      <ArrowRight size={16} />
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Anonymized Cases (Preserved Credibility Section) */}
-        <section id="industry-evaluations" className="section industry-evaluations-section" aria-labelledby="industry-evaluations-title">
+        <section id="industry-evaluations" className="section industry-evaluations-section" aria-labelledby="industry-evaluations-title" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="industry-evaluations-header text-center mb-8">
