@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { ArrowRight, Plus, Layers3, ShieldCheck, BarChart3, FileText, ClipboardList, Database, LifeBuoy } from "lucide-react";
 import { auth } from "../../lib/auth";
+import { prisma } from "../../lib/prisma";
 import { upsertUserProfileFromSession } from "../../server/user/userProfileService";
 import { ensureDefaultWorkspace } from "../../server/workspace/workspaceService";
 import { listAssessmentsForCurrentWorkspace } from "../../server/assessments/assessmentService";
@@ -47,6 +48,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const supportSent = query?.support === "sent";
   const supportError = query?.supportError ? decodeURIComponent(query.supportError) : null;
 
+  const userSupportRequests = session
+    ? await prisma.supportRequest.findMany({
+        where: {
+          OR: [
+            { userId: session.user.id },
+            { contactEmail: session.user.email },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: {
+          assessment: { select: { id: true, title: true } },
+        },
+      })
+    : [];
+
   // Calculate statistics
   const totalAssessments = assessments.length;
   let activeEvidenceFilesCount = 0;
@@ -81,14 +98,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <ClipboardList size={20} style={{ color: "#38bdf8" }} />
             <div>
-              <strong style={{ color: "white" }}>Consola interna activa</strong>
+              <strong style={{ color: "white" }}>Internal console active</strong>
               <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                Tenés acceso administrativo al centro operativo interno y a las solicitudes manuales.
+                You have administrative access to the internal operations center and manual requests.
               </p>
             </div>
           </div>
           <Link href="/dashboard/admin" className="btn btn-secondary btn-sm" style={{ border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "6px" }}>
-            Abrir consola interna
+            Open internal console
           </Link>
         </section>
       )}
@@ -161,6 +178,60 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             Open public support page <ArrowRight size={16} />
           </Link>
         </form>
+
+        {/* Support Request History */}
+        <div style={{ marginTop: "2rem", borderTop: "1px solid var(--border-color)", paddingTop: "1.5rem" }}>
+          <h3 style={{ fontSize: "1.1rem", fontWeight: 600, color: "white", marginBottom: "1rem" }}>Your recent support requests</h3>
+          {userSupportRequests.length === 0 ? (
+            <p className="text-muted" style={{ fontSize: "0.9rem" }}>No support requests yet.</p>
+          ) : (
+            <div className="assessment-table-wrap">
+              <table className="assessment-table" style={{ fontSize: "0.85rem" }}>
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Date</th>
+                    <th>Context</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {userSupportRequests.map((req) => (
+                    <tr key={req.id}>
+                      <td style={{ fontWeight: 500, color: "white" }}>{req.subject}</td>
+                      <td>{SUPPORT_CATEGORY_OPTIONS.find(o => o.value === req.category)?.label ?? req.category}</td>
+                      <td>
+                        <span className={`assessment-chip assessment-chip-${
+                          req.status === "resolved" || req.status === "closed" ? "good" :
+                          req.status === "triage" || req.status === "waiting_on_user" ? "warning" : "neutral"
+                        }`}>
+                          {req.status.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`assessment-chip assessment-chip-${
+                          req.priority === "urgent" || req.priority === "high" ? "danger" : "neutral"
+                        }`}>
+                          {req.priority}
+                        </span>
+                      </td>
+                      <td className="text-muted">{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(req.createdAt))}</td>
+                      <td>
+                        {req.assessment ? (
+                          <Link href={`/dashboard/assessments/${req.assessment.id}`} className="dashboard-card-link" style={{ fontSize: "0.8rem", margin: 0 }}>
+                            {req.assessment.title}
+                          </Link>
+                        ) : "Workspace"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Recent Activity or Empty State */}

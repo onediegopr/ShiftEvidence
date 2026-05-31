@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   AlertTriangle,
   Archive,
@@ -226,6 +226,8 @@ export function StorageDestinationReadinessPanel({
   const [text, setText] = useState(rawText);
   const [uploadClassification, setUploadClassification] = useState("unknown_needs_review");
   const [itemClassifications, setItemClassifications] = useState<Record<string, string>>({});
+  const [isPending, startTransition] = useTransition();
+  const [actionType, setActionType] = useState<string | null>(null);
   const currentWordCount = countWords(text);
   const currentCharacterCount = text.length;
   const maxWords = summary.limits.maxStorageContextWords;
@@ -311,7 +313,12 @@ export function StorageDestinationReadinessPanel({
       </div>
 
       <form
-        action={saveStorageReadinessDraftAction.bind(null, assessmentId)}
+        action={(formData) => {
+          setActionType("save-readiness-draft");
+          startTransition(async () => {
+            await saveStorageReadinessDraftAction(assessmentId, formData);
+          });
+        }}
         className="assessment-form-grid assessment-form-grid-wide"
       >
         <label className="form-label">
@@ -533,24 +540,38 @@ export function StorageDestinationReadinessPanel({
         </label>
 
         <div className="assessment-inline-actions assessment-form-span-2">
-          <button type="submit" className="btn btn-secondary">
-            Save storage draft
-            <RefreshCcw size={16} />
+          <button type="submit" className="btn btn-secondary" disabled={isPending}>
+            {isPending && actionType === "save-readiness-draft" ? "Saving draft..." : "Save storage draft"}
+            <RefreshCcw size={16} className={isPending && actionType === "save-readiness-draft" ? "animate-spin" : ""} />
           </button>
           <button
             type="submit"
-            formAction={submitStorageReadinessAction.bind(null, assessmentId)}
+            formAction={(formData) => {
+              setActionType("submit-readiness");
+              startTransition(async () => {
+                await submitStorageReadinessAction(assessmentId, formData);
+              });
+            }}
+            disabled={isPending}
             className="btn btn-primary btn-glow"
           >
-            Submit storage inputs
+            {isPending && actionType === "submit-readiness" ? "Submitting..." : "Submit storage inputs"}
             <FileText size={16} />
           </button>
         </div>
       </form>
 
-      <form action={skipStorageReadinessAction.bind(null, assessmentId)} className="assessment-inline-actions">
-        <button type="submit" className="btn btn-secondary">
-          Skip storage readiness for now
+      <form
+        action={() => {
+          setActionType("skip-readiness");
+          startTransition(async () => {
+            await skipStorageReadinessAction(assessmentId);
+          });
+        }}
+        className="assessment-inline-actions"
+      >
+        <button type="submit" className="btn btn-secondary" disabled={isPending}>
+          {isPending && actionType === "skip-readiness" ? "Skipping..." : "Skip storage readiness for now"}
           <Archive size={16} />
         </button>
         <span className="assessment-inline-note">
@@ -571,7 +592,12 @@ export function StorageDestinationReadinessPanel({
       </div>
 
       <form
-        action={saveStorageContextDraftAction.bind(null, assessmentId)}
+        action={(formData) => {
+          setActionType("save-context-draft");
+          startTransition(async () => {
+            await saveStorageContextDraftAction(assessmentId, formData);
+          });
+        }}
         className="assessment-form-grid assessment-form-grid-wide"
       >
         <label className="form-label assessment-form-span-2">
@@ -615,17 +641,22 @@ export function StorageDestinationReadinessPanel({
         </div>
 
         <div className="assessment-inline-actions assessment-form-span-2">
-          <button type="submit" className="btn btn-secondary">
-            Save context draft
-            <RefreshCcw size={16} />
+          <button type="submit" className="btn btn-secondary" disabled={isPending}>
+            {isPending && actionType === "save-context-draft" ? "Saving draft..." : "Save context draft"}
+            <RefreshCcw size={16} className={isPending && actionType === "save-context-draft" ? "animate-spin" : ""} />
           </button>
           <button
             type="submit"
-            formAction={submitStorageContextAction.bind(null, assessmentId)}
+            formAction={(formData) => {
+              setActionType("submit-context");
+              startTransition(async () => {
+                await submitStorageContextAction(assessmentId, formData);
+              });
+            }}
             className="btn btn-primary btn-glow"
-            disabled={isWordLimitExceeded}
+            disabled={isPending || isWordLimitExceeded}
           >
-            Submit storage context
+            {isPending && actionType === "submit-context" ? "Submitting..." : "Submit storage context"}
             <FileText size={16} />
           </button>
         </div>
@@ -671,15 +702,25 @@ export function StorageDestinationReadinessPanel({
         </div>
       </div>
 
-      <form action={runStorageContextAnalysisAction.bind(null, assessmentId)} className="assessment-inline-actions">
+      <form
+        action={() => {
+          setActionType("analyze-context");
+          startTransition(async () => {
+            await runStorageContextAnalysisAction(assessmentId);
+          });
+        }}
+        className="assessment-inline-actions"
+      >
         <button
           type="submit"
           className="btn btn-primary btn-glow"
-          disabled={!canRunAnalysis || isAnalyzing}
+          disabled={!canRunAnalysis || isAnalyzing || isPending}
         >
-          {analysisStatus === "completed" || analysisStatus === "stale"
-            ? "Re-run storage analysis"
-            : "Analyze storage context"}
+          {isPending && actionType === "analyze-context"
+            ? "Analyzing storage context..."
+            : (analysisStatus === "completed" || analysisStatus === "stale"
+              ? "Re-run storage analysis"
+              : "Analyze storage context")}
           <Brain size={16} />
         </button>
         <span className="assessment-inline-note">
@@ -911,13 +952,23 @@ export function StorageDestinationReadinessPanel({
         </article>
       ) : null}
 
-      <form action={runCephReadinessAnalysisAction.bind(null, assessmentId)} className="assessment-inline-actions">
+      <form
+        action={() => {
+          setActionType("evaluate-ceph");
+          startTransition(async () => {
+            await runCephReadinessAnalysisAction(assessmentId);
+          });
+        }}
+        className="assessment-inline-actions"
+      >
         <button
           type="submit"
           className="btn btn-primary btn-glow"
-          disabled={!canRunCephEvaluation}
+          disabled={!canRunCephEvaluation || isPending}
         >
-          {cephReadiness ? "Re-run Ceph evaluation" : "Evaluate Ceph suitability"}
+          {isPending && actionType === "evaluate-ceph"
+            ? "Evaluating Ceph suitability..."
+            : (cephReadiness ? "Re-run Ceph evaluation" : "Evaluate Ceph suitability")}
           <Server size={16} />
         </button>
         <span className="assessment-inline-note">
@@ -1044,7 +1095,12 @@ export function StorageDestinationReadinessPanel({
       </div>
 
       <form
-        action={uploadStorageEvidenceAction.bind(null, assessmentId)}
+        action={(formData) => {
+          setActionType("upload-evidence");
+          startTransition(async () => {
+            await uploadStorageEvidenceAction(assessmentId, formData);
+          });
+        }}
         className="assessment-form-grid assessment-form-grid-wide"
         encType="multipart/form-data"
       >
@@ -1087,8 +1143,8 @@ export function StorageDestinationReadinessPanel({
           />
         </label>
         <div className="assessment-inline-actions assessment-form-span-2">
-          <button type="submit" className="btn btn-primary btn-glow" disabled={summary.remainingFiles <= 0}>
-            Upload storage evidence
+          <button type="submit" className="btn btn-primary btn-glow" disabled={summary.remainingFiles <= 0 || isPending}>
+            {isPending && actionType === "upload-evidence" ? "Uploading..." : "Upload storage evidence"}
             <Upload size={16} />
           </button>
           <span className="assessment-inline-note">
@@ -1119,11 +1175,12 @@ export function StorageDestinationReadinessPanel({
               </div>
 
               <form
-                action={classifyStorageEvidenceAction.bind(
-                  null,
-                  assessmentId,
-                  item.evidenceFileId,
-                )}
+                action={(formData) => {
+                  setActionType(`classify-${item.id}`);
+                  startTransition(async () => {
+                    await classifyStorageEvidenceAction(assessmentId, item.evidenceFileId, formData);
+                  });
+                }}
                 className="assessment-form-grid"
               >
                 <label className="form-label">
@@ -1157,26 +1214,28 @@ export function StorageDestinationReadinessPanel({
                   />
                 </label>
                 <div className="assessment-inline-actions assessment-form-span-2">
-                  <button type="submit" className="btn btn-secondary">
-                    Update classification
-                    <RefreshCcw size={16} />
+                  <button type="submit" className="btn btn-secondary" disabled={isPending}>
+                    {isPending && actionType === `classify-${item.id}` ? "Updating..." : "Update classification"}
+                    <RefreshCcw size={16} className={isPending && actionType === `classify-${item.id}` ? "animate-spin" : ""} />
                   </button>
                 </div>
               </form>
 
               <form
-                action={setStorageEvidenceIncludedAction.bind(
-                  null,
-                  assessmentId,
-                  item.id,
-                  !item.includedInStorageAnalysis,
-                )}
+                action={() => {
+                  setActionType(`include-${item.id}`);
+                  startTransition(async () => {
+                    await setStorageEvidenceIncludedAction(assessmentId, item.id, !item.includedInStorageAnalysis);
+                  });
+                }}
                 className="assessment-inline-actions"
               >
-                <button type="submit" className="btn btn-secondary">
-                  {item.includedInStorageAnalysis
-                    ? "Exclude from future storage analysis"
-                    : "Include in future storage analysis"}
+                <button type="submit" className="btn btn-secondary" disabled={isPending}>
+                  {isPending && actionType === `include-${item.id}`
+                    ? "Processing..."
+                    : (item.includedInStorageAnalysis
+                      ? "Exclude from future storage analysis"
+                      : "Include in future storage analysis")}
                 </button>
                 <span className="assessment-inline-note">
                   Classification: {labelFromValue(item.classification)}
