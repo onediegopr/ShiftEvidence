@@ -199,7 +199,7 @@ export const riskItems: RiskItem[] = [
   { label: "9 multi-NIC VMs", severity: "medium", detail: "Network mapping needs extra validation." },
   { label: "3 possible domain controllers", severity: "critical", detail: "Identity workloads need a special plan." },
   { label: "5 SQL/ERP-like workloads", severity: "critical", detail: "Business critical systems should not be early-wave candidates." },
-  { label: "2 datastores above 85%", severity: "high", detail: "Storage pressure may affect migration staging." },
+  { label: "2 datastores above 80%", severity: "high", detail: "Storage pressure may affect migration staging." },
   { label: "Backup evidence missing", severity: "critical", detail: "Restore points must be validated before critical workload movement." },
 ];
 

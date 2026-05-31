@@ -65,7 +65,7 @@ const topRisks = [
   ["Large disks above 2 TB", "High"],
   ["Multi-NIC workloads", "Medium"],
   ["Outdated VMware Tools", "Medium"],
-  ["Datastores above 85%", "High"],
+  ["Datastores above 80%", "High"],
   ["Critical workloads require manual review", "Critical"],
 ];
 
