@@ -37,6 +37,7 @@ import {
   safeRedirectError,
 } from "../../../../server/assessments/formUtils";
 import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
+import { createAssessmentSupportRequest } from "../../../../server/support/supportRequestService";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -472,6 +473,28 @@ export async function archiveAssessmentAction(assessmentId: string) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to archive assessment.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`);
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function createAssessmentSupportRequestAction(
+  assessmentId: string,
+  formData: FormData,
+) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "support=sent", "support");
+
+  try {
+    await createAssessmentSupportRequest({
+      userId: session.user.id,
+      userEmail: session.user.email,
+      assessmentId,
+      formData,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to send support request.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "support");
   }
 
   redirect(redirectTarget);

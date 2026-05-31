@@ -71,10 +71,10 @@ export default function Footer() {
                 <a href="#features">Core Features</a>
               </li>
               <li>
-                <a href="#comparison">VMware vs Proxmox</a>
+                <a href="/shiftreadiness#pricing">Pricing</a>
               </li>
               <li>
-                <a href="#process">Migration Pipeline</a>
+                <a href="/support#security">Security</a>
               </li>
             </ul>
           </div>
@@ -83,16 +83,16 @@ export default function Footer() {
             <h4 className="footer-links-title">{copy.resources}</h4>
             <ul className="footer-links-list">
               <li>
-                <a href="#">Subscription Cost Whitepaper</a>
+                <a href="/about">About</a>
               </li>
               <li>
-                <a href="#">Ceph Sizing Guide</a>
+                <a href="/support">Support</a>
               </li>
               <li>
-                <a href="#">Proxmox Backup Server (PBS) Setup</a>
+                <a href="/support#partners">Partners</a>
               </li>
               <li>
-                <a href="#">Broadcom Price Updates</a>
+                <a href="/contact">Contact</a>
               </li>
             </ul>
           </div>

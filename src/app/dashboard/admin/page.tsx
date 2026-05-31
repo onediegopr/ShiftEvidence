@@ -11,6 +11,7 @@ import {
   FileText,
   Gauge,
   HardDrive,
+  LifeBuoy,
   Lock,
   Server,
   Settings,
@@ -27,6 +28,7 @@ import {
   updateAiBudgetAction,
   updateCommercialOpportunityAction,
   updateOperationalRuntimeSettingsAction,
+  updateSupportRequestAction,
 } from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
@@ -74,6 +76,27 @@ function formatAiEventType(value: string) {
     ai_advisory_fallback_used: "Fallback usado",
   };
   return labels[value] ?? value;
+}
+
+function formatSupportStatus(value: string) {
+  const labels: Record<string, string> = {
+    open: "Abierta",
+    triage: "En triage",
+    waiting_on_user: "Esperando usuario",
+    resolved: "Resuelta",
+    closed: "Cerrada",
+  };
+  return labels[value] ?? formatStatusLabel(value);
+}
+
+function formatSupportPriority(value: string) {
+  const labels: Record<string, string> = {
+    low: "Baja",
+    normal: "Normal",
+    high: "Alta",
+    urgent: "Urgente",
+  };
+  return labels[value] ?? formatStatusLabel(value);
 }
 
 function formatStatusLabel(value: string | null | undefined) {
@@ -239,6 +262,7 @@ function getAdminTabSectionKeys(activeTab: string) {
     "owner_emails",
     "ai_status",
     "ai_usage",
+    "support_requests",
   ];
 
   const sectionKeysByTab: Record<string, string[]> = {
@@ -253,6 +277,7 @@ function getAdminTabSectionKeys(activeTab: string) {
     "configuracion-operativa": ["runtime_settings", "ai_status"],
     "accesos-planes": ["users", "entitlements"],
     oportunidades: ["commercial_opportunities"],
+    soporte: ["support_requests"],
     configuracion: ["runtime_settings"],
     auditoria: ["audit_events", "advanced_audit"],
   };
@@ -424,6 +449,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     revoked: "Acceso revocado correctamente.",
     opportunity: "Oportunidad comercial actualizada.",
     runtime: "Configuración operativa en runtime actualizada.",
+    support: "Solicitud de soporte actualizada.",
   };
   const savedMessage = saved ? (savedMessages[saved] ?? "Acción administrativa guardada.") : null;
 
@@ -440,6 +466,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Configuración Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
     ["Oportunidades", "oportunidades"],
+    ["Soporte", "soporte"],
     ["Configuración", "configuracion"],
     ["Auditoría", "auditoria"],
   ];
@@ -494,6 +521,95 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <MetricCard icon={<HardDrive size={22} />} label="Storage Activo" value={data.storageCeph?.activeStorageAssessments ?? 0} note="Con módulo storage" />
           <MetricCard icon={<Server size={22} />} label="Ceph Solicitado" value={data.storageCeph?.cephRequested ?? 0} note="Preferencia Ceph o candidate" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Fallos IA Storage" value={(data.storageCeph?.aiAnalysisStatus?.failed ?? 0) + (data.storageCeph?.aiAnalysisStatus?.budget_blocked ?? 0) + (data.storageCeph?.aiAnalysisStatus?.plan_restricted ?? 0)} note="Fallados, bloqueados o restringidos" />
+          <MetricCard icon={<LifeBuoy size={22} />} label="Soporte abierto" value={(data.supportRequests?.summary.open ?? 0) + (data.supportRequests?.summary.triage ?? 0)} note="Solicitudes abiertas o en triage" />
+        </section>
+      )}
+
+      {activeTab === "soporte" && (
+        <section className="assessment-section glass-card">
+          <SectionTitle
+            id="soporte"
+            icon={<LifeBuoy size={18} />}
+            label="Soporte"
+            title="Solicitudes de soporte"
+            description="Bandeja interna para clasificar, priorizar, resolver o cerrar pedidos publicos y autenticados. No muestra secretos ni archivos crudos."
+          />
+          <section className="assessment-summary-grid">
+            <MetricCard icon={<LifeBuoy size={22} />} label="Abiertas" value={data.supportRequests.summary.open} note="Pendientes de primera revision" />
+            <MetricCard icon={<Activity size={22} />} label="En triage" value={data.supportRequests.summary.triage} note="En revision interna" />
+            <MetricCard icon={<Users size={22} />} label="Esperando usuario" value={data.supportRequests.summary.waitingOnUser} note="Bloqueadas por respuesta externa" />
+            <MetricCard icon={<CheckCircle2 size={22} />} label="Resueltas" value={data.supportRequests.summary.resolved} note="Marcadas como resueltas" />
+            <MetricCard icon={<Lock size={22} />} label="Cerradas" value={data.supportRequests.summary.closed} note="Cierre administrativo" />
+            <MetricCard icon={<AlertTriangle size={22} />} label="Alta prioridad" value={data.supportRequests.summary.highPriority} note="Alta o urgente sin cierre" />
+          </section>
+
+          <div className="report-history-grid">
+            {data.supportRequests.recent.length === 0 ? (
+              <article className="glass-card report-history-card">
+                <h3>No hay solicitudes de soporte.</h3>
+                <p className="assessment-inline-note">Cuando un usuario envie un pedido, aparecera en esta bandeja.</p>
+              </article>
+            ) : (
+              data.supportRequests.recent.map((request) => (
+                <article key={request.id} className="glass-card report-history-card">
+                  <div className="report-history-header">
+                    <div>
+                      <h3>{request.subject}</h3>
+                      <p className="assessment-inline-note">
+                        {formatDate(request.createdAt)} · {formatStatusLabel(request.category)} · {formatStatusLabel(request.source)}
+                      </p>
+                    </div>
+                    <StatusPill status={formatSupportStatus(request.status)} />
+                  </div>
+                  <p>{request.message}</p>
+                  <div className="assessment-preview-grid">
+                    <div>
+                      <span className="assessment-preview-label">Contacto</span>
+                      <strong>{request.contactEmail ?? request.user?.email ?? "No disponible"}</strong>
+                      <p className="assessment-inline-note">{request.contactName ?? request.user?.name ?? request.companyName ?? "Sin nombre declarado"}</p>
+                    </div>
+                    <div>
+                      <span className="assessment-preview-label">Assessment</span>
+                      <strong>{request.assessment?.title ?? "No asociado"}</strong>
+                      <p className="assessment-inline-note">{request.assessment?.clientLabel ?? request.workspace?.companyName ?? request.workspace?.name ?? "Sin contexto adicional"}</p>
+                    </div>
+                    <div>
+                      <span className="assessment-preview-label">Prioridad</span>
+                      <strong>{formatSupportPriority(request.priority)}</strong>
+                      <p className="assessment-inline-note">Estado: {formatSupportStatus(request.status)}</p>
+                    </div>
+                  </div>
+                  <form action={updateSupportRequestAction} className="unlock-admin-form">
+                    <input type="hidden" name="supportRequestId" value={request.id} />
+                    <label className="form-label">
+                      Estado
+                      <select name="status" className="form-input" defaultValue={request.status}>
+                        <option value="open">Abierta</option>
+                        <option value="triage">En triage</option>
+                        <option value="waiting_on_user">Esperando usuario</option>
+                        <option value="resolved">Resuelta</option>
+                        <option value="closed">Cerrada</option>
+                      </select>
+                    </label>
+                    <label className="form-label">
+                      Prioridad
+                      <select name="priority" className="form-input" defaultValue={request.priority}>
+                        <option value="low">Baja</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">Alta</option>
+                        <option value="urgent">Urgente</option>
+                      </select>
+                    </label>
+                    <label className="form-label" style={{ gridColumn: "1 / -1" }}>
+                      Notas internas
+                      <textarea name="adminNotes" className="form-input assessment-textarea" defaultValue={request.adminNotes ?? ""} />
+                    </label>
+                    <button type="submit" className="btn btn-secondary">Guardar soporte</button>
+                  </form>
+                </article>
+              ))
+            )}
+          </div>
         </section>
       )}
 

@@ -14,6 +14,7 @@ import {
   listUserEntitlements,
 } from "./adminOpsService";
 import { DEFAULT_RUNTIME_SETTINGS, getOperationalRuntimeSettings } from "./runtimeSettingsService";
+import { getAdminSupportRequests, getSupportRequestFallback } from "../support/supportRequestService";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -56,6 +57,7 @@ export type AdminSectionKey =
   | "owner_emails"
   | "ai_status"
   | "ai_usage"
+  | "support_requests"
   | "storage_ceph";
 
 export type AdminSectionFailure = {
@@ -881,6 +883,16 @@ export async function getAdminConsoleData(params?: {
       load: () => getAdminAiUsage({ range: "30d" }),
     }),
   );
+  const supportRequests = rememberSection(
+    await resolveAdminSection<Awaited<ReturnType<typeof getAdminSupportRequests>>>({
+      sectionKey: "support_requests",
+      title: "Solicitudes de soporte",
+      errorKey: "admin_support_requests_failed",
+      message: "No se pudieron cargar las solicitudes de soporte. El resto de la consola sigue disponible.",
+      fallback: getSupportRequestFallback(),
+      load: getAdminSupportRequests,
+    }),
+  );
   const persistentUsageByUser = new Map(aiUsage.byUser.filter((item) => item.userId).map((item) => [item.userId, item]));
   const persistentUsageByAssessment = new Map(
     aiUsage.byAssessment.filter((item) => item.assessmentId).map((item) => [item.assessmentId, item]),
@@ -903,6 +915,7 @@ export async function getAdminConsoleData(params?: {
       evidenceClassification: storageCephResult.evidenceClassification,
       aiAnalysisStatus: storageCephResult.aiAnalysisStatus,
     },
+    supportRequests,
     summary: {
       totalUsers,
       totalAssessments,

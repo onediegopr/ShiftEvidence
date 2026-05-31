@@ -767,6 +767,50 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section className="section" aria-labelledby="public-trust-title" style={{ paddingTop: "3rem" }}>
+          <div className="container">
+            <div className="glass-card assessment-section">
+              <div className="assessment-section-title">
+                <div className="assessment-section-eyebrow">
+                  <ShieldCheck size={18} />
+                  <span>Trust and support</span>
+                </div>
+                <h2 id="public-trust-title">Clear boundaries before you share migration evidence.</h2>
+                <p>
+                  Shift Evidence is an independent assessment service with workspace-level separation,
+                  no production agents, and explicit support paths for technical, security, privacy, and
+                  partner questions.
+                </p>
+              </div>
+              <div className="assessment-preview-grid">
+                <article className="assessment-preview-card">
+                  <span className="assessment-preview-label">Security</span>
+                  <strong>No credentials</strong>
+                  <p>Support requests should never include passwords, tokens, secrets, or raw private files.</p>
+                </article>
+                <article className="assessment-preview-card">
+                  <span className="assessment-preview-label">Privacy</span>
+                  <strong>Assessment scoped</strong>
+                  <p>Project context stays tied to the relevant workspace and assessment boundary.</p>
+                </article>
+                <article className="assessment-preview-card">
+                  <span className="assessment-preview-label">Support</span>
+                  <strong>Manual review</strong>
+                  <p>Questions are routed through a simple support workflow, without live chat or automated SLA.</p>
+                </article>
+              </div>
+              <div className="assessment-inline-actions">
+                <a href="/about" className="btn btn-secondary">
+                  About Shift Evidence
+                </a>
+                <a href="/support" className="dashboard-card-link">
+                  Contact support <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {selectedEvaluation ? (

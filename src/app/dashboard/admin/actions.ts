@@ -9,6 +9,7 @@ import {
   updateCommercialOpportunityFromForm,
   upsertUserEntitlementFromForm,
 } from "../../../server/admin/adminOpsService";
+import { updateSupportRequestFromAdmin } from "../../../server/support/supportRequestService";
 import {
   AI_RUNTIME_MODE_OPTIONS,
   parseOperationalRuntimeSettingsForm,
@@ -128,5 +129,21 @@ export async function setAiRuntimeModeFormAction(formData: FormData) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo cambiar el modo runtime IA.";
     adminRedirect(`error=${safeRedirectError(message)}&tab=configuracion-operativa`);
+  }
+}
+
+export async function updateSupportRequestAction(formData: FormData) {
+  const session = await requireAdminSession();
+
+  try {
+    await updateSupportRequestFromAdmin({
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      formData,
+    });
+    adminRedirect("saved=support&tab=soporte");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo actualizar la solicitud de soporte.";
+    adminRedirect(`error=${safeRedirectError(message)}&tab=soporte`);
   }
 }

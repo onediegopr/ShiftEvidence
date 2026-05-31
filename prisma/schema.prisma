@@ -27,6 +27,7 @@ model User {
   upgradeEvents         UpgradeEvent[]
   reports               Report[]
   unlockRequests        UnlockRequest[]
+  supportRequests       SupportRequest[]
   createdAdvisorConversations AssessmentAdvisorConversation[] @relation("AssessmentAdvisorConversationCreatedBy")
   advisorMessages       AssessmentAdvisorMessage[] @relation("AssessmentAdvisorMessageUser")
   createdAdvisorMemoryItems AssessmentAdvisorMemoryItem[] @relation("AssessmentAdvisorMemoryItemCreatedBy")
@@ -138,6 +139,7 @@ model Workspace {
   upgradeEvents  UpgradeEvent[]
   reports        Report[]
   unlockRequests UnlockRequest[]
+  supportRequests SupportRequest[]
   advisorConversations AssessmentAdvisorConversation[]
   advisorMessages      AssessmentAdvisorMessage[]
   advisorMemoryItems   AssessmentAdvisorMemoryItem[]
@@ -201,6 +203,7 @@ model Assessment {
   upgradeEvents               UpgradeEvent[]
   reports                     Report[]
   unlockRequests              UnlockRequest[]
+  supportRequests             SupportRequest[]
   advisorConversation         AssessmentAdvisorConversation?
   advisorMessages             AssessmentAdvisorMessage[]
   advisorMemoryItems          AssessmentAdvisorMemoryItem[]
@@ -1109,6 +1112,40 @@ model UnlockRequest {
   @@index([createdAt])
 }
 
+model SupportRequest {
+  id           String                 @id @default(cuid())
+  source       SupportRequestSource   @default(public_support_page)
+  category     SupportRequestCategory @default(general_question)
+  status       SupportRequestStatus   @default(open)
+  priority     SupportRequestPriority @default(normal)
+  subject      String
+  message      String
+  contactName  String?
+  contactEmail String?
+  companyName  String?
+  userId       String?
+  workspaceId  String?
+  assessmentId String?
+  adminNotes   String?
+  metadataJson Json?
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace    Workspace?             @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment   Assessment?            @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([source])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([assessmentId])
+  @@index([createdAt])
+}
+
 enum WorkspacePlan {
   free
   readiness_report
@@ -1281,6 +1318,38 @@ enum UnlockRequestType {
   readiness_report_pro
   storage_addon
   technical_review
+}
+
+enum SupportRequestSource {
+  public_support_page
+  user_dashboard
+  assessment_detail
+  admin_internal
+}
+
+enum SupportRequestCategory {
+  general_question
+  assessment_report_question
+  technical_issue
+  billing_question
+  partner_msp_inquiry
+  security_privacy
+  data_deletion_request
+}
+
+enum SupportRequestStatus {
+  open
+  triage
+  waiting_on_user
+  resolved
+  closed
+}
+
+enum SupportRequestPriority {
+  low
+  normal
+  high
+  urgent
 }
 
 enum AssessmentLicensingAnalysisStatus {

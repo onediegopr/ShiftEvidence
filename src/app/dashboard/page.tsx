@@ -1,14 +1,21 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowRight, Plus, Layers3, ShieldCheck, BarChart3, FileText, ClipboardList, Database } from "lucide-react";
+import { ArrowRight, Plus, Layers3, ShieldCheck, BarChart3, FileText, ClipboardList, Database, LifeBuoy } from "lucide-react";
 import { auth } from "../../lib/auth";
 import { upsertUserProfileFromSession } from "../../server/user/userProfileService";
 import { ensureDefaultWorkspace } from "../../server/workspace/workspaceService";
 import { listAssessmentsForCurrentWorkspace } from "../../server/assessments/assessmentService";
 import { isAdminEmail } from "../../server/admin/adminAuth";
 import { getLifecycleStatus } from "./assessments/page";
+import { SUPPORT_CATEGORY_OPTIONS } from "../../server/support/supportRequestService";
+import { createDashboardSupportRequestAction } from "./support/actions";
 
-export default async function DashboardPage() {
+type DashboardPageProps = {
+  searchParams?: Promise<{ support?: string; supportError?: string }> | { support?: string; supportError?: string };
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const query = await Promise.resolve(searchParams);
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -37,6 +44,8 @@ export default async function DashboardPage() {
   const name = session?.user?.name ?? "Readiness user";
   const email = session?.user?.email ?? "Connected account";
   const isAdmin = isAdminEmail(email);
+  const supportSent = query?.support === "sent";
+  const supportError = query?.supportError ? decodeURIComponent(query.supportError) : null;
 
   // Calculate statistics
   const totalAssessments = assessments.length;
@@ -104,6 +113,54 @@ export default async function DashboardPage() {
           <strong>{totalReportsCount}</strong>
           <p>Readiness reports compiled</p>
         </article>
+      </section>
+
+      {supportSent ? (
+        <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">
+          Support request received. We will review it and follow up through your account email.
+        </div>
+      ) : null}
+      {supportError ? (
+        <div className="dashboard-banner dashboard-banner-error" role="alert">
+          {supportError}
+        </div>
+      ) : null}
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <LifeBuoy size={18} />
+            <span>Support</span>
+          </div>
+          <h2>Need help with this workspace?</h2>
+          <p>Send a short request from your dashboard. Do not include passwords, tokens, secrets, or raw private files.</p>
+        </div>
+        <form action={createDashboardSupportRequestAction} className="unlock-admin-form">
+          <label className="form-label">
+            Category
+            <select name="category" className="form-input" defaultValue="general_question">
+              {SUPPORT_CATEGORY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="form-label">
+            Subject
+            <input name="subject" required className="form-input" placeholder="Short summary" />
+          </label>
+          <label className="form-label" style={{ gridColumn: "1 / -1" }}>
+            Message
+            <textarea name="message" required className="form-input assessment-textarea" placeholder="What should we review?" />
+          </label>
+          <button type="submit" className="btn btn-secondary">
+            Contact support
+          </button>
+          <Link href="/support" className="dashboard-card-link">
+            Open public support page <ArrowRight size={16} />
+          </Link>
+        </form>
       </section>
 
       {/* Recent Activity or Empty State */}
