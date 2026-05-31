@@ -22,7 +22,7 @@ describe("billing payment options foundation", () => {
   });
 
   it("keeps Stripe deferred and out of public payment labels", () => {
-    expect(marketingPlans.every((plan) => plan.disabledProvider === "stripe")).toBe(true);
+    expect(marketingPlans.every((plan) => plan.disabledProvider === "stripe_disabled")).toBe(true);
     expect(marketingPlans.flatMap((plan) => plan.paymentOptions).map(getPaymentOptionLabel)).not.toContain("Stripe");
   });
 

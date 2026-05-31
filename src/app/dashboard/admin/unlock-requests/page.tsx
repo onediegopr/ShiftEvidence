@@ -7,6 +7,7 @@ import {
   listPendingUnlockRequestsForAdmin,
   listRecentUnlockRequestsForAdmin,
 } from "../../../../server/unlocks/unlockRequestService";
+import { getBillingAdminStatus } from "../../../../server/billing/billingConfiguration";
 import {
   approveUnlockRequestAction,
   cancelUnlockRequestAction,
@@ -189,6 +190,7 @@ export default async function UnlockRequestsAdminPage({
 
   const pendingRequests = await listPendingUnlockRequestsForAdmin();
   const recentRequests = await listRecentUnlockRequestsForAdmin(40);
+  const billingStatus = getBillingAdminStatus();
   const filteredRequests =
     activeFilter === "all"
       ? recentRequests
@@ -204,6 +206,7 @@ export default async function UnlockRequestsAdminPage({
           <h1>Solicitudes manuales de desbloqueo</h1>
           <p>
             Aprobacion manual interna. El pago no esta automatizado y no hay checkout activo.
+            Lemon Squeezy: {billingStatus.providers[0].status}.
           </p>
         </div>
         <div className="dashboard-hero-actions">

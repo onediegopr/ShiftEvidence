@@ -1,14 +1,20 @@
-export type BillingCadence = "one_time" | "monthly" | "scoped";
+import {
+  billingPlans,
+  getBillingCadenceLabel as getConfiguredBillingCadenceLabel,
+  getBillingPaymentOptionLabel,
+  type BillingCadence,
+  type BillingPaymentOption,
+  type BillingPlanId,
+  type BillingProvider,
+} from "../config/billing";
 
-export type PaymentOption = "card_checkout" | "bank_transfer_invoice";
+export type { BillingCadence };
 
-export type PaymentProvider = "lemon_squeezy" | "stripe";
+export type PaymentOption = BillingPaymentOption;
 
-export type PlanId =
-  | "starter_readiness"
-  | "professional_assessment"
-  | "migration_blueprint"
-  | "msp_partner";
+export type PaymentProvider = Extract<BillingProvider, "lemon_squeezy" | "stripe_disabled">;
+
+export type PlanId = BillingPlanId;
 
 export interface Plan {
   id: PlanId;
@@ -67,44 +73,34 @@ export const paymentOptionsCopy = {
 } as const;
 
 export function getPaymentOptionLabel(option: PaymentOption) {
-  switch (option) {
-    case "card_checkout":
-      return "Card checkout";
-    case "bank_transfer_invoice":
-      return "Bank transfer invoice";
-  }
+  return getBillingPaymentOptionLabel(option);
 }
 
 export function getBillingCadenceLabel(cadence: BillingCadence) {
-  switch (cadence) {
-    case "one_time":
-      return "One-time";
-    case "monthly":
-      return "Monthly";
-    case "scoped":
-      return "Scoped before payment";
-  }
+  return getConfiguredBillingCadenceLabel(cadence);
 }
+
+const starterBillingPlan = billingPlans.find((plan) => plan.id === "starter_readiness")!;
+const professionalBillingPlan = billingPlans.find((plan) => plan.id === "professional_assessment")!;
+const blueprintBillingPlan = billingPlans.find((plan) => plan.id === "migration_blueprint")!;
+const mspBillingPlan = billingPlans.find((plan) => plan.id === "msp_partner")!;
 
 export const marketingPlans: Plan[] = [
   {
     id: "starter_readiness",
-    name: "Starter Readiness",
-    price: "USD 490",
-    priceAmountUsd: 490,
-    billingCadence: "one_time",
+    name: starterBillingPlan.displayName,
+    price: starterBillingPlan.priceLabel,
+    priceAmountUsd: starterBillingPlan.priceAmountUsd,
+    billingCadence: starterBillingPlan.cadence,
     bestFor: "Teams that want a clear first assessment before committing to a larger migration plan.",
     accent: "core",
-    recommendedPayment: "card_checkout",
-    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    recommendedPayment: starterBillingPlan.recommendedPayment,
+    paymentOptions: starterBillingPlan.paymentOptions,
     futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe",
-    cta: { label: "Start Starter Assessment", href: "/sign-up?plan=starter_readiness" },
-    secondaryCta: {
-      label: "Request bank transfer invoice",
-      href: "/support?category=billing_question&subject=Starter%20Readiness%20Bank%20Transfer%20Invoice",
-    },
-    paymentNote: "Fast-start card checkout first. Bank transfer invoice available on request for business customers.",
+    disabledProvider: "stripe_disabled",
+    cta: starterBillingPlan.primaryAction,
+    secondaryCta: starterBillingPlan.secondaryAction,
+    paymentNote: "Card checkout is prepared for this plan but not active yet. Bank transfer invoice is available on request for business customers.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools upload / guided evidence review",
@@ -124,22 +120,19 @@ export const marketingPlans: Plan[] = [
   },
   {
     id: "professional_assessment",
-    name: "Professional Assessment",
-    price: "USD 1,500",
-    priceAmountUsd: 1_500,
-    billingCadence: "one_time",
+    name: professionalBillingPlan.displayName,
+    price: professionalBillingPlan.priceLabel,
+    priceAmountUsd: professionalBillingPlan.priceAmountUsd,
+    billingCadence: professionalBillingPlan.cadence,
     bestFor: "Infrastructure teams that need a fuller migration readiness assessment and stakeholder-ready report.",
     accent: "pro",
-    recommendedPayment: "card_checkout",
-    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    recommendedPayment: professionalBillingPlan.recommendedPayment,
+    paymentOptions: professionalBillingPlan.paymentOptions,
     futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe",
-    cta: { label: "Book Professional Assessment", href: "/sign-up?plan=professional_assessment" },
-    secondaryCta: {
-      label: "Request invoice",
-      href: "/support?category=billing_question&subject=Professional%20Assessment%20Invoice",
-    },
-    paymentNote: "Card checkout or bank transfer invoice. Business invoice support is available for procurement workflows.",
+    disabledProvider: "stripe_disabled",
+    cta: professionalBillingPlan.primaryAction,
+    secondaryCta: professionalBillingPlan.secondaryAction,
+    paymentNote: "Card checkout is prepared for this plan but not active yet. Business invoice support is available for procurement workflows.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",
@@ -160,25 +153,19 @@ export const marketingPlans: Plan[] = [
   },
   {
     id: "migration_blueprint",
-    name: "Migration Blueprint",
-    price: "From USD 3,500",
-    priceAmountUsd: 3_500,
-    pricePrefix: "from",
-    billingCadence: "scoped",
+    name: blueprintBillingPlan.displayName,
+    price: blueprintBillingPlan.priceLabel,
+    priceAmountUsd: blueprintBillingPlan.priceAmountUsd,
+    pricePrefix: blueprintBillingPlan.pricePrefix,
+    billingCadence: blueprintBillingPlan.cadence,
     bestFor: "Teams preparing a serious migration plan with scope, waves, validation gates and rollback expectations.",
     accent: "blueprint",
-    recommendedPayment: "bank_transfer_invoice",
-    paymentOptions: ["bank_transfer_invoice"],
+    recommendedPayment: blueprintBillingPlan.recommendedPayment,
+    paymentOptions: blueprintBillingPlan.paymentOptions,
     futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe",
-    cta: {
-      label: "Request Migration Blueprint",
-      href: "/support?category=partner_msp_inquiry&subject=Migration%20Blueprint%20Scope",
-    },
-    secondaryCta: {
-      label: "Discuss scope",
-      href: "/support?category=assessment_report_question&subject=Migration%20Blueprint%20Scope%20Discussion",
-    },
+    disabledProvider: "stripe_disabled",
+    cta: blueprintBillingPlan.primaryAction,
+    secondaryCta: blueprintBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.blueprint,
     includes: [
       "Everything in Professional Assessment",
@@ -199,22 +186,19 @@ export const marketingPlans: Plan[] = [
   },
   {
     id: "msp_partner",
-    name: "MSP Partner",
-    price: "From USD 399/month",
-    priceAmountUsd: 399,
-    pricePrefix: "from",
-    billingCadence: "monthly",
+    name: mspBillingPlan.displayName,
+    price: mspBillingPlan.priceLabel,
+    priceAmountUsd: mspBillingPlan.priceAmountUsd,
+    pricePrefix: mspBillingPlan.pricePrefix,
+    billingCadence: mspBillingPlan.cadence,
     bestFor: "Consultants, MSPs and integrators who need repeatable assessments for client conversations.",
     accent: "partner",
-    recommendedPayment: "card_checkout",
-    paymentOptions: ["card_checkout", "bank_transfer_invoice"],
+    recommendedPayment: mspBillingPlan.recommendedPayment,
+    paymentOptions: mspBillingPlan.paymentOptions,
     futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe",
-    cta: { label: "Become a partner", href: "/partners" },
-    secondaryCta: {
-      label: "Request partner invoice",
-      href: "/support?category=partner_msp_inquiry&subject=MSP%20Partner%20Invoice",
-    },
+    disabledProvider: "stripe_disabled",
+    cta: mspBillingPlan.primaryAction,
+    secondaryCta: mspBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.msp,
     includes: [
       "Reusable methodology",

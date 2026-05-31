@@ -15,6 +15,7 @@ import {
 } from "./adminOpsService";
 import { DEFAULT_RUNTIME_SETTINGS, getOperationalRuntimeSettings } from "./runtimeSettingsService";
 import { getAdminSupportRequests, getSupportRequestFallback } from "../support/supportRequestService";
+import { getBillingAdminStatus } from "../billing/billingConfiguration";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -901,6 +902,7 @@ export async function getAdminConsoleData(params?: {
   const authConfigured = isConfigured(process.env.BETTER_AUTH_SECRET) && isConfigured(process.env.BETTER_AUTH_URL);
   const storageConfigured = isConfigured(process.env.HOSTINGER_STORAGE_ROOT);
   const emailConfigured = isConfigured(process.env.RESEND_API_KEY) || isConfigured(process.env.EMAIL_FROM);
+  const billingStatus = getBillingAdminStatus();
 
   const failedSignals = failedEvidenceFiles + failedReports;
 
@@ -916,6 +918,7 @@ export async function getAdminConsoleData(params?: {
       aiAnalysisStatus: storageCephResult.aiAnalysisStatus,
     },
     supportRequests,
+    billingStatus,
     summary: {
       totalUsers,
       totalAssessments,
@@ -1007,6 +1010,12 @@ export async function getAdminConsoleData(params?: {
         recommendation: "Validar Resend/password recovery con pruebas controladas.",
       },
       {
+        title: "Billing Provider",
+        status: "Atención",
+        description: `Lemon Squeezy: ${billingStatus.providers[0].status}. Checkout preparado, no activo.`,
+        recommendation: "Agregar credenciales y variant IDs en un hito futuro antes de activar checkout real.",
+      },
+      {
         title: "Producción Hostinger",
         status: "Atención",
         description: "Estado real depende de smoke/logs Hostinger, no de este panel local.",
@@ -1030,6 +1039,11 @@ export async function getAdminConsoleData(params?: {
       { name: "AI_ADVISORY_FALLBACK_PROVIDER", value: safeVisibleValue(process.env.AI_ADVISORY_FALLBACK_PROVIDER), secret: false },
       { name: "AI_ADVISORY_FALLBACK_MODEL", value: safeVisibleValue(process.env.AI_ADVISORY_FALLBACK_MODEL), secret: false },
       { name: "MAX_UPLOAD_SIZE_MB", value: safeVisibleValue(process.env.MAX_UPLOAD_SIZE_MB), secret: false },
+      ...billingStatus.envPlaceholders.map((item) => ({
+        name: item.name,
+        value: item.configured ? "Configurada" : "No configurada",
+        secret: item.secret,
+      })),
     ],
     runtimeSettings,
     recentUsers: recentUsers.map((user) => {

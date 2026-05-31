@@ -11,6 +11,8 @@ export const metadata: Metadata = {
 };
 
 export default function PartnersPage() {
+  const mspPlan = marketingPlans.find((plan) => plan.id === "msp_partner");
+
   return (
     <>
       <Navbar />
@@ -49,11 +51,11 @@ export default function PartnersPage() {
               </article>
             </div>
             <div className="assessment-inline-actions" style={{ marginTop: "2rem" }}>
-              <Link href="/support?category=partner_msp_inquiry" className="btn btn-primary btn-glow">
-                Contact partner support
+              <Link href={mspPlan?.cta.href ?? "/billing/checkout/msp"} className="btn btn-primary btn-glow">
+                {mspPlan?.cta.label ?? "Subscribe"}
               </Link>
-              <Link href="/about" className="btn btn-secondary">
-                About Shift Evidence
+              <Link href={mspPlan?.secondaryCta.href ?? "/support?category=partner_msp_inquiry"} className="btn btn-secondary">
+                {mspPlan?.secondaryCta.label ?? "Request invoice"}
               </Link>
             </div>
           </div>

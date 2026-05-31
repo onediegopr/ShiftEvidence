@@ -8,6 +8,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
@@ -819,9 +820,9 @@ export default function LandingPage() {
                   <li style={{ display: "flex", gap: "0.5rem" }}><Check size={16} className="text-cyan" /> Helps prepare technical review and next steps.</li>
                   <li style={{ display: "flex", gap: "0.5rem" }}><Check size={16} className="text-cyan" /> Read-only advisory role.</li>
                 </ul>
-                <a href="/sign-up?plan=readiness-report-pro" className="btn btn-primary btn-glow">
-                  See Advisor in Pro
-                </a>
+                <Link href="/billing/checkout/professional" className="btn btn-primary btn-glow">
+                  View Professional checkout status
+                </Link>
               </div>
             </div>
           </div>
@@ -947,7 +948,7 @@ export default function LandingPage() {
               <span className="badge badge-cyan" style={{ marginBottom: "1rem" }}>Plans & Pricing</span>
               <h2 style={{ fontSize: "2.25rem", color: "white", marginBottom: "1rem" }}>Transparent, modular pricing models.</h2>
               <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "0 auto 2.5rem", fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Start with a focused readiness assessment. Use card checkout when available, or request a bank transfer invoice for business purchasing.
+                Start with a focused readiness assessment. Card checkout routes are prepared as safe placeholders, and bank transfer invoices remain available for business purchasing.
               </p>
 
               <div 

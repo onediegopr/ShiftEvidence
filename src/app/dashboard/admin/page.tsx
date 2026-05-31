@@ -522,6 +522,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <MetricCard icon={<Server size={22} />} label="Ceph Solicitado" value={data.storageCeph?.cephRequested ?? 0} note="Preferencia Ceph o candidate" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Fallos IA Storage" value={(data.storageCeph?.aiAnalysisStatus?.failed ?? 0) + (data.storageCeph?.aiAnalysisStatus?.budget_blocked ?? 0) + (data.storageCeph?.aiAnalysisStatus?.plan_restricted ?? 0)} note="Fallados, bloqueados o restringidos" />
           <MetricCard icon={<LifeBuoy size={22} />} label="Soporte abierto" value={(data.supportRequests?.summary.open ?? 0) + (data.supportRequests?.summary.triage ?? 0)} note="Solicitudes abiertas o en triage" />
+          <MetricCard icon={<BadgePercent size={22} />} label="Billing Provider" value={`Lemon Squeezy (${data.billingStatus.providers[0].status})`} note="Checkout preparado, no activo" />
         </section>
       )}
 

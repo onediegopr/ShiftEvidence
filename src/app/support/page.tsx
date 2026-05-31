@@ -113,7 +113,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   <li id="partners"><LifeBuoy size={14} /> Partners: {SUPPORT_CONTACTS.partners}</li>
                 </ul>
                 <p className="assessment-inline-note">
-                  {paymentOptionsCopy.bankTransfer} There is no live chat, attachment upload, automated SLA, or billing provider workflow in this support layer.
+                  {paymentOptionsCopy.bankTransfer} There is no live chat, attachment upload, automated SLA, or automated billing provider workflow in this support layer.
                 </p>
                 <Link href="/about" className="dashboard-card-link">
                   Learn about the trust model
