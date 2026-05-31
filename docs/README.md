@@ -100,6 +100,7 @@ Read these to understand:
 
 ## Senior Migration Advisor
 
+- [Advisor-3 Final Operational Summary](./advisor-3-final-operational-summary.md)
 - [Advisor audit / release readiness trace](./hito-advisor-release-readiness-1-controlled-migration-plan.md)
 - [Advisor v1 implementation](./hito-advisor-1-senior-migration-advisor-basic-chat-usage-limits.md)
 - [Advisor release readiness](./hito-advisor-release-readiness-1-controlled-migration-plan.md)
@@ -125,11 +126,14 @@ Read these to understand:
 - [Advisor Methodology Controlled Smoke Flag On](./hito-advisor-3e-controlled-smoke-flag-on.md)
 - [Advisor Methodology User-Attested Flag-On Close](./hito-advisor-3e-user-attested-production-flag-on-close.md)
 - [Advisor Methodology Admin Visibility](./hito-advisor-3f-production-observation-admin-visibility.md)
+- [Advisor Methodology Admin Smoke Record](./hito-advisor-3f-smoke-authenticated-admin-visibility.md)
+- [Advisor Methodology Admin Smoke User-Attested Close](./hito-advisor-3f-smoke-user-attested-close.md)
+- [Advisor Methodology KB Curation Hardening](./hito-advisor-3g-methodology-kb-curation-hardening.md)
 
 Recommended next Advisor milestones:
 
-- ADVISOR-3F-SMOKE for authenticated admin visibility verification.
-- ADVISOR-3G controlled activation smoke or ADVISOR-3/RAG audit spec, without starting embeddings/vector DB until explicitly approved.
+- Freeze Advisor-3 and move to another product area, or run a production observation hito.
+- Any future RAG/embeddings work should start as audit/spec only and requires explicit approval before implementation.
 
 ## Hostinger / Production Ops
 
