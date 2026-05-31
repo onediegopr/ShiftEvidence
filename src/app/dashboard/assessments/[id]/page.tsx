@@ -1095,7 +1095,7 @@ export default async function AssessmentDetailPage({
                 ) : (
                   <>
                     <p className="assessment-storage-note">
-                      Storage Destination Readiness is active. You can now configure target details and copy agentless commands in the **Storage** tab.
+                      Storage Destination Readiness is active. You can now configure target details and copy agentless commands in the <strong>Storage</strong> tab.
                     </p>
                     <form action={toggleStorageReadinessAction.bind(null, assessment.id)}>
                       <input type="hidden" name="currentTab" value="basics" />
@@ -1561,7 +1561,7 @@ export default async function AssessmentDetailPage({
                 Looking to upload Proxmox node configurations, Ceph cluster status, or PBS datasets?
               </p>
               <p className="text-muted" style={{ fontSize: "0.85rem", lineHeight: "1.5", marginTop: "0.25rem" }}>
-                Go to the **Storage** tab to find the read-only command guidelines, upload options, and specific classifications.
+                Go to the <strong>Storage</strong> tab to find the read-only command guidelines, upload options, and specific classifications.
               </p>
               <Link href={`/dashboard/assessments/${assessment.id}?tab=storage`} className="dashboard-card-link" style={{ marginTop: "0.5rem", display: "inline-flex", alignItems: "center" }}>
                 Go to Storage tab <ArrowRight size={14} style={{ marginLeft: "0.25rem" }} />

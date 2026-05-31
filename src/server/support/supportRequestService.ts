@@ -8,6 +8,7 @@ import { prisma } from "../../lib/prisma";
 import { ensureAssessmentOwnership } from "../assessments/assessmentService";
 import { parseOptionalString, parseRequiredString } from "../assessments/formUtils";
 import { recordAdminAuditEvent } from "../admin/adminOpsService";
+import { assertRateLimit } from "../security/rateLimit";
 import { INPUT_LIMITS } from "../validation/inputLimits";
 
 export const SUPPORT_CONTACTS = {
@@ -105,12 +106,23 @@ function parseSupportPayload(formData: FormData, options?: { requireEmail?: bool
   };
 }
 
-export async function createPublicSupportRequest(formData: FormData) {
+export async function createPublicSupportRequest(formData: FormData, options?: { clientIp?: string }) {
   const payload = parseSupportPayload(formData, { requireEmail: true });
   const context = parseOptionalString(formData.get("context"), {
     fieldName: "Context",
     maxLength: INPUT_LIMITS.shortText,
   });
+
+  await Promise.all([
+    assertRateLimit({
+      limiter: "publicSupportIp",
+      keyParts: [options?.clientIp ?? "unknown"],
+    }),
+    assertRateLimit({
+      limiter: "publicSupportEmail",
+      keyParts: [payload.contactEmail ?? "unknown"],
+    }),
+  ]);
 
   return prisma.supportRequest.create({
     data: {

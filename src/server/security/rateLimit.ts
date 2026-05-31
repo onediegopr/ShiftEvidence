@@ -11,7 +11,9 @@ export type RateLimitName =
   | "reportGenerateUser"
   | "reportGenerateAssessment"
   | "uploadEvidenceUser"
-  | "uploadEvidenceIp";
+  | "uploadEvidenceIp"
+  | "publicSupportIp"
+  | "publicSupportEmail";
 
 type RateLimitConfig = {
   limit: number;
@@ -40,6 +42,8 @@ const RATE_LIMITS: Record<RateLimitName, RateLimitConfig> = {
   reportGenerateAssessment: { limit: 5, window: "15 m", prefix: "rl:report-generate-assessment" },
   uploadEvidenceUser: { limit: 20, window: "15 m", prefix: "rl:upload-evidence-user" },
   uploadEvidenceIp: { limit: 50, window: "15 m", prefix: "rl:upload-evidence-ip" },
+  publicSupportIp: { limit: 10, window: "15 m", prefix: "rl:public-support-ip" },
+  publicSupportEmail: { limit: 5, window: "1 h", prefix: "rl:public-support-email" },
 };
 
 let redis: Redis | null | undefined;

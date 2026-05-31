@@ -51,10 +51,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const userSupportRequests = session
     ? await prisma.supportRequest.findMany({
         where: {
-          OR: [
-            { userId: session.user.id },
-            { contactEmail: session.user.email },
-          ],
+          userId: session.user.id,
         },
         orderBy: { createdAt: "desc" },
         take: 5,

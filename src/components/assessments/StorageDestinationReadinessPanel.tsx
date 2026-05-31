@@ -1188,7 +1188,7 @@ ceph osd pool ls detail --format json > ceph-pools-detail.json`}
           </p>
           <p style={{ fontSize: "0.8rem", marginTop: "0.5rem", color: "var(--text-muted)" }}>
             These commands only export telemetry, configuration, and capacity metadata. Review files prior to upload.
-            Adding destination evidence improves scoring confidence for Ceph sizing, backup coverage, and Proxmox integration without transmitting active credentials.
+            Adding destination evidence improves scoring confidence for Ceph suitability signals, backup coverage, and Proxmox integration without transmitting active credentials.
           </p>
         </article>
       </div>

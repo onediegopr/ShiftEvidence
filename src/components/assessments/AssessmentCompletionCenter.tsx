@@ -79,6 +79,10 @@ function ModuleCard({
 }) {
   const tone = getCompletionStatusTone(completionModule.status);
   const href = getCompletionModuleHref(assessmentId, completionModule.key);
+  const statusLabel =
+    completionModule.key === "storage_analysis" && completionModule.status === "complete"
+      ? "Ready for storage review"
+      : getCompletionStatusLabel(completionModule.status);
 
   const isCompact = completionModule.status === "complete" || completionModule.status === "not_applicable";
 
@@ -93,7 +97,7 @@ function ModuleCard({
             <div>
               <h3 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "normal" }}>{completionModule.label}</h3>
               <span className={`assessment-chip assessment-chip-${tone}`} style={{ fontSize: "0.7rem", padding: "0.05rem 0.35rem", display: "inline-block", marginTop: "0.15rem" }}>
-                {getCompletionStatusLabel(completionModule.status)}
+                {statusLabel}
               </span>
             </div>
           </div>
@@ -120,7 +124,7 @@ function ModuleCard({
 
       <div className="completion-module-meta">
         <span className={`assessment-chip assessment-chip-${tone}`}>
-          {getCompletionStatusLabel(completionModule.status)}
+          {statusLabel}
         </span>
         <span className="assessment-chip assessment-chip-neutral">
           {completionModule.required ? "Required" : "Optional"}

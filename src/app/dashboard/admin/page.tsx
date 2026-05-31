@@ -2084,20 +2084,20 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                               if (destEvidence.length > 0) {
                                 return (
                                   <span style={{ fontSize: "0.7rem", color: "#22d3ee" }}>
-                                    ✓ Destination evidence uploaded ({destEvidence.length})
+                                    Evidencia de destino cargada ({destEvidence.length})
                                   </span>
                                 );
                               }
                               if (st.evidenceFilesCount > 0) {
                                 return (
                                   <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                                    Manual collector evidence expected
+                                    Evidencia manual del collector pendiente
                                   </span>
                                 );
                               }
                               return (
                                 <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                                  No destination collector evidence uploaded
+                                  Sin evidencia de collector de destino
                                 </span>
                               );
                             })()}
