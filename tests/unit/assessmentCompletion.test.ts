@@ -357,4 +357,181 @@ describe("assessment completion model", () => {
       expect(summary.reportConfidencePercent).toBeLessThanOrEqual(100);
     });
   });
+
+  describe("HITO STORAGE-COMPLETION-2A new storage completion rules", () => {
+    it("1. Sin storage nuevo ni legacy -> storage completion = not started / missing", () => {
+      const summary = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: null,
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: null,
+        storageReadinessInput: null,
+      }));
+      const storageModule = moduleByKey(summary.modules, "storage_analysis");
+      expect(storageModule.status).toBe("not_started");
+      expect(storageModule.completionContribution).toBe(0);
+    });
+
+    it("2. Sólo legacy StorageReadinessInput -> completion usa fallback, no rompe", () => {
+      const summary = computeAssessmentCompletionSummary(parsedRvtoolsAssessment({
+        storageDestinationReadiness: null,
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: null,
+        storageReadinessInput: {
+          currentStorageType: "SAN",
+          targetStoragePreference: "ceph",
+          capacityTb: 12,
+          usedTb: 8,
+          requiresHa: true,
+          requiresSharedStorage: true,
+        },
+      }));
+      const storageModule = moduleByKey(summary.modules, "storage_analysis");
+      expect(storageModule.status).toBe("complete");
+    });
+
+    it("3. Nuevo AssessmentStorageDestinationReadiness con campos mínimos -> partial / ready", () => {
+      const summary = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          currentStorageType: "san",
+          targetStoragePreference: "ceph",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+        },
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: null,
+        storageReadinessInput: null,
+      }));
+      const storageModule = moduleByKey(summary.modules, "storage_analysis");
+      expect(storageModule.status).toBe("partial");
+      expect(storageModule.completionContribution).toBeGreaterThan(0);
+    });
+
+    it("4. Nuevo record + storage evidence -> sube completion/contribution", () => {
+      const summaryNoEvidence = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          currentStorageType: "san",
+          targetStoragePreference: "nfs",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+        },
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: null,
+        storageReadinessInput: null,
+      }));
+
+      const summaryWithEvidence = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          currentStorageType: "san",
+          targetStoragePreference: "nfs",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+        },
+        storageContext: null,
+        storageEvidence: [
+          {
+            id: "se-1",
+            classification: "source_storage_export",
+            includedInStorageAnalysis: true,
+            analysisStatus: "received_not_analyzed",
+            evidenceFile: {
+              id: "ef-1",
+              evidenceType: "proxmox",
+              originalFilename: "storage-report.csv",
+              deletedAt: null,
+              processingStatus: "uploaded",
+            },
+          },
+        ],
+        storageAnalysis: null,
+        storageReadinessInput: null,
+      }));
+
+      const moduleNoEvidence = moduleByKey(summaryNoEvidence.modules, "storage_analysis");
+      const moduleWithEvidence = moduleByKey(summaryWithEvidence.modules, "storage_analysis");
+
+      expect(moduleWithEvidence.completionContribution).toBeGreaterThan(moduleNoEvidence.completionContribution);
+      expect(moduleWithEvidence.status).toBe("complete");
+    });
+
+    it("5. Nuevo record + Ceph evidence -> refleja mayor confidence/completion", () => {
+      const summaryWithSpecific = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          currentStorageType: "san",
+          targetStoragePreference: "ceph",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+        },
+        storageContext: null,
+        storageEvidence: [
+          {
+            id: "se-1",
+            classification: "ceph_status",
+            includedInStorageAnalysis: true,
+            analysisStatus: "received_not_analyzed",
+            evidenceFile: {
+              id: "ef-1",
+              evidenceType: "proxmox",
+              originalFilename: "ceph-status.json",
+              deletedAt: null,
+              processingStatus: "uploaded",
+            },
+          },
+        ],
+        storageAnalysis: null,
+        storageReadinessInput: null,
+      }));
+
+      const moduleWithSpecific = moduleByKey(summaryWithSpecific.modules, "storage_analysis");
+      expect(moduleWithSpecific.completionContribution).toBeGreaterThan(0);
+      expect(moduleWithSpecific.status).toBe("complete");
+    });
+
+    it("6. Nuevo record + Ceph suitability -> refleja evaluación ejecutada", () => {
+      const summaryWithSuitability = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          currentStorageType: "san",
+          targetStoragePreference: "ceph",
+          needsHighAvailability: true,
+          requiresSharedStorage: true,
+        },
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: {
+          cephSuitabilityStatus: "ceph_applies",
+          status: "completed",
+          generatedAt: now,
+        },
+        storageReadinessInput: null,
+      }));
+
+      const moduleWithSuitability = moduleByKey(summaryWithSuitability.modules, "storage_analysis");
+      expect(moduleWithSuitability.status).toBe("partial");
+    });
+
+    it("7. Legacy y nuevo existen -> nuevo modelo tiene prioridad", () => {
+      const summary = computeAssessmentCompletionSummary(baseAssessment({
+        storageDestinationReadiness: {
+          status: "skipped",
+          mode: "agnostic",
+        },
+        storageContext: null,
+        storageEvidence: [],
+        storageAnalysis: null,
+        storageReadinessInput: {
+          currentStorageType: "SAN",
+          targetStoragePreference: "ceph",
+          capacityTb: 12,
+          usedTb: 8,
+          requiresHa: true,
+          requiresSharedStorage: true,
+        },
+      }));
+      const storageModule = moduleByKey(summary.modules, "storage_analysis");
+      expect(storageModule.status).toBe("skipped");
+    });
+  });
 });
