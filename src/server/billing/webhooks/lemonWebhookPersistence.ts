@@ -1,6 +1,7 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
 import { prisma } from "../../../lib/prisma";
 import { createBillingEventIdempotencyKey } from "../ledger/billingIdempotency";
+import { processLemonBillingEvent } from "../ledger/billingBusinessLedgerService";
 import { buildBillingEventCreateData } from "../ledger/billingLedgerService";
 import type { ParsedLemonWebhookEvent } from "./lemonWebhookEvent";
 
@@ -42,10 +43,16 @@ export async function persistLemonWebhookEvent(params: {
         processedAt: new Date(),
       }),
     });
+    const businessLedger = await processLemonBillingEvent({
+      db,
+      billingEvent,
+      rawBody: typeof params.rawBody === "string" ? params.rawBody : params.rawBody.toString("utf8"),
+    });
 
     return {
       outcome: "created" as const,
       billingEvent,
+      businessLedger,
     };
   } catch (error) {
     if (isUniqueConstraintError(error)) {

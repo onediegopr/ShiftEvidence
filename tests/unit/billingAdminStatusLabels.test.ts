@@ -5,6 +5,9 @@ import {
   formatBooleanYesNo,
   getBillingEventStatusLabel,
   getBillingEventStatusTone,
+  getBillingOrderStatusLabel,
+  getBillingPaymentStatusLabel,
+  getBillingSubscriptionStatusLabel,
 } from "../../src/server/billing/admin/billingAdminLabels";
 
 describe("billing admin status labels", () => {
@@ -29,5 +32,14 @@ describe("billing admin status labels", () => {
     expect(formatBillingRiskLevel("bajo")).toBe("Bajo");
     expect(formatBillingRiskLevel("medio")).toBe("Medio");
     expect(formatBillingRiskLevel("alto")).toBe("Alto");
+  });
+
+  it("maps commercial ledger statuses to Spanish admin labels", () => {
+    expect(getBillingOrderStatusLabel("paid")).toBe("Pagada");
+    expect(getBillingOrderStatusLabel("refunded")).toBe("Reembolsada");
+    expect(getBillingPaymentStatusLabel("paid")).toBe("Pagado");
+    expect(getBillingPaymentStatusLabel("failed")).toBe("Fallido");
+    expect(getBillingSubscriptionStatusLabel("active")).toBe("Activa");
+    expect(getBillingSubscriptionStatusLabel("payment_failed")).toBe("Pago fallido");
   });
 });

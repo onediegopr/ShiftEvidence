@@ -18,13 +18,20 @@ import {
   getBillingAdminLedgerSnapshot,
   getBillingLedgerFallback,
   type BillingAdminLedgerEvent,
+  type BillingAdminLedgerOrder,
+  type BillingAdminLedgerPayment,
+  type BillingAdminLedgerSubscription,
 } from "../../../../server/billing/admin/billingAdminLedgerService";
 import {
   formatBillingRiskLevel,
   formatBooleanPresence,
   formatBooleanYesNo,
+  getBillingCommercialStatusTone,
   getBillingEventStatusLabel,
   getBillingEventStatusTone,
+  getBillingOrderStatusLabel,
+  getBillingPaymentStatusLabel,
+  getBillingSubscriptionStatusLabel,
 } from "../../../../server/billing/admin/billingAdminLabels";
 import {
   getBillingProviderStatusSnapshot,
@@ -53,6 +60,39 @@ function formatProvider(value: string) {
   };
 
   return labels[value] ?? value;
+}
+
+function formatPlan(value: string) {
+  const labels: Record<string, string> = {
+    starter_readiness: "Starter Readiness",
+    professional_assessment: "Professional Assessment",
+    migration_blueprint: "Migration Blueprint",
+    msp_partner: "MSP Partner",
+  };
+
+  return labels[value] ?? value;
+}
+
+function formatAmount(amountCents: number, currency: string) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(amountCents / 100);
+}
+
+function formatMatchState(record: {
+  userId?: string | null;
+  workspaceId?: string | null;
+  assessmentId?: string | null;
+}) {
+  const missing = [
+    record.userId ? null : "usuario",
+    record.workspaceId ? null : "workspace",
+    "assessmentId" in record && record.assessmentId ? null : "assessment",
+  ].filter(Boolean);
+
+  return missing.length === 0 ? "Con match" : `Sin match: ${missing.join(", ")}`;
 }
 
 function formatLemonStatus(value: string) {
@@ -214,6 +254,138 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
   );
 }
 
+function OrdersTable({ orders }: { orders: BillingAdminLedgerOrder[] }) {
+  if (orders.length === 0) {
+    return <p className="assessment-empty-note">No hay ordenes comerciales registradas todavia.</p>;
+  }
+
+  return (
+    <div className="assessment-table-wrap">
+      <table className="assessment-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Provider</th>
+            <th>Plan</th>
+            <th>Email cliente</th>
+            <th>Estado</th>
+            <th>Monto</th>
+            <th>Match</th>
+            <th>Provider Order ID</th>
+            <th>Pago/Reembolso</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.id}>
+              <td>{formatDate(order.createdAt)}</td>
+              <td>{formatProvider(order.provider)}</td>
+              <td>{formatPlan(order.planId)}</td>
+              <td>{order.customerEmail ?? "-"}</td>
+              <td>
+                <Chip
+                  label={getBillingOrderStatusLabel(order.status)}
+                  tone={getBillingCommercialStatusTone(order.status)}
+                />
+              </td>
+              <td>{formatAmount(order.amountCents, order.currency)}</td>
+              <td>{formatMatchState(order)}</td>
+              <td>{order.providerOrderId ?? "-"}</td>
+              <td>{formatDate(order.refundedAt ?? order.paidAt)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PaymentsTable({ payments }: { payments: BillingAdminLedgerPayment[] }) {
+  if (payments.length === 0) {
+    return <p className="assessment-empty-note">No hay pagos comerciales registrados todavia.</p>;
+  }
+
+  return (
+    <div className="assessment-table-wrap">
+      <table className="assessment-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Provider</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Provider Payment ID</th>
+            <th>Orden provider</th>
+            <th>Orden interna</th>
+          </tr>
+        </thead>
+        <tbody>
+          {payments.map((payment) => (
+            <tr key={payment.id}>
+              <td>{formatDate(payment.createdAt)}</td>
+              <td>{formatProvider(payment.provider)}</td>
+              <td>{formatAmount(payment.amountCents, payment.currency)}</td>
+              <td>
+                <Chip
+                  label={getBillingPaymentStatusLabel(payment.status)}
+                  tone={getBillingCommercialStatusTone(payment.status)}
+                />
+              </td>
+              <td>{payment.providerPaymentId ?? "-"}</td>
+              <td>{payment.providerOrderId ?? "-"}</td>
+              <td>{payment.orderId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SubscriptionsTable({ subscriptions }: { subscriptions: BillingAdminLedgerSubscription[] }) {
+  if (subscriptions.length === 0) {
+    return <p className="assessment-empty-note">No hay suscripciones comerciales registradas todavia.</p>;
+  }
+
+  return (
+    <div className="assessment-table-wrap">
+      <table className="assessment-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Provider</th>
+            <th>Plan</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>Periodo actual</th>
+            <th>Workspace</th>
+            <th>Provider Subscription ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {subscriptions.map((subscription) => (
+            <tr key={subscription.id}>
+              <td>{formatDate(subscription.createdAt)}</td>
+              <td>{formatProvider(subscription.provider)}</td>
+              <td>{formatPlan(subscription.planId)}</td>
+              <td>{subscription.customerEmail ?? "-"}</td>
+              <td>
+                <Chip
+                  label={getBillingSubscriptionStatusLabel(subscription.status)}
+                  tone={getBillingCommercialStatusTone(subscription.status)}
+                />
+              </td>
+              <td>{formatDate(subscription.currentPeriodStart)} / {formatDate(subscription.currentPeriodEnd)}</td>
+              <td>{subscription.workspaceId ? "Con workspace" : "Sin match"}</td>
+              <td>{subscription.providerSubscriptionId ?? "-"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default async function AdminBillingPage() {
   const session = await requireAdminSession();
   let ledger;
@@ -253,9 +425,9 @@ export default async function AdminBillingPage() {
         <MetricCard icon={<AlertTriangle size={22} />} label="Live payments" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" />
         <MetricCard icon={<ShieldCheck size={22} />} label="Manual fulfillment" value={status.operations.manualFulfillment ? "ON" : "OFF"} note="Runbook manual activo" />
         <MetricCard icon={<LinkIcon size={22} />} label="Webhooks" value={status.operations.webhooks ? "ON" : "OFF"} note="Endpoint disponible, secret separado" />
-        <MetricCard icon={<Database size={22} />} label="Ledger" value={status.operations.ledger ? "ON" : "OFF"} note="BillingEvent solamente" />
+        <MetricCard icon={<Database size={22} />} label="Ledger" value={status.operations.ledger ? "ON" : "OFF"} note="Eventos y ledger comercial" />
         <MetricCard icon={<BadgePercent size={22} />} label="Entitlements automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" />
-        <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin ordenes/pagos/suscripciones" />
+        <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin match automatico" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Eventos fallidos" value={status.operations.failedEventsCount} note="Requieren revision segura" />
       </section>
 
@@ -336,9 +508,10 @@ export default async function AdminBillingPage() {
               ["Ledger", status.operations.ledger ? "ON" : "OFF"],
               ["Entitlements automaticos", "OFF"],
               ["Reconciliacion", "Manual"],
-              ["Ordenes persistidas", "Futuro / No implementado"],
-              ["Pagos persistidos", "Futuro / No implementado"],
-              ["Suscripciones persistidas", "Futuro / No implementado"],
+              ["Ordenes persistidas", ledger.recentOrdersCount],
+              ["Pagos persistidos", ledger.recentPaymentsCount],
+              ["Suscripciones persistidas", ledger.recentSubscriptionsCount],
+              ["Registros sin match", ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount],
               ["Manual fulfillment runbook", "Activo"],
             ]}
           />
@@ -349,6 +522,47 @@ export default async function AdminBillingPage() {
             ))}
           </div>
         </ProviderCard>
+      </section>
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <Database size={18} />
+            <span>Ledger comercial</span>
+          </div>
+          <h2>Ordenes, pagos y suscripciones</h2>
+          <p>
+            Estos registros reflejan eventos comerciales capturados desde Lemon. No otorgan acceso y no reemplazan
+            el fulfillment manual.
+          </p>
+        </div>
+        <section className="assessment-summary-grid">
+          <MetricCard icon={<Database size={22} />} label="Ordenes" value={ledger.recentOrdersCount} note="Creadas por eventos Lemon" />
+          <MetricCard icon={<Banknote size={22} />} label="Pagos" value={ledger.recentPaymentsCount} note="Solo con ID estable" />
+          <MetricCard icon={<BadgePercent size={22} />} label="Suscripciones" value={ledger.recentSubscriptionsCount} note="MSP y renewals futuros" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Sin match" value={ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount} note="Requiere revision manual" />
+        </section>
+        <h3>Ordenes recientes</h3>
+        <OrdersTable orders={ledger.recentOrders} />
+        <h3>Pagos recientes</h3>
+        <PaymentsTable payments={ledger.recentPayments} />
+        <h3>Suscripciones recientes</h3>
+        <SubscriptionsTable subscriptions={ledger.recentSubscriptions} />
+      </section>
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <AlertTriangle size={18} />
+            <span>Unmatched</span>
+          </div>
+          <h2>Registros sin match</h2>
+          <p>Requiere revision manual. No otorga acceso automaticamente.</p>
+        </div>
+        <h3>Ordenes sin match completo</h3>
+        <OrdersTable orders={ledger.unmatchedOrders} />
+        <h3>Suscripciones sin match</h3>
+        <SubscriptionsTable subscriptions={ledger.unmatchedSubscriptions} />
       </section>
 
       <section className="assessment-section glass-card">
@@ -386,6 +600,9 @@ export default async function AdminBillingPage() {
             ["Checkout devuelve not_configured", "Revisar API key, Store ID, Variant IDs, checkout disabled y redeploy pendiente."],
             ["Cliente pago pero no tiene acceso", "No hay grant automatico. Verificar Lemon, usar runbook manual y revisar solicitudes de desbloqueo."],
             ["Webhook no llega", "Revisar secret, URL configurada en Lemon, deploy del endpoint y firma invalida."],
+            ["Pago aparece en Lemon pero no en Shift Evidence", "Revisar entrega webhook, firma, evento fallido, ID estable y procesamiento comercial pendiente."],
+            ["Orden sin match", "Verificar email, workspace y assessment. El match manual queda para un hito posterior."],
+            ["Pago visible pero sin acceso", "Correcto por diseno: el ledger no concede acceso. Usar fulfillment manual."],
             ["Evento fallido", "Revisar error safe. No otorgar acceso manual sin verificar Lemon."],
             ["Refund o cancelacion", "No borrar datos. Marcar revision manual y usar runbook."],
           ].map(([title, description]) => (

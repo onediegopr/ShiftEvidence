@@ -29,7 +29,7 @@ vi.mock("../../src/lib/prisma", () => ({
 }));
 
 describe("billing admin ledger service", () => {
-  it("reads BillingEvent summaries without touching orders, payments, subscriptions or grants", async () => {
+  it("reads BillingEvent and commercial ledger summaries without mutating billing records", async () => {
     const { getBillingAdminLedgerSnapshot } = await import("../../src/server/billing/admin/billingAdminLedgerService");
     const event = {
       id: "event_1",
@@ -40,6 +40,55 @@ describe("billing admin ledger service", () => {
       receivedAt: new Date("2026-05-31T10:00:00.000Z"),
       processedAt: new Date("2026-05-31T10:00:01.000Z"),
       errorMessage: null,
+      createdAt: new Date("2026-05-31T10:00:00.000Z"),
+    };
+    const order = {
+      id: "order_1",
+      provider: "lemon_squeezy",
+      providerOrderId: "provider_order_1",
+      planId: "starter_readiness",
+      amountCents: 49000,
+      currency: "USD",
+      status: "paid",
+      customerEmail: "buyer@example.com",
+      userId: null,
+      workspaceId: null,
+      assessmentId: null,
+      paidAt: new Date("2026-05-31T10:00:00.000Z"),
+      refundedAt: null,
+      cancelledAt: null,
+      createdAt: new Date("2026-05-31T10:00:00.000Z"),
+    };
+    const payment = {
+      id: "payment_1",
+      provider: "lemon_squeezy",
+      providerPaymentId: "provider_payment_1",
+      orderId: "order_1",
+      amountCents: 49000,
+      currency: "USD",
+      status: "paid",
+      paidAt: new Date("2026-05-31T10:00:00.000Z"),
+      refundedAt: null,
+      failedAt: null,
+      createdAt: new Date("2026-05-31T10:00:00.000Z"),
+      order: {
+        providerOrderId: "provider_order_1",
+      },
+    };
+    const subscription = {
+      id: "subscription_1",
+      provider: "lemon_squeezy",
+      providerSubscriptionId: "provider_subscription_1",
+      planId: "msp_partner",
+      customerEmail: "msp@example.com",
+      userId: null,
+      workspaceId: null,
+      status: "active",
+      currentPeriodStart: new Date("2026-05-31T10:00:00.000Z"),
+      currentPeriodEnd: new Date("2026-06-30T10:00:00.000Z"),
+      cancelledAt: null,
+      expiredAt: null,
+      paymentFailedAt: null,
       createdAt: new Date("2026-05-31T10:00:00.000Z"),
     };
 
@@ -74,6 +123,13 @@ describe("billing admin ledger service", () => {
     prismaMock.billingEvent.findFirst.mockResolvedValueOnce({
       receivedAt: event.receivedAt,
     });
+    prismaMock.billingOrder.findMany
+      .mockResolvedValueOnce([order])
+      .mockResolvedValueOnce([order]);
+    prismaMock.billingPayment.findMany.mockResolvedValueOnce([payment]);
+    prismaMock.billingSubscription.findMany
+      .mockResolvedValueOnce([subscription])
+      .mockResolvedValueOnce([subscription]);
 
     const snapshot = await getBillingAdminLedgerSnapshot();
 
@@ -89,17 +145,34 @@ describe("billing admin ledger service", () => {
           count: 3,
         },
       ],
+      recentOrdersCount: 1,
+      recentPaymentsCount: 1,
+      recentSubscriptionsCount: 1,
+      unmatchedOrdersCount: 1,
+      unmatchedSubscriptionsCount: 1,
     });
     expect(snapshot.recentEvents[0]).toMatchObject({
       id: "event_1",
       provider: "lemon_squeezy",
       status: "processed",
     });
-    expect(prismaMock.billingOrder.findMany).not.toHaveBeenCalled();
+    expect(snapshot.recentOrders[0]).toMatchObject({
+      id: "order_1",
+      providerOrderId: "provider_order_1",
+      status: "paid",
+    });
+    expect(snapshot.recentPayments[0]).toMatchObject({
+      id: "payment_1",
+      providerPaymentId: "provider_payment_1",
+      providerOrderId: "provider_order_1",
+    });
+    expect(snapshot.recentSubscriptions[0]).toMatchObject({
+      id: "subscription_1",
+      providerSubscriptionId: "provider_subscription_1",
+      status: "active",
+    });
     expect(prismaMock.billingOrder.create).not.toHaveBeenCalled();
-    expect(prismaMock.billingPayment.findMany).not.toHaveBeenCalled();
     expect(prismaMock.billingPayment.create).not.toHaveBeenCalled();
-    expect(prismaMock.billingSubscription.findMany).not.toHaveBeenCalled();
     expect(prismaMock.billingSubscription.create).not.toHaveBeenCalled();
     expect(prismaMock.billingEntitlementGrant.findMany).not.toHaveBeenCalled();
     expect(prismaMock.billingEntitlementGrant.create).not.toHaveBeenCalled();

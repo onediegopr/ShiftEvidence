@@ -18,6 +18,9 @@ function lemonPayload(overrides?: {
       type: "orders",
       attributes: {
         test_mode: true,
+        total: 49000,
+        currency: "USD",
+        user_email: "buyer@example.com",
       },
     },
   });
@@ -58,22 +61,32 @@ describe("Lemon webhook event persistence", () => {
     ).toThrow("Lemon webhook payload is missing data.id.");
   });
 
-  it("persists only BillingEvent as technically processed capture", async () => {
+  it("persists BillingEvent and maps safe commercial ledger entities", async () => {
     const db = {
       billingEvent: {
         create: vi.fn().mockResolvedValue({
           id: "billing_event_123",
+          provider: "lemon_squeezy",
+          providerEventId: "123",
+          eventType: "order_created",
           status: "processed",
         }),
+        update: vi.fn(),
       },
       billingOrder: {
         create: vi.fn(),
+        findUnique: vi.fn().mockResolvedValue(null),
+        update: vi.fn(),
       },
       billingPayment: {
         create: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
       },
       billingSubscription: {
         create: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
       },
       billingEntitlementGrant: {
         create: vi.fn(),
@@ -97,7 +110,15 @@ describe("Lemon webhook event persistence", () => {
         processedAt: expect.any(Date),
       }),
     });
-    expect(db.billingOrder.create).not.toHaveBeenCalled();
+    expect(db.billingOrder.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        provider: "lemon_squeezy",
+        providerOrderId: "123",
+        planId: "starter_readiness",
+        amountCents: 49000,
+        status: "paid",
+      }),
+    });
     expect(db.billingPayment.create).not.toHaveBeenCalled();
     expect(db.billingSubscription.create).not.toHaveBeenCalled();
     expect(db.billingEntitlementGrant.create).not.toHaveBeenCalled();
