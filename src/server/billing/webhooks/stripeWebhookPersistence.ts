@@ -2,6 +2,7 @@ import { Prisma, type PrismaClient } from "@prisma/client";
 import { prisma } from "../../../lib/prisma";
 import { createBillingEventIdempotencyKey } from "../ledger/billingIdempotency";
 import { buildBillingEventCreateData } from "../ledger/billingLedgerService";
+import { processStripeBillingEvent } from "../ledger/stripeBusinessLedgerService";
 import type { ParsedStripeWebhookEvent } from "./stripeWebhookEvent";
 
 type DbClient = PrismaClient | Prisma.TransactionClient;
@@ -42,23 +43,28 @@ export async function persistStripeWebhookEvent(params: {
         processedAt: new Date(),
       }),
     });
+    const businessLedger = await processStripeBillingEvent({
+      db,
+      billingEvent,
+      rawBody: typeof params.rawBody === "string" ? params.rawBody : params.rawBody.toString("utf8"),
+    });
 
     return {
       outcome: "created" as const,
       billingEvent,
+      businessLedger,
     };
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      const billingEvent = await db.billingEvent.update({
+      const billingEvent = await db.billingEvent.findUnique({
         where: {
           idempotencyKey,
         },
-        data: {
-          status: "ignored",
-          errorMessage: null,
-          processedAt: new Date(),
-        },
       });
+
+      if (!billingEvent) {
+        throw error;
+      }
 
       return {
         outcome: "duplicate_ignored" as const,
