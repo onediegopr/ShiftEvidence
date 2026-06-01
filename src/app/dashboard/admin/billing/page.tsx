@@ -18,6 +18,7 @@ import {
   fulfillBillingOrderAction,
   matchBillingOrderAction,
   matchBillingSubscriptionAction,
+  revokeBillingGrantedEntitlementAction,
 } from "./actions";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import {
@@ -35,6 +36,10 @@ import {
   getBillingCommercialStatusTone,
   getBillingEventStatusLabel,
   getBillingEventStatusTone,
+  getBillingGrantReviewStatusLabel,
+  getBillingGrantReviewStatusTone,
+  getBillingGrantStatusLabel,
+  getBillingGrantStatusTone,
   getBillingMatchStatusLabel,
   getBillingMatchStatusTone,
   getBillingOrderStatusLabel,
@@ -53,6 +58,10 @@ import {
   getBillingOrderMatchStatus,
   getBillingSubscriptionMatchStatus,
 } from "../../../../server/billing/admin/billingManualMatchService";
+import {
+  getBillingRefundCancelReviewItems,
+  type BillingGrantReviewItem,
+} from "../../../../server/billing/admin/billingRefundCancelReviewService";
 import {
   getBillingProviderStatusSnapshot,
   getCheckoutPlanLinks,
@@ -431,6 +440,74 @@ function BillingFulfillmentPanel({
   );
 }
 
+function BillingRevocationReviewPanel({ reviewItems }: { reviewItems: BillingGrantReviewItem[] }) {
+  if (reviewItems.length === 0) {
+    return <p className="assessment-empty-note">No hay grants de billing para revisar todavia.</p>;
+  }
+
+  return (
+    <div style={{ display: "grid", gap: "16px" }}>
+      {reviewItems.map((item) => (
+        <article key={item.id} className="glass-card report-history-card">
+          <div className="report-history-header">
+            <div>
+              <span className="assessment-preview-label">Grant de billing</span>
+              <h3>{item.entitlementKey}</h3>
+            </div>
+            <Chip
+              label={getBillingGrantReviewStatusLabel(item.reviewStatus)}
+              tone={getBillingGrantReviewStatusTone(item.reviewStatus)}
+            />
+          </div>
+          <FieldList
+            rows={[
+              ["Provider Order ID", item.providerOrderId ?? "-"],
+              ["Order status", item.orderStatus ? getBillingOrderStatusLabel(item.orderStatus) : "-"],
+              ["Provider Subscription ID", item.providerSubscriptionId ?? "-"],
+              ["Subscription status", item.subscriptionStatus ? getBillingSubscriptionStatusLabel(item.subscriptionStatus) : "-"],
+              ["Grant status", <Chip key="grant-status" label={getBillingGrantStatusLabel(item.grantStatus)} tone={getBillingGrantStatusTone(item.grantStatus)} />],
+              ["Fuente", item.source],
+              ["Usuario", item.userId ?? "-"],
+              ["Workspace", item.workspaceId ?? "-"],
+              ["Assessment", item.assessmentId ?? "-"],
+              ["Concedido", formatDate(item.grantedAt)],
+              ["Revocado", formatDate(item.revokedAt)],
+            ]}
+          />
+          <p className="assessment-inline-note">{item.recommendedAction}</p>
+          {item.canRevoke ? (
+            <form action={revokeBillingGrantedEntitlementAction} className="billing-match-form" style={{ marginTop: "14px" }}>
+              <input type="hidden" name="billingEntitlementGrantId" value={item.id} />
+              <div className="dashboard-banner dashboard-banner-error" role="alert" style={{ marginBottom: "12px" }}>
+                Esta accion puede quitar acceso real al assessment.
+              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                <input type="checkbox" name="confirmRevocation" value="confirmed" />
+                <span>Confirmo que revise el refund/cancel y quiero revocar este acceso.</span>
+              </label>
+              <label style={{ display: "grid", gap: "6px" }}>
+                <span className="assessment-preview-label">Nota interna obligatoria</span>
+                <textarea
+                  className="admin-input"
+                  name="note"
+                  rows={2}
+                  required
+                  placeholder="Motivo operativo de la revocacion. No guardar secretos ni datos de tarjeta."
+                />
+              </label>
+              <button className="btn btn-secondary" type="submit">Revocar acceso manual</button>
+            </form>
+          ) : (
+            <p className="assessment-inline-note">
+              No hay accion automatica. Las suscripciones, fuentes no manuales y grants ya revocados quedan solo para revision.
+            </p>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function ProviderCard({
   icon,
   title,
@@ -735,6 +812,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
   const fulfillmentPreviews = await previewBillingOrdersFulfillment({
     billingOrderIds: ledger.recentOrders.map((order) => order.id),
   });
+  const revocationReviewItems = await getBillingRefundCancelReviewItems(25);
   const savedMessage = query?.saved
     ? query.saved === "order-match"
       ? "Match de orden guardado."
@@ -742,7 +820,9 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         ? "Match de suscripcion guardado."
         : query.saved === "fulfillment"
           ? "Acceso manual concedido o confirmado idempotentemente."
-          : "Cambios guardados."
+          : query.saved === "revocation"
+            ? "Revocacion manual registrada o confirmada idempotentemente."
+            : "Cambios guardados."
     : null;
   const errorMessage = formatQueryMessage(query?.error);
 
@@ -901,6 +981,24 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         <PaymentsTable payments={ledger.recentPayments} />
         <h3>Suscripciones recientes</h3>
         <SubscriptionsTable subscriptions={ledger.recentSubscriptions} />
+      </section>
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <AlertTriangle size={18} />
+            <span>Refund/cancel boundary</span>
+          </div>
+          <h2>Riesgos y revocaciones</h2>
+          <p>
+            Esta vista muestra grants concedidos por fulfillment billing manual. Los refunds y cancelaciones solo
+            marcan revision; no revocan acceso automaticamente.
+          </p>
+        </div>
+        <div className="dashboard-banner dashboard-banner-warning" role="alert" style={{ marginBottom: "16px" }}>
+          Esta accion puede quitar acceso real al assessment. Requiere confirmacion explicita y nota interna.
+        </div>
+        <BillingRevocationReviewPanel reviewItems={revocationReviewItems} />
       </section>
 
       <section className="assessment-section glass-card">

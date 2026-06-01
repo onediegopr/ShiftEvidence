@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import { fulfillBillingOrderManually } from "../../../../server/billing/admin/billingManualFulfillmentService";
+import { revokeBillingGrantedEntitlement } from "../../../../server/billing/admin/billingManualRevocationService";
 import { safeRedirectError } from "../../../../server/assessments/formUtils";
 import {
   matchBillingOrder,
@@ -75,6 +76,26 @@ export async function fulfillBillingOrderAction(formData: FormData) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo conceder acceso manual.";
+    redirectParams = `error=${safeRedirectError(message)}`;
+  }
+
+  getBillingRedirect(redirectParams);
+}
+
+export async function revokeBillingGrantedEntitlementAction(formData: FormData) {
+  const session = await requireAdminSession();
+  let redirectParams = "saved=revocation";
+
+  try {
+    await revokeBillingGrantedEntitlement({
+      adminUserId: session.user.id,
+      adminEmail: session.user.email,
+      billingEntitlementGrantId: String(formData.get("billingEntitlementGrantId") ?? ""),
+      confirmationAccepted: formData.get("confirmRevocation") === "confirmed",
+      note: readOptionalFormText(formData, "note"),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo revocar el acceso manual.";
     redirectParams = `error=${safeRedirectError(message)}`;
   }
 

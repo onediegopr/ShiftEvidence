@@ -87,6 +87,13 @@ function compactMetadata(value: Record<string, unknown>) {
   return output;
 }
 
+function isUniqueGrantConflict(error: unknown) {
+  return typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2002";
+}
+
 export function getBillingPlanEntitlementKeys(planId: string): EntitlementKey[] {
   return billingPlanFulfillmentConfig[planId]?.entitlementKeys ?? [];
 }
@@ -315,20 +322,26 @@ export async function fulfillBillingOrderManually(params: {
       });
 
       if (!existingGrant) {
-        const createdGrant = await tx.billingEntitlementGrant.create({
-          data: {
-            billingOrderId: order.id,
-            userId: order.userId,
-            workspaceId: order.workspaceId,
-            assessmentId: order.assessmentId,
-            entitlementKey,
-            status: "granted",
-            source: "manual_billing_fulfillment",
-            reviewNotes: note,
-            grantedAt,
-          },
-        });
-        createdGrants.push(createdGrant);
+        try {
+          const createdGrant = await tx.billingEntitlementGrant.create({
+            data: {
+              billingOrderId: order.id,
+              userId: order.userId,
+              workspaceId: order.workspaceId,
+              assessmentId: order.assessmentId,
+              entitlementKey,
+              status: "granted",
+              source: "manual_billing_fulfillment",
+              reviewNotes: note,
+              grantedAt,
+            },
+          });
+          createdGrants.push(createdGrant);
+        } catch (error) {
+          if (!isUniqueGrantConflict(error)) {
+            throw error;
+          }
+        }
       }
 
       const assessmentEntitlement = await grantAssessmentEntitlement({

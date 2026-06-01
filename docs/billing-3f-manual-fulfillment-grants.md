@@ -83,13 +83,13 @@ For an eligible fulfillment action:
 
 - `assessmentId + entitlementKey`.
 
-`BillingEntitlementGrant` idempotency in v1 is service-level, not DB-level. The service checks for an existing active grant for:
+`BillingEntitlementGrant` idempotency in v1 shipped as service-level, not DB-level. The service checks for an existing active grant for:
 
 - `billingOrderId + entitlementKey`
 
 before creating a new grant.
 
-There is no unique constraint yet on `BillingEntitlementGrant(billingOrderId, entitlementKey)`. A future hardening milestone should add an additive unique constraint or equivalent DB-level guard to protect against concurrent double-submit races.
+BILLING-3G adds a local additive migration for a DB-level unique index on `BillingEntitlementGrant(billingOrderId, entitlementKey)`. That migration is not applied to production in 3G; until a separate production migration hito applies it, production still relies on service-level idempotency plus duplicate-conflict handling.
 
 ## Admin UI
 
@@ -163,4 +163,4 @@ Recommended next milestone:
 
 - BILLING-3F-AUDIT-PUSH for controlled commit/push;
 - then BILLING-3F-PROD-SMOKE with a paid test-mode order, never a live payment;
-- later hardening: DB-level unique guard for `BillingEntitlementGrant(billingOrderId, entitlementKey)`.
+- BILLING-3G for DB-level unique hardening and manual refund/cancel revocation boundary.

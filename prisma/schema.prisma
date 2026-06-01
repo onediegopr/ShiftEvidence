@@ -1302,6 +1302,7 @@ model BillingEntitlementGrant {
   @@index([entitlementKey])
   @@index([status])
   @@index([createdAt])
+  @@unique([billingOrderId, entitlementKey])
 }
 
 enum WorkspacePlan {

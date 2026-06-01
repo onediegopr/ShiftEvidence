@@ -5,6 +5,10 @@ import {
   formatBooleanYesNo,
   getBillingEventStatusLabel,
   getBillingEventStatusTone,
+  getBillingGrantReviewStatusLabel,
+  getBillingGrantReviewStatusTone,
+  getBillingGrantStatusLabel,
+  getBillingGrantStatusTone,
   getBillingOrderStatusLabel,
   getBillingPaymentStatusLabel,
   getBillingSubscriptionStatusLabel,
@@ -41,5 +45,14 @@ describe("billing admin status labels", () => {
     expect(getBillingPaymentStatusLabel("failed")).toBe("Fallido");
     expect(getBillingSubscriptionStatusLabel("active")).toBe("Activa");
     expect(getBillingSubscriptionStatusLabel("payment_failed")).toBe("Pago fallido");
+  });
+
+  it("maps billing grant and refund review statuses to Spanish admin labels", () => {
+    expect(getBillingGrantStatusLabel("granted")).toBe("Concedido");
+    expect(getBillingGrantStatusLabel("revoked")).toBe("Revocado");
+    expect(getBillingGrantStatusTone("pending_review")).toBe("warning");
+    expect(getBillingGrantReviewStatusLabel("requires_review")).toBe("Requiere revision");
+    expect(getBillingGrantReviewStatusLabel("no_action")).toBe("Sin accion");
+    expect(getBillingGrantReviewStatusTone("requires_review")).toBe("warning");
   });
 });

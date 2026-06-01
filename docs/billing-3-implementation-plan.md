@@ -120,7 +120,8 @@ Scope:
 
 - persist refund/cancellation/failed payment events;
 - mark orders/subscriptions at risk;
-- admin decides revocation;
+- add DB-level idempotency hardening for billing grants;
+- admin decides revocation through an explicit action;
 - no automatic deletion.
 
 Rules:
@@ -134,6 +135,13 @@ Exit criteria:
 - admin sees risk state;
 - manual revoke action documented and audited;
 - duplicate refund/cancel events safe.
+
+Implementation notes:
+
+- `BillingEntitlementGrant(billingOrderId, entitlementKey)` should be protected by an additive unique index.
+- Production migration must be approved separately from code generation.
+- Revocation may only target grants created by `manual_billing_fulfillment`.
+- Webhook refund/cancel events never call revocation directly.
 
 ## 7. BILLING-3F - Production Test-Mode End-to-End Smoke
 

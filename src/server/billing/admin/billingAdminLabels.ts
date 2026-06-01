@@ -1,9 +1,11 @@
 import type {
   BillingEventStatus,
+  BillingGrantStatus,
   BillingOrderStatus,
   BillingPaymentStatus,
   BillingSubscriptionStatus,
 } from "@prisma/client";
+import type { BillingGrantReviewStatus } from "./billingRefundCancelReviewService";
 import type { BillingMatchStatus } from "./billingManualMatchService";
 
 export type BillingRiskLevel = "bajo" | "medio" | "alto";
@@ -110,6 +112,50 @@ export function getBillingMatchStatusTone(status: BillingMatchStatus) {
     partial: "warning",
     complete: "good",
     needs_review: "warning",
+  };
+
+  return tones[status];
+}
+
+export function getBillingGrantStatusLabel(status: BillingGrantStatus) {
+  const labels: Record<BillingGrantStatus, string> = {
+    pending_review: "Pendiente de revision",
+    granted: "Concedido",
+    revoked: "Revocado",
+    rejected: "Rechazado",
+  };
+
+  return labels[status];
+}
+
+export function getBillingGrantStatusTone(status: BillingGrantStatus) {
+  const tones: Record<BillingGrantStatus, "neutral" | "good" | "warning" | "danger"> = {
+    pending_review: "warning",
+    granted: "good",
+    revoked: "danger",
+    rejected: "neutral",
+  };
+
+  return tones[status];
+}
+
+export function getBillingGrantReviewStatusLabel(status: BillingGrantReviewStatus) {
+  const labels: Record<BillingGrantReviewStatus, string> = {
+    granted: "Concedido",
+    requires_review: "Requiere revision",
+    revoked: "Revocado",
+    no_action: "Sin accion",
+  };
+
+  return labels[status];
+}
+
+export function getBillingGrantReviewStatusTone(status: BillingGrantReviewStatus) {
+  const tones: Record<BillingGrantReviewStatus, "neutral" | "good" | "warning" | "danger"> = {
+    granted: "good",
+    requires_review: "warning",
+    revoked: "danger",
+    no_action: "neutral",
   };
 
   return tones[status];

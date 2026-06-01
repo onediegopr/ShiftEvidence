@@ -21,6 +21,12 @@ const fulfillBillingOrderManuallyMock = vi.hoisted(() =>
   }),
 );
 
+const revokeBillingGrantedEntitlementMock = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({
+    status: "revoked",
+  }),
+);
+
 vi.mock("next/navigation", () => ({
   redirect: redirectMock,
 }));
@@ -31,6 +37,10 @@ vi.mock("../../src/server/admin/adminAuth", () => ({
 
 vi.mock("../../src/server/billing/admin/billingManualFulfillmentService", () => ({
   fulfillBillingOrderManually: fulfillBillingOrderManuallyMock,
+}));
+
+vi.mock("../../src/server/billing/admin/billingManualRevocationService", () => ({
+  revokeBillingGrantedEntitlement: revokeBillingGrantedEntitlementMock,
 }));
 
 vi.mock("../../src/server/billing/admin/billingManualMatchService", () => ({
@@ -66,5 +76,27 @@ describe("billing admin fulfillment actions", () => {
     formData.set("billingOrderId", "billing_order_1");
 
     await expect(fulfillBillingOrderAction(formData)).rejects.toThrow("/dashboard/admin/billing?error=");
+  });
+
+  it("requires admin session and revokes only by explicit grant id", async () => {
+    const { revokeBillingGrantedEntitlementAction } = await import("../../src/app/dashboard/admin/billing/actions");
+    const formData = new FormData();
+    formData.set("billingEntitlementGrantId", "grant_1");
+    formData.set("confirmRevocation", "confirmed");
+    formData.set("entitlementKeys", "pro_matrix_unlocked");
+    formData.set("note", "Refund verified in Lemon.");
+
+    await expect(revokeBillingGrantedEntitlementAction(formData)).rejects.toThrow(
+      "REDIRECT:/dashboard/admin/billing?saved=revocation",
+    );
+
+    expect(requireAdminSessionMock).toHaveBeenCalled();
+    expect(revokeBillingGrantedEntitlementMock).toHaveBeenCalledWith({
+      adminUserId: "admin_1",
+      adminEmail: "admin@example.invalid",
+      billingEntitlementGrantId: "grant_1",
+      confirmationAccepted: true,
+      note: "Refund verified in Lemon.",
+    });
   });
 });
