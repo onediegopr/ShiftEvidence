@@ -12,6 +12,7 @@ import {
   getBillingOrderStatusLabel,
   getBillingPaymentStatusLabel,
   getBillingSubscriptionStatusLabel,
+  maskBillingProviderId,
 } from "../../src/server/billing/admin/billingAdminLabels";
 
 describe("billing admin status labels", () => {
@@ -36,6 +37,13 @@ describe("billing admin status labels", () => {
     expect(formatBillingRiskLevel("bajo")).toBe("Bajo");
     expect(formatBillingRiskLevel("medio")).toBe("Medio");
     expect(formatBillingRiskLevel("alto")).toBe("Alto");
+  });
+
+  it("masks long provider ids for admin display without losing provider prefix", () => {
+    expect(maskBillingProviderId("cs_test_b1JiehZZVzCnrN1Swz6XfPpmusQditrjbEvNHUx1cPTG9YaqJ37bjWM5ZK"))
+      .toBe("cs_test_...jWM5ZK");
+    expect(maskBillingProviderId("pi_short")).toBe("pi_short");
+    expect(maskBillingProviderId(null)).toBe("-");
   });
 
   it("maps commercial ledger statuses to Spanish admin labels", () => {

@@ -45,6 +45,7 @@ import {
   getBillingOrderStatusLabel,
   getBillingPaymentStatusLabel,
   getBillingSubscriptionStatusLabel,
+  maskBillingProviderId,
 } from "../../../../server/billing/admin/billingAdminLabels";
 import {
   getBillingAdminMatchCandidates,
@@ -408,7 +409,7 @@ function BillingFulfillmentPanel({
       </div>
       <FieldList
         rows={[
-          ["Provider Order ID", order.providerOrderId ?? "-"],
+          ["Provider Order ID", maskBillingProviderId(order.providerOrderId)],
           ["Estado pago", getBillingOrderStatusLabel(order.status)],
           ["Match", getBillingMatchStatusLabel(getBillingOrderMatchStatus(order))],
           ["Entitlements", preview.entitlementKeys.length > 0 ? preview.entitlementKeys.join(", ") : "Sin mapping soportado"],
@@ -470,9 +471,9 @@ function BillingRevocationReviewPanel({ reviewItems }: { reviewItems: BillingGra
           </div>
           <FieldList
             rows={[
-              ["Provider Order ID", item.providerOrderId ?? "-"],
+              ["Provider Order ID", maskBillingProviderId(item.providerOrderId)],
               ["Order status", item.orderStatus ? getBillingOrderStatusLabel(item.orderStatus) : "-"],
-              ["Provider Subscription ID", item.providerSubscriptionId ?? "-"],
+              ["Provider Subscription ID", maskBillingProviderId(item.providerSubscriptionId)],
               ["Subscription status", item.subscriptionStatus ? getBillingSubscriptionStatusLabel(item.subscriptionStatus) : "-"],
               ["Grant status", <Chip key="grant-status" label={getBillingGrantStatusLabel(item.grantStatus)} tone={getBillingGrantStatusTone(item.grantStatus)} />],
               ["Fuente", item.source],
@@ -576,7 +577,7 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
               <td>
                 <Chip label={getBillingEventStatusLabel(event.status)} tone={getBillingEventStatusTone(event.status)} />
               </td>
-              <td>{event.providerEventId}</td>
+              <td>{maskBillingProviderId(event.providerEventId)}</td>
               <td>{event.errorMessage ?? "-"}</td>
               <td>{formatDate(event.processedAt)}</td>
             </tr>
@@ -642,7 +643,7 @@ function OrdersTable({
                   tone={getBillingMatchStatusTone(getBillingOrderMatchStatus(order))}
                 />
               </td>
-              <td>{order.providerOrderId ?? "-"}</td>
+              <td>{maskBillingProviderId(order.providerOrderId)}</td>
               <td>{formatDate(order.refundedAt ?? order.paidAt)}</td>
             </tr>
           ))}
@@ -657,7 +658,7 @@ function OrdersTable({
                 rows={[
                   ["Plan", formatPlan(order.planId)],
                   ["Email cliente", order.customerEmail ?? "-"],
-                  ["Provider Order ID", order.providerOrderId ?? "-"],
+                  ["Provider Order ID", maskBillingProviderId(order.providerOrderId)],
                   ["Estado actual", getBillingMatchStatusLabel(getBillingOrderMatchStatus(order))],
                 ]}
               />
@@ -712,8 +713,8 @@ function PaymentsTable({ payments }: { payments: BillingAdminLedgerPayment[] }) 
                   tone={getBillingCommercialStatusTone(payment.status)}
                 />
               </td>
-              <td>{payment.providerPaymentId ?? "-"}</td>
-              <td>{payment.providerOrderId ?? "-"}</td>
+              <td>{maskBillingProviderId(payment.providerPaymentId)}</td>
+              <td>{maskBillingProviderId(payment.providerOrderId)}</td>
               <td>{payment.orderId}</td>
             </tr>
           ))}
@@ -773,7 +774,7 @@ function SubscriptionsTable({
                   tone={getBillingMatchStatusTone(getBillingSubscriptionMatchStatus(subscription))}
                 />
               </td>
-              <td>{subscription.providerSubscriptionId ?? "-"}</td>
+              <td>{maskBillingProviderId(subscription.providerSubscriptionId)}</td>
             </tr>
           ))}
         </tbody>
@@ -787,7 +788,7 @@ function SubscriptionsTable({
                 rows={[
                   ["Plan", formatPlan(subscription.planId)],
                   ["Email cliente", subscription.customerEmail ?? "-"],
-                  ["Provider Subscription ID", subscription.providerSubscriptionId ?? "-"],
+                  ["Provider Subscription ID", maskBillingProviderId(subscription.providerSubscriptionId)],
                   ["Estado actual", getBillingMatchStatusLabel(getBillingSubscriptionMatchStatus(subscription))],
                 ]}
               />

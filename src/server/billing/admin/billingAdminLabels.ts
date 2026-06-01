@@ -18,6 +18,14 @@ export function formatBooleanYesNo(value: boolean) {
   return value ? "Si" : "No";
 }
 
+export function maskBillingProviderId(value: string | null | undefined) {
+  const normalized = value?.trim();
+  if (!normalized) return "-";
+  if (normalized.length <= 14) return normalized;
+
+  return `${normalized.slice(0, 8)}...${normalized.slice(-6)}`;
+}
+
 export function formatBillingRiskLevel(value: BillingRiskLevel) {
   const labels: Record<BillingRiskLevel, string> = {
     bajo: "Bajo",
