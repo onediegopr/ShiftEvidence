@@ -37,6 +37,9 @@ export default function PricingPage() {
               <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
                 {paymentOptionsCopy.notActive} {paymentOptionsCopy.cardCheckout}
               </p>
+              <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
+                Card payments are processed securely by Stripe. Assessment access may require manual verification and fulfillment depending on plan and account match.
+              </p>
             </div>
           </div>
         </section>

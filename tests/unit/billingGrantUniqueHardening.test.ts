@@ -80,6 +80,6 @@ describe("BillingEntitlementGrant DB-level idempotency hardening", () => {
 
     expect(result.status).toBe("already_granted");
     expect(db.billingEntitlementGrant.create).toHaveBeenCalledTimes(1);
-    expect(db.assessmentEntitlement.upsert).toHaveBeenCalledTimes(1);
+    expect(db.assessmentEntitlement.upsert).not.toHaveBeenCalled();
   });
 });

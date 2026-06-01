@@ -64,6 +64,11 @@ import {
   type BillingGrantReviewItem,
 } from "../../../../server/billing/admin/billingRefundCancelReviewService";
 import {
+  getBillingReconciliationSnapshot,
+  type BillingReconciliationItem,
+  type BillingReconciliationSeverity,
+} from "../../../../server/billing/admin/billingReconciliationService";
+import {
   getBillingProviderStatusSnapshot,
   getCheckoutPlanLinks,
 } from "../../../../server/billing/admin/billingProviderStatusService";
@@ -200,6 +205,44 @@ function statusTone(value: string) {
   if (value.includes("test") || value.includes("ok") || value === "processed") return "good";
   if (value.includes("manual") || value.includes("pendiente") || value.includes("medio")) return "warning";
   return "neutral";
+}
+
+function reconciliationTone(value: BillingReconciliationSeverity) {
+  const tones: Record<BillingReconciliationSeverity, "neutral" | "good" | "warning" | "danger"> = {
+    ok: "good",
+    review: "warning",
+    warning: "warning",
+    critical: "danger",
+  };
+
+  return tones[value];
+}
+
+function reconciliationLabel(value: BillingReconciliationSeverity) {
+  const labels: Record<BillingReconciliationSeverity, string> = {
+    ok: "OK",
+    review: "Revisar",
+    warning: "Advertencia",
+    critical: "Accion requerida",
+  };
+
+  return labels[value];
+}
+
+function fulfillmentStatusLabel(preview?: BillingFulfillmentPreview) {
+  if (!preview) return "No evaluado";
+  if (preview.status === "already_granted") return "Fulfilled";
+  if (preview.eligible) return "Pendiente fulfillment";
+  return "No elegible";
+}
+
+function orderActionLabel(order: BillingAdminLedgerOrder, preview?: BillingFulfillmentPreview) {
+  if (getBillingOrderMatchStatus(order) !== "complete" && order.status === "paid") return "Match manual";
+  if (preview?.eligible) return "Fulfillment manual";
+  if (preview?.status === "already_granted") return "OK";
+  if (order.status === "refunded" || order.status === "cancelled") return "Revisar refund/cancel";
+  if (order.status === "pending") return "Esperar pago";
+  return "Revisar";
 }
 
 function Chip({ label, tone = "neutral" }: { label: string; tone?: "neutral" | "good" | "warning" | "danger" }) {
@@ -588,6 +631,40 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
   );
 }
 
+function ReconciliationPanel({ items }: { items: BillingReconciliationItem[] }) {
+  if (items.length === 0) {
+    return <p className="assessment-empty-note">No hay inconsistencias visibles en el snapshot actual.</p>;
+  }
+
+  return (
+    <div style={{ display: "grid", gap: "12px" }}>
+      {items.map((item) => (
+        <article key={item.id} className="glass-card report-history-card">
+          <div className="report-history-header">
+            <div>
+              <span className="assessment-preview-label">{formatProvider(item.provider)}</span>
+              <h3>{item.title}</h3>
+            </div>
+            <Chip label={reconciliationLabel(item.severity)} tone={reconciliationTone(item.severity)} />
+          </div>
+          <FieldList
+            rows={[
+              ["Plan", item.planId ? formatPlan(item.planId) : "-"],
+              ["Cliente", item.customerEmail ?? "-"],
+              ["Orden interna", item.billingOrderId ?? "-"],
+              ["Pago interno", item.billingPaymentId ?? "-"],
+              ["Suscripcion interna", item.billingSubscriptionId ?? "-"],
+              ["Evento interno", item.billingEventId ?? "-"],
+            ]}
+          />
+          <p className="assessment-inline-note">{item.detail}</p>
+          <p className="assessment-inline-note"><strong>Proximo paso:</strong> {item.action}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function OrdersTable({
   orders,
   candidates,
@@ -618,6 +695,8 @@ function OrdersTable({
             <th>Monto</th>
             <th>Match</th>
             <th>Estado match</th>
+            <th>Fulfillment</th>
+            <th>Accion</th>
             <th>Provider Order ID</th>
             <th>Pago/Reembolso</th>
           </tr>
@@ -643,6 +722,8 @@ function OrdersTable({
                   tone={getBillingMatchStatusTone(getBillingOrderMatchStatus(order))}
                 />
               </td>
+              <td>{fulfillmentStatusLabel(fulfillmentPreviews?.[order.id])}</td>
+              <td>{orderActionLabel(order, fulfillmentPreviews?.[order.id])}</td>
               <td>{maskBillingProviderId(order.providerOrderId)}</td>
               <td>{formatDate(order.refundedAt ?? order.paidAt)}</td>
             </tr>
@@ -822,6 +903,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
   const fulfillmentPreviews = await previewBillingOrdersFulfillment({
     billingOrderIds: ledger.recentOrders.map((order) => order.id),
   });
+  const reconciliation = await getBillingReconciliationSnapshot(ledger);
   const revocationReviewItems = await getBillingRefundCancelReviewItems(25);
   const savedMessage = query?.saved
     ? query.saved === "order-match"
@@ -868,6 +950,8 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         <MetricCard icon={<BadgePercent size={22} />} label="Entitlements automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" />
         <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin match automatico" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Eventos fallidos" value={status.operations.failedEventsCount} note="Requieren revision segura" />
+        <MetricCard icon={<AlertTriangle size={22} />} label="Acciones requeridas" value={reconciliation.actionRequiredCount} note="Billing owner debe revisar" />
+        <MetricCard icon={<ShieldCheck size={22} />} label="Ordenes fulfilled" value={reconciliation.fulfilledOrderCount} note="Con grant activo" />
       </section>
 
       <section className="report-history-grid">
@@ -957,6 +1041,8 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
               ["Pagos persistidos", ledger.recentPaymentsCount],
               ["Suscripciones persistidas", ledger.recentSubscriptionsCount],
               ["Registros sin match", ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount],
+              ["Acciones requeridas", reconciliation.actionRequiredCount],
+              ["Ordenes fulfilled", reconciliation.fulfilledOrderCount],
               ["Manual fulfillment runbook", "Activo"],
             ]}
           />
@@ -986,6 +1072,8 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           <MetricCard icon={<Banknote size={22} />} label="Pagos" value={ledger.recentPaymentsCount} note="Solo con ID estable" />
           <MetricCard icon={<BadgePercent size={22} />} label="Suscripciones" value={ledger.recentSubscriptionsCount} note="MSP y renewals futuros" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Sin match" value={ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount} note="Requiere revision manual" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Accion requerida" value={reconciliation.actionRequiredCount} note="Prioridad operativa" />
+          <MetricCard icon={<ShieldCheck size={22} />} label="OK" value={reconciliation.okCount} note="Sin accion inmediata" />
         </section>
         <h3>Ordenes recientes</h3>
         <OrdersTable
@@ -997,6 +1085,32 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         <PaymentsTable payments={ledger.recentPayments} />
         <h3>Suscripciones recientes</h3>
         <SubscriptionsTable subscriptions={ledger.recentSubscriptions} />
+      </section>
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <Gauge size={18} />
+            <span>Reconciliacion</span>
+          </div>
+          <h2>Acciones requeridas</h2>
+          <p>
+            Vista read-only para detectar ordenes pagadas sin match, pagos sin fulfillment, eventos fallidos,
+            planes desconocidos y subscriptions que requieren revision. No concede ni revoca acceso.
+          </p>
+        </div>
+        <section className="assessment-summary-grid">
+          <MetricCard icon={<AlertTriangle size={22} />} label="Criticas" value={reconciliation.criticalCount} note="Actuar antes de fulfillment" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Warnings" value={reconciliation.warningCount} note="Verificar ledger" />
+          <MetricCard icon={<Gauge size={22} />} label="Revision" value={reconciliation.reviewCount} note="No automatizar" />
+          <MetricCard icon={<ShieldCheck size={22} />} label="OK" value={reconciliation.okCount} note="Sin accion inmediata" />
+        </section>
+        <div className="assessment-inline-actions" style={{ marginBottom: "16px" }}>
+          <Link href="/dashboard/admin/billing/export/reconciliation" className="btn btn-secondary">
+            Exportar CSV
+          </Link>
+        </div>
+        <ReconciliationPanel items={reconciliation.items} />
       </section>
 
       <section className="assessment-section glass-card">

@@ -73,6 +73,17 @@ function errorMessage(error: string | undefined) {
   }
 }
 
+function statusMessage(status: string | undefined) {
+  switch (status) {
+    case "success":
+      return "Payment was completed in Stripe test checkout. Access may require manual verification and fulfillment before the assessment is unlocked.";
+    case "cancelled":
+      return "Checkout was cancelled. You can retry card checkout or contact billing support for an invoice.";
+    default:
+      return null;
+  }
+}
+
 export default async function BillingCheckoutPage({ params, searchParams }: BillingCheckoutPageProps) {
   const { plan: planSlug } = await params;
   const query = await searchParams;
@@ -85,6 +96,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
   const plan = state.plan;
   const checkoutReady = state.status === "configured";
   const checkoutError = errorMessage(query?.error);
+  const checkoutStatus = statusMessage(query?.status);
 
   return (
     <>
@@ -100,7 +112,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 <p className="assessment-inline-note">
                   Plan: {plan.displayName}. Provider: Stripe.
                   {checkoutReady
-                    ? " Starting checkout creates a hosted Stripe Checkout session. Entitlements are still handled manually."
+                    ? " Payment by card is processed securely by Stripe. Starting checkout creates a hosted Stripe Checkout session. Entitlements are still handled manually."
                     : " No checkout session, payment, order, webhook or entitlement is created here."}
                 </p>
               </div>
@@ -149,6 +161,9 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
               {checkoutError ? (
                 <p className="assessment-inline-note assessment-warning-note">{checkoutError}</p>
               ) : null}
+              {checkoutStatus ? (
+                <p className="assessment-inline-note assessment-warning-note">{checkoutStatus}</p>
+              ) : null}
 
               <div className="assessment-status-row">
                 <span className={`assessment-chip assessment-chip-${statusTone(state.status)}`}>
@@ -180,6 +195,9 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                   Contact billing support
                 </Link>
               </div>
+              <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
+                Business invoice and bank transfer requests are handled through support. Refunds and access adjustments are reviewed manually.
+              </p>
             </section>
           </div>
         </section>

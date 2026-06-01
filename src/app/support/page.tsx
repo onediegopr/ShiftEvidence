@@ -115,6 +115,12 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 <p className="assessment-inline-note">
                   {paymentOptionsCopy.bankTransfer} There is no live chat, attachment upload, automated SLA, or automated billing provider workflow in this support layer.
                 </p>
+                <p className="assessment-inline-note">
+                  Support can help with paid-but-no-access, wrong email, invoice requests, duplicate payment checks, refund requests, failed payment follow-up, and MSP subscription questions.
+                </p>
+                <p className="assessment-inline-note">
+                  Refunds and access adjustments are reviewed manually. A refund, cancellation, or failed payment does not automatically revoke access without admin review.
+                </p>
                 <Link href="/about" className="dashboard-card-link">
                   Learn about the trust model
                 </Link>

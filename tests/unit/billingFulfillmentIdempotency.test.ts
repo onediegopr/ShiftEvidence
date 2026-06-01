@@ -70,7 +70,7 @@ describe("billing fulfillment idempotency and boundaries", () => {
 
     expect(result.status).toBe("already_granted");
     expect(db.billingEntitlementGrant.create).not.toHaveBeenCalled();
-    expect(db.assessmentEntitlement.upsert).toHaveBeenCalledTimes(1);
+    expect(db.assessmentEntitlement.upsert).not.toHaveBeenCalled();
   });
 
   it("does not wire fulfillment into webhooks, match or subscription flows", () => {

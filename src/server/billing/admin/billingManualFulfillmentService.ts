@@ -321,27 +321,32 @@ export async function fulfillBillingOrderManually(params: {
         },
       });
 
-      if (!existingGrant) {
-        try {
-          const createdGrant = await tx.billingEntitlementGrant.create({
-            data: {
-              billingOrderId: order.id,
-              userId: order.userId,
-              workspaceId: order.workspaceId,
-              assessmentId: order.assessmentId,
-              entitlementKey,
-              status: "granted",
-              source: "manual_billing_fulfillment",
-              reviewNotes: note,
-              grantedAt,
-            },
-          });
-          createdGrants.push(createdGrant);
-        } catch (error) {
-          if (!isUniqueGrantConflict(error)) {
-            throw error;
-          }
+      if (existingGrant) {
+        assessmentEntitlements.push({ entitlementKey });
+        continue;
+      }
+
+      try {
+        const createdGrant = await tx.billingEntitlementGrant.create({
+          data: {
+            billingOrderId: order.id,
+            userId: order.userId,
+            workspaceId: order.workspaceId,
+            assessmentId: order.assessmentId,
+            entitlementKey,
+            status: "granted",
+            source: "manual_billing_fulfillment",
+            reviewNotes: note,
+            grantedAt,
+          },
+        });
+        createdGrants.push(createdGrant);
+      } catch (error) {
+        if (!isUniqueGrantConflict(error)) {
+          throw error;
         }
+        assessmentEntitlements.push({ entitlementKey });
+        continue;
       }
 
       const assessmentEntitlement = await grantAssessmentEntitlement({
