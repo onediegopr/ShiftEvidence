@@ -98,6 +98,11 @@ function hasEnv(name: string) {
   return Boolean(process.env[name]?.trim());
 }
 
+function parseEnvBoolean(value: string | undefined) {
+  const normalized = value?.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
+}
+
 function getLemonCheckoutMode() {
   const raw = process.env.LEMON_SQUEEZY_CHECKOUT_MODE?.trim().toLowerCase();
   if (raw === "live") return "live" as const;
@@ -110,7 +115,7 @@ function getStripeCheckoutMode() {
 }
 
 function isStripeLivePaymentsApproved() {
-  return process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim() === "true";
+  return parseEnvBoolean(process.env.STRIPE_LIVE_PAYMENTS_APPROVED);
 }
 
 function getWiseApiUrlMode() {
@@ -128,6 +133,7 @@ function getStripeRecommendedAction(params: {
   configured: boolean;
   checkoutEnabled: boolean;
   checkoutMode: "test" | "live";
+  livePaymentsApproved: boolean;
   webhookSecretPresent: boolean;
 }) {
   if (!params.checkoutEnabled) {
@@ -139,7 +145,7 @@ function getStripeRecommendedAction(params: {
   }
 
   if (params.checkoutMode === "live") {
-    return params.checkoutEnabled
+    return params.livePaymentsApproved
       ? "Live aprobado por hito controlado. Operar solo el smoke autorizado y mantener fulfillment manual."
       : "Live detectado pero no aprobado. Mantener bloqueado hasta hito separado de go-live.";
   }
@@ -272,6 +278,7 @@ export function getBillingProviderStatusSnapshot(
         configured: stripeConfigured,
         checkoutEnabled: stripeCheckoutEnabled,
         checkoutMode: stripeCheckoutMode,
+        livePaymentsApproved: stripeLivePaymentsApproved,
         webhookSecretPresent: stripeWebhookSecretPresent,
       }),
       riskLevel: stripeCheckoutMode === "live" ? (stripeLivePaymentsApproved ? "medio" : "alto") : stripeConfigured ? "bajo" : "medio",

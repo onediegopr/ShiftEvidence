@@ -110,12 +110,13 @@ describe("billing admin provider status", () => {
     process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
     process.env.STRIPE_MSP_PRICE_ID = "price_msp";
     process.env.STRIPE_CHECKOUT_MODE = "live";
-    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
 
     const status = getBillingProviderStatusSnapshot();
 
     expect(status.stripe.status).toBe("configurado_live_aprobado");
     expect(status.stripe.checkoutActive).toBe(true);
+    expect(status.stripe.recommendedAction).toContain("Live aprobado");
     expect(status.stripe.riskLevel).toBe("medio");
     expect(status.operations.checkoutTestMode).toBe(false);
     expect(status.operations.livePayments).toBe(true);

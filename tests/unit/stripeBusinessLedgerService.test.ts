@@ -350,7 +350,7 @@ describe("Stripe business ledger service", () => {
   });
 
   it("processes live Stripe events only when live payments are explicitly approved", async () => {
-    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
     const db = makeDb();
     db.billingOrder.findUnique.mockResolvedValueOnce(null);
     db.billingOrder.create.mockResolvedValueOnce({

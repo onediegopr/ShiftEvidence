@@ -117,7 +117,7 @@ describe("billing checkout architecture", () => {
     process.env.STRIPE_SECRET_KEY = "sk_live_example";
     process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
     process.env.STRIPE_CHECKOUT_MODE = "live";
-    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
 
     const state = getBillingCheckoutRouteState("starter");
 

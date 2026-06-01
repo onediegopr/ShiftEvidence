@@ -42,8 +42,13 @@ export function getStripeCheckoutMode() {
   return readEnv("STRIPE_CHECKOUT_MODE") === "live" ? "live" : "test";
 }
 
+function parseEnvBoolean(value: string | null) {
+  const normalized = value?.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
+}
+
 export function isStripeLivePaymentsApproved() {
-  return readEnv("STRIPE_LIVE_PAYMENTS_APPROVED") === "true";
+  return parseEnvBoolean(readEnv("STRIPE_LIVE_PAYMENTS_APPROVED"));
 }
 
 function isStripeCheckoutDisabled() {

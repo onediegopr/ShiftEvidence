@@ -289,7 +289,8 @@ async function runInTransaction<T>(db: DbClient, callback: (tx: DbClient) => Pro
 }
 
 function isStripeLivePaymentsApproved() {
-  return process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim() === "true";
+  const normalized = process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
 }
 
 async function processMappedStripeEvent(params: {
