@@ -184,6 +184,19 @@ describe("Stripe checkout foundation", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("returns a safe Stripe API error when session creation fails before a response", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    const fetchSpy = vi.fn().mockRejectedValue(new Error("network timeout"));
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("stripe_api_error");
+    expect(result.ok ? null : result.detail).not.toContain("sk_test_example");
+  });
+
   it("defaults to test mode unless live mode is explicit", () => {
     delete process.env.STRIPE_CHECKOUT_MODE;
     expect(getStripeCheckoutMode()).toBe("test");

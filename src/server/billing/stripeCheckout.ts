@@ -2,6 +2,7 @@ import type { BillingPlanConfig } from "../../config/billing";
 import { normalizeCheckoutOrigin } from "./checkoutOrigin";
 
 const STRIPE_CHECKOUT_SESSIONS_API_URL = "https://api.stripe.com/v1/checkout/sessions";
+const STRIPE_CHECKOUT_REQUEST_TIMEOUT_MS = 15000;
 
 type StripeCheckoutApiResponse = {
   id?: string;
@@ -144,15 +145,30 @@ export async function createStripeCheckoutSession(
   appendFormValue(body, "metadata[source]", "shift_evidence_public_checkout");
   appendFormValue(body, "allow_promotion_codes", "true");
 
-  const response = await fetch(STRIPE_CHECKOUT_SESSIONS_API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
-    cache: "no-store",
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), STRIPE_CHECKOUT_REQUEST_TIMEOUT_MS);
+  let response: Response;
+
+  try {
+    response = await fetch(STRIPE_CHECKOUT_SESSIONS_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+  } catch {
+    return {
+      ok: false,
+      reason: "stripe_api_error",
+      detail: "Stripe Checkout session creation timed out or failed before a hosted checkout URL was returned.",
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     return {
