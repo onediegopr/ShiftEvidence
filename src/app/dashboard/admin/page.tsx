@@ -492,6 +492,10 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             <ClipboardList size={16} />
             Solicitudes de desbloqueo
           </Link>
+          <Link href="/dashboard/admin/billing" className="btn btn-secondary">
+            <BadgePercent size={16} />
+            Billing y proveedores
+          </Link>
         </div>
       </section>
 
