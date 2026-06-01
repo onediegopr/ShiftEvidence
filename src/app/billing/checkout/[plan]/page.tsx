@@ -95,6 +95,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
 
   const plan = state.plan;
   const checkoutReady = state.status === "configured";
+  const checkoutModeLabel = "stripe" in state && state.stripe?.mode === "live" ? "live mode" : "test mode";
   const checkoutError = errorMessage(query?.error);
   const checkoutStatus = statusMessage(query?.status);
 
@@ -135,7 +136,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 <CreditCard size={22} />
                 <span className="assessment-summary-label">Card checkout</span>
                 <strong>{checkoutReady ? "Ready" : plan.checkoutEligible ? "Prepared" : "Not eligible"}</strong>
-                <p>{checkoutReady ? "Server-side Stripe checkout is configured for test mode." : "Stripe is waiting for full configuration."}</p>
+                <p>{checkoutReady ? `Server-side Stripe checkout is configured for ${checkoutModeLabel}.` : "Stripe is waiting for full configuration."}</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <CircleAlert size={22} />
