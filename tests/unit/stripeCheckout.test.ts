@@ -184,7 +184,7 @@ describe("Stripe checkout foundation", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("returns a safe Stripe API error when session creation fails before a response", async () => {
+  it("returns a safe runtime error when session creation fails before a response", async () => {
     process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
     const fetchSpy = vi.fn().mockRejectedValue(new Error("network timeout"));
@@ -193,8 +193,55 @@ describe("Stripe checkout foundation", () => {
     const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
 
     expect(result.ok).toBe(false);
-    expect(result.ok ? null : result.reason).toBe("stripe_api_error");
+    expect(result.ok ? null : result.reason).toBe("stripe_runtime_error");
     expect(result.ok ? null : result.detail).not.toContain("sk_test_example");
+  });
+
+  it("returns a safe timeout error when Stripe does not respond in time", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    const fetchSpy = vi.fn().mockRejectedValue(new DOMException("aborted", "AbortError"));
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("stripe_timeout");
+    expect(result.ok ? null : result.detail).not.toContain("sk_test_example");
+  });
+
+  it("maps Stripe auth failures to a safe auth error", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      clone: () => ({ json: async () => ({ error: { type: "invalid_request_error" } }) }),
+    });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("stripe_auth_error");
+    expect(result.ok ? null : result.detail).not.toContain("sk_test_example");
+  });
+
+  it("maps Stripe missing price failures to a safe price error", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      clone: () => ({ json: async () => ({ error: { code: "resource_missing", param: "line_items[0][price]" } }) }),
+    });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("stripe_price_invalid");
+    expect(result.ok ? null : result.detail).not.toContain("price_starter");
   });
 
   it("defaults to test mode unless live mode is explicit", () => {

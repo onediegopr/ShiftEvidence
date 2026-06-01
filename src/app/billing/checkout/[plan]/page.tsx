@@ -66,6 +66,14 @@ function errorMessage(error: string | undefined) {
       return "Stripe checkout mode does not match the configured secret key mode. Verify Hostinger Stripe env vars and restart the server.";
     case "stripe_api_error":
       return "Stripe could not create a checkout session. Please request an invoice instead.";
+    case "stripe_auth_error":
+      return "Stripe authentication failed server-side. Please request an invoice while billing reviews the configuration.";
+    case "stripe_price_invalid":
+      return "The configured Stripe Price ID could not be used. Please request an invoice while billing reviews the configuration.";
+    case "stripe_runtime_error":
+      return "Stripe checkout hit a safe runtime error. Please request an invoice instead.";
+    case "stripe_timeout":
+      return "Stripe checkout timed out before returning a hosted checkout URL. Please request an invoice instead.";
     case "unsupported_plan":
       return "This checkout plan is not available.";
     case "not_eligible":

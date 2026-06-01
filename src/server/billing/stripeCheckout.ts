@@ -26,7 +26,11 @@ export type StripeCheckoutResult =
         | "invalid_price"
         | "live_not_approved"
         | "stripe_key_mode_mismatch"
-        | "stripe_api_error";
+        | "stripe_api_error"
+        | "stripe_auth_error"
+        | "stripe_price_invalid"
+        | "stripe_runtime_error"
+        | "stripe_timeout";
       detail: string;
       statusCode?: number;
     };
@@ -44,6 +48,7 @@ export function getStripeSecretKeyMode(secretKey = readStripeSecretKey()) {
   const normalized = secretKey?.trim().replace(/^["']|["']$/g, "");
   if (normalized?.startsWith("sk_live_")) return "live" as const;
   if (normalized?.startsWith("sk_test_")) return "test" as const;
+  if (normalized?.startsWith("rk_live_")) return "restricted_live" as const;
   return "unknown" as const;
 }
 
@@ -70,6 +75,64 @@ function getPlanStripePriceId(plan: BillingPlanConfig) {
 
 function appendFormValue(body: URLSearchParams, key: string, value: string | number) {
   body.append(key, String(value));
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof DOMException
+    ? error.name === "AbortError"
+    : typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
+}
+
+function logStripeCheckoutFailure(params: {
+  planId: string;
+  reason: Exclude<StripeCheckoutResult, { ok: true }>["reason"];
+  statusCode?: number;
+}) {
+  console.warn("stripe_checkout_failure", {
+    planId: params.planId,
+    reason: params.reason,
+    statusCode: params.statusCode ?? null,
+  });
+}
+
+async function mapStripeErrorResponse(
+  response: Response,
+): Promise<Pick<Exclude<StripeCheckoutResult, { ok: true }>, "reason" | "detail" | "statusCode">> {
+  if (response.status === 401 || response.status === 403) {
+    return {
+      reason: "stripe_auth_error",
+      detail: "Stripe authentication failed with the configured server-side key.",
+      statusCode: response.status,
+    };
+  }
+
+  let stripeErrorCode: string | null = null;
+  let stripeErrorParam: string | null = null;
+  try {
+    const payload = await response.clone().json() as { error?: { code?: string; param?: string; type?: string } };
+    stripeErrorCode = payload.error?.code ?? null;
+    stripeErrorParam = payload.error?.param ?? null;
+  } catch {
+    // Raw Stripe error bodies are intentionally ignored in safe user-facing responses.
+  }
+
+  if (
+    response.status === 404 ||
+    stripeErrorCode === "resource_missing" ||
+    stripeErrorParam?.includes("price")
+  ) {
+    return {
+      reason: "stripe_price_invalid",
+      detail: "Stripe could not use the configured Price ID.",
+      statusCode: response.status,
+    };
+  }
+
+  return {
+    reason: "stripe_runtime_error",
+    detail: `Stripe checkout failed with a safe runtime error code ${response.status}.`,
+    statusCode: response.status,
+  };
 }
 
 export async function createStripeCheckoutSession(
@@ -160,31 +223,46 @@ export async function createStripeCheckoutSession(
       cache: "no-store",
       signal: controller.signal,
     });
-  } catch {
+  } catch (error) {
+    const reason = isAbortError(error) ? "stripe_timeout" : "stripe_runtime_error";
+    logStripeCheckoutFailure({ planId: plan.id, reason });
     return {
       ok: false,
-      reason: "stripe_api_error",
-      detail: "Stripe Checkout session creation timed out or failed before a hosted checkout URL was returned.",
+      reason,
+      detail: reason === "stripe_timeout"
+        ? "Stripe Checkout session creation timed out before a hosted checkout URL was returned."
+        : "Stripe Checkout session creation failed before a hosted checkout URL was returned.",
     };
   } finally {
     clearTimeout(timeout);
   }
 
   if (!response.ok) {
+    const mapped = await mapStripeErrorResponse(response);
+    logStripeCheckoutFailure({ planId: plan.id, reason: mapped.reason, statusCode: mapped.statusCode });
     return {
       ok: false,
-      reason: "stripe_api_error",
-      detail: `Stripe returned ${response.status}.`,
-      statusCode: response.status,
+      ...mapped,
     };
   }
 
-  const payload = (await response.json()) as StripeCheckoutApiResponse;
-
-  if (!payload.url) {
+  let payload: StripeCheckoutApiResponse;
+  try {
+    payload = (await response.json()) as StripeCheckoutApiResponse;
+  } catch {
+    logStripeCheckoutFailure({ planId: plan.id, reason: "stripe_runtime_error" });
     return {
       ok: false,
-      reason: "stripe_api_error",
+      reason: "stripe_runtime_error",
+      detail: "Stripe returned a response that could not be parsed safely.",
+    };
+  }
+
+  if (!payload.url) {
+    logStripeCheckoutFailure({ planId: plan.id, reason: "stripe_runtime_error" });
+    return {
+      ok: false,
+      reason: "stripe_runtime_error",
       detail: "Stripe did not return a checkout URL.",
     };
   }

@@ -72,6 +72,7 @@ import {
   getBillingProviderStatusSnapshot,
   getCheckoutPlanLinks,
 } from "../../../../server/billing/admin/billingProviderStatusService";
+import { getStripeLiveDiagnostics } from "../../../../server/billing/stripeLiveDiagnostics";
 
 type AdminBillingPageProps = {
   searchParams?: Promise<{
@@ -189,6 +190,22 @@ function formatCheckoutMode(value: string) {
   };
 
   return labels[value] ?? value;
+}
+
+function formatStripeSecretKeyMode(value: string) {
+  const labels: Record<string, string> = {
+    live: "Live sk_live",
+    test: "Test sk_test",
+    restricted_live: "Live restringida rk_live",
+    unknown: "Desconocida",
+    missing: "Faltante",
+  };
+
+  return labels[value] ?? value;
+}
+
+function formatDiagnosticOk(value: boolean) {
+  return value ? "OK" : "NO";
 }
 
 function formatWiseApiMode(value: string) {
@@ -906,6 +923,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
   });
   const reconciliation = await getBillingReconciliationSnapshot(ledger);
   const revocationReviewItems = await getBillingRefundCancelReviewItems(25);
+  const stripeDiagnostics = await getStripeLiveDiagnostics().catch(() => null);
   const savedMessage = query?.saved
     ? query.saved === "order-match"
       ? "Match de orden guardado."
@@ -956,6 +974,50 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
       </section>
 
       <section className="report-history-grid">
+        <ProviderCard
+          icon={<Gauge size={22} />}
+          title="Diagnostico Stripe Live"
+          status={stripeDiagnostics?.overall.readyForLiveCheckoutPrepaymentSmoke ? "Pre-payment smoke listo" : "Revision requerida"}
+          risk={stripeDiagnostics?.overall.readyForLiveCheckoutPrepaymentSmoke ? "Bajo" : "Medio"}
+        >
+          {stripeDiagnostics ? (
+            <>
+              <FieldList
+                rows={[
+                  ["Secret key mode", formatStripeSecretKeyMode(stripeDiagnostics.runtimeEnv.secretKeyMode)],
+                  ["Webhook secret", formatBooleanPresence(stripeDiagnostics.runtimeEnv.webhookSecretPresent)],
+                  ["Checkout mode", formatCheckoutMode(stripeDiagnostics.runtimeEnv.checkoutMode)],
+                  ["Checkout habilitado", formatBooleanYesNo(stripeDiagnostics.runtimeEnv.checkoutEnabled)],
+                  ["Live aprobado", formatBooleanYesNo(stripeDiagnostics.runtimeEnv.livePaymentsApproved)],
+                  ["Stripe API reachable", formatDiagnosticOk(stripeDiagnostics.stripeApi.stripeAccountReachable)],
+                  ["Starter price", formatDiagnosticOk(stripeDiagnostics.prices.starter.sane)],
+                  ["Professional price", formatDiagnosticOk(stripeDiagnostics.prices.professional.sane)],
+                  ["MSP price", formatDiagnosticOk(stripeDiagnostics.prices.msp.sane)],
+                  ["Ready pre-payment", formatBooleanYesNo(stripeDiagnostics.overall.readyForLiveCheckoutPrepaymentSmoke)],
+                  ["Chequeado", formatDate(stripeDiagnostics.checkedAt)],
+                ]}
+              />
+              {stripeDiagnostics.overall.blockers.length > 0 ? (
+                <p className="assessment-inline-note assessment-warning-note">
+                  Blockers: {stripeDiagnostics.overall.blockers.join(" ")}
+                </p>
+              ) : null}
+              {stripeDiagnostics.overall.warnings.length > 0 ? (
+                <p className="assessment-inline-note">
+                  Warnings: {stripeDiagnostics.overall.warnings.join(" ")}
+                </p>
+              ) : null}
+              <p className="assessment-inline-note">
+                Diagnostico server-only: no crea Checkout Session, PaymentIntent, Customer, BillingEvent ni grants.
+              </p>
+            </>
+          ) : (
+            <p className="assessment-inline-note assessment-warning-note">
+              Diagnostico no disponible. Revisar logs runtime; no se exponen secretos.
+            </p>
+          )}
+        </ProviderCard>
+
         <ProviderCard
           icon={<ShieldCheck size={22} />}
           title="Stripe"

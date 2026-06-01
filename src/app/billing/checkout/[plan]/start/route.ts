@@ -28,7 +28,13 @@ export async function POST(request: NextRequest, context: BillingCheckoutStartRo
     return redirectToCheckoutPage(publicOrigin, planSlug, { error: "unsupported_plan" });
   }
 
-  const result = await createStripeCheckoutSession(plan, publicOrigin);
+  let result: Awaited<ReturnType<typeof createStripeCheckoutSession>>;
+  try {
+    result = await createStripeCheckoutSession(plan, publicOrigin);
+  } catch {
+    console.error("stripe_checkout_unhandled_error", { planSlug });
+    return redirectToCheckoutPage(publicOrigin, planSlug, { error: "stripe_runtime_error" });
+  }
 
   if (!result.ok) {
     return redirectToCheckoutPage(publicOrigin, planSlug, { error: result.reason });
