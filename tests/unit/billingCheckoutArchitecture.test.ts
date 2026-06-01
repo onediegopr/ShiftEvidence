@@ -103,7 +103,7 @@ describe("billing checkout architecture", () => {
   });
 
   it("blocks Stripe live mode until a separate go-live milestone", () => {
-    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_SECRET_KEY = "\"sk_live_example\"";
     process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
     process.env.STRIPE_CHECKOUT_MODE = "live";
 
@@ -124,6 +124,18 @@ describe("billing checkout architecture", () => {
     expect(state.status).toBe("configured");
     expect("stripe" in state ? state.stripe.mode : "test").toBe("live");
     expect("stripe" in state ? state.stripe.checkoutActive : false).toBe(true);
+  });
+
+  it("blocks Stripe live checkout when the secret key prefix is unknown", () => {
+    process.env.STRIPE_SECRET_KEY = "live_secret_without_expected_prefix";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured_live_disabled");
+    expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
   });
 
   it("blocks Stripe live checkout when the secret key is still test-mode", () => {

@@ -50,7 +50,7 @@ function hasStripeSecretKey() {
 }
 
 function getStripeSecretKeyMode() {
-  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim().replace(/^["']|["']$/g, "");
   if (secretKey?.startsWith("sk_live_")) return "live" as const;
   if (secretKey?.startsWith("sk_test_")) return "test" as const;
   return "unknown" as const;
@@ -69,7 +69,6 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
   const liveApproved = isStripeLivePaymentsApproved();
   const keyModeMatches =
     !secretKeyConfigured ||
-    secretKeyMode === "unknown" ||
     (mode === "live" ? secretKeyMode === "live" : secretKeyMode === "test");
   const checkoutActive =
     configured &&

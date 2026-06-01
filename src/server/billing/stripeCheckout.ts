@@ -40,8 +40,9 @@ export function readStripeSecretKey() {
 }
 
 export function getStripeSecretKeyMode(secretKey = readStripeSecretKey()) {
-  if (secretKey?.startsWith("sk_live_")) return "live" as const;
-  if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  const normalized = secretKey?.trim().replace(/^["']|["']$/g, "");
+  if (normalized?.startsWith("sk_live_")) return "live" as const;
+  if (normalized?.startsWith("sk_test_")) return "test" as const;
   return "unknown" as const;
 }
 

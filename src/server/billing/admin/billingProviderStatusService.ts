@@ -115,7 +115,7 @@ function getStripeCheckoutMode() {
 }
 
 function getStripeSecretKeyMode() {
-  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim().replace(/^["']|["']$/g, "");
   if (secretKey?.startsWith("sk_live_")) return "live" as const;
   if (secretKey?.startsWith("sk_test_")) return "test" as const;
   return "unknown" as const;
@@ -212,7 +212,6 @@ export function getBillingProviderStatusSnapshot(
   const stripeConfigured = stripeSecretKeyPresent && stripeStarterPricePresent && stripeProfessionalPricePresent && stripeMspPricePresent;
   const stripeKeyModeMatches =
     !stripeSecretKeyPresent ||
-    stripeSecretKeyMode === "unknown" ||
     (stripeCheckoutMode === "live" ? stripeSecretKeyMode === "live" : stripeSecretKeyMode === "test");
   const livePayments =
     stripeConfigured &&
