@@ -12,6 +12,13 @@ const trackedEnvNames = [
   "LEMON_SQUEEZY_CHECKOUT_ENABLED",
   "LEMON_SQUEEZY_WEBHOOK_SECRET",
   "LEMONSQUEEZY_WEBHOOK_SECRET",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "STRIPE_STARTER_PRICE_ID",
+  "STRIPE_PROFESSIONAL_PRICE_ID",
+  "STRIPE_MSP_PRICE_ID",
+  "STRIPE_CHECKOUT_MODE",
+  "STRIPE_CHECKOUT_ENABLED",
   "WISE_API_TOKEN",
   "WISE_API_URL",
   "WISE_PROFILE_ID",
@@ -37,67 +44,64 @@ afterEach(() => {
 });
 
 describe("billing admin provider status", () => {
-  it("marks Lemon as configured test-mode when checkout env is complete", () => {
+  it("marks Stripe as configured test-mode when checkout env is complete", () => {
     resetTrackedEnv();
-    process.env.LEMON_SQUEEZY_STORE_ID = "store";
-    process.env.LEMON_SQUEEZY_API_KEY = "api-key";
-    process.env.LEMONSQUEEZY_API_KEY = "alias-key";
-    process.env.LEMON_STARTER_VARIANT_ID = "starter";
-    process.env.LEMON_PROFESSIONAL_VARIANT_ID = "professional";
-    process.env.LEMON_MSP_VARIANT_ID = "msp";
-    process.env.LEMON_SQUEEZY_CHECKOUT_MODE = "test";
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
 
     const status = getBillingProviderStatusSnapshot();
 
-    expect(status.lemon).toMatchObject({
+    expect(status.stripe).toMatchObject({
       status: "configurado_test",
-      storeIdPresent: true,
-      apiKeyPresent: true,
-      apiKeyAliasPresent: true,
-      starterVariantPresent: true,
-      professionalVariantPresent: true,
-      mspVariantPresent: true,
+      secretKeyPresent: true,
+      webhookSecretPresent: true,
+      starterPricePresent: true,
+      professionalPricePresent: true,
+      mspPricePresent: true,
       checkoutMode: "test",
       checkoutEnabled: true,
+      checkoutActive: true,
       riskLevel: "bajo",
     });
     expect(status.operations.checkoutTestMode).toBe(true);
     expect(status.operations.livePayments).toBe(false);
-    expect(JSON.stringify(status)).not.toContain("api-key");
+    expect(JSON.stringify(status)).not.toContain("sk_test_example");
   });
 
-  it("marks Lemon as not configured without API key", () => {
+  it("marks Stripe as not configured without secret key", () => {
     resetTrackedEnv();
-    process.env.LEMON_SQUEEZY_STORE_ID = "store";
-    process.env.LEMON_STARTER_VARIANT_ID = "starter";
-    process.env.LEMON_PROFESSIONAL_VARIANT_ID = "professional";
-    process.env.LEMON_MSP_VARIANT_ID = "msp";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
 
     const status = getBillingProviderStatusSnapshot();
 
-    expect(status.lemon.status).toBe("no_configurado");
-    expect(status.lemon.apiKeyPresent).toBe(false);
+    expect(status.stripe.status).toBe("no_configurado");
+    expect(status.stripe.secretKeyPresent).toBe(false);
     expect(status.operations.checkoutTestMode).toBe(false);
   });
 
-  it("flags live Lemon without webhook secret as high risk", () => {
+  it("flags Stripe live mode as not approved without activating live payments", () => {
     resetTrackedEnv();
-    process.env.LEMON_SQUEEZY_STORE_ID = "store";
-    process.env.LEMON_SQUEEZY_API_KEY = "api-key";
-    process.env.LEMON_STARTER_VARIANT_ID = "starter";
-    process.env.LEMON_PROFESSIONAL_VARIANT_ID = "professional";
-    process.env.LEMON_MSP_VARIANT_ID = "msp";
-    process.env.LEMON_SQUEEZY_CHECKOUT_MODE = "live";
+    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
 
     const status = getBillingProviderStatusSnapshot();
 
-    expect(status.lemon.status).toBe("configurado_live");
-    expect(status.lemon.webhookSecretPresent).toBe(false);
-    expect(status.lemon.riskLevel).toBe("alto");
-    expect(status.operations.livePayments).toBe(true);
+    expect(status.stripe.status).toBe("configurado_live_no_aprobado");
+    expect(status.stripe.riskLevel).toBe("alto");
+    expect(status.operations.checkoutTestMode).toBe(false);
+    expect(status.operations.livePayments).toBe(false);
   });
 
-  it("keeps Wise manual by default and Stripe deferred", () => {
+  it("keeps Wise manual by default and Lemon legacy disabled", () => {
     resetTrackedEnv();
 
     const status = getBillingProviderStatusSnapshot();
@@ -109,10 +113,10 @@ describe("billing admin provider status", () => {
       automationEnabled: false,
       currentUse: "Transferencia bancaria manual / invoice",
     });
-    expect(status.stripe).toMatchObject({
-      status: "diferido_desactivado",
-      publiclyVisible: false,
-      checkoutActive: false,
+    expect(status.lemon).toMatchObject({
+      status: "legado_desactivado",
+      checkoutEnabled: false,
     });
+    expect(status.stripe.publiclyVisible).toBe(true);
   });
 });

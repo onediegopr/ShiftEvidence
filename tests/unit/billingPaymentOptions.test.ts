@@ -15,15 +15,16 @@ describe("billing payment options foundation", () => {
     ]);
   });
 
-  it("uses Lemon Squeezy only as a future card checkout provider", () => {
-    expect(marketingPlans.every((plan) => plan.futureProvider === "lemon_squeezy")).toBe(true);
-    expect(paymentOptionsCopy.cardCheckout).toContain("Lemon Squeezy");
+  it("uses Stripe as the primary configurable card checkout provider", () => {
+    expect(marketingPlans.every((plan) => plan.futureProvider === "stripe")).toBe(true);
+    expect(paymentOptionsCopy.cardCheckout).toContain("Stripe");
     expect(paymentOptionsCopy.notActive).toContain("manual follow-up");
   });
 
-  it("keeps Stripe deferred and out of public payment labels", () => {
-    expect(marketingPlans.every((plan) => plan.disabledProvider === "stripe_disabled")).toBe(true);
+  it("keeps Lemon legacy out of public payment labels", () => {
+    expect(marketingPlans.every((plan) => plan.disabledProvider === "lemon_squeezy_legacy")).toBe(true);
     expect(marketingPlans.flatMap((plan) => plan.paymentOptions).map(getPaymentOptionLabel)).not.toContain("Stripe");
+    expect(JSON.stringify(marketingPlans)).not.toContain("Lemon Squeezy");
   });
 
   it("shows bank transfer invoices without exposing Wise as a public payment label", () => {

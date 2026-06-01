@@ -2,6 +2,10 @@
 
 Date: 2026-05-31
 
+## BILLING-4 update
+
+Lemon Squeezy is now legacy-disabled after provider rejection of the offering as services. Do not create new Lemon checkouts or treat Lemon as the active card checkout provider. Historical Lemon notes are retained for audit continuity only.
+
 ## 1. Status
 
 Status: PARCIAL / BLOQUEADO.

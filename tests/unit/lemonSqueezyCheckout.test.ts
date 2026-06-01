@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 describe("Lemon Squeezy checkout creation", () => {
-  it("does not call Lemon when required env vars are missing", async () => {
+  it("keeps Lemon checkout legacy-disabled when required env vars are missing", async () => {
     trackedEnvNames.forEach((name) => {
       delete process.env[name];
     });
@@ -39,46 +39,22 @@ describe("Lemon Squeezy checkout creation", () => {
     const result = await createLemonSqueezyCheckout(starterPlan, "https://shiftevidence.com/billing/checkout/starter");
 
     expect(result.ok).toBe(false);
-    expect(result.ok ? null : result.reason).toBe("not_configured");
+    expect(result.ok ? null : result.reason).toBe("checkout_disabled");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("creates a test-mode checkout URL through the Lemon API when configured", async () => {
+  it("keeps Lemon checkout legacy-disabled even when old env vars are configured", async () => {
     process.env.LEMON_SQUEEZY_STORE_ID = "393386";
     process.env.LEMONSQUEEZY_API_KEY = "test-key";
     process.env.LEMON_STARTER_VARIANT_ID = "123";
-    const fetchSpy = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        data: {
-          id: "checkout_123",
-          attributes: {
-            test_mode: true,
-            url: "https://shiftevidence.lemonsqueezy.com/checkout/custom/checkout_123",
-          },
-        },
-      }),
-    });
+    const fetchSpy = vi.fn();
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     const result = await createLemonSqueezyCheckout(starterPlan, "https://shiftevidence.com/billing/checkout/starter");
-    const [, request] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(String(request.body));
 
-    expect(result).toEqual({
-      ok: true,
-      checkoutId: "checkout_123",
-      testMode: true,
-      url: "https://shiftevidence.lemonsqueezy.com/checkout/custom/checkout_123",
-    });
-    expect(request.headers).toMatchObject({
-      Accept: "application/vnd.api+json",
-      "Content-Type": "application/vnd.api+json",
-      Authorization: "Bearer test-key",
-    });
-    expect(body.data.attributes.test_mode).toBe(true);
-    expect(body.data.relationships.store.data.id).toBe("393386");
-    expect(body.data.relationships.variant.data.id).toBe("123");
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("checkout_disabled");
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it("does not call Lemon when checkout is explicitly disabled", async () => {

@@ -2,6 +2,7 @@ import {
   billingEnvPlaceholders,
   billingPlans,
   billingProviders,
+  legacyLemonEnvPlaceholders,
   getBillingPlanByCheckoutSlug,
   type BillingCheckoutSlug,
   type BillingPlanConfig,
@@ -10,6 +11,7 @@ import {
 export type BillingCheckoutRuntimeStatus =
   | "not_configured"
   | "configured_but_disabled"
+  | "configured_live_disabled"
   | "configured"
   | "invoice_only"
   | "unsupported_plan";
@@ -26,8 +28,62 @@ function hasLemonSqueezyApiKey() {
   return hasEnv("LEMON_SQUEEZY_API_KEY") || hasEnv("LEMONSQUEEZY_API_KEY");
 }
 
-function isCheckoutExplicitlyDisabled() {
-  return process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
+function readCheckoutMode() {
+  return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
+}
+
+function isStripeCheckoutExplicitlyDisabled() {
+  return process.env.STRIPE_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
+}
+
+function hasStripeSecretKey() {
+  return hasEnv("STRIPE_SECRET_KEY");
+}
+
+function getStripePriceEnvName(plan: BillingPlanConfig) {
+  return plan.stripePriceEnvName;
+}
+
+export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
+  const secretKeyConfigured = hasStripeSecretKey();
+  const priceConfigured = hasEnv(getStripePriceEnvName(plan));
+  const mode = readCheckoutMode();
+  const configured = secretKeyConfigured && priceConfigured;
+  const checkoutActive = configured && mode === "test" && !isStripeCheckoutExplicitlyDisabled();
+  const status = !configured
+    ? "not_configured"
+    : isStripeCheckoutExplicitlyDisabled()
+      ? "configured_but_disabled"
+      : mode === "live"
+        ? "configured_live_disabled"
+        : "configured";
+
+  return {
+    provider: billingProviders.stripe.displayName,
+    checkoutActive,
+    configured,
+    status,
+    mode,
+    env: {
+      secretKeyConfigured,
+      priceConfigured,
+      priceEnvName: getStripePriceEnvName(plan),
+    },
+  } satisfies {
+    provider: string;
+    checkoutActive: boolean;
+    configured: boolean;
+    status: Extract<
+      BillingCheckoutRuntimeStatus,
+      "not_configured" | "configured_but_disabled" | "configured_live_disabled" | "configured"
+    >;
+    mode: "test" | "live";
+    env: {
+      secretKeyConfigured: boolean;
+      priceConfigured: boolean;
+      priceEnvName: string | null;
+    };
+  };
 }
 
 export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
@@ -35,8 +91,8 @@ export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
   const apiKeyConfigured = hasLemonSqueezyApiKey();
   const variantConfigured = hasEnv(plan.lemonVariantEnvName);
   const configured = storeConfigured && apiKeyConfigured && variantConfigured;
-  const checkoutActive = configured && !isCheckoutExplicitlyDisabled();
-  const status = configured ? (checkoutActive ? "configured" : "configured_but_disabled") : "not_configured";
+  const checkoutActive = false;
+  const status = configured ? "configured_but_disabled" : "not_configured";
 
   return {
     provider: billingProviders.lemonSqueezy.displayName,
@@ -49,6 +105,7 @@ export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
       variantConfigured,
       variantEnvName: plan.lemonVariantEnvName,
     },
+    legacyReason: "Lemon Squeezy rejected the offering as services. It remains read-only historical/legacy.",
   } satisfies {
     provider: string;
     checkoutActive: boolean;
@@ -60,6 +117,7 @@ export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
       variantConfigured: boolean;
       variantEnvName: string | null;
     };
+    legacyReason: string;
   };
 }
 
@@ -84,58 +142,64 @@ export function getBillingCheckoutRouteState(slug: string) {
     };
   }
 
-  const lemon = getLemonSqueezyRuntimeStatus(plan);
+  const stripe = getStripeRuntimeStatus(plan);
 
   return {
     plan,
-    lemon,
-    status: lemon.status,
-    headline: lemon.checkoutActive ? "Secure card checkout" : "Checkout coming soon",
+    stripe,
+    status: stripe.status,
+    headline: stripe.checkoutActive ? "Secure Stripe checkout" : "Stripe checkout not configured",
     detail:
-      lemon.checkoutActive
-        ? "This route creates a Lemon Squeezy checkout session server-side and redirects to secure checkout."
-        : "Lemon Squeezy checkout is not fully configured yet. No payment is processed and no order is created.",
+      stripe.checkoutActive
+        ? "This route creates a Stripe Checkout session server-side in test mode and redirects to hosted checkout."
+        : stripe.status === "configured_live_disabled"
+          ? "Stripe appears configured for live mode, but live checkout is intentionally disabled until owner approval."
+          : "Stripe checkout is not fully configured yet. No payment is processed and no order is created.",
   };
 }
 
 export function getBillingAdminStatus() {
   const planStates = billingPlans.map((plan) => {
-    const lemon = getLemonSqueezyRuntimeStatus(plan);
+    const stripe = getStripeRuntimeStatus(plan);
 
     return {
       planId: plan.id,
       displayName: plan.displayName,
       checkoutEligible: plan.checkoutEligible,
       invoiceEligible: plan.invoiceEligible,
-      checkoutStatus: plan.checkoutEligible ? lemon.status : "invoice_only",
-      variantEnvName: plan.lemonVariantEnvName,
-      variantConfigured: lemon.env.variantConfigured,
+      checkoutStatus: plan.checkoutEligible ? stripe.status : "invoice_only",
+      priceEnvName: plan.stripePriceEnvName,
+      priceConfigured: stripe.env.priceConfigured,
     };
   });
 
-  const lemonCheckoutActiveForAnyPlan = planStates.some(
+  const stripeCheckoutActiveForAnyPlan = planStates.some(
     (plan) => plan.checkoutEligible && plan.checkoutStatus === "configured",
   );
-  const lemonConfiguredForAnyCheckoutPlan = planStates.some((plan) => {
+  const stripeConfiguredForAnyCheckoutPlan = planStates.some((plan) => {
     return (
       plan.checkoutEligible &&
-      (plan.checkoutStatus === "configured" || plan.checkoutStatus === "configured_but_disabled")
+      (
+        plan.checkoutStatus === "configured" ||
+        plan.checkoutStatus === "configured_but_disabled" ||
+        plan.checkoutStatus === "configured_live_disabled"
+      )
     );
   });
 
   return {
     providers: [
       {
-        id: billingProviders.lemonSqueezy.id,
-        label: billingProviders.lemonSqueezy.displayName,
-        status: lemonCheckoutActiveForAnyPlan
-          ? "Configured"
-          : lemonConfiguredForAnyCheckoutPlan
-            ? "Configured, disabled"
+        id: billingProviders.stripe.id,
+        label: billingProviders.stripe.displayName,
+        status: stripeCheckoutActiveForAnyPlan
+          ? "Configured test mode"
+          : stripeConfiguredForAnyCheckoutPlan
+            ? "Configured, disabled/live not approved"
             : "Not Configured",
-        detail: lemonCheckoutActiveForAnyPlan
-          ? "Server-side checkout creation is available for configured plans. No entitlement automation is active."
-          : "Prepared for checkout. Lemon API calls are made only from checkout start routes when fully configured.",
+        detail: stripeCheckoutActiveForAnyPlan
+          ? "Server-side Stripe Checkout creation is available in test mode. No entitlement automation is active."
+          : "Stripe is the primary configurable provider. Missing env vars degrade to manual invoice follow-up.",
       },
       {
         id: billingProviders.bankTransfer.id,
@@ -144,16 +208,21 @@ export function getBillingAdminStatus() {
         detail: "Invoice requests route through support/manual follow-up.",
       },
       {
-        id: billingProviders.stripeDisabled.id,
-        label: billingProviders.stripeDisabled.displayName,
-        status: "Disabled",
-        detail: "Deferred provider. Not shown as public checkout.",
+        id: billingProviders.lemonSqueezy.id,
+        label: billingProviders.lemonSqueezy.displayName,
+        status: "Rejected / legacy disabled",
+        detail: "Historical provider only. Lemon checkout is no longer active after services-policy rejection.",
       },
     ],
     envPlaceholders: billingEnvPlaceholders.map((name) => ({
       name,
       configured: hasEnv(name),
-      secret: name === "LEMON_SQUEEZY_API_KEY" || name === "LEMONSQUEEZY_API_KEY",
+      secret: name === "STRIPE_SECRET_KEY" || name === "STRIPE_WEBHOOK_SECRET",
+    })),
+    legacyLemonEnvPlaceholders: legacyLemonEnvPlaceholders.map((name) => ({
+      name,
+      configured: hasEnv(name),
+      secret: name.includes("API_KEY") || name.includes("WEBHOOK_SECRET"),
     })),
     planStates,
   };

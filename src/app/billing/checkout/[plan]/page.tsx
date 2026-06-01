@@ -9,7 +9,7 @@ import { getBillingCheckoutRouteState } from "../../../../server/billing/billing
 
 export const metadata: Metadata = {
   title: "Secure Checkout | Shift Evidence",
-  description: "Secure Lemon Squeezy checkout routing for Shift Evidence plans.",
+  description: "Secure Stripe checkout routing for Shift Evidence plans.",
 };
 
 type BillingCheckoutPageProps = {
@@ -55,15 +55,19 @@ function statusLabel(status: string) {
 function errorMessage(error: string | undefined) {
   switch (error) {
     case "not_configured":
-      return "Checkout is missing one or more server-side Lemon Squeezy variables.";
+      return "Checkout is missing one or more server-side Stripe variables.";
     case "checkout_disabled":
       return "Checkout is temporarily disabled. Please request an invoice instead.";
-    case "invalid_variant":
-      return "The configured Lemon Squeezy variant ID is invalid.";
-    case "lemon_api_error":
-      return "Lemon Squeezy could not create a checkout session. Please request an invoice instead.";
+    case "invalid_price":
+      return "The configured Stripe Price ID is invalid.";
+    case "live_not_approved":
+      return "Stripe live checkout is intentionally disabled until owner approval.";
+    case "stripe_api_error":
+      return "Stripe could not create a checkout session. Please request an invoice instead.";
     case "unsupported_plan":
       return "This checkout plan is not available.";
+    case "not_eligible":
+      return "This plan is invoice-only and does not support card checkout.";
     default:
       return null;
   }
@@ -94,9 +98,9 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 <h1>{state.headline}</h1>
                 <p>{state.detail}</p>
                 <p className="assessment-inline-note">
-                  Plan: {plan.displayName}. Provider: Lemon Squeezy.
+                  Plan: {plan.displayName}. Provider: Stripe.
                   {checkoutReady
-                    ? " Starting checkout creates a hosted Lemon Squeezy checkout session. Entitlements are still handled manually."
+                    ? " Starting checkout creates a hosted Stripe Checkout session. Entitlements are still handled manually."
                     : " No checkout session, payment, order, webhook or entitlement is created here."}
                 </p>
               </div>
@@ -119,7 +123,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 <CreditCard size={22} />
                 <span className="assessment-summary-label">Card checkout</span>
                 <strong>{checkoutReady ? "Ready" : plan.checkoutEligible ? "Prepared" : "Not eligible"}</strong>
-                <p>{checkoutReady ? "Server-side Lemon checkout is configured." : "Lemon Squeezy is waiting for full configuration."}</p>
+                <p>{checkoutReady ? "Server-side Stripe checkout is configured for test mode." : "Stripe is waiting for full configuration."}</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <CircleAlert size={22} />
@@ -138,8 +142,8 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 <h2>{checkoutReady ? "Continue to hosted checkout" : "No payment is active yet"}</h2>
                 <p>
                   {checkoutReady
-                    ? "The button below starts a server-side Lemon Squeezy checkout and redirects you to the hosted checkout page. No entitlement is granted automatically after payment yet."
-                    : "This route exists so checkout can be enabled centrally after credentials and variant IDs are added. Until then, use invoice or support follow-up."}
+                    ? "The button below starts a server-side Stripe Checkout session and redirects you to the hosted checkout page. No entitlement is granted automatically after payment yet."
+                    : "This route exists so checkout can be enabled centrally after credentials and Stripe Price IDs are added. Until then, use invoice or support follow-up."}
                 </p>
               </div>
               {checkoutError ? (
@@ -148,7 +152,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
 
               <div className="assessment-status-row">
                 <span className={`assessment-chip assessment-chip-${statusTone(state.status)}`}>
-                  Lemon Squeezy: {statusLabel(state.status)}
+                  Stripe: {statusLabel(state.status)}
                 </span>
                 {plan.paymentOptions.map((option) => (
                   <span key={option} className="assessment-chip assessment-chip-neutral">

@@ -2,6 +2,10 @@
 
 Fecha: 2026-05-31
 
+## BILLING-4 update
+
+Lemon Squeezy checkout is decommissioned after provider rejection of the offering as services. This document remains historical architecture evidence. New checkout foundation is Stripe-first with manual invoice fallback; no new Lemon checkout sessions should be created.
+
 ## 1. Resumen
 
 BILLING-2 prepara la arquitectura de checkout para Lemon Squeezy sin activar cobros reales.

@@ -9,7 +9,7 @@ import {
   getBillingCheckoutRouteState,
 } from "../../src/server/billing/billingConfiguration";
 
-const trackedEnvNames = [...billingEnvPlaceholders, "LEMON_SQUEEZY_CHECKOUT_ENABLED"] as const;
+const trackedEnvNames = [...billingEnvPlaceholders, "STRIPE_CHECKOUT_ENABLED"] as const;
 
 const originalEnv = Object.fromEntries(trackedEnvNames.map((name) => [name, process.env[name]]));
 
@@ -67,7 +67,7 @@ describe("billing checkout architecture", () => {
     expect(getBillingPlanByCheckoutSlug("msp")?.primaryAction.href).toBe("/billing/checkout/msp");
   });
 
-  it("does not require Lemon Squeezy env vars for checkout route state", () => {
+  it("does not require Stripe env vars for checkout route state", () => {
     billingEnvPlaceholders.forEach((name) => {
       delete process.env[name];
     });
@@ -76,31 +76,41 @@ describe("billing checkout architecture", () => {
 
     expect(state.plan?.id).toBe("starter_readiness");
     expect(state.status).toBe("not_configured");
-    expect("lemon" in state ? state.lemon.checkoutActive : true).toBe(false);
+    expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
   });
 
-  it("marks checkout as ready when Lemon Squeezy env vars are configured", () => {
-    process.env.LEMON_SQUEEZY_STORE_ID = "393386";
-    process.env.LEMONSQUEEZY_API_KEY = "test-key";
-    process.env.LEMON_STARTER_VARIANT_ID = "123";
+  it("marks checkout as ready when Stripe test env vars are configured", () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
 
     const state = getBillingCheckoutRouteState("starter");
 
     expect(state.status).toBe("configured");
-    expect("lemon" in state ? state.lemon.checkoutActive : false).toBe(true);
-    expect("lemon" in state ? state.lemon.env.apiKeyConfigured : false).toBe(true);
+    expect("stripe" in state ? state.stripe.checkoutActive : false).toBe(true);
+    expect("stripe" in state ? state.stripe.env.secretKeyConfigured : false).toBe(true);
   });
 
   it("allows checkout to be disabled explicitly without removing credentials", () => {
-    process.env.LEMON_SQUEEZY_STORE_ID = "393386";
-    process.env.LEMON_SQUEEZY_API_KEY = "test-key";
-    process.env.LEMON_STARTER_VARIANT_ID = "123";
-    process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED = "false";
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_ENABLED = "false";
 
     const state = getBillingCheckoutRouteState("starter");
 
     expect(state.status).toBe("configured_but_disabled");
-    expect("lemon" in state ? state.lemon.checkoutActive : true).toBe(false);
+    expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
+  });
+
+  it("blocks Stripe live mode until a separate go-live milestone", () => {
+    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured_live_disabled");
+    expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
   });
 
   it("keeps provider visibility safe for admin surfaces", () => {
@@ -109,16 +119,16 @@ describe("billing checkout architecture", () => {
     expect(status.providers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: "lemon_squeezy",
-          label: "Lemon Squeezy",
+          id: "stripe",
+          label: "Stripe",
         }),
         expect.objectContaining({
           id: "bank_transfer",
-          label: "Bank transfer invoice",
+          label: "Manual invoice / bank transfer",
         }),
         expect.objectContaining({
-          id: "stripe_disabled",
-          status: "Disabled",
+          id: "lemon_squeezy_legacy",
+          status: "Rejected / legacy disabled",
         }),
       ]),
     );

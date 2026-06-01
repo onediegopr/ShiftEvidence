@@ -12,7 +12,7 @@ export type { BillingCadence };
 
 export type PaymentOption = BillingPaymentOption;
 
-export type PaymentProvider = Extract<BillingProvider, "lemon_squeezy" | "stripe_disabled">;
+export type PaymentProvider = Extract<BillingProvider, "stripe" | "lemon_squeezy_legacy">;
 
 export type PlanId = BillingPlanId;
 
@@ -57,7 +57,7 @@ export interface AddOn {
 }
 
 export const paymentOptionsCopy = {
-  cardCheckout: "Secure card checkout is routed through Lemon Squeezy when the plan is configured.",
+  cardCheckout: "Secure card checkout is routed through Stripe when the plan is configured.",
   bankTransfer: "Bank transfer invoices are available for business customers.",
   general: "Card checkout uses secure checkout when configured. Bank transfer invoices are available for business customers.",
   pricingNote:
@@ -96,11 +96,11 @@ export const marketingPlans: Plan[] = [
     accent: "core",
     recommendedPayment: starterBillingPlan.recommendedPayment,
     paymentOptions: starterBillingPlan.paymentOptions,
-    futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe_disabled",
+    futureProvider: "stripe",
+    disabledProvider: "lemon_squeezy_legacy",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is available when Lemon Squeezy is configured for this plan. Bank transfer invoice is available on request for business customers.",
+    paymentNote: "Card checkout is available when Stripe is configured for this plan. Bank transfer invoice is available on request for business customers.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools upload / guided evidence review",
@@ -128,11 +128,11 @@ export const marketingPlans: Plan[] = [
     accent: "pro",
     recommendedPayment: professionalBillingPlan.recommendedPayment,
     paymentOptions: professionalBillingPlan.paymentOptions,
-    futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe_disabled",
+    futureProvider: "stripe",
+    disabledProvider: "lemon_squeezy_legacy",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is available when Lemon Squeezy is configured for this plan. Business invoice support is available for procurement workflows.",
+    paymentNote: "Card checkout is available when Stripe is configured for this plan. Business invoice support is available for procurement workflows.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",
@@ -162,8 +162,8 @@ export const marketingPlans: Plan[] = [
     accent: "blueprint",
     recommendedPayment: blueprintBillingPlan.recommendedPayment,
     paymentOptions: blueprintBillingPlan.paymentOptions,
-    futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe_disabled",
+    futureProvider: "stripe",
+    disabledProvider: "lemon_squeezy_legacy",
     cta: blueprintBillingPlan.primaryAction,
     secondaryCta: blueprintBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.blueprint,
@@ -195,8 +195,8 @@ export const marketingPlans: Plan[] = [
     accent: "partner",
     recommendedPayment: mspBillingPlan.recommendedPayment,
     paymentOptions: mspBillingPlan.paymentOptions,
-    futureProvider: "lemon_squeezy",
-    disabledProvider: "stripe_disabled",
+    futureProvider: "stripe",
+    disabledProvider: "lemon_squeezy_legacy",
     cta: mspBillingPlan.primaryAction,
     secondaryCta: mspBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.msp,

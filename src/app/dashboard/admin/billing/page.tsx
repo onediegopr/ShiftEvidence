@@ -144,9 +144,18 @@ function formatQueryMessage(value: string | null | undefined) {
 function formatLemonStatus(value: string) {
   const labels: Record<string, string> = {
     no_configurado: "No configurado",
+    legado_desactivado: "Legado desactivado",
+    rechazado_legacy: "Rechazado / legacy",
+  };
+
+  return labels[value] ?? value;
+}
+
+function formatStripeStatus(value: string) {
+  const labels: Record<string, string> = {
+    no_configurado: "No configurado",
     configurado_test: "Configurado test",
-    configurado_live: "Configurado live",
-    error: "Error",
+    configurado_live_no_aprobado: "Live no aprobado",
     desactivado: "Desactivado",
   };
 
@@ -862,29 +871,27 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
 
       <section className="report-history-grid">
         <ProviderCard
-          icon={<BadgePercent size={22} />}
-          title="Lemon Squeezy"
-          status={formatLemonStatus(status.lemon.status)}
-          risk={formatBillingRiskLevel(status.lemon.riskLevel)}
+          icon={<ShieldCheck size={22} />}
+          title="Stripe"
+          status={formatStripeStatus(status.stripe.status)}
+          risk={formatBillingRiskLevel(status.stripe.riskLevel)}
         >
           <FieldList
             rows={[
-              ["Store ID", formatBooleanPresence(status.lemon.storeIdPresent)],
-              ["API key", formatBooleanPresence(status.lemon.apiKeyPresent)],
-              ["API key alias MCP", formatBooleanPresence(status.lemon.apiKeyAliasPresent)],
-              ["Starter Variant ID", formatBooleanPresence(status.lemon.starterVariantPresent)],
-              ["Professional Variant ID", formatBooleanPresence(status.lemon.professionalVariantPresent)],
-              ["MSP Variant ID", formatBooleanPresence(status.lemon.mspVariantPresent)],
-              ["Checkout mode", formatCheckoutMode(status.lemon.checkoutMode)],
-              ["Checkout habilitado", formatBooleanYesNo(status.lemon.checkoutEnabled)],
-              ["Webhook secret", formatBooleanPresence(status.lemon.webhookSecretPresent)],
-              ["Endpoint webhook", status.lemon.webhookEndpointAvailable ? "Disponible" : "No disponible"],
+              ["Secret key", formatBooleanPresence(status.stripe.secretKeyPresent)],
+              ["Webhook secret", formatBooleanPresence(status.stripe.webhookSecretPresent)],
+              ["Starter Price ID", formatBooleanPresence(status.stripe.starterPricePresent)],
+              ["Professional Price ID", formatBooleanPresence(status.stripe.professionalPricePresent)],
+              ["MSP Price ID", formatBooleanPresence(status.stripe.mspPricePresent)],
+              ["Checkout mode", formatCheckoutMode(status.stripe.checkoutMode)],
+              ["Checkout habilitado", formatBooleanYesNo(status.stripe.checkoutEnabled)],
+              ["Checkout activo", formatBooleanYesNo(status.stripe.checkoutActive)],
               ["Eventos recibidos", status.operations.recentEventsCount],
               ["Eventos fallidos", status.operations.failedEventsCount],
               ["Ultimo evento", formatDate(status.operations.lastEventAt)],
             ]}
           />
-          <p className="assessment-inline-note">{status.lemon.recommendedAction}</p>
+          <p className="assessment-inline-note">{status.stripe.recommendedAction}</p>
         </ProviderCard>
 
         <ProviderCard
@@ -907,19 +914,27 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         </ProviderCard>
 
         <ProviderCard
-          icon={<ShieldCheck size={22} />}
-          title="Stripe"
-          status="Diferido / desactivado"
-          risk={formatBillingRiskLevel(status.stripe.riskLevel)}
+          icon={<BadgePercent size={22} />}
+          title="Lemon Squeezy"
+          status={formatLemonStatus(status.lemon.status)}
+          risk={formatBillingRiskLevel(status.lemon.riskLevel)}
         >
           <FieldList
             rows={[
-              ["Visible publicamente", "No"],
-              ["Checkout activo", "No"],
-              ["Motivo", status.stripe.reason],
-              ["Accion recomendada", status.stripe.recommendedAction],
+              ["Store ID", formatBooleanPresence(status.lemon.storeIdPresent)],
+              ["API key", formatBooleanPresence(status.lemon.apiKeyPresent)],
+              ["API key alias MCP", formatBooleanPresence(status.lemon.apiKeyAliasPresent)],
+              ["Starter Variant ID", formatBooleanPresence(status.lemon.starterVariantPresent)],
+              ["Professional Variant ID", formatBooleanPresence(status.lemon.professionalVariantPresent)],
+              ["MSP Variant ID", formatBooleanPresence(status.lemon.mspVariantPresent)],
+              ["Checkout mode historico", formatCheckoutMode(status.lemon.checkoutMode)],
+              ["Checkout habilitado", "No"],
+              ["Webhook secret historico", formatBooleanPresence(status.lemon.webhookSecretPresent)],
+              ["Estado webhook", status.lemon.webhookStatus],
+              ["Motivo", "Provider legado: rechazo del offering como servicios."],
             ]}
           />
+          <p className="assessment-inline-note">{status.lemon.recommendedAction}</p>
         </ProviderCard>
 
         <ProviderCard
@@ -961,12 +976,12 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           </div>
           <h2>Ordenes, pagos y suscripciones</h2>
           <p>
-            Estos registros reflejan eventos comerciales capturados desde Lemon. No otorgan acceso y no reemplazan
+            Estos registros reflejan eventos comerciales capturados desde providers de billing. No otorgan acceso y no reemplazan
             el fulfillment manual.
           </p>
         </div>
         <section className="assessment-summary-grid">
-          <MetricCard icon={<Database size={22} />} label="Ordenes" value={ledger.recentOrdersCount} note="Creadas por eventos Lemon" />
+          <MetricCard icon={<Database size={22} />} label="Ordenes" value={ledger.recentOrdersCount} note="Creadas por eventos de provider" />
           <MetricCard icon={<Banknote size={22} />} label="Pagos" value={ledger.recentPaymentsCount} note="Solo con ID estable" />
           <MetricCard icon={<BadgePercent size={22} />} label="Suscripciones" value={ledger.recentSubscriptionsCount} note="MSP y renewals futuros" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Sin match" value={ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount} note="Requiere revision manual" />

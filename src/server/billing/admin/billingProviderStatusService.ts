@@ -3,10 +3,8 @@ import type { BillingRiskLevel } from "./billingAdminLabels";
 
 export type LemonBillingStatus =
   | "no_configurado"
-  | "configurado_test"
-  | "configurado_live"
-  | "error"
-  | "desactivado";
+  | "legado_desactivado"
+  | "rechazado_legacy";
 
 export type WiseBillingStatus =
   | "factura_manual"
@@ -15,7 +13,11 @@ export type WiseBillingStatus =
   | "api_produccion_configurada"
   | "error";
 
-export type StripeBillingStatus = "diferido_desactivado";
+export type StripeBillingStatus =
+  | "no_configurado"
+  | "configurado_test"
+  | "configurado_live_no_aprobado"
+  | "desactivado";
 
 export type BillingOperationsReconciliation = "manual" | "parcial" | "automatizada";
 
@@ -38,11 +40,11 @@ export type BillingProviderStatusSnapshot = {
     professionalVariantPresent: boolean;
     mspVariantPresent: boolean;
     checkoutMode: "test" | "live" | "unknown";
-    checkoutEnabled: boolean;
+    checkoutEnabled: false;
     webhookSecretPresent: boolean;
     webhookEndpointAvailable: boolean;
-    webhookStatus: "no_configurado" | "endpoint_disponible" | "secreto_presente" | "eventos_recibidos" | "errores";
-    lastSmokeStatus: "ok" | "not_run" | "failed" | "unknown";
+    webhookStatus: "legado" | "eventos_recibidos" | "errores";
+    lastSmokeStatus: "legacy_disabled";
     recommendedAction: string;
     riskLevel: BillingRiskLevel;
   };
@@ -61,10 +63,17 @@ export type BillingProviderStatusSnapshot = {
   stripe: {
     providerName: "Stripe";
     status: StripeBillingStatus;
-    publiclyVisible: false;
-    checkoutActive: false;
-    reason: "Proveedor opcional futuro";
-    recommendedAction: "No configurar todavia.";
+    secretKeyPresent: boolean;
+    webhookSecretPresent: boolean;
+    starterPricePresent: boolean;
+    professionalPricePresent: boolean;
+    mspPricePresent: boolean;
+    checkoutMode: "test" | "live";
+    checkoutEnabled: boolean;
+    checkoutActive: boolean;
+    publiclyVisible: boolean;
+    reason: string;
+    recommendedAction: string;
     riskLevel: BillingRiskLevel;
   };
   operations: {
@@ -88,15 +97,15 @@ function hasEnv(name: string) {
   return Boolean(process.env[name]?.trim());
 }
 
-function getCheckoutMode() {
+function getLemonCheckoutMode() {
   const raw = process.env.LEMON_SQUEEZY_CHECKOUT_MODE?.trim().toLowerCase();
   if (raw === "live") return "live" as const;
   if (raw === "test" || !raw) return "test" as const;
   return "unknown" as const;
 }
 
-function isCheckoutExplicitlyDisabled() {
-  return process.env.LEMON_SQUEEZY_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
+function getStripeCheckoutMode() {
+  return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
 }
 
 function getWiseApiUrlMode() {
@@ -106,34 +115,33 @@ function getWiseApiUrlMode() {
   return "production" as const;
 }
 
-function getLemonRecommendedAction(params: {
+function isStripeCheckoutExplicitlyDisabled() {
+  return process.env.STRIPE_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
+}
+
+function getStripeRecommendedAction(params: {
   configured: boolean;
   checkoutEnabled: boolean;
-  checkoutMode: "test" | "live" | "unknown";
+  checkoutMode: "test" | "live";
   webhookSecretPresent: boolean;
-  failedEventsCount: number;
 }) {
   if (!params.checkoutEnabled) {
-    return "Checkout desactivado. Mantener fulfillment manual y revisar configuracion antes de activar.";
+    return "Checkout Stripe desactivado por configuracion. Mantener invoice manual.";
   }
 
   if (!params.configured) {
-    return "Completar Store ID, API key y Variant IDs server-side antes de operar checkout.";
+    return "Completar STRIPE_SECRET_KEY y Price IDs server-side antes de operar checkout.";
   }
 
-  if (params.checkoutMode === "live" && !params.webhookSecretPresent) {
-    return "Riesgo alto: live activo sin webhook secret. Volver a test o completar webhook antes de operar.";
-  }
-
-  if (params.failedEventsCount > 0) {
-    return "Revisar eventos fallidos antes de otorgar accesos manuales.";
+  if (params.checkoutMode === "live") {
+    return "Live detectado pero no aprobado. Mantener bloqueado hasta hito separado de go-live.";
   }
 
   if (!params.webhookSecretPresent) {
-    return "Checkout test-mode operativo. Falta configurar webhook secret para smoke de eventos.";
+    return "Stripe test-mode puede crear checkout si los Price IDs estan presentes; falta webhook secret para capturar eventos.";
   }
 
-  return "Mantener test-mode y fulfillment manual hasta completar conciliacion y grants controlados.";
+  return "Mantener test-mode, fulfillment manual y webhooks sin grants automaticos.";
 }
 
 export function getBillingProviderStatusSnapshot(
@@ -152,34 +160,38 @@ export function getBillingProviderStatusSnapshot(
   const professionalVariantPresent = hasEnv("LEMON_PROFESSIONAL_VARIANT_ID");
   const mspVariantPresent = hasEnv("LEMON_MSP_VARIANT_ID");
   const webhookSecretPresent = hasEnv("LEMON_SQUEEZY_WEBHOOK_SECRET") || hasEnv("LEMONSQUEEZY_WEBHOOK_SECRET");
-  const checkoutMode = getCheckoutMode();
-  const checkoutEnabled = !isCheckoutExplicitlyDisabled();
+  const checkoutMode = getLemonCheckoutMode();
+  const checkoutEnabled = false;
   const requiredCheckoutConfigured =
     storeIdPresent &&
     (apiKeyPresent || apiKeyAliasPresent) &&
     starterVariantPresent &&
     professionalVariantPresent &&
     mspVariantPresent;
-  const livePayments = checkoutMode === "live" && requiredCheckoutConfigured && checkoutEnabled;
-  const lemonStatus: LemonBillingStatus = !checkoutEnabled
-    ? "desactivado"
-    : !requiredCheckoutConfigured
-      ? "no_configurado"
-      : checkoutMode === "live"
-        ? "configurado_live"
-        : "configurado_test";
+  const lemonStatus: LemonBillingStatus = requiredCheckoutConfigured ? "rechazado_legacy" : "legado_desactivado";
   const webhookStatus = ledgerSummary.failedEventsCount > 0
     ? "errores"
     : ledgerSummary.recentEventsCount > 0
       ? "eventos_recibidos"
-      : webhookSecretPresent
-        ? "secreto_presente"
-        : "endpoint_disponible";
-  const lemonRiskLevel: BillingRiskLevel = livePayments && !webhookSecretPresent
-    ? "alto"
-    : !requiredCheckoutConfigured || ledgerSummary.failedEventsCount > 0
-      ? "medio"
-      : "bajo";
+      : "legado";
+  const lemonRiskLevel: BillingRiskLevel = ledgerSummary.failedEventsCount > 0 ? "medio" : "bajo";
+  const stripeSecretKeyPresent = hasEnv("STRIPE_SECRET_KEY");
+  const stripeWebhookSecretPresent = hasEnv("STRIPE_WEBHOOK_SECRET");
+  const stripeStarterPricePresent = hasEnv("STRIPE_STARTER_PRICE_ID");
+  const stripeProfessionalPricePresent = hasEnv("STRIPE_PROFESSIONAL_PRICE_ID");
+  const stripeMspPricePresent = hasEnv("STRIPE_MSP_PRICE_ID");
+  const stripeCheckoutMode = getStripeCheckoutMode();
+  const stripeCheckoutEnabled = !isStripeCheckoutExplicitlyDisabled();
+  const stripeConfigured = stripeSecretKeyPresent && stripeStarterPricePresent && stripeProfessionalPricePresent && stripeMspPricePresent;
+  const stripeCheckoutActive = stripeConfigured && stripeCheckoutMode === "test" && stripeCheckoutEnabled;
+  const stripeStatus: StripeBillingStatus = !stripeCheckoutEnabled
+    ? "desactivado"
+    : !stripeConfigured
+      ? "no_configurado"
+      : stripeCheckoutMode === "live"
+        ? "configurado_live_no_aprobado"
+        : "configurado_test";
+  const livePayments = false;
   const wiseTokenPresent = hasEnv("WISE_API_TOKEN");
   const wiseProfileIdPresent = hasEnv("WISE_PROFILE_ID");
   const wiseApiUrlMode = getWiseApiUrlMode();
@@ -206,14 +218,9 @@ export function getBillingProviderStatusSnapshot(
       webhookSecretPresent,
       webhookEndpointAvailable: true,
       webhookStatus,
-      lastSmokeStatus: requiredCheckoutConfigured && checkoutMode === "test" ? "ok" : "unknown",
-      recommendedAction: getLemonRecommendedAction({
-        configured: requiredCheckoutConfigured,
-        checkoutEnabled,
-        checkoutMode,
-        webhookSecretPresent,
-        failedEventsCount: ledgerSummary.failedEventsCount,
-      }),
+      lastSmokeStatus: "legacy_disabled",
+      recommendedAction:
+        "Lemon Squeezy queda como legado historico deshabilitado tras rechazo del offering como servicios. No crear nuevos checkouts Lemon.",
       riskLevel: lemonRiskLevel,
     },
     wise: {
@@ -231,18 +238,34 @@ export function getBillingProviderStatusSnapshot(
     },
     stripe: {
       providerName: "Stripe",
-      status: "diferido_desactivado",
-      publiclyVisible: false,
-      checkoutActive: false,
-      reason: "Proveedor opcional futuro",
-      recommendedAction: "No configurar todavia.",
-      riskLevel: "bajo",
+      status: stripeStatus,
+      secretKeyPresent: stripeSecretKeyPresent,
+      webhookSecretPresent: stripeWebhookSecretPresent,
+      starterPricePresent: stripeStarterPricePresent,
+      professionalPricePresent: stripeProfessionalPricePresent,
+      mspPricePresent: stripeMspPricePresent,
+      checkoutMode: stripeCheckoutMode,
+      checkoutEnabled: stripeCheckoutEnabled,
+      checkoutActive: stripeCheckoutActive,
+      publiclyVisible: true,
+      reason: stripeCheckoutActive
+        ? "Stripe es el provider principal configurable en test-mode."
+        : stripeCheckoutMode === "live"
+          ? "Live detectado pero bloqueado por policy de BILLING-4."
+          : "Faltan variables Stripe o checkout esta desactivado.",
+      recommendedAction: getStripeRecommendedAction({
+        configured: stripeConfigured,
+        checkoutEnabled: stripeCheckoutEnabled,
+        checkoutMode: stripeCheckoutMode,
+        webhookSecretPresent: stripeWebhookSecretPresent,
+      }),
+      riskLevel: stripeCheckoutMode === "live" ? "alto" : stripeConfigured ? "bajo" : "medio",
     },
     operations: {
-      checkoutTestMode: requiredCheckoutConfigured && checkoutMode === "test" && checkoutEnabled,
+      checkoutTestMode: stripeCheckoutActive,
       livePayments,
       manualFulfillment: true,
-      webhooks: webhookSecretPresent || ledgerSummary.recentEventsCount > 0,
+      webhooks: stripeWebhookSecretPresent || webhookSecretPresent || ledgerSummary.recentEventsCount > 0,
       ledger: true,
       automaticEntitlements: false,
       reconciliation: "manual",
@@ -252,7 +275,7 @@ export function getBillingProviderStatusSnapshot(
       ignoredEventsCount: ledgerSummary.ignoredEventsCount,
       lastEventAt: ledgerSummary.lastEventAt,
       recommendedAction:
-        "Mantener fulfillment manual. No otorgar accesos sin verificar Lemon y el runbook operativo.",
+        "Mantener fulfillment manual. No otorgar accesos sin verificar Stripe/admin ledger y el runbook operativo.",
     },
   };
 }

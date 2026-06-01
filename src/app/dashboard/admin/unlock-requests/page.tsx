@@ -205,8 +205,8 @@ export default async function UnlockRequestsAdminPage({
           <div className="badge badge-cyan">Administracion</div>
           <h1>Solicitudes manuales de desbloqueo</h1>
           <p>
-            Aprobacion manual interna. El pago no esta automatizado y no hay checkout activo.
-            Lemon Squeezy: {billingStatus.providers[0].status}.
+            Aprobacion manual interna. El pago no esta automatizado y el fulfillment sigue siendo manual.
+            Stripe: {billingStatus.providers[0].status}.
           </p>
         </div>
         <div className="dashboard-hero-actions">

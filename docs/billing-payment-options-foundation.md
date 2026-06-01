@@ -2,6 +2,10 @@
 
 Fecha: 2026-05-31
 
+## BILLING-4 update
+
+Card checkout provider direction changed from Lemon Squeezy to Stripe after Lemon rejected the offering as services. Bank transfer/Wise remains manual. Lemon references below are historical unless explicitly marked as legacy.
+
 ## 1. Que se implemento
 
 Se implemento una base visual, textual y estructural para comunicar planes, precios y opciones de pago sin activar pagos reales.

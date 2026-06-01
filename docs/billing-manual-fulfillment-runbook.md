@@ -2,6 +2,10 @@
 
 Date: 2026-05-31
 
+## BILLING-4 update
+
+This runbook still applies to manual fulfillment, but the active checkout foundation is now Stripe-first. References to Lemon Squeezy below are historical for orders/events created before decommission; new card checkout should use Stripe test-safe wiring or manual invoice fallback.
+
 Status: active operating runbook before BILLING-3.
 
 ## 1. Scope
@@ -316,4 +320,3 @@ Access changes, if any, will be handled manually and confirmed separately.
 Thanks,
 Shift Evidence
 ```
-

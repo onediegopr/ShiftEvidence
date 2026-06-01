@@ -20,7 +20,6 @@ import { getBillingAdminStatus } from "../billing/billingConfiguration";
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
 }
-
 function safeVisibleValue(value: string | undefined) {
   return isConfigured(value) ? value : "No configurada";
 }
@@ -110,7 +109,6 @@ function getAdminSectionFailure<T>(result: AdminSectionResult<T>): AdminSectionF
     message: result.message,
   };
 }
-
 function createFallbackAiRuntimeStatus(): AdminAiRuntimeStatus {
   return {
     estado: "desconocido",
@@ -1012,8 +1010,8 @@ export async function getAdminConsoleData(params?: {
       {
         title: "Billing Provider",
         status: "Atención",
-        description: `Lemon Squeezy: ${billingStatus.providers[0].status}. Checkout preparado, no activo.`,
-        recommendation: "Agregar credenciales y variant IDs en un hito futuro antes de activar checkout real.",
+        description: `Stripe: ${billingStatus.providers[0].status}. Checkout test-safe; fulfillment manual.`,
+        recommendation: "Agregar credenciales y Price IDs en un hito futuro antes de activar checkout real.",
       },
       {
         title: "Producción Hostinger",

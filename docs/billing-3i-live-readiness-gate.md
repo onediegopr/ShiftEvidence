@@ -2,6 +2,10 @@
 
 Date: 2026-06-01
 
+## BILLING-4 update
+
+After BILLING-3I, Lemon Squeezy rejected the offering as services. The Lemon live path is decommissioned and replaced by a Stripe-first checkout foundation. This document is retained as historical readiness evidence only; it is not approval to enable Lemon live payments.
+
 ## Executive Summary
 
 This hito audits readiness before enabling live payments in Lemon Squeezy.

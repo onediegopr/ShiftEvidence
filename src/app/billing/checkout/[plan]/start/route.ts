@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getBillingPlanByCheckoutSlug } from "../../../../../config/billing";
 import { getCheckoutPublicOrigin } from "../../../../../server/billing/checkoutOrigin";
-import { createLemonSqueezyCheckout } from "../../../../../server/billing/lemonSqueezyCheckout";
+import { createStripeCheckoutSession } from "../../../../../server/billing/stripeCheckout";
 
 type BillingCheckoutStartRouteContext = {
   params: Promise<{
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, context: BillingCheckoutStartRo
     return redirectToCheckoutPage(publicOrigin, planSlug, { error: "unsupported_plan" });
   }
 
-  const result = await createLemonSqueezyCheckout(plan, publicOrigin);
+  const result = await createStripeCheckoutSession(plan, publicOrigin);
 
   if (!result.ok) {
     return redirectToCheckoutPage(publicOrigin, planSlug, { error: result.reason });
