@@ -11,8 +11,13 @@ import {
   FileText,
   Gauge,
   LinkIcon,
+  Search,
   ShieldCheck,
 } from "lucide-react";
+import {
+  matchBillingOrderAction,
+  matchBillingSubscriptionAction,
+} from "./actions";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import {
   getBillingAdminLedgerSnapshot,
@@ -29,14 +34,32 @@ import {
   getBillingCommercialStatusTone,
   getBillingEventStatusLabel,
   getBillingEventStatusTone,
+  getBillingMatchStatusLabel,
+  getBillingMatchStatusTone,
   getBillingOrderStatusLabel,
   getBillingPaymentStatusLabel,
   getBillingSubscriptionStatusLabel,
 } from "../../../../server/billing/admin/billingAdminLabels";
 import {
+  getBillingAdminMatchCandidates,
+  type BillingAdminMatchCandidates,
+} from "../../../../server/billing/admin/billingAdminMatchSearchService";
+import {
+  getBillingOrderMatchStatus,
+  getBillingSubscriptionMatchStatus,
+} from "../../../../server/billing/admin/billingManualMatchService";
+import {
   getBillingProviderStatusSnapshot,
   getCheckoutPlanLinks,
 } from "../../../../server/billing/admin/billingProviderStatusService";
+
+type AdminBillingPageProps = {
+  searchParams?: Promise<{
+    error?: string;
+    saved?: string;
+    matchSearch?: string;
+  }>;
+};
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "Sin eventos";
@@ -93,6 +116,15 @@ function formatMatchState(record: {
   ].filter(Boolean);
 
   return missing.length === 0 ? "Con match" : `Sin match: ${missing.join(", ")}`;
+}
+
+function formatQueryMessage(value: string | null | undefined) {
+  if (!value) return null;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 function formatLemonStatus(value: string) {
@@ -184,6 +216,149 @@ function FieldList({ rows }: { rows: Array<[string, string | number | ReactNode]
   );
 }
 
+function CandidateSelect({
+  name,
+  label,
+  defaultValue,
+  options,
+}: {
+  name: string;
+  label: string;
+  defaultValue?: string | null;
+  options: Array<{ id: string; label: string }>;
+}) {
+  return (
+    <label style={{ display: "grid", gap: "6px" }}>
+      <span className="assessment-preview-label">{label}</span>
+      <select name={name} defaultValue={defaultValue ?? ""} className="admin-input">
+        <option value="">Sin seleccionar</option>
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>{option.label}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function MatchSearchForm({ query }: { query: string }) {
+  return (
+    <form className="billing-match-form" style={{ display: "flex", gap: "12px", alignItems: "end" }}>
+      <label style={{ display: "grid", gap: "6px", flex: 1 }}>
+        <span className="assessment-preview-label">Buscar candidatos</span>
+        <input
+          className="admin-input"
+          name="matchSearch"
+          defaultValue={query}
+          placeholder="email, nombre, workspace, assessment"
+        />
+      </label>
+      <button className="btn btn-secondary" type="submit">
+        <Search size={16} />
+        Buscar
+      </button>
+    </form>
+  );
+}
+
+function OrderMatchForm({
+  order,
+  candidates,
+}: {
+  order: BillingAdminLedgerOrder;
+  candidates: BillingAdminMatchCandidates;
+}) {
+  return (
+    <form action={matchBillingOrderAction} className="billing-match-form" style={{ marginTop: "12px" }}>
+      <input type="hidden" name="billingOrderId" value={order.id} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "12px" }}>
+        <CandidateSelect
+          name="userId"
+          label="Usuario"
+          defaultValue={order.userId}
+          options={candidates.users.map((user) => ({
+            id: user.id,
+            label: `${user.email} - ${user.name}`,
+          }))}
+        />
+        <CandidateSelect
+          name="workspaceId"
+          label="Workspace"
+          defaultValue={order.workspaceId}
+          options={candidates.workspaces.map((workspace) => ({
+            id: workspace.id,
+            label: `${workspace.name} - ${workspace.ownerEmail}`,
+          }))}
+        />
+        <CandidateSelect
+          name="assessmentId"
+          label="Assessment"
+          defaultValue={order.assessmentId}
+          options={candidates.assessments.map((assessment) => ({
+            id: assessment.id,
+            label: `${assessment.title} - ${assessment.workspaceName}`,
+          }))}
+        />
+      </div>
+      <label style={{ display: "grid", gap: "6px", marginTop: "12px" }}>
+        <span className="assessment-preview-label">Nota interna</span>
+        <textarea
+          className="admin-input"
+          name="note"
+          rows={2}
+          placeholder="Contexto operativo del match. No guardar secretos ni datos de tarjeta."
+        />
+      </label>
+      <p className="assessment-inline-note">Guardar match no otorga acceso. El acceso se concede en un hito posterior de fulfillment.</p>
+      <button className="btn btn-secondary" type="submit">Guardar match</button>
+    </form>
+  );
+}
+
+function SubscriptionMatchForm({
+  subscription,
+  candidates,
+}: {
+  subscription: BillingAdminLedgerSubscription;
+  candidates: BillingAdminMatchCandidates;
+}) {
+  return (
+    <form action={matchBillingSubscriptionAction} className="billing-match-form" style={{ marginTop: "12px" }}>
+      <input type="hidden" name="billingSubscriptionId" value={subscription.id} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "12px" }}>
+        <CandidateSelect
+          name="userId"
+          label="Usuario"
+          defaultValue={subscription.userId}
+          options={candidates.users.map((user) => ({
+            id: user.id,
+            label: `${user.email} - ${user.name}`,
+          }))}
+        />
+        <CandidateSelect
+          name="workspaceId"
+          label="Workspace"
+          defaultValue={subscription.workspaceId}
+          options={candidates.workspaces.map((workspace) => ({
+            id: workspace.id,
+            label: `${workspace.name} - ${workspace.ownerEmail}`,
+          }))}
+        />
+      </div>
+      <label style={{ display: "grid", gap: "6px", marginTop: "12px" }}>
+        <span className="assessment-preview-label">Nota interna</span>
+        <textarea
+          className="admin-input"
+          name="note"
+          rows={2}
+          placeholder="Contexto operativo del match. No guardar secretos ni datos de tarjeta."
+        />
+      </label>
+      <p className="assessment-inline-note">Guardar match no activa acceso partner automaticamente.</p>
+      <button className="btn btn-secondary" type="submit">Guardar match</button>
+    </form>
+  );
+}
+
 function ProviderCard({
   icon,
   title,
@@ -254,7 +429,15 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
   );
 }
 
-function OrdersTable({ orders }: { orders: BillingAdminLedgerOrder[] }) {
+function OrdersTable({
+  orders,
+  candidates,
+  showMatchForm = false,
+}: {
+  orders: BillingAdminLedgerOrder[];
+  candidates?: BillingAdminMatchCandidates;
+  showMatchForm?: boolean;
+}) {
   if (orders.length === 0) {
     return <p className="assessment-empty-note">No hay ordenes comerciales registradas todavia.</p>;
   }
@@ -271,6 +454,7 @@ function OrdersTable({ orders }: { orders: BillingAdminLedgerOrder[] }) {
             <th>Estado</th>
             <th>Monto</th>
             <th>Match</th>
+            <th>Estado match</th>
             <th>Provider Order ID</th>
             <th>Pago/Reembolso</th>
           </tr>
@@ -290,12 +474,36 @@ function OrdersTable({ orders }: { orders: BillingAdminLedgerOrder[] }) {
               </td>
               <td>{formatAmount(order.amountCents, order.currency)}</td>
               <td>{formatMatchState(order)}</td>
+              <td>
+                <Chip
+                  label={getBillingMatchStatusLabel(getBillingOrderMatchStatus(order))}
+                  tone={getBillingMatchStatusTone(getBillingOrderMatchStatus(order))}
+                />
+              </td>
               <td>{order.providerOrderId ?? "-"}</td>
               <td>{formatDate(order.refundedAt ?? order.paidAt)}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      {showMatchForm && candidates ? (
+        <div style={{ display: "grid", gap: "16px", marginTop: "16px" }}>
+          {orders.map((order) => (
+            <article key={`match-${order.id}`} className="glass-card report-history-card">
+              <h3>Revisar match de orden</h3>
+              <FieldList
+                rows={[
+                  ["Plan", formatPlan(order.planId)],
+                  ["Email cliente", order.customerEmail ?? "-"],
+                  ["Provider Order ID", order.providerOrderId ?? "-"],
+                  ["Estado actual", getBillingMatchStatusLabel(getBillingOrderMatchStatus(order))],
+                ]}
+              />
+              <OrderMatchForm order={order} candidates={candidates} />
+            </article>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -342,7 +550,15 @@ function PaymentsTable({ payments }: { payments: BillingAdminLedgerPayment[] }) 
   );
 }
 
-function SubscriptionsTable({ subscriptions }: { subscriptions: BillingAdminLedgerSubscription[] }) {
+function SubscriptionsTable({
+  subscriptions,
+  candidates,
+  showMatchForm = false,
+}: {
+  subscriptions: BillingAdminLedgerSubscription[];
+  candidates?: BillingAdminMatchCandidates;
+  showMatchForm?: boolean;
+}) {
   if (subscriptions.length === 0) {
     return <p className="assessment-empty-note">No hay suscripciones comerciales registradas todavia.</p>;
   }
@@ -359,6 +575,7 @@ function SubscriptionsTable({ subscriptions }: { subscriptions: BillingAdminLedg
             <th>Estado</th>
             <th>Periodo actual</th>
             <th>Workspace</th>
+            <th>Estado match</th>
             <th>Provider Subscription ID</th>
           </tr>
         </thead>
@@ -377,17 +594,43 @@ function SubscriptionsTable({ subscriptions }: { subscriptions: BillingAdminLedg
               </td>
               <td>{formatDate(subscription.currentPeriodStart)} / {formatDate(subscription.currentPeriodEnd)}</td>
               <td>{subscription.workspaceId ? "Con workspace" : "Sin match"}</td>
+              <td>
+                <Chip
+                  label={getBillingMatchStatusLabel(getBillingSubscriptionMatchStatus(subscription))}
+                  tone={getBillingMatchStatusTone(getBillingSubscriptionMatchStatus(subscription))}
+                />
+              </td>
               <td>{subscription.providerSubscriptionId ?? "-"}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      {showMatchForm && candidates ? (
+        <div style={{ display: "grid", gap: "16px", marginTop: "16px" }}>
+          {subscriptions.map((subscription) => (
+            <article key={`match-${subscription.id}`} className="glass-card report-history-card">
+              <h3>Revisar match de suscripcion</h3>
+              <FieldList
+                rows={[
+                  ["Plan", formatPlan(subscription.planId)],
+                  ["Email cliente", subscription.customerEmail ?? "-"],
+                  ["Provider Subscription ID", subscription.providerSubscriptionId ?? "-"],
+                  ["Estado actual", getBillingMatchStatusLabel(getBillingSubscriptionMatchStatus(subscription))],
+                ]}
+              />
+              <SubscriptionMatchForm subscription={subscription} candidates={candidates} />
+            </article>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
 
-export default async function AdminBillingPage() {
+export default async function AdminBillingPage({ searchParams }: AdminBillingPageProps) {
   const session = await requireAdminSession();
+  const query = await Promise.resolve(searchParams);
+  const matchSearch = query?.matchSearch ?? "";
   let ledger;
 
   try {
@@ -398,6 +641,18 @@ export default async function AdminBillingPage() {
 
   const status = getBillingProviderStatusSnapshot(ledger);
   const checkoutLinks = getCheckoutPlanLinks();
+  const matchCandidates = await getBillingAdminMatchCandidates({
+    query: matchSearch,
+    customerEmail: ledger.unmatchedOrders[0]?.customerEmail ?? ledger.unmatchedSubscriptions[0]?.customerEmail ?? null,
+  });
+  const savedMessage = query?.saved
+    ? query.saved === "order-match"
+      ? "Match de orden guardado."
+      : query.saved === "subscription-match"
+        ? "Match de suscripcion guardado."
+        : "Cambios guardados."
+    : null;
+  const errorMessage = formatQueryMessage(query?.error);
 
   return (
     <main className="dashboard-page">
@@ -407,6 +662,8 @@ export default async function AdminBillingPage() {
           <h1>Billing y proveedores</h1>
           <p>Estado operativo de checkout, proveedores, fulfillment manual, webhooks, ledger y entitlements.</p>
           <p className="assessment-inline-note">Sesion admin: {session.user.email}</p>
+          {savedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status">{savedMessage}</div> : null}
+          {errorMessage ? <div className="dashboard-banner dashboard-banner-error" role="alert">{errorMessage}</div> : null}
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard/admin" className="btn btn-secondary">
@@ -559,10 +816,11 @@ export default async function AdminBillingPage() {
           <h2>Registros sin match</h2>
           <p>Requiere revision manual. No otorga acceso automaticamente.</p>
         </div>
+        <MatchSearchForm query={matchSearch} />
         <h3>Ordenes sin match completo</h3>
-        <OrdersTable orders={ledger.unmatchedOrders} />
+        <OrdersTable orders={ledger.unmatchedOrders} candidates={matchCandidates} showMatchForm />
         <h3>Suscripciones sin match</h3>
-        <SubscriptionsTable subscriptions={ledger.unmatchedSubscriptions} />
+        <SubscriptionsTable subscriptions={ledger.unmatchedSubscriptions} candidates={matchCandidates} showMatchForm />
       </section>
 
       <section className="assessment-section glass-card">

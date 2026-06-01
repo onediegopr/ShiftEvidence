@@ -4,6 +4,7 @@ import type {
   BillingPaymentStatus,
   BillingSubscriptionStatus,
 } from "@prisma/client";
+import type { BillingMatchStatus } from "./billingManualMatchService";
 
 export type BillingRiskLevel = "bajo" | "medio" | "alto";
 
@@ -90,4 +91,26 @@ export function getBillingCommercialStatusTone(
   }
 
   return "neutral";
+}
+
+export function getBillingMatchStatusLabel(status: BillingMatchStatus) {
+  const labels: Record<BillingMatchStatus, string> = {
+    unmatched: "Sin match",
+    partial: "Match parcial",
+    complete: "Match completo",
+    needs_review: "Requiere revision",
+  };
+
+  return labels[status];
+}
+
+export function getBillingMatchStatusTone(status: BillingMatchStatus) {
+  const tones: Record<BillingMatchStatus, "neutral" | "good" | "warning" | "danger"> = {
+    unmatched: "danger",
+    partial: "warning",
+    complete: "good",
+    needs_review: "warning",
+  };
+
+  return tones[status];
 }
