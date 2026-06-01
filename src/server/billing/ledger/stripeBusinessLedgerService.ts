@@ -288,6 +288,10 @@ async function runInTransaction<T>(db: DbClient, callback: (tx: DbClient) => Pro
   return callback(db);
 }
 
+function isStripeLivePaymentsApproved() {
+  return process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim() === "true";
+}
+
 async function processMappedStripeEvent(params: {
   db: DbClient;
   billingEvent: BillingEvent;
@@ -296,7 +300,7 @@ async function processMappedStripeEvent(params: {
   const mapped = mapStripeWebhookPayloadToBusinessLedger(params.rawBody);
   const warnings = [...mapped.warnings];
 
-  if (mapped.liveMode) {
+  if (mapped.liveMode && !isStripeLivePaymentsApproved()) {
     warnings.push("live_event_skipped_not_approved");
     await updateEventWarnings(params.db, params.billingEvent.id, warnings);
     return {

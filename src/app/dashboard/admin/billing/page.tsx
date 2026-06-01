@@ -161,6 +161,7 @@ function formatStripeStatus(value: string) {
   const labels: Record<string, string> = {
     no_configurado: "No configurado",
     configurado_test: "Configurado test",
+    configurado_live_aprobado: "Live aprobado",
     configurado_live_no_aprobado: "Live no aprobado",
     desactivado: "Desactivado",
   };

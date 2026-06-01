@@ -11,6 +11,7 @@ const trackedEnvNames = [
   "STRIPE_MSP_PRICE_ID",
   "STRIPE_CHECKOUT_MODE",
   "STRIPE_CHECKOUT_ENABLED",
+  "STRIPE_LIVE_PAYMENTS_APPROVED",
 ] as const;
 const originalEnv = Object.fromEntries(trackedEnvNames.map((name) => [name, process.env[name]]));
 
@@ -100,7 +101,7 @@ describe("Stripe checkout foundation", () => {
     expect(body.get("metadata[plan_id]")).toBe("msp_partner");
   });
 
-  it("blocks live mode and invalid price IDs before calling Stripe", async () => {
+  it("blocks live mode without explicit owner approval before calling Stripe", async () => {
     const fetchSpy = vi.fn();
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
     process.env.STRIPE_SECRET_KEY = "sk_live_example";
@@ -111,9 +112,41 @@ describe("Stripe checkout foundation", () => {
 
     expect(liveResult.ok).toBe(false);
     expect(liveResult.ok ? null : liveResult.reason).toBe("live_not_approved");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
 
-    process.env.STRIPE_CHECKOUT_MODE = "test";
+  it("creates a live Stripe Checkout session only when explicitly approved", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: "cs_live_123",
+        livemode: true,
+        url: "https://checkout.stripe.com/c/pay/cs_live_123",
+      }),
+    });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result).toEqual({
+      ok: true,
+      checkoutId: "cs_live_123",
+      testMode: false,
+      url: "https://checkout.stripe.com/c/pay/cs_live_123",
+    });
+  });
+
+  it("blocks invalid price IDs before calling Stripe", async () => {
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.STRIPE_STARTER_PRICE_ID = "starter";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+
     const invalidPriceResult = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
 
     expect(invalidPriceResult.ok).toBe(false);

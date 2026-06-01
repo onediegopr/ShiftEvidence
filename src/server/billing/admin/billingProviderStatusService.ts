@@ -16,6 +16,7 @@ export type WiseBillingStatus =
 export type StripeBillingStatus =
   | "no_configurado"
   | "configurado_test"
+  | "configurado_live_aprobado"
   | "configurado_live_no_aprobado"
   | "desactivado";
 
@@ -108,6 +109,10 @@ function getStripeCheckoutMode() {
   return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
 }
 
+function isStripeLivePaymentsApproved() {
+  return process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim() === "true";
+}
+
 function getWiseApiUrlMode() {
   const url = process.env.WISE_API_URL?.trim().toLowerCase();
   if (!url) return "not_configured" as const;
@@ -134,7 +139,9 @@ function getStripeRecommendedAction(params: {
   }
 
   if (params.checkoutMode === "live") {
-    return "Live detectado pero no aprobado. Mantener bloqueado hasta hito separado de go-live.";
+    return params.checkoutEnabled
+      ? "Live aprobado por hito controlado. Operar solo el smoke autorizado y mantener fulfillment manual."
+      : "Live detectado pero no aprobado. Mantener bloqueado hasta hito separado de go-live.";
   }
 
   if (!params.webhookSecretPresent) {
@@ -181,17 +188,23 @@ export function getBillingProviderStatusSnapshot(
   const stripeProfessionalPricePresent = hasEnv("STRIPE_PROFESSIONAL_PRICE_ID");
   const stripeMspPricePresent = hasEnv("STRIPE_MSP_PRICE_ID");
   const stripeCheckoutMode = getStripeCheckoutMode();
+  const stripeLivePaymentsApproved = isStripeLivePaymentsApproved();
   const stripeCheckoutEnabled = !isStripeCheckoutExplicitlyDisabled();
   const stripeConfigured = stripeSecretKeyPresent && stripeStarterPricePresent && stripeProfessionalPricePresent && stripeMspPricePresent;
-  const stripeCheckoutActive = stripeConfigured && stripeCheckoutMode === "test" && stripeCheckoutEnabled;
+  const livePayments = stripeConfigured && stripeCheckoutMode === "live" && stripeCheckoutEnabled && stripeLivePaymentsApproved;
+  const stripeCheckoutActive =
+    stripeConfigured &&
+    stripeCheckoutEnabled &&
+    (stripeCheckoutMode === "test" || livePayments);
   const stripeStatus: StripeBillingStatus = !stripeCheckoutEnabled
     ? "desactivado"
     : !stripeConfigured
       ? "no_configurado"
       : stripeCheckoutMode === "live"
-        ? "configurado_live_no_aprobado"
+        ? stripeLivePaymentsApproved
+          ? "configurado_live_aprobado"
+          : "configurado_live_no_aprobado"
         : "configurado_test";
-  const livePayments = false;
   const wiseTokenPresent = hasEnv("WISE_API_TOKEN");
   const wiseProfileIdPresent = hasEnv("WISE_PROFILE_ID");
   const wiseApiUrlMode = getWiseApiUrlMode();
@@ -249,9 +262,11 @@ export function getBillingProviderStatusSnapshot(
       checkoutActive: stripeCheckoutActive,
       publiclyVisible: true,
       reason: stripeCheckoutActive
-        ? "Stripe es el provider principal configurable en test-mode."
+        ? stripeCheckoutMode === "live"
+          ? "Stripe live esta aprobado para el smoke controlado de BILLING-9."
+          : "Stripe es el provider principal configurable en test-mode."
         : stripeCheckoutMode === "live"
-          ? "Live detectado pero bloqueado por policy de BILLING-4."
+          ? "Live detectado pero bloqueado por policy hasta aprobacion explicita."
           : "Faltan variables Stripe o checkout esta desactivado.",
       recommendedAction: getStripeRecommendedAction({
         configured: stripeConfigured,
@@ -259,10 +274,10 @@ export function getBillingProviderStatusSnapshot(
         checkoutMode: stripeCheckoutMode,
         webhookSecretPresent: stripeWebhookSecretPresent,
       }),
-      riskLevel: stripeCheckoutMode === "live" ? "alto" : stripeConfigured ? "bajo" : "medio",
+      riskLevel: stripeCheckoutMode === "live" ? (stripeLivePaymentsApproved ? "medio" : "alto") : stripeConfigured ? "bajo" : "medio",
     },
     operations: {
-      checkoutTestMode: stripeCheckoutActive,
+      checkoutTestMode: stripeCheckoutMode === "test" && stripeCheckoutActive,
       livePayments,
       manualFulfillment: true,
       webhooks: stripeWebhookSecretPresent || webhookSecretPresent || ledgerSummary.recentEventsCount > 0,

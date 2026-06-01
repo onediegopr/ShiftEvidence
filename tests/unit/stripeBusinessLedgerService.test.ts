@@ -1,5 +1,15 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { processStripeBillingEvent } from "../../src/server/billing/ledger/stripeBusinessLedgerService";
+
+const originalStripeLivePaymentsApproved = process.env.STRIPE_LIVE_PAYMENTS_APPROVED;
+
+afterEach(() => {
+  if (originalStripeLivePaymentsApproved === undefined) {
+    delete process.env.STRIPE_LIVE_PAYMENTS_APPROVED;
+  } else {
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = originalStripeLivePaymentsApproved;
+  }
+});
 
 function billingEvent(overrides?: {
   id?: string;
@@ -324,6 +334,7 @@ describe("Stripe business ledger service", () => {
   });
 
   it("skips live Stripe events until a separate go-live hito approves them", async () => {
+    delete process.env.STRIPE_LIVE_PAYMENTS_APPROVED;
     const db = makeDb();
 
     const result = await processStripeBillingEvent({
@@ -336,5 +347,35 @@ describe("Stripe business ledger service", () => {
     expect(result.warnings).toContain("live_event_skipped_not_approved");
     expect(db.billingOrder.create).not.toHaveBeenCalled();
     expect(db.billingPayment.create).not.toHaveBeenCalled();
+  });
+
+  it("processes live Stripe events only when live payments are explicitly approved", async () => {
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+    const db = makeDb();
+    db.billingOrder.findUnique.mockResolvedValueOnce(null);
+    db.billingOrder.create.mockResolvedValueOnce({
+      id: "billing_order_live_1",
+      provider: "stripe",
+      providerOrderId: "cs_test_1",
+      amountCents: 49000,
+      currency: "USD",
+    });
+    db.billingPayment.findUnique.mockResolvedValueOnce(null);
+    db.billingPayment.create.mockResolvedValueOnce({
+      id: "billing_payment_live_1",
+      providerPaymentId: "pi_test_1",
+      orderId: "billing_order_live_1",
+    });
+
+    const result = await processStripeBillingEvent({
+      db: db as never,
+      billingEvent: billingEvent() as never,
+      rawBody: checkoutPayload({ livemode: true }).replace('"livemode":false', '"livemode":true'),
+    });
+
+    expect(result.skipped).toBe(false);
+    expect(result.warnings).not.toContain("live_event_skipped_not_approved");
+    expect(db.billingOrder.create).toHaveBeenCalled();
+    expect(db.billingPayment.create).toHaveBeenCalled();
   });
 });

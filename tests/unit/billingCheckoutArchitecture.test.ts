@@ -9,7 +9,7 @@ import {
   getBillingCheckoutRouteState,
 } from "../../src/server/billing/billingConfiguration";
 
-const trackedEnvNames = [...billingEnvPlaceholders, "STRIPE_CHECKOUT_ENABLED"] as const;
+const trackedEnvNames = [...billingEnvPlaceholders, "STRIPE_CHECKOUT_ENABLED", "STRIPE_LIVE_PAYMENTS_APPROVED"] as const;
 
 const originalEnv = Object.fromEntries(trackedEnvNames.map((name) => [name, process.env[name]]));
 
@@ -111,6 +111,19 @@ describe("billing checkout architecture", () => {
 
     expect(state.status).toBe("configured_live_disabled");
     expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
+  });
+
+  it("marks Stripe live checkout ready only with explicit live approval", () => {
+    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured");
+    expect("stripe" in state ? state.stripe.mode : "test").toBe("live");
+    expect("stripe" in state ? state.stripe.checkoutActive : false).toBe(true);
   });
 
   it("keeps provider visibility safe for admin surfaces", () => {

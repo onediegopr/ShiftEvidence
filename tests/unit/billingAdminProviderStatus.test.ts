@@ -19,6 +19,7 @@ const trackedEnvNames = [
   "STRIPE_MSP_PRICE_ID",
   "STRIPE_CHECKOUT_MODE",
   "STRIPE_CHECKOUT_ENABLED",
+  "STRIPE_LIVE_PAYMENTS_APPROVED",
   "WISE_API_TOKEN",
   "WISE_API_URL",
   "WISE_PROFILE_ID",
@@ -99,6 +100,26 @@ describe("billing admin provider status", () => {
     expect(status.stripe.riskLevel).toBe("alto");
     expect(status.operations.checkoutTestMode).toBe(false);
     expect(status.operations.livePayments).toBe(false);
+  });
+
+  it("activates Stripe live payments only with explicit owner approval env", () => {
+    resetTrackedEnv();
+    process.env.STRIPE_SECRET_KEY = "sk_live_example";
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "true";
+
+    const status = getBillingProviderStatusSnapshot();
+
+    expect(status.stripe.status).toBe("configurado_live_aprobado");
+    expect(status.stripe.checkoutActive).toBe(true);
+    expect(status.stripe.riskLevel).toBe("medio");
+    expect(status.operations.checkoutTestMode).toBe(false);
+    expect(status.operations.livePayments).toBe(true);
+    expect(JSON.stringify(status)).not.toContain("sk_live_example");
   });
 
   it("keeps Wise manual by default and Lemon legacy disabled", () => {

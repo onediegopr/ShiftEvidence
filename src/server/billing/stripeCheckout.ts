@@ -42,6 +42,10 @@ export function getStripeCheckoutMode() {
   return readEnv("STRIPE_CHECKOUT_MODE") === "live" ? "live" : "test";
 }
 
+export function isStripeLivePaymentsApproved() {
+  return readEnv("STRIPE_LIVE_PAYMENTS_APPROVED") === "true";
+}
+
 function isStripeCheckoutDisabled() {
   return readEnv("STRIPE_CHECKOUT_ENABLED") === "false";
 }
@@ -75,7 +79,7 @@ export async function createStripeCheckoutSession(
   }
 
   const checkoutMode = getStripeCheckoutMode();
-  if (checkoutMode === "live") {
+  if (checkoutMode === "live" && !isStripeLivePaymentsApproved()) {
     return {
       ok: false,
       reason: "live_not_approved",

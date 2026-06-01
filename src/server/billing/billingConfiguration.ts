@@ -32,6 +32,10 @@ function readCheckoutMode() {
   return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
 }
 
+function isStripeLivePaymentsApproved() {
+  return process.env.STRIPE_LIVE_PAYMENTS_APPROVED?.trim() === "true";
+}
+
 function isStripeCheckoutExplicitlyDisabled() {
   return process.env.STRIPE_CHECKOUT_ENABLED?.trim().toLowerCase() === "false";
 }
@@ -49,12 +53,16 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
   const priceConfigured = hasEnv(getStripePriceEnvName(plan));
   const mode = readCheckoutMode();
   const configured = secretKeyConfigured && priceConfigured;
-  const checkoutActive = configured && mode === "test" && !isStripeCheckoutExplicitlyDisabled();
+  const liveApproved = isStripeLivePaymentsApproved();
+  const checkoutActive =
+    configured &&
+    !isStripeCheckoutExplicitlyDisabled() &&
+    (mode === "test" || liveApproved);
   const status = !configured
     ? "not_configured"
     : isStripeCheckoutExplicitlyDisabled()
       ? "configured_but_disabled"
-      : mode === "live"
+      : mode === "live" && !liveApproved
         ? "configured_live_disabled"
         : "configured";
 
@@ -151,7 +159,9 @@ export function getBillingCheckoutRouteState(slug: string) {
     headline: stripe.checkoutActive ? "Secure Stripe checkout" : "Stripe checkout not configured",
     detail:
       stripe.checkoutActive
-        ? "This route creates a Stripe Checkout session server-side in test mode and redirects to hosted checkout."
+        ? stripe.mode === "live"
+          ? "This route creates a Stripe Checkout session server-side in live mode for the controlled go-live smoke."
+          : "This route creates a Stripe Checkout session server-side in test mode and redirects to hosted checkout."
         : stripe.status === "configured_live_disabled"
           ? "Stripe appears configured for live mode, but live checkout is intentionally disabled until owner approval."
           : "Stripe checkout is not fully configured yet. No payment is processed and no order is created.",
@@ -193,12 +203,16 @@ export function getBillingAdminStatus() {
         id: billingProviders.stripe.id,
         label: billingProviders.stripe.displayName,
         status: stripeCheckoutActiveForAnyPlan
-          ? "Configured test mode"
+          ? readCheckoutMode() === "live"
+            ? "Configured live mode"
+            : "Configured test mode"
           : stripeConfiguredForAnyCheckoutPlan
             ? "Configured, disabled/live not approved"
             : "Not Configured",
         detail: stripeCheckoutActiveForAnyPlan
-          ? "Server-side Stripe Checkout creation is available in test mode. No entitlement automation is active."
+          ? readCheckoutMode() === "live"
+            ? "Server-side Stripe Checkout creation is available in live mode for the controlled smoke. No entitlement automation is active."
+            : "Server-side Stripe Checkout creation is available in test mode. No entitlement automation is active."
           : "Stripe is the primary configurable provider. Missing env vars degrade to manual invoice follow-up.",
       },
       {
