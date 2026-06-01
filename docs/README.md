@@ -22,6 +22,14 @@ This index points to the current operational documentation for ShiftReadiness. H
 - [Production Launch Edition](./shiftreadiness-operational-functional-manual-v1-0-production-launch-edition.md)
 - [Public Launch Readiness Review](./public-launch-readiness-review.md)
 
+## Billing / Payments
+
+- [Billing 9C - Live Checkout Acceptance Without Real Payment](./billing-9c-close-live-checkout-acceptance.md)
+- [Billing 9B - First Live Checkout Pre-Payment Smoke](./billing-9b-first-live-payment-smoke.md)
+- [Billing 9A FIX-3 - Safe Stripe Live Diagnostics](./billing-9a-fix-3-stripe-live-diagnostics.md)
+- [Billing 8D - Owner Live Readiness Final Checklist](./billing-8d-owner-attestation-final-checklist.md)
+- [Manual Billing Fulfillment Runbook](./billing-manual-fulfillment-runbook.md)
+
 ## Core Assessment / Completion Center
 
 - [Assessment Completion Model](./hito-acc-1-assessment-modules-engine-completion-model.md)
