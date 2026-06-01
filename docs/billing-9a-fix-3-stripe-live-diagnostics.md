@@ -85,6 +85,24 @@ Resultado esperado post-deploy:
 
 No se ejecuta checkout live ni pago en este hito.
 
+Resultado observado en produccion el 2026-06-01:
+
+- endpoint sin sesion: protegido con redirect a sign-in;
+- endpoint con admin: JSON seguro devuelto correctamente;
+- secret key mode: `live`;
+- webhook secret: presente;
+- checkout mode: `live`;
+- live approved: `true`;
+- checkout enabled: `false`;
+- Stripe API reachable: `true`;
+- Starter price sane: `true`;
+- Professional price sane: `true`;
+- MSP price sane: `true`;
+- ready for live pre-payment smoke: `true`;
+- warning esperado: checkout publico deshabilitado;
+- admin UI muestra “Diagnostico Stripe Live” sin secrets;
+- public checkout start sigue redirigiendo a `checkout_disabled`.
+
 ## 8. DB before/after
 
 Baseline esperado sin cambios:
@@ -99,9 +117,21 @@ Baseline esperado sin cambios:
 
 El diagnostico no escribe en DB.
 
+Counts antes/despues del smoke:
+
+- BillingEvent: 3 -> 3;
+- BillingOrder: 3 -> 3;
+- BillingPayment: 1 -> 1;
+- BillingSubscription: 1 -> 1;
+- BillingEntitlementGrant: 2 -> 2;
+- AssessmentEntitlement: 136 -> 136;
+- AuditEvent: 369 -> 369.
+
 ## 9. Webhook invalid signature
 
 El smoke de firma invalida debe seguir devolviendo 401 `invalid_signature` y no crear BillingEvent.
+
+Resultado observado: 401 `invalid_signature`.
 
 ## 10. Seguridad
 
