@@ -24,6 +24,7 @@ export type StripeCheckoutResult =
         | "not_configured"
         | "invalid_price"
         | "live_not_approved"
+        | "stripe_key_mode_mismatch"
         | "stripe_api_error";
       detail: string;
       statusCode?: number;
@@ -36,6 +37,12 @@ function readEnv(name: string) {
 
 export function readStripeSecretKey() {
   return readEnv("STRIPE_SECRET_KEY");
+}
+
+export function getStripeSecretKeyMode(secretKey = readStripeSecretKey()) {
+  if (secretKey?.startsWith("sk_live_")) return "live" as const;
+  if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  return "unknown" as const;
 }
 
 export function getStripeCheckoutMode() {
@@ -101,6 +108,18 @@ export async function createStripeCheckoutSession(
       ok: false,
       reason: "not_configured",
       detail: "Stripe checkout is missing secret key, price ID, or request origin configuration.",
+    };
+  }
+
+  const secretKeyMode = getStripeSecretKeyMode(secretKey);
+  const secretKeyModeMismatch =
+    (checkoutMode === "live" && secretKeyMode !== "live") ||
+    (checkoutMode === "test" && secretKeyMode === "live");
+  if (secretKeyModeMismatch) {
+    return {
+      ok: false,
+      reason: "stripe_key_mode_mismatch",
+      detail: "Stripe checkout mode does not match the configured secret key mode.",
     };
   }
 

@@ -115,6 +115,21 @@ describe("Stripe checkout foundation", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("blocks live mode when the configured secret key is still test-mode", async () => {
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
+
+    const liveResult = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(liveResult.ok).toBe(false);
+    expect(liveResult.ok ? null : liveResult.reason).toBe("stripe_key_mode_mismatch");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it("creates a live Stripe Checkout session only when explicitly approved", async () => {
     process.env.STRIPE_SECRET_KEY = "sk_live_example";
     process.env.STRIPE_STARTER_PRICE_ID = "price_starter";

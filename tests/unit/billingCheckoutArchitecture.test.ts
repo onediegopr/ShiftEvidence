@@ -126,6 +126,18 @@ describe("billing checkout architecture", () => {
     expect("stripe" in state ? state.stripe.checkoutActive : false).toBe(true);
   });
 
+  it("blocks Stripe live checkout when the secret key is still test-mode", () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "live";
+    process.env.STRIPE_LIVE_PAYMENTS_APPROVED = "\"true\"";
+
+    const state = getBillingCheckoutRouteState("starter");
+
+    expect(state.status).toBe("configured_live_disabled");
+    expect("stripe" in state ? state.stripe.checkoutActive : true).toBe(false);
+  });
+
   it("keeps provider visibility safe for admin surfaces", () => {
     const status = getBillingAdminStatus();
 

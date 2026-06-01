@@ -49,6 +49,13 @@ function hasStripeSecretKey() {
   return hasEnv("STRIPE_SECRET_KEY");
 }
 
+function getStripeSecretKeyMode() {
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  if (secretKey?.startsWith("sk_live_")) return "live" as const;
+  if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  return "unknown" as const;
+}
+
 function getStripePriceEnvName(plan: BillingPlanConfig) {
   return plan.stripePriceEnvName;
 }
@@ -57,19 +64,27 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
   const secretKeyConfigured = hasStripeSecretKey();
   const priceConfigured = hasEnv(getStripePriceEnvName(plan));
   const mode = readCheckoutMode();
+  const secretKeyMode = getStripeSecretKeyMode();
   const configured = secretKeyConfigured && priceConfigured;
   const liveApproved = isStripeLivePaymentsApproved();
+  const keyModeMatches =
+    !secretKeyConfigured ||
+    secretKeyMode === "unknown" ||
+    (mode === "live" ? secretKeyMode === "live" : secretKeyMode === "test");
   const checkoutActive =
     configured &&
     !isStripeCheckoutExplicitlyDisabled() &&
+    keyModeMatches &&
     (mode === "test" || liveApproved);
   const status = !configured
     ? "not_configured"
     : isStripeCheckoutExplicitlyDisabled()
       ? "configured_but_disabled"
-      : mode === "live" && !liveApproved
+      : !keyModeMatches
         ? "configured_live_disabled"
-        : "configured";
+        : mode === "live" && !liveApproved
+          ? "configured_live_disabled"
+          : "configured";
 
   return {
     provider: billingProviders.stripe.displayName,
@@ -79,6 +94,7 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
     mode,
     env: {
       secretKeyConfigured,
+      secretKeyMode,
       priceConfigured,
       priceEnvName: getStripePriceEnvName(plan),
     },
@@ -93,6 +109,7 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
     mode: "test" | "live";
     env: {
       secretKeyConfigured: boolean;
+      secretKeyMode: "live" | "test" | "unknown";
       priceConfigured: boolean;
       priceEnvName: string | null;
     };

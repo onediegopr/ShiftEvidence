@@ -114,6 +114,13 @@ function getStripeCheckoutMode() {
   return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
 }
 
+function getStripeSecretKeyMode() {
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  if (secretKey?.startsWith("sk_live_")) return "live" as const;
+  if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  return "unknown" as const;
+}
+
 function isStripeLivePaymentsApproved() {
   return parseEnvBoolean(process.env.STRIPE_LIVE_PAYMENTS_APPROVED);
 }
@@ -133,6 +140,7 @@ function getStripeRecommendedAction(params: {
   configured: boolean;
   checkoutEnabled: boolean;
   checkoutMode: "test" | "live";
+  keyModeMatches: boolean;
   livePaymentsApproved: boolean;
   webhookSecretPresent: boolean;
 }) {
@@ -142,6 +150,10 @@ function getStripeRecommendedAction(params: {
 
   if (!params.configured) {
     return "Completar STRIPE_SECRET_KEY y Price IDs server-side antes de operar checkout.";
+  }
+
+  if (!params.keyModeMatches) {
+    return "STRIPE_CHECKOUT_MODE no coincide con el modo de STRIPE_SECRET_KEY. Corregir env vars en Hostinger y reiniciar antes de checkout.";
   }
 
   if (params.checkoutMode === "live") {
@@ -190,6 +202,7 @@ export function getBillingProviderStatusSnapshot(
   const lemonRiskLevel: BillingRiskLevel = ledgerSummary.failedEventsCount > 0 ? "medio" : "bajo";
   const stripeSecretKeyPresent = hasEnv("STRIPE_SECRET_KEY");
   const stripeWebhookSecretPresent = hasEnv("STRIPE_WEBHOOK_SECRET");
+  const stripeSecretKeyMode = getStripeSecretKeyMode();
   const stripeStarterPricePresent = hasEnv("STRIPE_STARTER_PRICE_ID");
   const stripeProfessionalPricePresent = hasEnv("STRIPE_PROFESSIONAL_PRICE_ID");
   const stripeMspPricePresent = hasEnv("STRIPE_MSP_PRICE_ID");
@@ -197,20 +210,32 @@ export function getBillingProviderStatusSnapshot(
   const stripeLivePaymentsApproved = isStripeLivePaymentsApproved();
   const stripeCheckoutEnabled = !isStripeCheckoutExplicitlyDisabled();
   const stripeConfigured = stripeSecretKeyPresent && stripeStarterPricePresent && stripeProfessionalPricePresent && stripeMspPricePresent;
-  const livePayments = stripeConfigured && stripeCheckoutMode === "live" && stripeCheckoutEnabled && stripeLivePaymentsApproved;
+  const stripeKeyModeMatches =
+    !stripeSecretKeyPresent ||
+    stripeSecretKeyMode === "unknown" ||
+    (stripeCheckoutMode === "live" ? stripeSecretKeyMode === "live" : stripeSecretKeyMode === "test");
+  const livePayments =
+    stripeConfigured &&
+    stripeCheckoutMode === "live" &&
+    stripeCheckoutEnabled &&
+    stripeLivePaymentsApproved &&
+    stripeKeyModeMatches;
   const stripeCheckoutActive =
     stripeConfigured &&
     stripeCheckoutEnabled &&
+    stripeKeyModeMatches &&
     (stripeCheckoutMode === "test" || livePayments);
   const stripeStatus: StripeBillingStatus = !stripeCheckoutEnabled
     ? "desactivado"
     : !stripeConfigured
       ? "no_configurado"
-      : stripeCheckoutMode === "live"
-        ? stripeLivePaymentsApproved
-          ? "configurado_live_aprobado"
-          : "configurado_live_no_aprobado"
-        : "configurado_test";
+      : !stripeKeyModeMatches
+        ? "configurado_live_no_aprobado"
+        : stripeCheckoutMode === "live"
+          ? stripeLivePaymentsApproved
+            ? "configurado_live_aprobado"
+            : "configurado_live_no_aprobado"
+          : "configurado_test";
   const wiseTokenPresent = hasEnv("WISE_API_TOKEN");
   const wiseProfileIdPresent = hasEnv("WISE_PROFILE_ID");
   const wiseApiUrlMode = getWiseApiUrlMode();
@@ -278,6 +303,7 @@ export function getBillingProviderStatusSnapshot(
         configured: stripeConfigured,
         checkoutEnabled: stripeCheckoutEnabled,
         checkoutMode: stripeCheckoutMode,
+        keyModeMatches: stripeKeyModeMatches,
         livePaymentsApproved: stripeLivePaymentsApproved,
         webhookSecretPresent: stripeWebhookSecretPresent,
       }),

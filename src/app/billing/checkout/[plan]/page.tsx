@@ -62,6 +62,8 @@ function errorMessage(error: string | undefined) {
       return "The configured Stripe Price ID is invalid.";
     case "live_not_approved":
       return "Stripe live checkout is intentionally disabled until owner approval.";
+    case "stripe_key_mode_mismatch":
+      return "Stripe checkout mode does not match the configured secret key mode. Verify Hostinger Stripe env vars and restart the server.";
     case "stripe_api_error":
       return "Stripe could not create a checkout session. Please request an invoice instead.";
     case "unsupported_plan":
