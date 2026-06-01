@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import {
+  fulfillBillingOrderAction,
   matchBillingOrderAction,
   matchBillingSubscriptionAction,
 } from "./actions";
@@ -44,6 +45,10 @@ import {
   getBillingAdminMatchCandidates,
   type BillingAdminMatchCandidates,
 } from "../../../../server/billing/admin/billingAdminMatchSearchService";
+import {
+  previewBillingOrdersFulfillment,
+  type BillingFulfillmentPreview,
+} from "../../../../server/billing/admin/billingManualFulfillmentService";
 import {
   getBillingOrderMatchStatus,
   getBillingSubscriptionMatchStatus,
@@ -359,6 +364,73 @@ function SubscriptionMatchForm({
   );
 }
 
+function BillingFulfillmentPanel({
+  order,
+  preview,
+}: {
+  order: BillingAdminLedgerOrder;
+  preview?: BillingFulfillmentPreview;
+}) {
+  if (!preview) return null;
+
+  const isAlreadyGranted = preview.status === "already_granted";
+  const disabled = !preview.eligible;
+
+  return (
+    <article className="glass-card report-history-card">
+      <div className="report-history-header">
+        <div>
+          <span className="assessment-preview-label">Fulfillment manual</span>
+          <h3>{formatPlan(order.planId)}</h3>
+        </div>
+        <Chip
+          label={isAlreadyGranted ? "Ya concedido" : preview.eligible ? "Elegible" : "No elegible"}
+          tone={isAlreadyGranted ? "good" : preview.eligible ? "warning" : "neutral"}
+        />
+      </div>
+      <FieldList
+        rows={[
+          ["Provider Order ID", order.providerOrderId ?? "-"],
+          ["Estado pago", getBillingOrderStatusLabel(order.status)],
+          ["Match", getBillingMatchStatusLabel(getBillingOrderMatchStatus(order))],
+          ["Entitlements", preview.entitlementKeys.length > 0 ? preview.entitlementKeys.join(", ") : "Sin mapping soportado"],
+          ["Grants existentes", preview.existingGrantKeys.length > 0 ? preview.existingGrantKeys.join(", ") : "Ninguno"],
+        ]}
+      />
+      <div className="dashboard-banner dashboard-banner-warning" role="alert" style={{ marginTop: "14px" }}>
+        Esta accion concede acceso real al assessment seleccionado.
+      </div>
+      {preview.reasons.length > 0 ? (
+        <ul className="assessment-inline-note" style={{ marginTop: "12px" }}>
+          {preview.reasons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      ) : null}
+      <form action={fulfillBillingOrderAction} className="billing-match-form" style={{ marginTop: "14px" }}>
+        <input type="hidden" name="billingOrderId" value={order.id} />
+        <label style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+          <input type="checkbox" name="confirmFulfillment" value="confirmed" disabled={disabled} />
+          <span>Confirmo que verifique el pago y el match.</span>
+        </label>
+        <label style={{ display: "grid", gap: "6px" }}>
+          <span className="assessment-preview-label">Nota interna</span>
+          <textarea
+            className="admin-input"
+            name="note"
+            rows={2}
+            disabled={disabled}
+            placeholder="Contexto operativo. No guardar secretos ni datos de tarjeta."
+          />
+        </label>
+        <button className="btn btn-primary" type="submit" disabled={disabled}>
+          Conceder acceso manual
+        </button>
+      </form>
+    </article>
+  );
+}
+
 function ProviderCard({
   icon,
   title,
@@ -432,11 +504,15 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
 function OrdersTable({
   orders,
   candidates,
+  fulfillmentPreviews,
   showMatchForm = false,
+  showFulfillment = false,
 }: {
   orders: BillingAdminLedgerOrder[];
   candidates?: BillingAdminMatchCandidates;
+  fulfillmentPreviews?: Record<string, BillingFulfillmentPreview>;
   showMatchForm?: boolean;
+  showFulfillment?: boolean;
 }) {
   if (orders.length === 0) {
     return <p className="assessment-empty-note">No hay ordenes comerciales registradas todavia.</p>;
@@ -501,6 +577,17 @@ function OrdersTable({
               />
               <OrderMatchForm order={order} candidates={candidates} />
             </article>
+          ))}
+        </div>
+      ) : null}
+      {showFulfillment && fulfillmentPreviews ? (
+        <div style={{ display: "grid", gap: "16px", marginTop: "16px" }}>
+          {orders.map((order) => (
+            <BillingFulfillmentPanel
+              key={`fulfillment-${order.id}`}
+              order={order}
+              preview={fulfillmentPreviews[order.id]}
+            />
           ))}
         </div>
       ) : null}
@@ -645,12 +732,17 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
     query: matchSearch,
     customerEmail: ledger.unmatchedOrders[0]?.customerEmail ?? ledger.unmatchedSubscriptions[0]?.customerEmail ?? null,
   });
+  const fulfillmentPreviews = await previewBillingOrdersFulfillment({
+    billingOrderIds: ledger.recentOrders.map((order) => order.id),
+  });
   const savedMessage = query?.saved
     ? query.saved === "order-match"
       ? "Match de orden guardado."
       : query.saved === "subscription-match"
         ? "Match de suscripcion guardado."
-        : "Cambios guardados."
+        : query.saved === "fulfillment"
+          ? "Acceso manual concedido o confirmado idempotentemente."
+          : "Cambios guardados."
     : null;
   const errorMessage = formatQueryMessage(query?.error);
 
@@ -800,7 +892,11 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           <MetricCard icon={<AlertTriangle size={22} />} label="Sin match" value={ledger.unmatchedOrdersCount + ledger.unmatchedSubscriptionsCount} note="Requiere revision manual" />
         </section>
         <h3>Ordenes recientes</h3>
-        <OrdersTable orders={ledger.recentOrders} />
+        <OrdersTable
+          orders={ledger.recentOrders}
+          fulfillmentPreviews={fulfillmentPreviews}
+          showFulfillment
+        />
         <h3>Pagos recientes</h3>
         <PaymentsTable payments={ledger.recentPayments} />
         <h3>Suscripciones recientes</h3>

@@ -107,6 +107,13 @@ Exit criteria:
 - MSP remains partner/workspace manual unless formal model exists;
 - duplicate grant is idempotent.
 
+Implementation note:
+
+- Initial `BillingEntitlementGrant` idempotency is service-level because there is
+  no DB unique constraint yet on `billingOrderId + entitlementKey`.
+- Additive DB-level hardening for that unique guard is recommended after the
+  manual fulfillment flow is validated.
+
 ## 6. BILLING-3E - Refund, Cancellation and Failed Payment Handling
 
 Scope:
@@ -264,4 +271,3 @@ Recommended commits:
 5. `feat: record billing refund and cancellation risk`
 6. `docs: record billing test-mode webhook smoke`
 7. `docs: record billing live readiness decision`
-

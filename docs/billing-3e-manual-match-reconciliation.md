@@ -14,6 +14,10 @@ The workflow links:
 
 This milestone does not grant access.
 
+Follow-up boundary: BILLING-3F may grant access only through a separate explicit
+admin fulfillment action from an eligible paid `BillingOrder`. Manual match by
+itself still never creates `BillingEntitlementGrant` or `AssessmentEntitlement`.
+
 ## 2. Data Model
 
 No migration was required.
