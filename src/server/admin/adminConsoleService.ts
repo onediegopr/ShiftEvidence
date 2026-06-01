@@ -16,6 +16,7 @@ import {
 import { DEFAULT_RUNTIME_SETTINGS, getOperationalRuntimeSettings } from "./runtimeSettingsService";
 import { getAdminSupportRequests, getSupportRequestFallback } from "../support/supportRequestService";
 import { getBillingAdminStatus } from "../billing/billingConfiguration";
+import { getEvidenceModuleCatalog } from "../evidence/evidenceModuleRegistry";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -555,6 +556,40 @@ export async function getAdminConsoleData(params?: {
             processingStatus: true,
           },
         },
+        evidenceModules: {
+          select: {
+            moduleKey: true,
+            status: true,
+            confidenceLevel: true,
+            completionPercent: true,
+            sourceType: true,
+            updatedAt: true,
+            skippedAt: true,
+            reviewedAt: true,
+            lastUpload: {
+              select: {
+                originalFilename: true,
+                uploadKind: true,
+                collectorName: true,
+                collectorVersion: true,
+                createdAt: true,
+              },
+            },
+            lastParseResult: {
+              select: {
+                status: true,
+                parserKey: true,
+                parserVersion: true,
+                warningsJson: true,
+                errorsJson: true,
+                createdAt: true,
+              },
+            },
+          },
+          orderBy: {
+            moduleKey: "asc",
+          },
+        },
         reports: {
           where: { deletedAt: null },
           select: {
@@ -1084,6 +1119,71 @@ export async function getAdminConsoleData(params?: {
 
       const usage = persistentUsageByAssessment.get(assessment.id);
       const opportunity = commercialOpportunities.find((item) => item.assessmentId === assessment.id);
+      const advancedEvidenceModules = getEvidenceModuleCatalog().map((metadata) => {
+        const evidenceModule = assessment.evidenceModules.find((item) => item.moduleKey === metadata.key);
+        if (!evidenceModule) {
+          return {
+            moduleKey: metadata.key,
+            status: "not_provided",
+            confidenceLevel: "limited",
+            completionPercent: 0,
+            sourceType: null,
+            skippedAt: null,
+            reviewedAt: null,
+            lastUpload: null,
+            lastParseResult: null,
+            requiresReview: false,
+          };
+        }
+
+        const warnings = Array.isArray(evidenceModule.lastParseResult?.warningsJson)
+          ? evidenceModule.lastParseResult.warningsJson.length
+          : 0;
+        const errors = Array.isArray(evidenceModule.lastParseResult?.errorsJson)
+          ? evidenceModule.lastParseResult.errorsJson.length
+          : 0;
+
+        return {
+          moduleKey: evidenceModule.moduleKey,
+          status: evidenceModule.status,
+          confidenceLevel: evidenceModule.confidenceLevel,
+          completionPercent: evidenceModule.completionPercent,
+          sourceType: evidenceModule.sourceType,
+          skippedAt: evidenceModule.skippedAt,
+          reviewedAt: evidenceModule.reviewedAt,
+          lastUpload: evidenceModule.lastUpload
+            ? {
+                originalFilename: evidenceModule.lastUpload.originalFilename,
+                uploadKind: evidenceModule.lastUpload.uploadKind,
+                collectorName: evidenceModule.lastUpload.collectorName,
+                collectorVersion: evidenceModule.lastUpload.collectorVersion,
+                createdAt: evidenceModule.lastUpload.createdAt,
+              }
+            : null,
+          lastParseResult: evidenceModule.lastParseResult
+            ? {
+                status: evidenceModule.lastParseResult.status,
+                parserKey: evidenceModule.lastParseResult.parserKey,
+                parserVersion: evidenceModule.lastParseResult.parserVersion,
+                warnings,
+                errors,
+                createdAt: evidenceModule.lastParseResult.createdAt,
+              }
+            : null,
+          requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",
+        };
+      });
+      const advancedEvidenceParsed = advancedEvidenceModules.filter((module) =>
+        ["parsed", "parsed_with_warnings", "reviewed"].includes(module.status),
+      ).length;
+      const advancedEvidenceWarnings = advancedEvidenceModules.reduce(
+        (total, module) => total + (module.lastParseResult?.warnings ?? 0),
+        0,
+      );
+      const advancedEvidenceErrors = advancedEvidenceModules.reduce(
+        (total, module) => total + (module.lastParseResult?.errors ?? 0),
+        0,
+      );
 
       const lic = assessment.licensingAnalysis;
       const licAssumptions = typeof lic?.assumptionsJson === "object" && lic.assumptionsJson && !Array.isArray(lic.assumptionsJson)
@@ -1097,6 +1197,13 @@ export async function getAdminConsoleData(params?: {
         ownerEmail: ownerEmailById.get(assessment.workspace.ownerUserId) ?? "Propietario no disponible en este runtime",
         status: assessment.status,
         evidence: assessment.evidenceFiles.length > 0 ? `${parsedFiles}/${assessment.evidenceFiles.length} parseados` : "Sin evidencia",
+        advancedEvidence: {
+          modules: advancedEvidenceModules,
+          parsed: advancedEvidenceParsed,
+          total: advancedEvidenceModules.length,
+          warnings: advancedEvidenceWarnings,
+          errors: advancedEvidenceErrors,
+        },
         context: hasContext ? "Con contexto" : "Pendiente",
         pdf: generatedReports > 0 ? `${generatedReports} generado(s)` : "Pendiente",
         ai: aiStatus.iaActiva ? "Disponible" : "Desactivada",

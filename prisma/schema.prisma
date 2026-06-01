@@ -21,6 +21,8 @@ model User {
   ownedWorkspaces       Workspace[]
   memberships           WorkspaceMember[]
   evidenceFiles         EvidenceFile[]
+  evidenceUploads       EvidenceUpload[]
+  reviewedEvidenceModules AssessmentEvidenceModule[] @relation("EvidenceModuleReviewedBy")
   auditEvents           AuditEvent[]
   aiUsageEvents         AiUsageEvent[]
   userEntitlements      UserEntitlement[]
@@ -195,6 +197,9 @@ model Assessment {
   clientContextAnalysis       AssessmentClientContextAnalysis?
   entitlements                AssessmentEntitlement[]
   evidenceFiles               EvidenceFile[]
+  evidenceModules             AssessmentEvidenceModule[]
+  evidenceUploads             EvidenceUpload[]
+  evidenceParseResults        EvidenceParseResult[]
   additionalEvidence          AssessmentAdditionalEvidence[]
   storageEvidence             AssessmentStorageEvidence[]
   parsedVMs                   ParsedVM[]
@@ -664,6 +669,7 @@ model EvidenceFile {
   parsedInventorySummary    ParsedInventorySummary?
   additionalEvidenceRecords AssessmentAdditionalEvidence[]
   storageEvidenceRecords    AssessmentStorageEvidence[]
+  evidenceUploads           EvidenceUpload[]
   riskFindings              RiskFinding[]
 
   @@index([assessmentId])
@@ -674,6 +680,90 @@ model EvidenceFile {
   @@index([processingStatus])
   @@index([processingStatus, deletedAt])
   @@index([deletedAt])
+}
+
+model AssessmentEvidenceModule {
+  id                  String                         @id @default(cuid())
+  assessmentId        String
+  moduleKey           EvidenceModuleKey
+  status              EvidenceModuleStatus          @default(not_provided)
+  sourceType          EvidenceModuleSourceType?
+  confidenceLevel     EvidenceModuleConfidenceLevel @default(limited)
+  completionPercent   Int                            @default(0)
+  lastUploadId        String?
+  lastParseResultId   String?
+  skippedAt           DateTime?
+  reviewedAt          DateTime?
+  reviewedByUserId    String?
+  createdAt           DateTime                       @default(now())
+  updatedAt           DateTime                       @updatedAt
+  assessment          Assessment                     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  lastUpload          EvidenceUpload?                @relation("AssessmentEvidenceModuleLastUpload", fields: [lastUploadId], references: [id], onDelete: SetNull)
+  lastParseResult     EvidenceParseResult?           @relation("AssessmentEvidenceModuleLastParseResult", fields: [lastParseResultId], references: [id], onDelete: SetNull)
+  reviewedBy          User?                          @relation("EvidenceModuleReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([assessmentId, moduleKey])
+  @@index([assessmentId])
+  @@index([moduleKey])
+  @@index([status])
+  @@index([lastUploadId])
+  @@index([lastParseResultId])
+  @@index([reviewedByUserId])
+}
+
+model EvidenceUpload {
+  id                  String               @id @default(cuid())
+  assessmentId        String
+  evidenceFileId      String
+  moduleKey           EvidenceModuleKey
+  uploadKind          EvidenceUploadKind   @default(manual)
+  originalFilename    String
+  schemaVersion       String?
+  collectorName       String?
+  collectorVersion    String?
+  sourcePlatform      String?
+  uploadedByUserId    String
+  createdAt           DateTime             @default(now())
+  assessment          Assessment           @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceFile        EvidenceFile         @relation(fields: [evidenceFileId], references: [id], onDelete: Cascade)
+  uploadedByUser      User                 @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  parseResults        EvidenceParseResult[]
+  moduleLastUploadFor AssessmentEvidenceModule[] @relation("AssessmentEvidenceModuleLastUpload")
+
+  @@index([assessmentId, moduleKey])
+  @@index([assessmentId])
+  @@index([evidenceFileId])
+  @@index([moduleKey])
+  @@index([uploadKind])
+  @@index([uploadedByUserId])
+  @@index([createdAt])
+}
+
+model EvidenceParseResult {
+  id                    String                     @id @default(cuid())
+  assessmentId          String
+  evidenceUploadId      String
+  moduleKey             EvidenceModuleKey
+  parserKey             String
+  parserVersion         String
+  status                EvidenceParseResultStatus
+  summaryJson           Json?
+  warningsJson          Json?
+  errorsJson            Json?
+  normalizedEntitiesJson Json?
+  startedAt             DateTime?
+  finishedAt            DateTime?
+  createdAt             DateTime                   @default(now())
+  assessment            Assessment                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidenceUpload        EvidenceUpload             @relation(fields: [evidenceUploadId], references: [id], onDelete: Cascade)
+  moduleLastParseFor    AssessmentEvidenceModule[] @relation("AssessmentEvidenceModuleLastParseResult")
+
+  @@index([assessmentId, moduleKey])
+  @@index([assessmentId])
+  @@index([evidenceUploadId])
+  @@index([moduleKey])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model ParsedVM {
@@ -1480,6 +1570,62 @@ enum EvidenceType {
   network
   cmdb
   other
+}
+
+enum EvidenceModuleKey {
+  vmware_enrichment
+  proxmox_target
+  backup_evidence
+  storage_san
+  application_dependency
+  migration_plan_readiness
+}
+
+enum EvidenceModuleStatus {
+  not_provided
+  template_downloaded
+  collector_downloaded
+  uploaded
+  queued
+  parsing
+  parsed
+  parsed_with_warnings
+  failed
+  stale
+  skipped
+  reviewed
+}
+
+enum EvidenceModuleSourceType {
+  manual
+  csv
+  xlsx
+  json
+  collector_output
+  system
+}
+
+enum EvidenceModuleConfidenceLevel {
+  none
+  limited
+  low
+  medium
+  high
+  verified
+}
+
+enum EvidenceUploadKind {
+  manual
+  template
+  collector_output
+  system
+}
+
+enum EvidenceParseResultStatus {
+  parsed
+  parsed_with_warnings
+  failed
+  unsupported
 }
 
 enum EvidenceProcessingStatus {

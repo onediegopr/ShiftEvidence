@@ -60,6 +60,7 @@ import {
 } from "../../../../server/assessments/assessmentCompletionService";
 import { AssessmentCompletionCenter } from "../../../../components/assessments/AssessmentCompletionCenter";
 import { ClientContextAdditionalEvidencePanel } from "../../../../components/assessments/ClientContextAdditionalEvidencePanel";
+import { EvidenceExpansionCenter } from "../../../../components/assessments/EvidenceExpansionCenter";
 import { LicensingCostExposurePanel } from "../../../../components/assessments/LicensingCostExposurePanel";
 import { SeniorMigrationAdvisorPanel } from "../../../../components/assessments/SeniorMigrationAdvisorPanel";
 import { StorageDestinationReadinessPanel } from "../../../../components/assessments/StorageDestinationReadinessPanel";
@@ -70,6 +71,10 @@ import {
   getLatestRvtoolsEvidence,
 } from "../../../../server/evidence/evidenceFileService";
 import { getMaxUploadSizeBytes } from "../../../../server/evidence/uploadValidation";
+import {
+  getEvidenceExpansionSummary,
+} from "../../../../server/evidence/evidenceExpansionService";
+import { isEvidenceExpansionEnabled } from "../../../../server/evidence/evidenceModuleRegistry";
 import {
   getEvidenceConfidenceLabel,
   getInventoryStatusLabel,
@@ -610,6 +615,15 @@ export default async function AssessmentDetailPage({
     headers: await headers(),
   });
   const isAdmin = session ? isAdminEmail(session.user.email) : false;
+  const evidenceExpansionEnabled = isEvidenceExpansionEnabled();
+  const evidenceExpansionSummary = evidenceExpansionEnabled
+    ? await getEvidenceExpansionSummary({
+        assessmentId: assessment.id,
+        userId: session?.user.id ?? null,
+        workspaceId: assessment.workspaceId,
+        enabled: evidenceExpansionEnabled,
+      })
+    : null;
   const clientContextSummary = session
     ? await buildAssessmentClientContextSummary({
         userId: session.user.id,
@@ -1571,6 +1585,15 @@ export default async function AssessmentDetailPage({
           </div>
         </section>
       )}
+
+      {activeTab === "evidence" && evidenceExpansionSummary ? (
+        <EvidenceExpansionCenter
+          assessmentId={assessment.id}
+          summary={evidenceExpansionSummary}
+          uploadUnlocked={isUploadUnlocked}
+          maxUploadSizeMb={maxUploadSizeMb}
+        />
+      ) : null}
 
       {activeTab === "inventory" && (
         <section className="assessment-section glass-card">

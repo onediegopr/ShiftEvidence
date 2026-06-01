@@ -5,11 +5,11 @@ const DEFAULT_MAX_UPLOAD_SIZE_MB = 50;
 const evidenceTypeExtensions: Record<EvidenceType, string[]> = {
   rvtools: [".xlsx", ".xls", ".csv"],
   manual_csv: [".csv"],
-  veeam: [".xlsx", ".xls", ".csv"],
-  proxmox: [".xlsx", ".xls", ".csv"],
-  network: [".xlsx", ".xls", ".csv"],
-  cmdb: [".xlsx", ".xls", ".csv"],
-  other: [".csv", ".txt", ".xlsx", ".xls", ".pdf", ".docx", ".png", ".jpg", ".jpeg"],
+  veeam: [".xlsx", ".xls", ".csv", ".json"],
+  proxmox: [".xlsx", ".xls", ".csv", ".json"],
+  network: [".xlsx", ".xls", ".csv", ".json"],
+  cmdb: [".xlsx", ".xls", ".csv", ".json"],
+  other: [".csv", ".txt", ".xlsx", ".xls", ".json", ".pdf", ".docx", ".png", ".jpg", ".jpeg"],
 };
 
 const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
@@ -18,6 +18,7 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "application/vnd.ms-excel",
     "text/csv",
     "application/csv",
+    "application/json",
     "application/octet-stream",
   ],
   manual_csv: ["text/csv", "application/csv", "application/octet-stream"],
@@ -26,6 +27,7 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "application/vnd.ms-excel",
     "text/csv",
     "application/csv",
+    "application/json",
     "application/octet-stream",
   ],
   proxmox: [
@@ -33,6 +35,7 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "application/vnd.ms-excel",
     "text/csv",
     "application/csv",
+    "application/json",
     "application/octet-stream",
   ],
   network: [
@@ -40,6 +43,7 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "application/vnd.ms-excel",
     "text/csv",
     "application/csv",
+    "application/json",
     "application/octet-stream",
   ],
   cmdb: [
@@ -54,6 +58,7 @@ const evidenceTypeMimeTypes: Record<EvidenceType, string[]> = {
     "application/vnd.ms-excel",
     "text/csv",
     "application/csv",
+    "application/json",
     "text/plain",
     "application/pdf",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

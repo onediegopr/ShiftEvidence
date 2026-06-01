@@ -35,6 +35,29 @@ export const assessmentCoreInclude = {
       },
     ],
   },
+  evidenceModules: {
+    include: {
+      lastUpload: {
+        include: {
+          evidenceFile: {
+            select: {
+              id: true,
+              originalFilename: true,
+              mimeType: true,
+              sizeBytes: true,
+              processingStatus: true,
+              uploadedAt: true,
+              deletedAt: true,
+            },
+          },
+        },
+      },
+      lastParseResult: true,
+    },
+    orderBy: {
+      moduleKey: "asc",
+    },
+  },
   additionalEvidence: {
     include: {
       evidenceFile: true,

@@ -1,0 +1,215 @@
+import { Download, FileText, Upload } from "lucide-react";
+import { EvidenceModuleKey, EvidenceModuleStatus, EvidenceType } from "@prisma/client";
+import type { EvidenceExpansionSummary } from "../../server/evidence/evidenceExpansionService";
+import {
+  skipEvidenceModuleAction,
+  uploadEvidenceAction,
+} from "../../app/dashboard/assessments/[id]/evidence/actions";
+
+function statusLabel(value: string) {
+  return value
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function statusTone(status: EvidenceModuleStatus) {
+  switch (status) {
+    case EvidenceModuleStatus.parsed:
+    case EvidenceModuleStatus.reviewed:
+      return "good";
+    case EvidenceModuleStatus.parsed_with_warnings:
+    case EvidenceModuleStatus.uploaded:
+    case EvidenceModuleStatus.queued:
+    case EvidenceModuleStatus.parsing:
+      return "warning";
+    case EvidenceModuleStatus.failed:
+      return "danger";
+    default:
+      return "neutral";
+  }
+}
+
+function evidenceTypeForModule(moduleKey: EvidenceModuleKey) {
+  switch (moduleKey) {
+    case EvidenceModuleKey.proxmox_target:
+      return EvidenceType.proxmox;
+    case EvidenceModuleKey.backup_evidence:
+      return EvidenceType.veeam;
+    case EvidenceModuleKey.application_dependency:
+      return EvidenceType.cmdb;
+    case EvidenceModuleKey.storage_san:
+      return EvidenceType.network;
+    case EvidenceModuleKey.vmware_enrichment:
+    case EvidenceModuleKey.migration_plan_readiness:
+    default:
+      return EvidenceType.other;
+  }
+}
+
+function jsonStringArray(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+}
+
+export function EvidenceExpansionCenter({
+  assessmentId,
+  summary,
+  uploadUnlocked,
+  maxUploadSizeMb,
+}: {
+  assessmentId: string;
+  summary: EvidenceExpansionSummary;
+  uploadUnlocked: boolean;
+  maxUploadSizeMb: number;
+}) {
+  return (
+    <section id="evidence-expansion-center" className="assessment-section glass-card">
+      <div className="assessment-section-title">
+        <div className="assessment-section-eyebrow">
+          <FileText size={18} />
+          <span>Optional evidence</span>
+        </div>
+        <h2>Evidence Expansion Center</h2>
+        <p>
+          Optional evidence modules can improve report precision and reduce assumptions. You can continue
+          with the base assessment using RVTools, or provide additional evidence to unlock stronger future
+          recommendations.
+        </p>
+      </div>
+
+      <div className="assessment-status-row">
+        <span className="assessment-chip assessment-chip-neutral">
+          Overall advanced evidence: {summary.overallEvidenceConfidence}
+        </span>
+        <span className="assessment-chip assessment-chip-neutral">
+          Completion: {summary.completionPercent}%
+        </span>
+        <span className="assessment-chip assessment-chip-neutral">
+          Optional modules: {summary.modules.length}
+        </span>
+      </div>
+
+      <div className="assessment-summary-mini-grid" style={{ marginTop: "1rem" }}>
+        {summary.modules.map((module) => {
+          const status = module.record.status;
+          const warnings = jsonStringArray(module.record.lastParseResult?.warningsJson);
+          const errors = jsonStringArray(module.record.lastParseResult?.errorsJson);
+          const evidenceType = evidenceTypeForModule(module.metadata.key);
+
+          return (
+            <article key={module.metadata.key} className="glass-card assessment-subcard">
+              <div className="assessment-evidence-main" style={{ alignItems: "flex-start" }}>
+                <div className="assessment-evidence-icon">
+                  <FileText size={18} />
+                </div>
+                <div className="assessment-evidence-meta">
+                  <strong>{module.metadata.displayName}</strong>
+                  <span>{module.metadata.description}</span>
+                  <span>{module.metadata.preparedMessage}</span>
+                </div>
+              </div>
+
+              <div className="assessment-evidence-stats" style={{ marginTop: "0.75rem" }}>
+                <span className={`assessment-chip assessment-chip-${statusTone(status)}`}>
+                  {statusLabel(status)}
+                </span>
+                <span className="assessment-chip assessment-chip-neutral">
+                  {module.record.completionPercent}% complete
+                </span>
+                <span className="assessment-chip assessment-chip-neutral">
+                  Impact: {module.metadata.confidenceImpact}
+                </span>
+              </div>
+
+              <p className="assessment-storage-note" style={{ marginTop: "0.75rem" }}>
+                Report impact: {module.metadata.reportImpact.join(", ")}.
+              </p>
+
+              {module.record.lastUpload?.evidenceFile ? (
+                <p className="assessment-inline-note">
+                  Last upload: {module.record.lastUpload.evidenceFile.originalFilename}
+                </p>
+              ) : null}
+
+              {module.reportWarning ? (
+                <p className="assessment-inline-note">{module.reportWarning}</p>
+              ) : null}
+
+              {warnings.length > 0 ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Parser warnings</strong>
+                  <ul className="assessment-bullet-list">
+                    {warnings.slice(0, 3).map((warning) => (
+                      <li key={warning}>{warning}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              {errors.length > 0 ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Parser errors</strong>
+                  <ul className="assessment-bullet-list">
+                    {errors.slice(0, 3).map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              <div className="assessment-inline-actions" style={{ marginTop: "0.9rem" }}>
+                {uploadUnlocked ? (
+                  <form
+                    action={uploadEvidenceAction.bind(null, assessmentId)}
+                    encType="multipart/form-data"
+                    className="assessment-inline-actions"
+                  >
+                    <input type="hidden" name="currentTab" value="evidence" />
+                    <input type="hidden" name="moduleKey" value={module.metadata.key} />
+                    <input type="hidden" name="evidenceType" value={evidenceType} />
+                    <label className="btn btn-secondary btn-sm" style={{ cursor: "pointer" }}>
+                      <Upload size={14} />
+                      Upload evidence
+                      <input
+                        name="file"
+                        type="file"
+                        accept=".xlsx,.xls,.csv,.json,.txt,application/json,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/plain"
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                    <button type="submit" className="btn btn-primary btn-glow btn-sm">
+                      Attach
+                    </button>
+                  </form>
+                ) : (
+                  <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
+                )}
+
+                <button type="button" className="btn btn-secondary btn-sm" disabled>
+                  <Download size={14} />
+                  Template soon
+                </button>
+
+                <span className="assessment-inline-note">Collector coming soon</span>
+
+                {status !== EvidenceModuleStatus.skipped ? (
+                  <form action={skipEvidenceModuleAction.bind(null, assessmentId, module.metadata.key)}>
+                    <button type="submit" className="btn btn-secondary btn-sm">
+                      Mark as skipped
+                    </button>
+                  </form>
+                ) : null}
+              </div>
+
+              <p className="assessment-storage-note">
+                This module is optional. Skipping it limits advanced confidence but does not block the
+                base readiness report. Max upload size: {maxUploadSizeMb} MB.
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

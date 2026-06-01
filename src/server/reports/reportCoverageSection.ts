@@ -123,7 +123,7 @@ export function buildAssessmentCoverageSection(
     area: module.label,
     status: statusLabel(module.status),
     required: module.required ? "Required" as const : "Optional" as const,
-    impact: getModuleImpact(module),
+    impact: getModuleImpact(module) ?? "Optional evidence can improve confidence without blocking the base report.",
     tone: statusTone(module.status),
   }));
   const hasLimitations = summary.limitations.length > 0;

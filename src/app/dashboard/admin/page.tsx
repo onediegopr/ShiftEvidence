@@ -166,6 +166,23 @@ function formatStatusLabel(value: string | null | undefined) {
     not_enough_evidence: "Evidencia insuficiente",
     deferred_storage_2: "Diferido (Storage 2)",
     not_evaluated_storage_1: "No evaluado (Storage 1)",
+    // Evidence Expansion
+    vmware_enrichment: "VMware enrichment",
+    proxmox_target: "Validacion Proxmox",
+    backup_evidence: "Evidencia backup",
+    storage_san: "Storage / SAN",
+    application_dependency: "Dependencias app",
+    migration_plan_readiness: "Plan migracion",
+    not_provided: "No provisto",
+    template_downloaded: "Template descargado",
+    collector_downloaded: "Collector descargado",
+    uploaded: "Cargado",
+    queued: "En cola",
+    parsing: "Parseando",
+    parsed: "Parseado",
+    parsed_with_warnings: "Completado con advertencias",
+    reviewed: "Revisado",
+    collector_output: "Collector output",
   };
 
   return labels[value] ?? value;
@@ -1529,6 +1546,62 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             </table>
           </div>
 
+          <div className="assessment-section-title" style={{ marginTop: "24px" }}>
+            <div className="assessment-section-eyebrow">
+              <FileText size={18} />
+              <span>Evidencia avanzada</span>
+            </div>
+            <h3>Estado de modulos opcionales</h3>
+            <p>Lectura basica por evaluacion: estado del modulo, ultima carga, parser, advertencias y errores.</p>
+          </div>
+
+          <div className="assessment-table-wrap">
+            <table className="assessment-table">
+              <thead>
+                <tr>
+                  <th>Evaluacion</th>
+                  <th>Modulo</th>
+                  <th>Estado del modulo</th>
+                  <th>Confianza</th>
+                  <th>Ultima carga</th>
+                  <th>Resultado del parser</th>
+                  <th>Advertencias</th>
+                  <th>Errores</th>
+                  <th>Revision</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentAssessments.flatMap((assessment) =>
+                  assessment.advancedEvidence.modules.map((module) => (
+                    <tr key={`${assessment.id}-${module.moduleKey}`}>
+                      <td>{assessment.title}</td>
+                      <td>{formatStatusLabel(module.moduleKey)}</td>
+                      <td>
+                        <span className={`assessment-chip assessment-chip-${module.requiresReview ? "warning" : "neutral"}`}>
+                          {formatStatusLabel(module.status)}
+                        </span>
+                      </td>
+                      <td>{formatStatusLabel(module.confidenceLevel)} / {module.completionPercent}%</td>
+                      <td>
+                        {module.lastUpload
+                          ? `${module.lastUpload.originalFilename} (${formatStatusLabel(module.lastUpload.uploadKind)})`
+                          : "Sin carga"}
+                      </td>
+                      <td>
+                        {module.lastParseResult
+                          ? `${formatStatusLabel(module.lastParseResult.status)} - ${module.lastParseResult.parserKey} v${module.lastParseResult.parserVersion}`
+                          : "Sin parser"}
+                      </td>
+                      <td>{module.lastParseResult?.warnings ?? 0}</td>
+                      <td>{module.lastParseResult?.errors ?? 0}</td>
+                      <td>{module.requiresReview ? "Requiere revision" : module.reviewedAt ? "Revisado" : "-"}</td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+          </div>
+
           <div className="admin-filter-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px" }}>
             <span className="assessment-inline-note">
               Mostrando {data.pagination.users.pageSize * (data.pagination.users.page - 1) + 1} - {Math.min(data.pagination.users.pageSize * data.pagination.users.page, data.pagination.users.totalCount)} de {data.pagination.users.totalCount} usuarios
@@ -1589,6 +1662,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Cliente/usuario</th>
                   <th>Estado</th>
                   <th>Evidencia</th>
+                  <th>Evidencia avanzada</th>
                   <th>Contexto</th>
                   <th>PDF</th>
                   <th>IA</th>
@@ -1637,6 +1711,16 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       )}
                     </td>
                     <td>{assessment.evidence}</td>
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                        <span className="assessment-chip assessment-chip-neutral">
+                          {assessment.advancedEvidence.parsed}/{assessment.advancedEvidence.total} modulos
+                        </span>
+                        <span className="assessment-inline-note" style={{ fontSize: "10px" }}>
+                          {assessment.advancedEvidence.warnings} advertencias / {assessment.advancedEvidence.errors} errores
+                        </span>
+                      </div>
+                    </td>
                     <td>{assessment.context}</td>
                     <td>{assessment.pdf}</td>
                     <td>{assessment.ai}</td>

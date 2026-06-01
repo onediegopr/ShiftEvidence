@@ -74,6 +74,8 @@ export function getCompletionModuleHref(assessmentId: string, key: AssessmentMod
       return `/dashboard/assessments/${assessmentId}?tab=basics#cost-risk-assumptions`;
     case "client_context_intelligence":
       return `/dashboard/assessments/${assessmentId}?tab=client-context#client-context-additional-evidence`;
+    case "advanced_evidence":
+      return `/dashboard/assessments/${assessmentId}?tab=evidence#evidence-expansion-center`;
     case "manual_assumptions":
       return `/dashboard/assessments/${assessmentId}?tab=basics#infrastructure-intake`;
     case "ai_advisory":
@@ -112,7 +114,8 @@ export function getCompletionCenterNotice(summary: AssessmentCompletionSummary) 
       ["storage_analysis", "licensing_cost_exposure", "migration_questions"].includes(
         completionModule.key,
       ) ||
-      completionModule.key === "client_context_intelligence",
+      completionModule.key === "client_context_intelligence" ||
+      completionModule.key === "advanced_evidence",
     )
     .slice(0, 2)
     .map((completionModule) => completionModule.label);

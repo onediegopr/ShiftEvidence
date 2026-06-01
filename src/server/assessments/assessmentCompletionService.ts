@@ -15,6 +15,7 @@ import {
   getLatestReportForAssessment,
   getReportPreviewStatusFromReports,
 } from "../reports/reportHistoryService";
+import { getEvidenceCompletenessSummaryFromModuleRecords } from "../evidence/evidenceExpansionService";
 
 export type CompletionStatus = "missing" | "partial" | "complete";
 
@@ -25,6 +26,7 @@ export type AssessmentModuleKey =
   | "storage_analysis"
   | "licensing_cost_exposure"
   | "client_context_intelligence"
+  | "advanced_evidence"
   | "manual_assumptions"
   | "ai_advisory"
   | "report_generation";
@@ -149,6 +151,16 @@ export const assessmentCompletionModuleCatalog = [
     actionLabel: "Add client context",
     impactIfMissing:
       "Customer narrative, internal constraints and additional evidence are not yet available for advisory context.",
+  },
+  {
+    key: "advanced_evidence",
+    label: "Advanced Evidence Modules",
+    description: "Optional VMware, Proxmox target, backup, storage/SAN and dependency evidence modules.",
+    required: false,
+    weight: 0,
+    actionLabel: "Add advanced evidence",
+    impactIfMissing:
+      "The base report can still be generated, but advanced recommendation confidence remains limited.",
   },
   {
     key: "manual_assumptions",
@@ -307,6 +319,12 @@ export function getMissingEvidenceSummary(assessment: AssessmentDetail) {
   } else if (completion.rvtoolsStatus === "failed") {
     missing.push("Reparse RVTools evidence after fixing the parsing issue.");
   }
+
+  const advancedEvidence = getEvidenceCompletenessSummaryFromModuleRecords({
+    assessmentId: assessment.id,
+    modules: assessment.evidenceModules ?? [],
+  });
+  missing.push(...advancedEvidence.missingEvidenceWarnings.slice(0, 3));
 
   return missing;
 }
@@ -1307,6 +1325,86 @@ function detectClientContextModule(
   };
 }
 
+function detectAdvancedEvidenceModule(
+  assessment: AssessmentCompletionAssessmentInput,
+): ModuleDetectionResult {
+  const summary = getEvidenceCompletenessSummaryFromModuleRecords({
+    assessmentId: assessment.id ?? "unknown",
+    modules: assessment.evidenceModules ?? [],
+  });
+  const activeModules = summary.modules.filter(
+    (module) => !["not_provided", "skipped"].includes(module.status),
+  );
+  const parsedModules = summary.modules.filter(
+    (module) => ["parsed", "parsed_with_warnings", "reviewed"].includes(module.status),
+  );
+  const failedModules = summary.modules.filter((module) => module.status === "failed");
+  const lastUpdatedAt = getLatestDate(
+    (assessment.evidenceModules ?? []).map((module) => module.updatedAt),
+  );
+
+  if (failedModules.length > 0) {
+    return {
+      status: "failed",
+      evidence: {
+        count: activeModules.length,
+        source: "evidence_expansion",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "One or more optional evidence modules failed parsing. The base RVTools report remains available, but advanced confidence is limited.",
+    };
+  }
+
+  if (parsedModules.length >= 3) {
+    return {
+      status: "complete",
+      evidence: {
+        count: parsedModules.length,
+        source: "evidence_expansion",
+        lastUpdatedAt,
+      },
+    };
+  }
+
+  if (parsedModules.length > 0 || summary.completionPercent >= 25) {
+    return {
+      status: "partial",
+      evidence: {
+        count: activeModules.length,
+        source: "evidence_expansion",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Advanced evidence modules are partially populated. Missing optional evidence limits stronger migration recommendations, not the base report.",
+    };
+  }
+
+  if (activeModules.length > 0) {
+    return {
+      status: "in_progress",
+      evidence: {
+        count: activeModules.length,
+        source: "evidence_expansion",
+        lastUpdatedAt,
+      },
+      limitationText:
+        "Optional evidence has been attached but is not yet parsed into domain-specific signals.",
+    };
+  }
+
+  return {
+    status: "not_started",
+    evidence: {
+      count: 0,
+      source: "evidence_expansion",
+    },
+    limitationText:
+      summary.missingEvidenceWarnings.slice(0, 2).join(" ") ||
+      "Optional advanced evidence is not provided. This does not block the base assessment.",
+  };
+}
+
 function detectManualAssumptionsModule(
   assessment: AssessmentCompletionAssessmentInput,
 ): ModuleDetectionResult {
@@ -1473,6 +1571,8 @@ function detectModule(
       return detectLicensingCostExposureModule(context.assessment);
     case "client_context_intelligence":
       return detectClientContextModule(context.assessment);
+    case "advanced_evidence":
+      return detectAdvancedEvidenceModule(context.assessment);
     case "manual_assumptions":
       return detectManualAssumptionsModule(context.assessment);
     case "ai_advisory":
@@ -1488,7 +1588,7 @@ function buildPrimaryCta(
   const rvtoolsModule = modules.find((module) => module.key === "rvtools_inventory");
   const reportModule = modules.find((module) => module.key === "report_generation");
   const hasMissingRecommended = modules.some(
-    (module) => !module.required && RECOMMENDED_MISSING_STATUSES.has(module.status),
+    (module) => !module.required && module.weight > 0 && RECOMMENDED_MISSING_STATUSES.has(module.status),
   );
 
   if (rvtoolsModule?.status !== "complete") {

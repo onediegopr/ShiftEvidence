@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { EvidenceModuleKey } from "@prisma/client";
 import { auth } from "../../../../../lib/auth";
 import { ensureAssessmentOwnership } from "../../../../../server/assessments/assessmentService";
 import { assertCanUploadEvidence } from "../../../../../server/assessments/assessmentUploadPrerequisites";
@@ -13,6 +14,12 @@ import {
   validateEvidenceUpload,
 } from "../../../../../server/evidence/uploadValidation";
 import { importRvtoolsEvidence } from "../../../../../server/rvtools/rvtoolsImportService";
+import {
+  associateEvidenceFileWithModule,
+  markEvidenceModuleSkipped,
+  parseEvidenceUpload,
+} from "../../../../../server/evidence/evidenceExpansionService";
+import { assertEvidenceModuleKey } from "../../../../../server/evidence/evidenceModuleRegistry";
 import { safeRedirectError } from "../../../../../server/assessments/formUtils";
 import { assertRateLimit, getClientIpFromHeaders } from "../../../../../server/security/rateLimit";
 import { logger } from "../../../../../server/logging/logger";
@@ -61,6 +68,11 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
     });
 
     const evidenceType = inferEvidenceTypeFromForm(formData.get("evidenceType"));
+    const rawModuleKey = formData.get("moduleKey");
+    const moduleKey =
+      typeof rawModuleKey === "string" && rawModuleKey.trim()
+        ? assertEvidenceModuleKey(rawModuleKey.trim())
+        : null;
     const fileEntry = formData.get("file");
 
     if (!(fileEntry instanceof File)) {
@@ -90,8 +102,9 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
       buffer,
     });
 
+    let evidenceFileId: string | null = null;
     try {
-      await createEvidenceFileRecord({
+      const evidenceFile = await createEvidenceFileRecord({
         userId: session.user.id,
         assessmentId: assessment.id,
         evidenceType,
@@ -102,7 +115,32 @@ export async function uploadEvidenceAction(assessmentId: string, formData: FormD
         mimeType: stored.mimeType,
         sizeBytes: stored.sizeBytes,
       });
+      evidenceFileId = evidenceFile.id;
+
+      if (moduleKey) {
+        const upload = await associateEvidenceFileWithModule({
+          userId: session.user.id,
+          assessmentId: assessment.id,
+          workspaceId: assessment.workspaceId,
+          evidenceFileId: evidenceFile.id,
+          moduleKey,
+          originalFilename: validation.originalFilename,
+        });
+
+        await parseEvidenceUpload({
+          userId: session.user.id,
+          workspaceId: assessment.workspaceId,
+          evidenceUploadId: upload.id,
+        });
+      }
     } catch (error) {
+      if (evidenceFileId) {
+        await softDeleteEvidenceFile({
+          userId: session.user.id,
+          assessmentId: assessment.id,
+          fileId: evidenceFileId,
+        });
+      }
       await deletePhysicalFileIfExists(stored.relativePath);
       throw error;
     }
@@ -167,6 +205,36 @@ export async function parseRvtoolsEvidenceAction(assessmentId: string, evidenceF
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to parse RVTools evidence.";
     redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "inventory");
+  }
+
+  redirect(redirectTarget);
+}
+
+export async function skipEvidenceModuleAction(assessmentId: string, moduleKey: EvidenceModuleKey) {
+  const session = await requireSession();
+  let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1", "evidence");
+
+  try {
+    const assessment = await ensureAssessmentOwnership({
+      userId: session.user.id,
+      assessmentId,
+    });
+
+    await markEvidenceModuleSkipped({
+      userId: session.user.id,
+      workspaceId: assessment.workspaceId,
+      assessmentId: assessment.id,
+      moduleKey,
+    });
+  } catch (error) {
+    logger.warn("evidence_module_skip_failed", {
+      userId: session.user.id,
+      assessmentId,
+      moduleKey,
+      error,
+    });
+    const message = error instanceof Error ? error.message : "Unable to skip evidence module.";
+    redirectTarget = getAssessmentRedirectPath(assessmentId, `error=${safeRedirectError(message)}`, "evidence");
   }
 
   redirect(redirectTarget);
