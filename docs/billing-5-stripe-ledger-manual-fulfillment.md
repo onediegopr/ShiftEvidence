@@ -215,25 +215,87 @@ Added/updated unit coverage:
 
 ## 14. Production Smoke
 
-Production smoke is executed after deployment of the BILLING-5 commit.
+Production deployment:
 
-Expected Starter test smoke:
+- Commit deployed: `90ee515 feat: map Stripe events to billing ledger`.
+- Hostinger status: completed.
 
-- `BillingEvent +1`
-- `BillingOrder +1`
-- `BillingPayment +1` when Stripe sends stable `payment_intent`
-- `BillingSubscription +0`
-- `BillingEntitlementGrant +0`
-- `AssessmentEntitlement +0`
+Baseline before Starter smoke:
 
-Replay expectations:
+- `BillingEvent`: 2.
+- `BillingOrder`: 2.
+- `BillingPayment`: 0.
+- `BillingSubscription`: 1.
+- `BillingEntitlementGrant`: 1.
+- `AssessmentEntitlement`: 136.
+- `AuditEvent`: 366.
 
-- no duplicate `BillingEvent`;
-- no duplicate `BillingOrder`;
-- no duplicate `BillingPayment`;
-- original event status is not degraded.
+Starter test checkout:
 
-Final production smoke results are recorded in this document after deployment.
+- Plan: Starter Readiness.
+- Email: `stripe-5-starter-ledger-smoke@example.invalid`.
+- Amount: USD 490.
+- Mode: Stripe test mode.
+- Result: checkout completed and returned to `/billing/checkout/starter?status=success`.
+
+Webhook and ledger result:
+
+- Stripe event: `evt_1TdXmr2ehRcYyaOrCajVa8rE`.
+- Event type: `checkout.session.completed`.
+- `BillingEvent`: created as `processed`.
+- `BillingOrder`: created for the Stripe checkout session.
+- `BillingPayment`: created for the Stripe payment intent.
+- `BillingSubscription`: unchanged for Starter.
+- `BillingEntitlementGrant`: unchanged.
+- `AssessmentEntitlement`: unchanged.
+- `AuditEvent`: unchanged.
+
+Counts after smoke:
+
+- `BillingEvent`: 3.
+- `BillingOrder`: 3.
+- `BillingPayment`: 1.
+- `BillingSubscription`: 1.
+- `BillingEntitlementGrant`: 1.
+- `AssessmentEntitlement`: 136.
+- `AuditEvent`: 366.
+
+Delta:
+
+- `BillingEvent`: +1.
+- `BillingOrder`: +1.
+- `BillingPayment`: +1.
+- `BillingSubscription`: +0.
+- `BillingEntitlementGrant`: +0.
+- `AssessmentEntitlement`: +0.
+- `AuditEvent`: +0.
+
+Replay result:
+
+- Same event id replayed with a valid test signature.
+- Response: `duplicate_ignored`.
+- `BillingEvent` count remained 3.
+- `BillingOrder` count remained 3.
+- `BillingPayment` count remained 1.
+- Original event status remained `processed`.
+- Matching Stripe order rows for the session: 1.
+- Matching Stripe payment rows for the payment intent: 1.
+
+Invalid-signature regression:
+
+- Response: 401.
+- Error: `invalid_signature`.
+- `BillingEvent` count remained unchanged.
+
+Admin billing result:
+
+- Stripe order visible as paid and unmatched.
+- Stripe payment visible as paid.
+- Stripe event visible as captured.
+- Live payments: OFF.
+- Entitlements automaticos: OFF.
+- Lemon Squeezy: legacy/rejected/disabled.
+- No secret values visible.
 
 ## 15. Rollback
 
