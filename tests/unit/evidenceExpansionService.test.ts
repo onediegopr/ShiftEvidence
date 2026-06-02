@@ -182,6 +182,51 @@ describe("evidence expansion service", () => {
     );
   });
 
+  it("updates Proxmox target module to parsed_with_warnings when parser returns warnings", async () => {
+    prismaMock.evidenceUpload.findUnique.mockResolvedValueOnce({
+      id: "upload_1",
+      assessmentId: "assessment_1",
+      evidenceFileId: "file_1",
+      moduleKey: EvidenceModuleKey.proxmox_target,
+      originalFilename: "shift-proxmox-target-output.json",
+      schemaVersion: null,
+      evidenceFile: {
+        id: "file_1",
+        relativePath: "private/proxmox-target.json",
+        mimeType: "application/json",
+      },
+    });
+    prismaMock.evidenceParseResult.create.mockResolvedValueOnce({ id: "parse_1" });
+
+    await parseEvidenceUpload({
+      userId: "user_1",
+      workspaceId: "workspace_1",
+      evidenceUploadId: "upload_1",
+      registry: {
+        parse: vi.fn().mockResolvedValue({
+          status: EvidenceParseResultStatus.parsed_with_warnings,
+          summary: { proxmoxTargetSummary: { nodeCount: 2 } },
+          warnings: ["No PBS detected."],
+          errors: [],
+          normalizedEntities: {},
+          parserKey: "proxmox-target-parser-v1",
+          parserVersion: "1.0.0",
+        }),
+      } as never,
+    });
+
+    expect(prismaMock.assessmentEvidenceModule.update).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: EvidenceModuleStatus.parsed_with_warnings,
+          confidenceLevel: EvidenceModuleConfidenceLevel.low,
+          completionPercent: 60,
+          lastParseResultId: "parse_1",
+        }),
+      }),
+    );
+  });
+
   it("marks an optional module as skipped without blocking base assessment", async () => {
     prismaMock.assessmentEvidenceModule.findMany.mockResolvedValueOnce(
       Object.values(EvidenceModuleKey).map((moduleKey) => ({ moduleKey })),

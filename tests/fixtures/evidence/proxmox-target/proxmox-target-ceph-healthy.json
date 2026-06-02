@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.proxmox-target.v1",
+  "collector": { "name": "shift-proxmox-target-collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "packagesInstalled": false, "servicesRestarted": false },
+  "summary": {},
+  "entities": { "cluster": {}, "nodes": [{ "node": "pve-a", "status": "online" }, { "node": "pve-b", "status": "online" }, { "node": "pve-c", "status": "online" }], "nodeStatus": [{ "memory": { "total": 137438953472, "used": 34359738368 }, "cpuinfo": { "cpus": 32 } }], "storages": [{ "storage": "rbd", "type": "rbd", "shared": true }, { "storage": "pbs-main", "type": "pbs", "shared": true, "content": "backup" }], "nodeStorage": [{ "storage": "rbd", "total": 3298534883328, "used": 824633720832 }], "networks": [{ "iface": "vmbr0", "type": "bridge", "bridge_vlan_aware": 1 }], "ha": { "resources": [{ "sid": "vm:101" }], "groups": [], "status": [] }, "resources": [], "ceph": { "cluster": { "health": "HEALTH_OK" } }, "backupTargets": [{ "storage": "pbs-main", "type": "pbs" }] },
+  "warnings": [],
+  "errors": []
+}

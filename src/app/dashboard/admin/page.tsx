@@ -183,6 +183,11 @@ function formatStatusLabel(value: string | null | undefined) {
     parsed_with_warnings: "Completado con advertencias",
     reviewed: "Revisado",
     collector_output: "Collector output",
+    target_validated: "Target validado",
+    target_partially_ready: "Target parcialmente listo",
+    target_insufficient: "Target insuficiente",
+    target_not_validated: "Target no validado",
+    target_requires_remediation: "Target requiere remediacion",
   };
 
   return labels[value] ?? value;
@@ -1564,7 +1569,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Estado del modulo</th>
                   <th>Confianza</th>
                   <th>Ultima carga</th>
-                  <th>Metrica VMware</th>
+                  <th>Metrica avanzada</th>
                   <th>Resultado del parser</th>
                   <th>Advertencias</th>
                   <th>Errores</th>
@@ -1591,7 +1596,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       <td>
                         {module.vmwareMetrics
                           ? `VMs ${module.vmwareMetrics.vmCount ?? "-"} / matched ${module.vmwareMetrics.matchedVmCount ?? "-"} / unmatched ${module.vmwareMetrics.unmatchedVmCount ?? "-"} / snapshots viejos ${module.vmwareMetrics.oldSnapshotCount ?? "-"} / tags ${module.vmwareMetrics.tagAssignmentCount ?? "-"} / DRS ${module.vmwareMetrics.drsRuleCount ?? "-"}`
-                          : "-"}
+                          : module.proxmoxMetrics
+                            ? `Target ${formatStatusLabel(module.proxmoxMetrics.targetStatus)} / nodes ${module.proxmoxMetrics.onlineNodeCount ?? "-"}/${module.proxmoxMetrics.nodeCount ?? "-"} / storage ${formatPercent(module.proxmoxMetrics.storageUsagePercent)} / HA ${module.proxmoxMetrics.haConfigured ? "si" : "no"} / PBS ${module.proxmoxMetrics.pbsDetected ? "si" : "no"} / Ceph ${module.proxmoxMetrics.cephDetected ? module.proxmoxMetrics.cephHealth ?? "detectado" : "no"}`
+                            : "-"}
                       </td>
                       <td>
                         {module.lastParseResult

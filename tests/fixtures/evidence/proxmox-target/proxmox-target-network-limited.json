@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.proxmox-target.v1",
+  "collector": { "name": "shift-proxmox-target-collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "packagesInstalled": false, "servicesRestarted": false },
+  "summary": {},
+  "entities": { "cluster": {}, "nodes": [{ "node": "pve-a", "status": "online" }, { "node": "pve-b", "status": "online" }], "nodeStatus": [{ "memory": { "total": 137438953472, "used": 34359738368 }, "cpuinfo": { "cpus": 32 } }], "storages": [{ "storage": "pbs-main", "type": "pbs", "shared": true, "content": "backup" }, { "storage": "nfs-main", "type": "nfs", "shared": true, "content": "images" }], "nodeStorage": [{ "storage": "nfs-main", "total": 2199023255552, "used": 549755813888 }], "networks": [{ "iface": "eth0", "type": "eth" }], "ha": { "resources": [{ "sid": "vm:101" }], "groups": [], "status": [] }, "resources": [], "ceph": { "cluster": null }, "backupTargets": [{ "storage": "pbs-main", "type": "pbs" }] },
+  "warnings": [],
+  "errors": []
+}

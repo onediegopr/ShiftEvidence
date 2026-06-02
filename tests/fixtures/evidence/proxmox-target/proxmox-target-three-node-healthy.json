@@ -1,0 +1,25 @@
+{
+  "schema": "shift-evidence.proxmox-target.v1",
+  "collector": { "name": "shift-proxmox-target-collector", "displayName": "Shift Evidence Proxmox Target Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "proxmox-ve", "hostname": "pve-a", "collectedAt": "2026-06-01T00:00:00Z" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "packagesInstalled": false, "servicesRestarted": false },
+  "summary": { "nodeCount": 3, "onlineNodeCount": 3, "storageCount": 3, "sharedStorageCount": 2, "vmCount": 3, "containerCount": 1, "haResourceCount": 2, "pbsStorageCount": 1, "cephDetected": true, "zfsDetected": false, "warningCount": 0, "errorCount": 0 },
+  "entities": {
+    "cluster": { "status": [{ "type": "cluster", "name": "shift-lab", "quorate": 1 }], "version": { "version": "8.2.0" } },
+    "nodes": [{ "node": "pve-a", "status": "online" }, { "node": "pve-b", "status": "online" }, { "node": "pve-c", "status": "online" }],
+    "nodeStatus": [
+      { "node": "pve-a", "memory": { "total": 137438953472, "used": 34359738368 }, "cpuinfo": { "cpus": 32 } },
+      { "node": "pve-b", "memory": { "total": 137438953472, "used": 34359738368 }, "cpuinfo": { "cpus": 32 } },
+      { "node": "pve-c", "memory": { "total": 137438953472, "used": 34359738368 }, "cpuinfo": { "cpus": 32 } }
+    ],
+    "storages": [{ "storage": "ceph-rbd", "type": "rbd", "shared": true, "content": "images,rootdir" }, { "storage": "cephfs", "type": "cephfs", "shared": true, "content": "iso,backup" }, { "storage": "pbs-main", "type": "pbs", "shared": true, "content": "backup" }],
+    "nodeStorage": [{ "storage": "ceph-rbd", "total": 6597069766656, "used": 2199023255552 }, { "storage": "pbs-main", "total": 3298534883328, "used": 549755813888 }],
+    "networks": [{ "iface": "vmbr0", "type": "bridge", "active": 1, "bridge_vlan_aware": 1 }, { "iface": "vmbr1", "type": "bridge", "active": 1, "bridge_vlan_aware": 1 }],
+    "ha": { "resources": [{ "sid": "vm:101" }, { "sid": "vm:102" }], "groups": [{ "group": "prod" }], "status": [{ "status": "started" }] },
+    "resources": [{ "vmid": 101, "name": "app-01", "type": "qemu" }, { "vmid": 102, "name": "db-01", "type": "qemu" }, { "vmid": 103, "name": "web-01", "type": "qemu" }, { "vmid": 201, "name": "ct-01", "type": "lxc" }],
+    "ceph": { "cluster": { "health": "HEALTH_OK", "monmap": { "mons": [{ "name": "pve-a" }, { "name": "pve-b" }, { "name": "pve-c" }] } }, "nodes": [] },
+    "backupTargets": [{ "storage": "pbs-main", "type": "pbs", "content": "backup" }]
+  },
+  "warnings": [],
+  "errors": []
+}

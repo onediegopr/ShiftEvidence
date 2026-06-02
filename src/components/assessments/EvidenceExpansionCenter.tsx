@@ -80,6 +80,36 @@ function getVmwareSummary(value: unknown) {
   };
 }
 
+function getProxmoxSummary(value: unknown) {
+  const summary = asRecord(value);
+  const proxmox = asRecord(summary?.proxmoxTargetSummary);
+  const readiness = asRecord(summary?.readiness);
+  if (!proxmox) return null;
+
+  const numberValue = (key: string) => {
+    const value = proxmox[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  };
+
+  const booleanValue = (key: string) => proxmox[key] === true;
+
+  return {
+    targetStatus: typeof readiness?.targetStatus === "string" ? readiness.targetStatus : "target_not_validated",
+    confidence: typeof readiness?.confidence === "string" ? readiness.confidence : "low",
+    recommendations: Array.isArray(readiness?.recommendations)
+      ? readiness.recommendations.filter((item): item is string => typeof item === "string")
+      : [],
+    nodeCount: numberValue("nodeCount"),
+    onlineNodeCount: numberValue("onlineNodeCount"),
+    storageUsagePercent: numberValue("storageUsagePercent"),
+    haConfigured: booleanValue("haConfigured"),
+    pbsDetected: booleanValue("pbsDetected"),
+    cephDetected: booleanValue("cephDetected"),
+    cephHealth: typeof proxmox.cephHealth === "string" ? proxmox.cephHealth : "unknown",
+    warningCount: jsonStringArray(summary?.warnings).length,
+  };
+}
+
 export function EvidenceExpansionCenter({
   assessmentId,
   summary,
@@ -125,7 +155,9 @@ export function EvidenceExpansionCenter({
           const errors = jsonStringArray(module.record.lastParseResult?.errorsJson);
           const evidenceType = evidenceTypeForModule(module.metadata.key);
           const isVmwareEnrichment = module.metadata.key === EvidenceModuleKey.vmware_enrichment;
+          const isProxmoxTarget = module.metadata.key === EvidenceModuleKey.proxmox_target;
           const vmwareSummary = getVmwareSummary(module.record.lastParseResult?.summaryJson);
+          const proxmoxSummary = getProxmoxSummary(module.record.lastParseResult?.summaryJson);
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -141,6 +173,13 @@ export function EvidenceExpansionCenter({
                     <span>
                       Read-only collector available. Run it locally against vCenter, review the JSON output,
                       and upload it here.
+                    </span>
+                  ) : null}
+                  {isProxmoxTarget ? (
+                    <span>
+                      Download the Shift Evidence Proxmox Target Collector, run it locally on a Proxmox VE
+                      node, review the generated JSON output, and upload it here to validate whether your
+                      target environment is ready for migration.
                     </span>
                   ) : null}
                 </div>
@@ -178,6 +217,16 @@ export function EvidenceExpansionCenter({
                 </div>
               ) : null}
 
+              {isProxmoxTarget ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Read-only collector safety</strong>
+                  <p className="assessment-storage-note">
+                    The collector is read-only. It does not change Proxmox configuration, create or delete VMs,
+                    modify storage, restart services, install packages, persist credentials, or upload data externally.
+                  </p>
+                </div>
+              ) : null}
+
               {vmwareSummary ? (
                 <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
                   <article className="assessment-preview-card">
@@ -205,6 +254,55 @@ export function EvidenceExpansionCenter({
                     <strong>{vmwareSummary.drsRuleCount}</strong>
                   </article>
                 </div>
+              ) : null}
+
+              {proxmoxSummary ? (
+                <>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Target: {statusLabel(proxmoxSummary.targetStatus)}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Confidence: {proxmoxSummary.confidence}
+                    </span>
+                  </div>
+                  <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Nodes</span>
+                      <strong>{proxmoxSummary.nodeCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Online</span>
+                      <strong>{proxmoxSummary.onlineNodeCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Storage used</span>
+                      <strong>{proxmoxSummary.storageUsagePercent}%</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">HA</span>
+                      <strong>{proxmoxSummary.haConfigured ? "Yes" : "No"}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">PBS</span>
+                      <strong>{proxmoxSummary.pbsDetected ? "Yes" : "No"}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Ceph</span>
+                      <strong>{proxmoxSummary.cephDetected ? proxmoxSummary.cephHealth : "No"}</strong>
+                    </article>
+                  </div>
+                  {proxmoxSummary.recommendations.length > 0 ? (
+                    <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                      <strong>Target recommendations</strong>
+                      <ul className="assessment-bullet-list">
+                        {proxmoxSummary.recommendations.slice(0, 3).map((recommendation) => (
+                          <li key={recommendation}>{recommendation}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </>
               ) : null}
 
               {module.reportWarning ? (
@@ -261,9 +359,13 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                {isVmwareEnrichment ? (
+                {isVmwareEnrichment || isProxmoxTarget ? (
                   <a
-                    href="/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                    href={
+                      isProxmoxTarget
+                        ? "/collectors/proxmox/shift-proxmox-target-collector.sh"
+                        : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                    }
                     className="btn btn-secondary btn-sm"
                     download
                   >
@@ -277,8 +379,11 @@ export function EvidenceExpansionCenter({
                   </button>
                 )}
 
-                {isVmwareEnrichment ? (
-                  <a href="/collectors/vmware/README.md" className="assessment-inline-note">
+                {isVmwareEnrichment || isProxmoxTarget ? (
+                  <a
+                    href={isProxmoxTarget ? "/collectors/proxmox/README.md" : "/collectors/vmware/README.md"}
+                    className="assessment-inline-note"
+                  >
                     Collector instructions
                   </a>
                 ) : (

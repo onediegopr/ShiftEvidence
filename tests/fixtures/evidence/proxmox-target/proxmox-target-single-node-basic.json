@@ -1,0 +1,21 @@
+{
+  "schema": "shift-evidence.proxmox-target.v1",
+  "collector": { "name": "shift-proxmox-target-collector", "displayName": "Shift Evidence Proxmox Target Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "proxmox-ve", "hostname": "pve-single", "collectedAt": "2026-06-01T00:00:00Z" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "packagesInstalled": false, "servicesRestarted": false },
+  "summary": { "nodeCount": 1, "onlineNodeCount": 1, "storageCount": 1, "sharedStorageCount": 0, "vmCount": 2, "containerCount": 1, "haResourceCount": 0, "pbsStorageCount": 0, "cephDetected": false, "zfsDetected": true, "warningCount": 1, "errorCount": 0 },
+  "entities": {
+    "cluster": { "status": [], "version": { "version": "8.2.0" } },
+    "nodes": [{ "node": "pve-single", "status": "online" }],
+    "nodeStatus": [{ "node": "pve-single", "memory": { "total": 68719476736, "used": 17179869184 }, "cpuinfo": { "cpus": 16 } }],
+    "storages": [{ "storage": "local-zfs", "type": "zfspool", "shared": false, "content": "images,rootdir" }],
+    "nodeStorage": [{ "node": "pve-single", "storage": "local-zfs", "total": 1099511627776, "used": 329853488332 }],
+    "networks": [{ "iface": "vmbr0", "type": "bridge", "active": 1, "bridge_vlan_aware": 1 }],
+    "ha": { "resources": [], "groups": [], "status": [] },
+    "resources": [{ "vmid": 101, "name": "app-01", "type": "qemu" }, { "vmid": 102, "name": "db-01", "type": "qemu" }, { "vmid": 201, "name": "ct-01", "type": "lxc" }],
+    "ceph": { "cluster": null, "nodes": [] },
+    "backupTargets": []
+  },
+  "warnings": [{ "code": "single_node_or_no_cluster", "message": "Single-node target detected.", "target": "cluster", "severity": "warning" }],
+  "errors": []
+}

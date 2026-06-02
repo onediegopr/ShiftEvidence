@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.proxmox-target.v1",
+  "collector": { "name": "shift-proxmox-target-collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "packagesInstalled": false, "servicesRestarted": false },
+  "summary": {},
+  "entities": { "cluster": {}, "nodes": [{ "node": "pve-a", "status": "online" }, { "node": "pve-b", "status": "online" }], "nodeStatus": [{ "node": "pve-a", "memory": { "total": 68719476736, "used": 21474836480 }, "cpuinfo": { "cpus": 16 } }], "storages": [{ "storage": "local-lvm", "type": "lvmthin", "shared": false }], "nodeStorage": [{ "storage": "local-lvm", "total": 107374182400, "used": 100931731456 }], "networks": [{ "iface": "vmbr0", "type": "bridge", "bridge_vlan_aware": 1 }], "ha": { "resources": [{ "sid": "vm:101" }], "groups": [], "status": [] }, "resources": [], "ceph": { "cluster": null }, "backupTargets": [{ "storage": "backup-dir", "type": "dir", "content": "backup" }] },
+  "warnings": [],
+  "errors": []
+}

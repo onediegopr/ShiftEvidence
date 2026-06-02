@@ -54,7 +54,7 @@ export const evidenceModuleCatalog = [
     phase: "prepared",
     userVisible: true,
     adminVisible: true,
-    preparedMessage: "Prepared for future Proxmox target validation. Missing target evidence limits confidence only.",
+    preparedMessage: "Download the read-only Proxmox target collector, review the JSON output locally, then upload it here. Missing target evidence limits confidence only.",
   },
   {
     key: EvidenceModuleKey.backup_evidence,

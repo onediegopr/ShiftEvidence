@@ -1134,6 +1134,7 @@ export async function getAdminConsoleData(params?: {
             lastUpload: null,
             lastParseResult: null,
             vmwareMetrics: null,
+            proxmoxMetrics: null,
             requiresReview: false,
           };
         }
@@ -1159,6 +1160,26 @@ export async function getAdminConsoleData(params?: {
         const vmwareNumber = (key: string) => {
           const value = vmwareSummary?.[key];
           return typeof value === "number" && Number.isFinite(value) ? value : null;
+        };
+        const proxmoxSummary =
+          typeof summaryJson?.proxmoxTargetSummary === "object" &&
+          summaryJson.proxmoxTargetSummary &&
+          !Array.isArray(summaryJson.proxmoxTargetSummary)
+            ? summaryJson.proxmoxTargetSummary as Record<string, unknown>
+            : null;
+        const proxmoxReadiness =
+          typeof summaryJson?.readiness === "object" &&
+          summaryJson.readiness &&
+          !Array.isArray(summaryJson.readiness)
+            ? summaryJson.readiness as Record<string, unknown>
+            : null;
+        const proxmoxNumber = (key: string) => {
+          const value = proxmoxSummary?.[key];
+          return typeof value === "number" && Number.isFinite(value) ? value : null;
+        };
+        const proxmoxBoolean = (key: string) => {
+          const value = proxmoxSummary?.[key];
+          return typeof value === "boolean" ? value : null;
         };
 
         return {
@@ -1197,6 +1218,22 @@ export async function getAdminConsoleData(params?: {
                 taggedVmCount: vmwareNumber("taggedVmCount"),
                 tagAssignmentCount: vmwareNumber("tagAssignmentCount"),
                 drsRuleCount: vmwareNumber("drsRuleCount"),
+              }
+            : null,
+          proxmoxMetrics: proxmoxSummary
+            ? {
+                targetStatus: typeof proxmoxReadiness?.targetStatus === "string" ? proxmoxReadiness.targetStatus : null,
+                confidence: typeof proxmoxReadiness?.confidence === "string" ? proxmoxReadiness.confidence : null,
+                nodeCount: proxmoxNumber("nodeCount"),
+                onlineNodeCount: proxmoxNumber("onlineNodeCount"),
+                storageCount: proxmoxNumber("storageCount"),
+                sharedStorageCount: proxmoxNumber("sharedStorageCount"),
+                storageUsagePercent: proxmoxNumber("storageUsagePercent"),
+                haConfigured: proxmoxBoolean("haConfigured"),
+                haResourceCount: proxmoxNumber("haResourceCount"),
+                pbsDetected: proxmoxBoolean("pbsDetected"),
+                cephDetected: proxmoxBoolean("cephDetected"),
+                cephHealth: typeof proxmoxSummary.cephHealth === "string" ? proxmoxSummary.cephHealth : null,
               }
             : null,
           requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",
