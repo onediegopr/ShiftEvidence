@@ -49,6 +49,7 @@ function getStripeSecretKeyMode() {
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim().replace(/^["']|["']$/g, "");
   if (secretKey?.startsWith("sk_live_")) return "live" as const;
   if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  if (secretKey?.startsWith("rk_live_")) return "restricted_live" as const;
   return "unknown" as const;
 }
 
@@ -104,7 +105,7 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
     mode: "test" | "live";
     env: {
       secretKeyConfigured: boolean;
-      secretKeyMode: "live" | "test" | "unknown";
+      secretKeyMode: "live" | "test" | "restricted_live" | "unknown";
       priceConfigured: boolean;
       priceEnvName: string | null;
     };
@@ -142,7 +143,7 @@ export function getBillingCheckoutRouteState(slug: string) {
     detail:
       stripe.checkoutActive
         ? stripe.mode === "live"
-          ? "This route creates a Stripe Checkout session server-side in live mode for the controlled go-live smoke."
+          ? "This route creates a Stripe Checkout session server-side in live mode only after explicit owner approval."
           : "This route creates a Stripe Checkout session server-side in test mode and redirects to hosted checkout."
         : stripe.status === "configured_live_disabled"
           ? "Stripe appears configured for live mode, but live checkout is intentionally disabled until owner approval."

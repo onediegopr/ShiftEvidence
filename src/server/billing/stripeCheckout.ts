@@ -179,7 +179,7 @@ export async function createStripeCheckoutSession(
   const secretKeyMode = getStripeSecretKeyMode(secretKey);
   const secretKeyModeMismatch =
     (checkoutMode === "live" && secretKeyMode !== "live") ||
-    (checkoutMode === "test" && secretKeyMode === "live");
+    (checkoutMode === "test" && secretKeyMode !== "test");
   if (secretKeyModeMismatch) {
     return {
       ok: false,
