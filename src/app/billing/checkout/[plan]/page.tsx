@@ -207,7 +207,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                 </Link>
               </div>
               <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
-                Business invoice and bank transfer requests are handled through support. Refunds and access adjustments are reviewed manually.
+                Business invoice and bank transfer requests use the manual invoice flow. Refunds and access adjustments are reviewed manually.
               </p>
             </section>
           </div>
