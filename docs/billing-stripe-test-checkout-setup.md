@@ -176,3 +176,11 @@ BETTER_AUTH_URL=https://shiftevidence.com
 - No production environment changes are part of this hito.
 - No automatic fulfillment is active.
 - Webhook handling can persist billing events when configured, but it does not grant assessment access.
+
+## STRIPE-LIVE-2 Runtime Gate Attempt
+
+Date: 2026-06-02.
+
+The owner configured live runtime variables outside source control and a controlled production smoke was attempted without payment. Public checkout and pricing routes returned 200, but checkout start POST requests for Starter, Professional, and MSP returned safe 303 redirects back to the app with `error=stripe_price_invalid`.
+
+No Stripe hosted checkout page was reached, no payment was completed, no secret was stored, no grant or entitlement was created, and no Wise action was performed. Recheck exact runtime Price IDs and confirm the live secret key belongs to the same Stripe account as the documented live products/prices before retrying.

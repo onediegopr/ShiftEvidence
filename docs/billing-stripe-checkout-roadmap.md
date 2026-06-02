@@ -95,3 +95,11 @@ Important boundary:
 - Live app checkout still requires a separate controlled runtime hito with explicit approval.
 
 Next required hito: configure live runtime env under the existing double gate, validate provider status, and smoke only to the Stripe hosted checkout page without completing payment unless a separate payment hito approves it.
+
+## STRIPE-LIVE-2 Runtime Gate Attempt
+
+Date: 2026-06-02.
+
+After the owner configured live runtime variables outside source control, production public routes loaded with 200 responses for checkout, pricing, and bank transfer pages. Checkout start POST requests for Starter, Professional, and MSP did not reach Stripe hosted checkout; each route redirected safely back to the app with `error=stripe_price_invalid`.
+
+No payment was completed, no card data was entered, no grant or entitlement was created, no Wise action was performed, and no secret was stored. The likely next check is runtime Price ID and `STRIPE_SECRET_KEY` account alignment. See `docs/billing-stripe-live-runtime-gate.md`.
