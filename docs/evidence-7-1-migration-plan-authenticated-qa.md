@@ -681,3 +681,110 @@ Decision:
 - Browser tooling is not ready.
 - EVIDENCE-7.1B remains NO CERRADO.
 - Retry EVIDENCE-7.1B only after Browser/Chrome plugin repair from the Codex plugin UI and a successful browser-control smoke.
+
+## Local DB migration fix and EVIDENCE-7.1B retry
+
+Date: 2026-06-02
+Status: DB mismatch resolved; browser QA still not closed
+
+### Original error
+
+Opening an assessment locally produced:
+
+```text
+The table `public.AssessmentEvidenceModule` does not exist in the current database.
+```
+
+This happened in the assessment detail load path and was traced to the Evidence Expansion common framework tables being absent from the database used by the local/dev environment.
+
+### Cause
+
+The application code was updated to include Evidence Expansion, but the confirmed local/dev Neon PostgreSQL database had not applied the existing migration:
+
+```text
+20260601193000_evidence_1_common_framework
+```
+
+This was not a Migration Recommendation Plan code bug and not a browser tooling bug.
+
+### DB target and safety
+
+The user explicitly confirmed that the configured remote Neon PostgreSQL target is the database to migrate for this local/dev workflow.
+
+No `DATABASE_URL` value was printed.
+
+No reset, `db push --force-reset`, `DROP`, `TRUNCATE` or destructive command was used.
+
+### Tables before migration
+
+- `AssessmentEvidenceModule`: missing.
+- `EvidenceUpload`: missing.
+- `EvidenceParseResult`: missing.
+
+### Commands executed
+
+```bash
+npx prisma migrate deploy
+npx prisma generate
+```
+
+`20260601193000_evidence_1_common_framework` applied successfully.
+
+`npx prisma generate` initially failed with `EPERM` because the local Next dev server was holding Prisma's Windows query engine DLL. The local dev server on port `3000` was stopped, then `npx prisma generate` succeeded.
+
+### Tables after migration
+
+- `AssessmentEvidenceModule`: exists.
+- `EvidenceUpload`: exists.
+- `EvidenceParseResult`: exists.
+
+### Validations
+
+Passed:
+
+- `npx prisma migrate status`: schema up to date.
+- `npx prisma validate`.
+- `npx prisma generate`.
+- `npm run typecheck`.
+- `npm run lint`.
+- `npm run test:run`.
+- `npm run build`.
+- `npm run ai:guardrails`.
+- `npm run hostinger:diagnose` as safe diagnostic only.
+
+Known warning:
+
+- Turbopack/NFT warning related to `localStorageService`, unchanged and non-blocking.
+
+### Local route smoke
+
+The local dev server was restarted.
+
+- `http://127.0.0.1:3000/sign-in`: `200 OK`.
+- `http://127.0.0.1:3000/dashboard/assessments` without session: `307 Temporary Redirect`.
+
+The original missing-table Prisma error was no longer observed during unauthenticated route smoke.
+
+### Browser/manual QA retry
+
+Codex browser control was retried after the DB fix.
+
+Result:
+
+- Chrome/browser control still failed before page control with the known local browser-runtime asset-path error.
+- No authenticated login was performed.
+- No assessment was opened in a controlled browser session.
+- No Migration Recommendation Plan panel browser QA was completed.
+- No browser-generated PDF was produced, downloaded or opened.
+- Admin visual browser QA was not completed.
+
+### Decision
+
+EVIDENCE-7.1B: NO CERRADO.
+
+Reason:
+
+- The DB mismatch is fixed.
+- The authenticated browser closeout still requires real browser control/manual attestation, and Codex browser tooling remains blocked.
+
+Full public launch remains NO.
