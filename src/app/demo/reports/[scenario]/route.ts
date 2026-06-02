@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { NextResponse } from "next/server";
+import fs from "node:fs";
+import path from "node:path";
 import { getDemoScenarioBySlug } from "../../../../server/demo/demoDatasets";
 
 export const runtime = "nodejs";
@@ -18,6 +20,40 @@ function writeSection(doc: PDFKit.PDFDocument, title: string, items: string[]) {
   }
 }
 
+const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
+
+function getShiftEvidenceBrandIcon() {
+  try {
+    if (fs.existsSync(BRAND_ICON_LIGHT_PATH)) {
+      return fs.readFileSync(BRAND_ICON_LIGHT_PATH);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function drawBrandHeader(doc: PDFKit.PDFDocument) {
+  const icon = getShiftEvidenceBrandIcon();
+  if (icon) {
+    try {
+      doc.image(icon, 54, 48, {
+        fit: [30, 30],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      doc.circle(69, 63, 11).lineWidth(2).strokeColor("#0891b2").stroke();
+    }
+  } else {
+    doc.circle(69, 63, 11).lineWidth(2).strokeColor("#0891b2").stroke();
+  }
+
+  doc.fontSize(12).fillColor("#111827").font("Helvetica-Bold").text("Shift Evidence", 92, 51);
+  doc.fontSize(8).fillColor("#4b5563").font("Helvetica").text("Read-only synthetic Demo Workspace", 92, 67);
+}
+
 function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenarioBySlug>>) {
   return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ margin: 54, size: "A4", info: { Title: scenario.name } });
@@ -27,13 +63,12 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
+    drawBrandHeader(doc);
     doc
-      .fontSize(12)
-      .fillColor("#0f766e")
-      .text("Shift Evidence Demo Workspace", { align: "left" })
-      .moveDown(0.5)
+      .moveDown(2.6)
       .fontSize(24)
       .fillColor("#111827")
+      .font("Helvetica-Bold")
       .text("Synthetic Demo Report", { align: "left" })
       .moveDown(0.3)
       .fontSize(18)
