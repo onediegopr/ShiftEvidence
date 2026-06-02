@@ -169,6 +169,64 @@ Post-admin reconciliation:
 - Lemon residual in public admin redirect/sign-in HTML: none.
 - Secrets or bank details exposed in public admin redirect/sign-in HTML: none.
 
+## Admin Visual Invoice QA Attempt
+
+Follow-up hito: `BILLING-PIVOT-2C`.
+
+Preflight:
+
+- Branch state: local branch was ahead by the documentation commit `3911644`.
+- `npx prisma migrate status`: database schema is up to date.
+- Request `cmpwt3win0001495l7ghdedqg` exists.
+- Request status before admin QA: `pending`.
+- Request remains in the latest-25 list used by the admin billing console.
+- Position in latest-25 list: 0.
+
+Admin access:
+
+- Public `/dashboard/admin/billing` returned 307 to `/sign-in`.
+- Authenticated admin session was not available in this Codex session.
+- In-app browser tooling was not exposed in the available tools for this turn.
+- Codex for Chrome was not used.
+
+Admin visual QA result:
+
+- Visual authenticated console QA performed: no.
+- Request visible through admin data source: yes.
+- Request visually confirmed in browser UI: no, blocked by missing admin session/tooling.
+- Expected visible fields were confirmed by the read-only admin data source:
+  - Plan: Professional Assessment.
+  - Amount: USD 1,500 (`amountCents=150000`).
+  - Provider: `wise`.
+  - Status: `pending`.
+  - Customer email: billing-smoke+wise-test@example.invalid.
+  - Company: Synthetic Billing Smoke LLC.
+  - Purchase order: PO-SMOKE-WISE-001.
+  - Notes: Synthetic smoke test. No real payment. Do not fulfill.
+
+Admin action result:
+
+- `invoice_sent` action executed: no.
+- Reason: the action requires authenticated admin session through `requireAdminSession`.
+- No direct DB update was used.
+- Final status: `pending`.
+- `invoiceSentAt`: null.
+- `internalNotes`: null.
+- Status-update AuditEvent created: no.
+- `payment_received` action executed: no.
+
+Reconciliation after the 2C attempt:
+
+- BillingOrder records created since the test window: none.
+- BillingOrder `paid` transitions since the test window: none.
+- BillingPayment records created since the test window: none.
+- AssessmentEntitlement records created since the test window: none.
+- UnlockRequest records created since the test window: none.
+- Wise API action: none.
+- Stripe checkout/payment action: none.
+- Lemon residual in public admin redirect/sign-in HTML: none.
+- Secrets, tokens or full bank details exposed in public admin redirect/sign-in HTML: none.
+
 ## Conclusion
 
 The UI and safety copy are live, the additive migration is applied, and the end-to-end manual invoice request flow creates a pending synthetic request without payment, order, Wise automation, Stripe checkout or entitlement side effects.
