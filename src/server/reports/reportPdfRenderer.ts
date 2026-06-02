@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
+import fs from "node:fs";
+import path from "node:path";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
 import { PRINT_REPORT_THEME, PRINT_TONE_COLORS, type ReportTone } from "./reportTheme";
@@ -40,6 +42,21 @@ const THEME = {
 };
 
 const TONE_COLORS = PRINT_TONE_COLORS;
+const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
+const BRAND_ICON_DARK_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-dark-transparent.png");
+
+function getShiftEvidenceBrandIcon(dark = false) {
+  const preferredPath = dark ? BRAND_ICON_DARK_PATH : BRAND_ICON_LIGHT_PATH;
+  try {
+    if (fs.existsSync(preferredPath)) {
+      return fs.readFileSync(preferredPath);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
 
 function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
   const scale = size / 32;
@@ -66,7 +83,20 @@ function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, si
 }
 
 function drawShiftEvidenceWordmark(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
-  drawShiftEvidenceMark(doc, x, y, 24);
+  const brandIcon = getShiftEvidenceBrandIcon(dark);
+  if (brandIcon) {
+    try {
+      doc.image(brandIcon, x, y - 2, {
+        fit: [28, 28],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      drawShiftEvidenceMark(doc, x, y, 24);
+    }
+  } else {
+    drawShiftEvidenceMark(doc, x, y, 24);
+  }
   doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x + 32, y + 1);
   doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x + 32, y + 15);
 }

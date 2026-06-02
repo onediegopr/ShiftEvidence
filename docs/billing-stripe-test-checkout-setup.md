@@ -140,6 +140,35 @@ BETTER_AUTH_URL=https://shiftevidence.com
 
 `STRIPE_SECRET_KEY` must be loaded as a secret runtime value, never stored in docs or source control. `STRIPE_WEBHOOK_SECRET` remains pending for a separate webhook smoke.
 
+## STRIPE-2B Live Price IDs Captured
+
+Date: 2026-06-02.
+
+Operator note: Stripe products and Payment Links were created manually in production mode. Payment Links were intentionally left active by owner decision. The application runtime was not configured in this hito, so the Shift Evidence app still does not create live Stripe Checkout sessions until the separate runtime gate is approved and deployed.
+
+Live products and prices:
+
+| Plan | Stripe Product | Product ID | Price ID | Mode | Amount | Cadence | Payment Link |
+| --- | --- | --- | --- | --- | ---: | --- | --- |
+| Starter Readiness | Starter Readiness | `prod_UclYxjpqT92sGY` | `price_1TdW1r2ehRcYyaOreX1g3zr3` | live | USD 490 | one-time | active |
+| Professional Assessment | Professional Assessment | `prod_UclcUgR7N174OV` | `price_1TdW4x2ehRcYyaOrxvclbwhh` | live | USD 1,500 | one-time | active |
+| MSP Partner | MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 399/month | monthly recurring | active |
+
+Runtime env values for the next hito:
+
+```text
+STRIPE_STARTER_PRICE_ID=price_1TdW1r2ehRcYyaOreX1g3zr3
+STRIPE_PROFESSIONAL_PRICE_ID=price_1TdW4x2ehRcYyaOrxvclbwhh
+STRIPE_MSP_PRICE_ID=price_1TdW6Q2ehRcYyaOruJVd7Lup
+STRIPE_CHECKOUT_MODE=live
+STRIPE_LIVE_PAYMENTS_APPROVED=true
+STRIPE_CHECKOUT_ENABLED=true
+NEXT_PUBLIC_APP_URL=https://shiftevidence.com
+BETTER_AUTH_URL=https://shiftevidence.com
+```
+
+`STRIPE_SECRET_KEY` must be loaded only as a runtime secret, never stored in docs or source control. `STRIPE_WEBHOOK_SECRET` remains pending for a separate webhook smoke. No Hostinger env, redeploy, checkout smoke, payment, grant, unlock, Wise action, or database change was performed in this documentation step.
+
 ## Current Boundary
 
 - No real payment is completed in this hito.

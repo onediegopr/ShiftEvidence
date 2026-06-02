@@ -8,6 +8,8 @@ const repoRoot = path.resolve(__dirname, "..");
 const outputDir = path.join(repoRoot, "public", "sample-reports");
 const outputPath = path.join(outputDir, "proxmox-migration-readiness-sample-report.pdf");
 const versionedOutputPath = path.join(outputDir, "proxmox-migration-readiness-premium-sample-report-v2.pdf");
+const brandIconLightPath = path.join(repoRoot, "public", "brand", "shift-evidence-icon-light-transparent.png");
+const brandIconLight = fs.existsSync(brandIconLightPath) ? fs.readFileSync(brandIconLightPath) : null;
 
 const colors = {
   ink: "#101828",
@@ -187,6 +189,23 @@ function drawMark(x, y, size = 22) {
     .stroke();
 }
 
+function drawBrandIcon(x, y, size = 24) {
+  if (brandIconLight) {
+    try {
+      doc.image(brandIconLight, x, y, {
+        fit: [size, size],
+        align: "center",
+        valign: "center",
+      });
+      return;
+    } catch {
+      // Fall through to the vector fallback if the PNG cannot be embedded.
+    }
+  }
+
+  drawMark(x, y, size);
+}
+
 function footer() {
   const y = doc.page.height - 70;
   doc.font("Helvetica").fontSize(7.5).fillColor(colors.faint).text(
@@ -201,7 +220,7 @@ function footer() {
 function header(kicker) {
   doc.rect(0, 0, doc.page.width, 62).fill(colors.panelStrong);
   doc.strokeColor(colors.line).lineWidth(0.7).moveTo(0, 62).lineTo(doc.page.width, 62).stroke();
-  drawMark(44, 19, 18);
+  drawBrandIcon(44, 18, 20);
   doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 70, 23, { characterSpacing: 1.3 });
   doc.fillColor(colors.muted).font("Helvetica").fontSize(8).text(safeText(kicker).toUpperCase(), 315, 24, { width: 236, align: "right" });
 }
@@ -319,7 +338,7 @@ function coverPage() {
   doc.rect(0, 0, doc.page.width, 120).fill(colors.panelStrong);
   doc.circle(510, 120, 190).fillOpacity(0.12).fill(colors.cyan).fillOpacity(1);
   doc.circle(80, 740, 170).fillOpacity(0.08).fill("#8b5cf6").fillOpacity(1);
-  drawMark(48, 42, 28);
+  drawBrandIcon(48, 40, 32);
   doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, { characterSpacing: 1.4 });
   doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(11).text("Full Premium Synthetic Sample Report", 48, 118);
   doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(42).text(dataset.reportTitle, 48, 152, { width: 470, lineGap: -3 });

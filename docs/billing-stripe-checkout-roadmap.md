@@ -74,3 +74,24 @@ The STRIPE-2A attempt stopped before any Stripe changes because authentication a
 - No runtime env was configured.
 
 Next required hito remains authentication-first: confirm Stripe test mode, then create or verify Starter, Professional, and MSP test Price IDs.
+
+## STRIPE-2B Live Price IDs
+
+Date: 2026-06-02.
+
+The owner chose to proceed with production Stripe products/prices instead of test-mode prices. The following live Price IDs were captured from manual Stripe Dashboard work:
+
+| Plan | Product ID | Price ID | Mode | Amount | Cadence | Payment Link |
+| --- | --- | --- | --- | ---: | --- | --- |
+| Starter Readiness | `prod_UclYxjpqT92sGY` | `price_1TdW1r2ehRcYyaOreX1g3zr3` | live | USD 490 | one-time | active |
+| Professional Assessment | `prod_UclcUgR7N174OV` | `price_1TdW4x2ehRcYyaOrxvclbwhh` | live | USD 1,500 | one-time | active |
+| MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 399/month | monthly recurring | active |
+
+Important boundary:
+
+- The live Payment Links are active outside the application.
+- The application runtime has not been configured with these live Price IDs.
+- No Hostinger env, redeploy, checkout smoke, payment, webhook smoke, grant, unlock, Wise action, or database change was performed.
+- Live app checkout still requires a separate controlled runtime hito with explicit approval.
+
+Next required hito: configure live runtime env under the existing double gate, validate provider status, and smoke only to the Stripe hosted checkout page without completing payment unless a separate payment hito approves it.

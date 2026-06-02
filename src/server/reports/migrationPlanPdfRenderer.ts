@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
+import fs from "node:fs";
+import path from "node:path";
 import type { MigrationRecommendationPlan, MigrationPlanGate } from "./migrationPlanTypes";
 import { PRINT_REPORT_THEME } from "./reportTheme";
 
@@ -14,6 +16,39 @@ const THEME = {
   amber: PRINT_REPORT_THEME.amber,
   red: PRINT_REPORT_THEME.red,
 };
+const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
+
+function getShiftEvidenceBrandIcon() {
+  try {
+    if (fs.existsSync(BRAND_ICON_LIGHT_PATH)) {
+      return fs.readFileSync(BRAND_ICON_LIGHT_PATH);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function drawBrandHeader(doc: PDFKit.PDFDocument) {
+  const icon = getShiftEvidenceBrandIcon();
+  if (icon) {
+    try {
+      doc.image(icon, MARGIN, MARGIN - 4, {
+        fit: [28, 28],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      doc.circle(MARGIN + 12, MARGIN + 10, 10).lineWidth(2).strokeColor(THEME.blue).stroke();
+    }
+  } else {
+    doc.circle(MARGIN + 12, MARGIN + 10, 10).lineWidth(2).strokeColor(THEME.blue).stroke();
+  }
+
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(10).text("SHIFT EVIDENCE", MARGIN + 36, MARGIN + 1);
+  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text("Migration planning report", MARGIN + 36, MARGIN + 15);
+}
 
 function safeText(value: string | number | null | undefined) {
   const text = value === null || value === undefined ? "Not provided" : String(value);
@@ -135,7 +170,7 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
   });
   doc.pipe(stream);
 
-  doc.fillColor(THEME.blue).font("Helvetica-Bold").fontSize(10).text("SHIFT EVIDENCE", MARGIN, MARGIN);
+  drawBrandHeader(doc);
   doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(24).text("Migration Recommendation Plan", MARGIN, 96, {
     width: contentWidth(doc),
   });

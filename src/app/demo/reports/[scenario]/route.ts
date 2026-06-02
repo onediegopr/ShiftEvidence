@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { NextResponse } from "next/server";
+import fs from "node:fs";
+import path from "node:path";
 import { getDemoScenarioBySlug } from "../../../../server/demo/demoDatasets";
 
 export const runtime = "nodejs";
@@ -48,14 +50,61 @@ function toneColors(tone: "good" | "warning" | "danger" | "info") {
   return { fill: COLORS.cyanSoft, stroke: COLORS.cyan, text: COLORS.cyan };
 }
 
+const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
+
+function getShiftEvidenceBrandIcon() {
+  try {
+    if (fs.existsSync(BRAND_ICON_LIGHT_PATH)) {
+      return fs.readFileSync(BRAND_ICON_LIGHT_PATH);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function drawBrandIcon(doc: PDFKit.PDFDocument, x: number, y: number, size = 24) {
+  const icon = getShiftEvidenceBrandIcon();
+  if (icon) {
+    try {
+      doc.image(icon, x, y, {
+        fit: [size, size],
+        align: "center",
+        valign: "center",
+      });
+      return;
+    } catch {
+      // Fall through to the vector fallback if the PNG cannot be embedded.
+    }
+  }
+
+  const scale = size / 32;
+  const strokeWidth = Math.max(1, 2.5 * scale);
+  doc.circle(x + 12 * scale, y + 16 * scale, 8 * scale).lineWidth(strokeWidth).strokeColor(COLORS.cyan).stroke();
+  doc
+    .moveTo(x + 12 * scale, y + 16 * scale)
+    .lineTo(x + 24 * scale, y + 16 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 12 * scale)
+    .moveTo(x + 24 * scale, y + 16 * scale)
+    .lineTo(x + 20 * scale, y + 20 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .lineJoin("round")
+    .strokeColor("#8b5cf6")
+    .stroke();
+}
+
 function addHeader(doc: PDFKit.PDFDocument, title: string) {
   doc.rect(0, 0, doc.page.width, 58).fill(COLORS.panelStrong);
   doc.strokeColor(COLORS.line).lineWidth(0.7).moveTo(0, 58).lineTo(doc.page.width, 58).stroke();
-  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 54, 20, {
+  drawBrandIcon(doc, 54, 13, 24);
+  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 86, 20, {
     characterSpacing: 1.2,
   });
-  doc.fillColor(COLORS.muted).font("Helvetica").fontSize(8).text(safeText(title).toUpperCase(), 290, 21, {
-    width: 240,
+  doc.fillColor(COLORS.muted).font("Helvetica").fontSize(8).text(safeText(title).toUpperCase(), 286, 21, {
+    width: 244,
     align: "right",
   });
 }
@@ -210,11 +259,14 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
-
     doc.addPage();
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(COLORS.paper);
     doc.rect(0, 0, doc.page.width, 152).fill(COLORS.panelStrong);
     doc.rect(0, 152, doc.page.width, 6).fill(COLORS.cyan);
+    drawBrandIcon(doc, 48, 40, 32);
+    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, {
+      characterSpacing: 1.4,
+    });
     doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(9).text("SHIFT EVIDENCE DEMO WORKSPACE", 54, 54, {
       characterSpacing: 1.5,
     });
