@@ -229,13 +229,43 @@ Guard messages remain commercial and non-technical:
 
 ## Push Status
 
-Controlled push status at documentation time:
+Controlled push result:
 
-- Pending before final push: `a934e6b feat: add read-only synthetic demo workspace`
-- Documentation commit planned: `docs: record demo workspace visual QA`
+- Demo Workspace commit pushed: `a934e6b feat: add read-only synthetic demo workspace`
+- QA documentation commit pushed: `6976ec7 docs: record demo workspace visual QA`
 - Push target: `origin/main`
 - Force push: no
 - Manual deploy: no
+
+## Post-Push Public Smoke
+
+Read-only public checks were run after the push without touching Hostinger/Vercel.
+
+An initial check was attempted while auto-deploy was still settling and showed old `/demo` replay copy plus a PDF `404`. The check was repeated after the deploy completed.
+
+Final post-deploy result:
+
+- `https://shiftevidence.com/demo`: 200
+- new Demo Workspace copy present: yes
+- scenario PDF links present: yes
+- old replay copy present: no
+- read-only copy present: yes
+- synthetic data copy present: yes
+
+Public PDF smoke after deploy:
+
+| Scenario | Status | Content type | Size |
+| --- | --- | --- | ---: |
+| `balanced-mid-market` | 200 | `application/pdf` | 4135 |
+| `storage-risk-heavy` | 200 | `application/pdf` | 4005 |
+| `backup-evidence-missing` | 200 | `application/pdf` | 3912 |
+| `critical-sql-erp` | 200 | `application/pdf` | 3995 |
+| `proxmox-target-partial` | 200 | `application/pdf` | 3816 |
+| `msp-client-sample` | 200 | `application/pdf` | 3808 |
+| `low-evidence-low-confidence` | 200 | `application/pdf` | 3890 |
+| `enterprise-multisite` | 200 | `application/pdf` | 4048 |
+
+No manual deploy was executed.
 
 ## Risks Remaining
 
@@ -257,10 +287,6 @@ After successful local QA:
 
 ## Next Steps
 
-1. Commit this documentation only.
-2. Push Demo Workspace + QA docs to `origin/main`.
-3. Do not run manual deploy.
-4. After auto-deploy, run a small public smoke:
-   - `https://shiftevidence.com/demo`
-   - `https://shiftevidence.com/demo/reports/balanced-mid-market`
-5. Resume billing/Prisma stashes in a separate controlled hito.
+1. Repeat browser screenshot QA once the in-app browser or Chrome connector is available.
+2. Resume billing/Prisma stashes in a separate controlled hito.
+3. Continue controlled commercial/demo QA without declaring full public launch.
