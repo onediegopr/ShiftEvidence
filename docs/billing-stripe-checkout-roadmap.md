@@ -60,3 +60,17 @@ Next Stripe-specific work:
 - Configure test-mode runtime env outside source control.
 - Redeploy only if the runtime requires it and the hito explicitly approves it.
 - Repeat checkout smoke and stop at the hosted Stripe checkout page without completing payment.
+
+## STRIPE-2A Result
+
+Date: 2026-06-02.
+
+The STRIPE-2A attempt stopped before any Stripe changes because authentication and test-mode status could not be confirmed:
+
+- Stripe connector returned authentication required.
+- In-app browser setup could not initialize in this Codex session.
+- No product or price was created.
+- No live resource was touched.
+- No runtime env was configured.
+
+Next required hito remains authentication-first: confirm Stripe test mode, then create or verify Starter, Professional, and MSP test Price IDs.

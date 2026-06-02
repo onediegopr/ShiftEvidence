@@ -93,6 +93,53 @@ Local fallback smoke:
 
 Result: fallback safe. No Stripe hosted checkout redirect was created because runtime config was incomplete.
 
+## STRIPE-2A Authentication Attempt
+
+Date: 2026-06-02.
+
+Objective: authenticate to Stripe test mode, create or verify the three required products and Price IDs, and document non-secret IDs.
+
+Result:
+
+- Stripe connector search required authentication.
+- In-app browser setup was attempted, but the local browser runtime could not initialize.
+- Stripe Dashboard authentication could not be confirmed.
+- Stripe test mode could not be confirmed.
+- No Stripe product was created or modified.
+- No Stripe Price ID was created, verified, captured, or documented.
+- No live product, live price, payment, webhook, Hostinger env, runtime env, grant, unlock, or entitlement was touched.
+
+Manual next step:
+
+1. Open Stripe Dashboard using an approved authenticated session.
+2. Confirm the dashboard is in test mode before any product or price action.
+3. Create or verify the three products and prices listed below.
+4. Capture only non-secret `prod_` and `price_` IDs.
+5. Do not configure runtime env until the separate runtime env hito approves it.
+
+Pending test-mode products and prices:
+
+| Plan | Stripe Product | Product ID | Price ID | Mode | Amount | Cadence |
+| --- | --- | --- | --- | --- | ---: | --- |
+| Starter Readiness | Starter Readiness | pending | pending | test | USD 490 | one-time |
+| Professional Assessment | Professional Assessment | pending | pending | test | USD 1,500 | one-time |
+| MSP Partner | MSP Partner | pending | pending | test | USD 399/month | monthly |
+
+Runtime env values pending after Price ID capture:
+
+```text
+STRIPE_STARTER_PRICE_ID=<price id>
+STRIPE_PROFESSIONAL_PRICE_ID=<price id>
+STRIPE_MSP_PRICE_ID=<price id>
+STRIPE_CHECKOUT_MODE=test
+STRIPE_LIVE_PAYMENTS_APPROVED=false
+STRIPE_CHECKOUT_ENABLED=true
+NEXT_PUBLIC_APP_URL=https://shiftevidence.com
+BETTER_AUTH_URL=https://shiftevidence.com
+```
+
+`STRIPE_SECRET_KEY` must be loaded as a secret runtime value, never stored in docs or source control. `STRIPE_WEBHOOK_SECRET` remains pending for a separate webhook smoke.
+
 ## Current Boundary
 
 - No real payment is completed in this hito.
