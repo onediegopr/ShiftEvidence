@@ -765,3 +765,22 @@ Result:
 - `synthetic-data/` was added for safe evidence expansion demos and QA.
 - Demo/sample/landing messaging was expanded conservatively.
 - EVIDENCE-7.1B authenticated browser click-through remains pending.
+
+## EVIDENCE-9 Follow-up
+
+Date: 2026-06-02.
+
+Decision:
+
+- Evidence Expansion operational closeout: accepted for controlled beta readiness.
+- Full public launch: NO.
+- Hostinger touched: NO.
+- Billing touched: NO.
+- DB schema changed: NO.
+- Deploy performed: NO.
+
+Result:
+
+- Final closeout and checklist documentation were created.
+- The current operating manual was updated with Evidence Expansion, Migration Recommendation Plan and Collector operating rules.
+- EVIDENCE-7.1B authenticated browser/manual closeout remains mandatory before the Migration Recommendation Plan is sold or positioned as fully browser-validated.

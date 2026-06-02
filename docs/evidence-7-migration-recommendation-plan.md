@@ -122,6 +122,10 @@ The PDF avoids dark cover-heavy styling and is intended as a professional planni
 
 EVIDENCE-8 aligned this standalone PDF with the shared print-friendly report theme and added a synthetic evidence dataset library that includes expected Migration Recommendation Plan gate outputs. The plan remains a planning deliverable only; it does not certify cutover readiness or production migration success.
 
+## EVIDENCE-9 follow-up
+
+EVIDENCE-9 preserves the same operating rule: Migration Recommendation Plan is code-complete and automated-QA accepted, but it is not fully browser/manual validated until EVIDENCE-7.1B closes. It should not be sold or described as a browser-validated commercial deliverable before that closeout.
+
 ## Tests
 
 Added unit coverage verifies:

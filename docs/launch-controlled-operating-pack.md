@@ -763,3 +763,16 @@ Status: implemented locally.
 - Hostinger, DNS/env vars, DB schema, billing and deploy were not touched.
 - EVIDENCE-7.1B authenticated browser QA remains a separate pending item.
 - Full public launch remains NO.
+
+## EVIDENCE-9 Evidence Expansion Closeout
+
+Date: 2026-06-02.
+
+Status: operational closeout.
+
+- Evidence Expansion is closed for controlled beta readiness.
+- Final closeout and checklist docs exist under `docs/`.
+- Manual operating rules were added for Evidence Expansion, Migration Recommendation Plan and collectors.
+- No new collectors, parsers, billing, Hostinger change, deploy or DB schema change were introduced.
+- EVIDENCE-7.1B authenticated browser QA remains pending.
+- Full public launch remains NO.

@@ -89,6 +89,8 @@ EVIDENCE-7.1 validates the Migration Recommendation Plan with automated QA, enti
 
 EVIDENCE-8 adds global print-friendly PDF theming, a deterministic `synthetic-data/` evidence library, expanded demo/sample/landing messaging and copy-safety tests. It does not close the separate EVIDENCE-7.1B authenticated browser QA gap. Full public launch remains NO.
 
+EVIDENCE-9 closes the main Evidence Expansion line operationally for controlled beta readiness with a final closeout document, checklist and operating rules. It does not add new features, does not touch Hostinger/billing/deploy/schema, and keeps EVIDENCE-7.1B browser/manual closeout pending. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

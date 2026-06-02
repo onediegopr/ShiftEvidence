@@ -332,6 +332,10 @@ QA artifacts under `qa-artifacts/evidence-7-1` are not intended for commit.
 
 EVIDENCE-8 proceeded with the authenticated browser closeout still pending. It improves global PDF print-friendliness, creates a synthetic evidence dataset library and expands public demo/sample/landing messaging, but it does not replace the required EVIDENCE-7.1B manual browser evidence.
 
+## EVIDENCE-9 note
+
+EVIDENCE-9 closes the Evidence Expansion line operationally for controlled beta readiness, but it does not close this authenticated browser/manual QA gap. Before selling or positioning the Migration Recommendation Plan as fully browser-validated, EVIDENCE-7.1B must still be completed.
+
 ## Decision
 
 EVIDENCE-7.1 is accepted as automated QA complete with partial authenticated browser QA.

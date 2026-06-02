@@ -61,6 +61,13 @@ EVIDENCE-8 update:
 - EVIDENCE-7.1B authenticated browser QA remains pending.
 - Full public launch remains NO.
 
+EVIDENCE-9 closeout update:
+
+- Evidence Expansion is operationally closed for controlled beta readiness.
+- Migration Recommendation Plan remains code-complete and automated-QA accepted, but browser/manual closeout is still pending.
+- Real customer use requires customer authorization, data review expectations and support/operator readiness.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
@@ -953,6 +960,83 @@ No aceptados:
 - full public launch sin aprobacion explicita;
 - storage paths privados visibles;
 - raw file contents en logs o UI.
+
+## 37A. Evidence Expansion Operating Rules
+
+Evidence Expansion is an optional evidence layer for controlled beta readiness. It extends the RVTools-first assessment with additional evidence modules that improve confidence, but it does not execute migrations or certify production cutover readiness.
+
+Available modules:
+
+- Common Evidence Framework: module state, parser registry, upload association, parse results and admin visibility.
+- VMware Enrichment: read-only vCenter-oriented evidence for VM/host/cluster metadata beyond RVTools.
+- Proxmox Target Validation: read-only destination evidence for target node, HA, storage and capacity signals.
+- Backup Evidence: backup/restore evidence parser and readiness gates; restore testing must be proven by evidence, not assumed.
+- Storage/SAN Evidence: vendor-neutral templates for storage capacity, mapping and target constraints.
+- Application Dependency Mapping: CSV/JSON mapping for technical dependencies and functional wave confidence.
+- Migration Recommendation Plan: separate gated planning deliverable.
+- Synthetic Dataset Library: safe QA/demo scenarios only; not customer evidence.
+
+Operating interpretation:
+
+- Missing evidence is a confidence limiter, not something to hide.
+- Optional evidence improves precision when supplied and parsed.
+- Missing backup evidence limits business continuity and critical workload confidence.
+- Missing target evidence limits destination sizing and storage confidence.
+- Missing dependency evidence limits functional-wave claims.
+- Missing storage/SAN evidence limits storage readiness conclusions.
+
+Customer positioning:
+
+- Allowed: evidence-based readiness, read-only evidence, planning support, confidence scoring, gated recommendations, human review required.
+- Not allowed: automatic migration, guaranteed success, validated cutover, universal SAN integration, production migration approval, no human review needed or full public launch readiness.
+
+Before using Evidence Expansion with real customer data:
+
+- Confirm customer authorization and scope.
+- Explain collectors/templates are read-only.
+- Ask the customer to review collector output before upload.
+- Avoid secrets, credentials, cookies, tokens and private paths.
+- Define retention and support expectations.
+- Validate entitlement and private download behavior.
+- Run browser/manual QA for the specific customer-facing flow when required.
+
+## 37B. Migration Recommendation Plan Operating Rule
+
+The Migration Recommendation Plan is a recommendation and planning deliverable, not an execution runbook and not a cutover certificate.
+
+Rules:
+
+- It depends on available evidence and deterministic gates.
+- It does not certify production migration readiness.
+- It does not override missing backup, target, storage or dependency evidence.
+- If backup/target/storage/dependency evidence is missing, the plan level and confidence must remain limited.
+- Functional waves are normally candidates unless strong dependency and business evidence supports validation.
+- AI narrative, when present, must not override deterministic gates or scores.
+- EVIDENCE-7.1B browser/manual QA remains pending before the plan is sold or described as fully browser-validated.
+
+Before commercial use of the Migration Recommendation Plan:
+
+- Close EVIDENCE-7.1B.
+- Confirm authenticated browser generation/download/open.
+- Confirm admin browser visibility.
+- Confirm entitlement/ownership denial behavior if feasible.
+- Confirm PDF visual QA and no-secret review.
+- Obtain owner/commercial approval.
+
+## 37C. Collector Operating Rule
+
+Collectors and templates are evidence helpers. They are not remote-control tools.
+
+Rules:
+
+- Collectors must be read-only.
+- Collectors must not store credentials in committed files.
+- Collectors must not upload automatically without customer/operator action.
+- Collectors must not modify VMware, Proxmox, backup, storage or network infrastructure.
+- Customers should be able to inspect output before upload.
+- Collector output should avoid secrets, tokens, cookies, private paths and passwords.
+- Collectors should be tested in a controlled environment before real customer use.
+- Collector use does not replace customer authorization or human review.
 
 ## 38. Criterios para full public launch
 

@@ -6,6 +6,7 @@ const publicCopyFiles = [
   "src/components/demo/MigrationReadinessReplay.tsx",
   "src/components/sample-report/SampleReportPage.tsx",
   "src/views/LandingPage.tsx",
+  "src/views/ShiftReadinessPage.tsx",
   "src/app/vmware-to-proxmox-readiness/page.tsx",
 ];
 
@@ -30,6 +31,11 @@ describe("EVIDENCE-8 public copy safety", () => {
       "guaranteed migration success",
       "guaranteed success",
       "validated cutover",
+      "production-ready cutover",
+      "validated restore",
+      "fully validated functional waves",
+      "universal san integration",
+      "self-service public checkout final",
       "full public launch",
       "move vms automatically",
     ];

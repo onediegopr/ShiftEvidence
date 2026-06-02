@@ -41,7 +41,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-7 is complete in code and introduces the separate premium Migration Recommendation Plan, deterministic evidence gates, plan levels, a print-friendly standalone PDF, user workflow and admin visibility without a DB migration.
 - EVIDENCE-7.1 completed automated QA for Migration Recommendation Plan behavior, entitlement checks and PDF structure, and added page numbering to the standalone plan PDF. Authenticated browser click-through remains partial because the local Browser plugin could not initialize in this session.
 - EVIDENCE-8 is implemented locally and adds a shared print-friendly PDF theme, a deterministic synthetic evidence dataset library, public demo/sample/landing expansion and no-secret/no-overpromise tests. It does not close the separate EVIDENCE-7.1B authenticated browser closeout.
-- The next recommended evidence hito is either EVIDENCE-7.1B manual/user-attested browser closeout or EVIDENCE-9 collector packaging / evidence module operationalization.
+- EVIDENCE-9 closes the Evidence Expansion line operationally with final status documentation, operating rules and a final QA/commercialization checklist. It does not add new collectors/parsers and does not close the separate EVIDENCE-7.1B browser closeout.
+- The next recommended evidence hito is either EVIDENCE-7.1B manual/user-attested browser closeout or EVIDENCE-10 Collector Packaging + Checksums + Download UX.
 
 ## B. Current State Audit
 
@@ -724,6 +725,17 @@ Deliverables:
 - Sales/demo sample reports.
 - No deletion of existing useful content unless explicitly approved.
 
+### Hito 10: EVIDENCE-9, Evidence Expansion closeout
+
+Deliverables:
+
+- Final Evidence Expansion closeout document.
+- Final QA/commercialization checklist.
+- Operating rules for Evidence Expansion, Migration Recommendation Plan and collectors.
+- Documentation consistency audit.
+- Public copy safety guardrail update.
+- No Hostinger, billing, deploy or DB schema changes.
+
 ## P. Estimates and Completion Percentages
 
 Before EVIDENCE-0:
@@ -747,6 +759,22 @@ After EVIDENCE-0:
 - PDF print-friendly direction: about 35-45%.
 - Synthetic dataset strategy: about 40-50%.
 - EVIDENCE-0 hito completion: 100% if this document is accepted.
+
+After EVIDENCE-9 closeout:
+
+- Evidence Expansion Layer: 98%.
+- Common Evidence Framework: 100%.
+- VMware Enrichment: 95% code/docs; real customer vCenter environment pending.
+- Proxmox Target: 95% code/docs; real Proxmox environment pending.
+- Backup Evidence: 95% code/docs; real Veeam environment pending.
+- Storage/SAN Evidence: 93% vendor-neutral; vendor-specific APIs future.
+- Application Dependency Mapping: 93% template-based; automatic discovery future.
+- Migration Recommendation Plan: 92%; EVIDENCE-7.1B browser/manual closeout pending.
+- PDF print-friendly global: 90%.
+- Synthetic dataset library: 90%.
+- Demo/sample/landing evidence messaging: 90%.
+- Broader invited beta readiness: high, controlled only.
+- Full public launch: NO.
 
 ## Q. Risk Register
 

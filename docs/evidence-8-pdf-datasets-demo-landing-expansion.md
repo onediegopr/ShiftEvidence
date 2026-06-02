@@ -121,6 +121,10 @@ EVIDENCE-8 does not invent or replace that evidence.
 
 ## Final Decision
 
-EVIDENCE-8 is suitable for code/docs closeout after validations pass.
+EVIDENCE-8 is closed in code/docs by commit `3b979bd feat: finalize evidence expansion demo and print-ready reports`.
 
 Full public launch remains NO.
+
+## EVIDENCE-9 follow-up
+
+EVIDENCE-9 closes the main Evidence Expansion line operationally through final documentation, operating rules and a QA/commercialization checklist. It does not close EVIDENCE-7.1B browser/manual QA and does not change launch status.
