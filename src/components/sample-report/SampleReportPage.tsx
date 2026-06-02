@@ -31,6 +31,24 @@ const reportStats = [
   ["23", "PDF pages"],
 ];
 
+const offerBridge = [
+  [
+    "Public sample",
+    "Shows structure, methodology and premium report quality with synthetic data only.",
+    "Use it to understand the deliverable before uploading evidence.",
+  ],
+  [
+    "Professional Assessment",
+    "Turns your approved VMware evidence into a private readiness report, VM risk matrix and decision pack.",
+    "Best fit when you need stakeholder-ready migration evidence.",
+  ],
+  [
+    "Migration Blueprint",
+    "Extends the assessment into scoped waves, validation gates, rollback expectations and remediation planning.",
+    "Best fit when the migration decision needs a controlled execution plan.",
+  ],
+];
+
 const tocItems = [
   "Executive Summary",
   "Assessment Scope",
@@ -214,6 +232,16 @@ export default function SampleReportPage() {
               <article key={label} className="glass-card sample-report-stat">
                 <strong>{value}</strong>
                 <span>{label}</span>
+              </article>
+            ))}
+          </div>
+
+          <div className="sample-report-offer-bridge" aria-label="Sample report commercial bridge">
+            {offerBridge.map(([title, body, note]) => (
+              <article key={title} className="glass-card sample-report-offer-card">
+                <span>{title}</span>
+                <p>{body}</p>
+                <small>{note}</small>
               </article>
             ))}
           </div>

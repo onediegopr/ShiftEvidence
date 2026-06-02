@@ -128,6 +128,34 @@ describe("read-only synthetic Demo Workspace", () => {
     }
   });
 
+  it("keeps the public sample report connected to Professional and Blueprint value", () => {
+    const sampleReport = readProjectFile("src/components/sample-report/SampleReportPage.tsx");
+
+    expect(sampleReport).toContain("Public sample");
+    expect(sampleReport).toContain("Professional Assessment");
+    expect(sampleReport).toContain("Migration Blueprint");
+    expect(sampleReport).toContain("Watch Quick Simulation");
+    expect(sampleReport).toContain("Explore a Sample Assessment");
+    expect(sampleReport).toContain("View pricing");
+    expect(sampleReport).toContain("Download full sample PDF");
+  });
+
+  it("keeps demo PDF reports premium, synthetic, and section-complete", () => {
+    const demoReportRoute = readProjectFile("src/app/demo/reports/[scenario]/route.ts");
+
+    expect(demoReportRoute).toContain("Synthetic Demo Report");
+    expect(demoReportRoute).toContain("Executive Summary");
+    expect(demoReportRoute).toContain("Evidence Matrix");
+    expect(demoReportRoute).toContain("Top Risks");
+    expect(demoReportRoute).toContain("Business Continuity Risk");
+    expect(demoReportRoute).toContain("Storage Destination Readiness");
+    expect(demoReportRoute).toContain("Licensing & Cost Exposure");
+    expect(demoReportRoute).toContain("Migration Recommendation Plan");
+    expect(demoReportRoute).toContain("Senior AI Advisor Notes");
+    expect(demoReportRoute).toContain("Assumptions, Disclaimers and Next Steps");
+    expect(demoReportRoute).toContain("Page ${pageIndex + 1} of ${range.count}");
+  });
+
   it("blocks demo mutations with commercial messages", () => {
     expect(isDemoUserEmail(DEMO_USER_EMAIL)).toBe(true);
     expect(isDemoAssessmentId("demo-john-balanced-mid-market")).toBe(true);

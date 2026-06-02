@@ -1609,7 +1609,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     });
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(26).text("Readiness Assessment", MARGIN, 124);
-    doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text("Infrastructure readiness before you migrate.", MARGIN, 186);
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text("Evidence-based migration decision pack before production movement.", MARGIN, 186);
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(18).text(safeText(input.assessmentTitle), MARGIN, 252, {
       width: contentWidth(doc),
     });
@@ -1654,7 +1654,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     });
     drawCoverBranding(doc, input, MARGIN, 452);
     doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(
-      "Confidential / Evidence-based assessment. This report is generated from the evidence available at assessment time.",
+      "Confidential / Evidence-based assessment. Professional Assessment focuses on readiness evidence and VM-level decision support; Blueprint work should validate waves, rollback and target architecture before production movement.",
       MARGIN,
       input.reportBranding ? 562 : 510,
       { width: contentWidth(doc), lineGap: 2 },
@@ -1696,6 +1696,11 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       tone: getSeverityTone(preview.costRiskPreview.riskLevel),
     });
     doc.y += 110;
+    callout(
+      doc,
+      "Executive decision lens: readiness describes the migration posture; confidence describes how complete the evidence is. Use both before approving waves, spend or production movement.",
+      "info",
+    );
     h2(doc, "What this means");
     bulletList(doc, getWhatThisMeans(input), 5);
     h2(doc, "Immediate actions");
