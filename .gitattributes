@@ -1,2 +1,6 @@
 *.pdf binary
+public/collectors/** text eol=lf
+public/evidence-artifacts/*.json text eol=lf
+public/templates/** text eol=lf
+*.ps1 text eol=lf
 *.sh text eol=lf
