@@ -29,7 +29,7 @@ Confirmed for Starter, Professional and MSP bank-transfer routes:
 - Wise appeared only as a manual bank transfer reference.
 - No Wise transfer, recipient, balance or automated payment promise was shown.
 - No bank account, IBAN, SWIFT or routing details were exposed.
-- No Lemon copy was found.
+- No retired card provider copy was found.
 - No "Pay with Wise" checkout copy was found.
 
 ## Initial Submission Attempt
@@ -166,7 +166,7 @@ Post-admin reconciliation:
 - UnlockRequest records created since the test window: none.
 - Wise API action: none.
 - Stripe checkout/payment action: none.
-- Lemon residual in public admin redirect/sign-in HTML: none.
+- Retired card provider residual in public admin redirect/sign-in HTML: none.
 - Secrets or bank details exposed in public admin redirect/sign-in HTML: none.
 
 ## Admin Visual Invoice QA Attempt
@@ -224,7 +224,7 @@ Reconciliation after the 2C attempt:
 - UnlockRequest records created since the test window: none.
 - Wise API action: none.
 - Stripe checkout/payment action: none.
-- Lemon residual in public admin redirect/sign-in HTML: none.
+- Retired card provider residual in public admin redirect/sign-in HTML: none.
 - Secrets, tokens or full bank details exposed in public admin redirect/sign-in HTML: none.
 
 ## Conclusion

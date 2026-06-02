@@ -3,16 +3,6 @@ import { getBillingProviderStatusSnapshot } from "../../src/server/billing/admin
 
 const trackedEnvNames = [
   "STRIPE_SECRET_KEY",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_STARTER_PRICE_ID",
-  "STRIPE_PROFESSIONAL_PRICE_ID",
-  "STRIPE_MSP_PRICE_ID",
-  "STRIPE_CHECKOUT_MODE",
-  "STRIPE_CHECKOUT_ENABLED",
-  "STRIPE_WEBHOOK_SECRET",
-  "STRIPE_WEBHOOK_SECRET",
-  "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "STRIPE_STARTER_PRICE_ID",
   "STRIPE_PROFESSIONAL_PRICE_ID",
@@ -63,7 +53,9 @@ describe("billing admin provider status", () => {
       starterPricePresent: true,
       professionalPricePresent: true,
       mspPricePresent: true,
+      secretKeyMode: "test",
       checkoutMode: "test",
+      livePaymentsApproved: false,
       checkoutEnabled: true,
       checkoutActive: true,
       riskLevel: "bajo",
@@ -83,7 +75,29 @@ describe("billing admin provider status", () => {
 
     expect(status.stripe.status).toBe("no_configurado");
     expect(status.stripe.secretKeyPresent).toBe(false);
+    expect(status.stripe.webhookSecretPresent).toBe(false);
+    expect(status.stripe.livePaymentsApproved).toBe(false);
     expect(status.operations.checkoutTestMode).toBe(false);
+  });
+
+  it("flags invalid Stripe checkout mode without treating it as test-mode", () => {
+    resetTrackedEnv();
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
+    process.env.STRIPE_CHECKOUT_MODE = "production";
+
+    const status = getBillingProviderStatusSnapshot();
+
+    expect(status.stripe.status).toBe("configuracion_invalida");
+    expect(status.stripe.checkoutMode).toBe("unknown");
+    expect(status.stripe.checkoutActive).toBe(false);
+    expect(status.stripe.riskLevel).toBe("alto");
+    expect(status.stripe.recommendedAction).toContain("valor invalido");
+    expect(status.operations.checkoutTestMode).toBe(false);
+    expect(status.operations.livePayments).toBe(false);
   });
 
   it("flags Stripe live mode as not approved without activating live payments", () => {
@@ -118,6 +132,24 @@ describe("billing admin provider status", () => {
     expect(status.stripe.checkoutActive).toBe(false);
     expect(status.stripe.recommendedAction).toContain("no coincide");
     expect(status.operations.livePayments).toBe(false);
+  });
+
+  it("keeps restricted live keys inactive in test-mode", () => {
+    resetTrackedEnv();
+    process.env.STRIPE_SECRET_KEY = "rk_live_example";
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_MSP_PRICE_ID = "price_msp";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+
+    const status = getBillingProviderStatusSnapshot();
+
+    expect(status.stripe.secretKeyMode).toBe("restricted_live");
+    expect(status.stripe.status).toBe("configurado_live_no_aprobado");
+    expect(status.stripe.checkoutActive).toBe(false);
+    expect(status.stripe.recommendedAction).toContain("no coincide");
+    expect(status.operations.checkoutTestMode).toBe(false);
   });
 
   it("activates Stripe live payments only with explicit owner approval env", () => {

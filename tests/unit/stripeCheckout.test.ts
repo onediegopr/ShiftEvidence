@@ -3,11 +3,13 @@ import { billingPlans } from "../../src/config/billing";
 import { createStripeCheckoutSession, getStripeCheckoutMode } from "../../src/server/billing/stripeCheckout";
 
 const starterPlan = billingPlans.find((plan) => plan.id === "starter_readiness")!;
+const professionalPlan = billingPlans.find((plan) => plan.id === "professional_assessment")!;
 const mspPlan = billingPlans.find((plan) => plan.id === "msp_partner")!;
 const originalFetch = globalThis.fetch;
 const trackedEnvNames = [
   "STRIPE_SECRET_KEY",
   "STRIPE_STARTER_PRICE_ID",
+  "STRIPE_PROFESSIONAL_PRICE_ID",
   "STRIPE_MSP_PRICE_ID",
   "STRIPE_CHECKOUT_MODE",
   "STRIPE_CHECKOUT_ENABLED",
@@ -76,7 +78,35 @@ describe("Stripe checkout foundation", () => {
     expect(body.get("line_items[0][price]")).toBe("price_starter");
     expect(body.get("metadata[provider]")).toBe("stripe");
     expect(body.get("metadata[plan_id]")).toBe("starter_readiness");
+    expect(body.get("metadata[plan_slug]")).toBe("starter");
+    expect(body.get("success_url")).toBe("https://shiftevidence.com/billing/checkout/starter?status=success");
+    expect(body.get("cancel_url")).toBe("https://shiftevidence.com/billing/checkout/starter?status=cancelled");
     expect(String(request.body)).not.toContain("sk_test_example");
+  });
+
+  it("creates a one-time Professional Checkout payload from server-side config", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_PROFESSIONAL_PRICE_ID = "price_professional";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: "cs_test_professional",
+        livemode: false,
+        url: "https://checkout.stripe.com/c/pay/cs_test_professional",
+      }),
+    });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await createStripeCheckoutSession(professionalPlan, "https://shiftevidence.com");
+    const [, request] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    const body = new URLSearchParams(String(request.body));
+
+    expect(result.ok).toBe(true);
+    expect(body.get("mode")).toBe("payment");
+    expect(body.get("line_items[0][price]")).toBe("price_professional");
+    expect(body.get("metadata[plan_id]")).toBe("professional_assessment");
+    expect(body.get("metadata[plan_slug]")).toBe("professional");
   });
 
   it("uses subscription mode for MSP without granting access", async () => {
@@ -115,6 +145,20 @@ describe("Stripe checkout foundation", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("does not call Stripe when the selected plan Price ID is missing", async () => {
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+    delete process.env.STRIPE_PROFESSIONAL_PRICE_ID;
+
+    const result = await createStripeCheckoutSession(professionalPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("not_configured");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it("blocks live mode when the configured secret key is still test-mode", async () => {
     const fetchSpy = vi.fn();
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
@@ -127,6 +171,20 @@ describe("Stripe checkout foundation", () => {
 
     expect(liveResult.ok).toBe(false);
     expect(liveResult.ok ? null : liveResult.reason).toBe("stripe_key_mode_mismatch");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("blocks restricted live keys in test-mode before calling Stripe", async () => {
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    process.env.STRIPE_SECRET_KEY = "rk_live_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+
+    const result = await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com");
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? null : result.reason).toBe("stripe_key_mode_mismatch");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 

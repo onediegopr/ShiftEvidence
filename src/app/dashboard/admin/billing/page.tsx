@@ -160,6 +160,7 @@ function formatQueryMessage(value: string | null | undefined) {
 function formatStripeStatus(value: string) {
   const labels: Record<string, string> = {
     no_configurado: "No configurado",
+    configuracion_invalida: "Configuracion invalida",
     configurado_test: "Configurado test",
     configurado_live_aprobado: "Live aprobado",
     configurado_live_no_aprobado: "Live no aprobado",
@@ -1145,7 +1146,9 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
               ["Starter Price ID", formatBooleanPresence(status.stripe.starterPricePresent)],
               ["Professional Price ID", formatBooleanPresence(status.stripe.professionalPricePresent)],
               ["MSP Price ID", formatBooleanPresence(status.stripe.mspPricePresent)],
+              ["Secret key mode", formatStripeSecretKeyMode(status.stripe.secretKeyMode)],
               ["Checkout mode", formatCheckoutMode(status.stripe.checkoutMode)],
+              ["Live aprobado", formatBooleanYesNo(status.stripe.livePaymentsApproved)],
               ["Checkout habilitado", formatBooleanYesNo(status.stripe.checkoutEnabled)],
               ["Checkout activo", formatBooleanYesNo(status.stripe.checkoutActive)],
               ["Eventos recibidos", status.operations.recentEventsCount],
