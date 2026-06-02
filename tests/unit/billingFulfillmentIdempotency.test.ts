@@ -14,7 +14,7 @@ function makeDbWithExistingGrant() {
     billingOrder: {
       findUnique: vi.fn().mockResolvedValue({
         id: "billing_order_1",
-        provider: "lemon_squeezy",
+        provider: "stripe",
         providerOrderId: "provider_order_1",
         planId: "starter_readiness",
         amountCents: 49000,
@@ -74,8 +74,8 @@ describe("billing fulfillment idempotency and boundaries", () => {
   });
 
   it("does not wire fulfillment into webhooks, match or subscription flows", () => {
-    const webhookPersistence = readFileSync("src/server/billing/webhooks/lemonWebhookPersistence.ts", "utf8");
-    const webhookRoute = readFileSync("src/app/api/webhooks/lemon/route.ts", "utf8");
+    const webhookPersistence = readFileSync("src/server/billing/webhooks/stripeWebhookPersistence.ts", "utf8");
+    const webhookRoute = readFileSync("src/app/api/webhooks/stripe/route.ts", "utf8");
     const manualMatch = readFileSync("src/server/billing/admin/billingManualMatchService.ts", "utf8");
     const billingActions = readFileSync("src/app/dashboard/admin/billing/actions.ts", "utf8");
 

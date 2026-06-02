@@ -12,7 +12,7 @@ export type { BillingCadence };
 
 export type PaymentOption = BillingPaymentOption;
 
-export type PaymentProvider = Extract<BillingProvider, "stripe" | "lemon_squeezy_legacy">;
+export type PaymentProvider = Extract<BillingProvider, "stripe">;
 
 export type PlanId = BillingPlanId;
 
@@ -28,7 +28,6 @@ export interface Plan {
   recommendedPayment: PaymentOption;
   paymentOptions: PaymentOption[];
   futureProvider: PaymentProvider;
-  disabledProvider: PaymentProvider;
   cta: {
     label: string;
     href: string;
@@ -97,7 +96,6 @@ export const marketingPlans: Plan[] = [
     recommendedPayment: starterBillingPlan.recommendedPayment,
     paymentOptions: starterBillingPlan.paymentOptions,
     futureProvider: "stripe",
-    disabledProvider: "lemon_squeezy_legacy",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
     paymentNote: "Card checkout is available when Stripe is configured for this plan. Bank transfer invoice is available on request for business customers.",
@@ -129,7 +127,6 @@ export const marketingPlans: Plan[] = [
     recommendedPayment: professionalBillingPlan.recommendedPayment,
     paymentOptions: professionalBillingPlan.paymentOptions,
     futureProvider: "stripe",
-    disabledProvider: "lemon_squeezy_legacy",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
     paymentNote: "Card checkout is available when Stripe is configured for this plan. Business invoice support is available for procurement workflows.",
@@ -163,7 +160,6 @@ export const marketingPlans: Plan[] = [
     recommendedPayment: blueprintBillingPlan.recommendedPayment,
     paymentOptions: blueprintBillingPlan.paymentOptions,
     futureProvider: "stripe",
-    disabledProvider: "lemon_squeezy_legacy",
     cta: blueprintBillingPlan.primaryAction,
     secondaryCta: blueprintBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.blueprint,
@@ -196,7 +192,6 @@ export const marketingPlans: Plan[] = [
     recommendedPayment: mspBillingPlan.recommendedPayment,
     paymentOptions: mspBillingPlan.paymentOptions,
     futureProvider: "stripe",
-    disabledProvider: "lemon_squeezy_legacy",
     cta: mspBillingPlan.primaryAction,
     secondaryCta: mspBillingPlan.secondaryAction,
     paymentNote: paymentOptionsCopy.msp,

@@ -84,7 +84,7 @@ describe("billing admin fulfillment actions", () => {
     formData.set("billingEntitlementGrantId", "grant_1");
     formData.set("confirmRevocation", "confirmed");
     formData.set("entitlementKeys", "pro_matrix_unlocked");
-    formData.set("note", "Refund verified in Lemon.");
+    formData.set("note", "Refund verified in provider dashboard.");
 
     await expect(revokeBillingGrantedEntitlementAction(formData)).rejects.toThrow(
       "REDIRECT:/dashboard/admin/billing?saved=revocation",
@@ -96,7 +96,7 @@ describe("billing admin fulfillment actions", () => {
       adminEmail: "admin@example.invalid",
       billingEntitlementGrantId: "grant_1",
       confirmationAccepted: true,
-      note: "Refund verified in Lemon.",
+      note: "Refund verified in provider dashboard.",
     });
   });
 });

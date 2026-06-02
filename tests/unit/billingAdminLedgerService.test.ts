@@ -33,7 +33,7 @@ describe("billing admin ledger service", () => {
     const { getBillingAdminLedgerSnapshot } = await import("../../src/server/billing/admin/billingAdminLedgerService");
     const event = {
       id: "event_1",
-      provider: "lemon_squeezy",
+      provider: "stripe",
       eventType: "order_created",
       status: "processed",
       providerEventId: "evt_1",
@@ -44,7 +44,7 @@ describe("billing admin ledger service", () => {
     };
     const order = {
       id: "order_1",
-      provider: "lemon_squeezy",
+      provider: "stripe",
       providerOrderId: "provider_order_1",
       planId: "starter_readiness",
       amountCents: 49000,
@@ -61,7 +61,7 @@ describe("billing admin ledger service", () => {
     };
     const payment = {
       id: "payment_1",
-      provider: "lemon_squeezy",
+      provider: "stripe",
       providerPaymentId: "provider_payment_1",
       orderId: "order_1",
       amountCents: 49000,
@@ -77,7 +77,7 @@ describe("billing admin ledger service", () => {
     };
     const subscription = {
       id: "subscription_1",
-      provider: "lemon_squeezy",
+      provider: "stripe",
       providerSubscriptionId: "provider_subscription_1",
       planId: "msp_partner",
       customerEmail: "msp@example.com",
@@ -153,7 +153,7 @@ describe("billing admin ledger service", () => {
     });
     expect(snapshot.recentEvents[0]).toMatchObject({
       id: "event_1",
-      provider: "lemon_squeezy",
+      provider: "stripe",
       status: "processed",
     });
     expect(snapshot.recentOrders[0]).toMatchObject({

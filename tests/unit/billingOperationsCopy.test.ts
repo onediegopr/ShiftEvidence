@@ -16,7 +16,7 @@ describe("billing operations public and admin copy", () => {
     expect(supportPage).toContain("Billing questions");
     expect(supportPage).toContain("Support can help with paid-but-no-access, wrong email, invoice requests, duplicate payment checks, refund requests, failed payment follow-up, and MSP subscription questions.");
     expect(supportPage).toContain("Refunds and access adjustments are reviewed manually");
-    expect(supportPage).not.toContain("Lemon checkout");
+    expect(supportPage).not.toContain("retired checkout");
   });
 
   it("keeps admin billing provider ids masked in UI tables", () => {

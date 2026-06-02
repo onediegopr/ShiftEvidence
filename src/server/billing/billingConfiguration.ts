@@ -2,7 +2,6 @@ import {
   billingEnvPlaceholders,
   billingPlans,
   billingProviders,
-  legacyLemonEnvPlaceholders,
   getBillingPlanByCheckoutSlug,
   type BillingCheckoutSlug,
   type BillingPlanConfig,
@@ -24,9 +23,6 @@ function hasEnv(name: string | null) {
   return name ? isPresent(process.env[name]) : false;
 }
 
-function hasLemonSqueezyApiKey() {
-  return hasEnv("LEMON_SQUEEZY_API_KEY") || hasEnv("LEMONSQUEEZY_API_KEY");
-}
 
 function readCheckoutMode() {
   return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
@@ -112,41 +108,6 @@ export function getStripeRuntimeStatus(plan: BillingPlanConfig) {
       priceConfigured: boolean;
       priceEnvName: string | null;
     };
-  };
-}
-
-export function getLemonSqueezyRuntimeStatus(plan: BillingPlanConfig) {
-  const storeConfigured = hasEnv("LEMON_SQUEEZY_STORE_ID");
-  const apiKeyConfigured = hasLemonSqueezyApiKey();
-  const variantConfigured = hasEnv(plan.lemonVariantEnvName);
-  const configured = storeConfigured && apiKeyConfigured && variantConfigured;
-  const checkoutActive = false;
-  const status = configured ? "configured_but_disabled" : "not_configured";
-
-  return {
-    provider: billingProviders.lemonSqueezy.displayName,
-    checkoutActive,
-    configured,
-    status,
-    env: {
-      storeConfigured,
-      apiKeyConfigured,
-      variantConfigured,
-      variantEnvName: plan.lemonVariantEnvName,
-    },
-    legacyReason: "Lemon Squeezy rejected the offering as services. It remains read-only historical/legacy.",
-  } satisfies {
-    provider: string;
-    checkoutActive: boolean;
-    configured: boolean;
-    status: Extract<BillingCheckoutRuntimeStatus, "not_configured" | "configured_but_disabled" | "configured">;
-    env: {
-      storeConfigured: boolean;
-      apiKeyConfigured: boolean;
-      variantConfigured: boolean;
-      variantEnvName: string | null;
-    };
-    legacyReason: string;
   };
 }
 
@@ -240,24 +201,13 @@ export function getBillingAdminStatus() {
         id: billingProviders.bankTransfer.id,
         label: billingProviders.bankTransfer.displayName,
         status: "Manual",
-        detail: "Invoice requests route through support/manual follow-up.",
-      },
-      {
-        id: billingProviders.lemonSqueezy.id,
-        label: billingProviders.lemonSqueezy.displayName,
-        status: "Rejected / legacy disabled",
-        detail: "Historical provider only. Lemon checkout is no longer active after services-policy rejection.",
+        detail: "Invoice requests use the bank transfer flow and manual admin review.",
       },
     ],
     envPlaceholders: billingEnvPlaceholders.map((name) => ({
       name,
       configured: hasEnv(name),
       secret: name === "STRIPE_SECRET_KEY" || name === "STRIPE_WEBHOOK_SECRET",
-    })),
-    legacyLemonEnvPlaceholders: legacyLemonEnvPlaceholders.map((name) => ({
-      name,
-      configured: hasEnv(name),
-      secret: name.includes("API_KEY") || name.includes("WEBHOOK_SECRET"),
     })),
     planStates,
   };

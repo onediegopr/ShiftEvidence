@@ -8,7 +8,7 @@ import type {
   EntitlementKey,
 } from "@prisma/client";
 
-export const billingLedgerProviders = ["lemon_squeezy", "wise", "stripe"] as const satisfies BillingProvider[];
+export const billingLedgerProviders = ["wise", "stripe"] as const satisfies BillingProvider[];
 
 export const billingEventStatuses = [
   "pending",

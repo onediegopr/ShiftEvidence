@@ -57,9 +57,9 @@ describe("billing refund/cancel review boundary", () => {
   });
 
   it("keeps refund and subscription webhook flows away from auto-revocation", () => {
-    const webhookPersistence = readFileSync("src/server/billing/webhooks/lemonWebhookPersistence.ts", "utf8");
-    const webhookRoute = readFileSync("src/app/api/webhooks/lemon/route.ts", "utf8");
-    const businessLedger = readFileSync("src/server/billing/ledger/billingBusinessLedgerService.ts", "utf8");
+    const webhookPersistence = readFileSync("src/server/billing/webhooks/stripeWebhookPersistence.ts", "utf8");
+    const webhookRoute = readFileSync("src/app/api/webhooks/stripe/route.ts", "utf8");
+    const businessLedger = readFileSync("src/server/billing/ledger/stripeBusinessLedgerService.ts", "utf8");
 
     expect(webhookPersistence).not.toContain("revokeBillingGrantedEntitlement");
     expect(webhookRoute).not.toContain("revokeBillingGrantedEntitlement");

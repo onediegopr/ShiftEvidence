@@ -21,10 +21,8 @@ describe("billing payment options foundation", () => {
     expect(paymentOptionsCopy.notActive).toContain("manual follow-up");
   });
 
-  it("keeps Lemon legacy out of public payment labels", () => {
-    expect(marketingPlans.every((plan) => plan.disabledProvider === "lemon_squeezy_legacy")).toBe(true);
+  it("keeps card provider labels out of public payment option labels", () => {
     expect(marketingPlans.flatMap((plan) => plan.paymentOptions).map(getPaymentOptionLabel)).not.toContain("Stripe");
-    expect(JSON.stringify(marketingPlans)).not.toContain("Lemon Squeezy");
   });
 
   it("shows bank transfer invoices without exposing Wise as a public payment label", () => {

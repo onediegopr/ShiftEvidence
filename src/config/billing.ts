@@ -2,7 +2,6 @@ export type BillingProvider =
   | "stripe"
   | "bank_transfer"
   | "wise_manual"
-  | "lemon_squeezy_legacy"
   | "paddle_not_used"
   | "fastspring_not_used";
 
@@ -37,7 +36,6 @@ export type BillingPlanConfig = {
   recommendedPayment: BillingPaymentOption;
   checkoutEligible: boolean;
   invoiceEligible: boolean;
-  lemonVariantEnvName: string | null;
   stripePriceEnvName: string | null;
   primaryAction: BillingPlanAction;
   secondaryAction: BillingPlanAction;
@@ -48,12 +46,6 @@ export const billingProviders = {
     id: "stripe" as const,
     displayName: "Stripe",
     statusLabel: "Primary configurable",
-    checkoutActive: false,
-  },
-  lemonSqueezy: {
-    id: "lemon_squeezy_legacy" as const,
-    displayName: "Lemon Squeezy",
-    statusLabel: "Rejected / legacy disabled",
     checkoutActive: false,
   },
   bankTransfer: {
@@ -97,19 +89,13 @@ export const billingEnvPlaceholders = [
   "NEXT_PUBLIC_APP_URL",
 ] as const;
 
-export const legacyLemonEnvPlaceholders = [
-  "LEMON_SQUEEZY_STORE_ID",
-  "LEMON_SQUEEZY_API_KEY",
-  "LEMONSQUEEZY_API_KEY",
-  "LEMON_STARTER_VARIANT_ID",
-  "LEMON_PROFESSIONAL_VARIANT_ID",
-  "LEMON_MSP_VARIANT_ID",
-  "LEMON_SQUEEZY_WEBHOOK_SECRET",
-  "LEMONSQUEEZY_WEBHOOK_SECRET",
-] as const;
 
 export function getBillingCheckoutPath(slug: BillingCheckoutSlug) {
   return `/billing/checkout/${slug}`;
+}
+
+export function getBillingBankTransferPath(slug: BillingCheckoutSlug) {
+  return `/billing/bank-transfer/${slug}`;
 }
 
 export function getBillingInvoicePath(subject: string, category = "billing_question") {
@@ -129,7 +115,6 @@ export const billingPlans: BillingPlanConfig[] = [
     recommendedPayment: "card_checkout",
     checkoutEligible: true,
     invoiceEligible: true,
-    lemonVariantEnvName: "LEMON_STARTER_VARIANT_ID",
     stripePriceEnvName: "STRIPE_STARTER_PRICE_ID",
     primaryAction: {
       label: "Pay by card",
@@ -138,7 +123,7 @@ export const billingPlans: BillingPlanConfig[] = [
     },
     secondaryAction: {
       label: "Request invoice",
-      href: getBillingInvoicePath("Starter Readiness Invoice"),
+      href: getBillingBankTransferPath("starter"),
       kind: "invoice_request",
     },
   },
@@ -154,7 +139,6 @@ export const billingPlans: BillingPlanConfig[] = [
     recommendedPayment: "card_checkout",
     checkoutEligible: true,
     invoiceEligible: true,
-    lemonVariantEnvName: "LEMON_PROFESSIONAL_VARIANT_ID",
     stripePriceEnvName: "STRIPE_PROFESSIONAL_PRICE_ID",
     primaryAction: {
       label: "Pay by card",
@@ -163,7 +147,7 @@ export const billingPlans: BillingPlanConfig[] = [
     },
     secondaryAction: {
       label: "Request invoice",
-      href: getBillingInvoicePath("Professional Assessment Invoice"),
+      href: getBillingBankTransferPath("professional"),
       kind: "invoice_request",
     },
   },
@@ -180,7 +164,6 @@ export const billingPlans: BillingPlanConfig[] = [
     recommendedPayment: "bank_transfer_invoice",
     checkoutEligible: false,
     invoiceEligible: true,
-    lemonVariantEnvName: null,
     stripePriceEnvName: null,
     primaryAction: {
       label: "Request invoice",
@@ -206,7 +189,6 @@ export const billingPlans: BillingPlanConfig[] = [
     recommendedPayment: "card_checkout",
     checkoutEligible: true,
     invoiceEligible: true,
-    lemonVariantEnvName: "LEMON_MSP_VARIANT_ID",
     stripePriceEnvName: "STRIPE_MSP_PRICE_ID",
     primaryAction: {
       label: "Subscribe",
@@ -215,7 +197,7 @@ export const billingPlans: BillingPlanConfig[] = [
     },
     secondaryAction: {
       label: "Request invoice",
-      href: getBillingInvoicePath("MSP Partner Invoice", "partner_msp_inquiry"),
+      href: getBillingBankTransferPath("msp"),
       kind: "invoice_request",
     },
   },

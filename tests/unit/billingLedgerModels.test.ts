@@ -25,7 +25,7 @@ const migration = readFileSync(
 
 describe("billing ledger models", () => {
   it("tracks the provider and status enum coverage for Billing 3A", () => {
-    expect([...billingLedgerProviders]).toEqual(["lemon_squeezy", "wise", "stripe"]);
+    expect([...billingLedgerProviders]).toEqual(["wise", "stripe"]);
     expect([...billingEventStatuses]).toEqual(["pending", "processed", "failed", "ignored"]);
     expect([...billingOrderStatuses]).toEqual(["pending", "paid", "refunded", "cancelled"]);
     expect([...billingPaymentStatuses]).toEqual(["pending", "paid", "refunded", "failed"]);

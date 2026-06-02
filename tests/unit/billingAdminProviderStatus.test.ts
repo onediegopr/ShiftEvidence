@@ -2,16 +2,16 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getBillingProviderStatusSnapshot } from "../../src/server/billing/admin/billingProviderStatusService";
 
 const trackedEnvNames = [
-  "LEMON_SQUEEZY_STORE_ID",
-  "LEMON_SQUEEZY_API_KEY",
-  "LEMONSQUEEZY_API_KEY",
-  "LEMON_STARTER_VARIANT_ID",
-  "LEMON_PROFESSIONAL_VARIANT_ID",
-  "LEMON_MSP_VARIANT_ID",
-  "LEMON_SQUEEZY_CHECKOUT_MODE",
-  "LEMON_SQUEEZY_CHECKOUT_ENABLED",
-  "LEMON_SQUEEZY_WEBHOOK_SECRET",
-  "LEMONSQUEEZY_WEBHOOK_SECRET",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_STARTER_PRICE_ID",
+  "STRIPE_PROFESSIONAL_PRICE_ID",
+  "STRIPE_MSP_PRICE_ID",
+  "STRIPE_CHECKOUT_MODE",
+  "STRIPE_CHECKOUT_ENABLED",
+  "STRIPE_WEBHOOK_SECRET",
+  "STRIPE_WEBHOOK_SECRET",
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "STRIPE_STARTER_PRICE_ID",
@@ -159,7 +159,7 @@ describe("billing admin provider status", () => {
     expect(status.operations.livePayments).toBe(false);
   });
 
-  it("keeps Wise manual by default and Lemon legacy disabled", () => {
+  it("keeps Wise manual by default and Stripe publicly visible", () => {
     resetTrackedEnv();
 
     const status = getBillingProviderStatusSnapshot();
@@ -170,10 +170,6 @@ describe("billing admin provider status", () => {
       apiUrlMode: "not_configured",
       automationEnabled: false,
       currentUse: "Transferencia bancaria manual / invoice",
-    });
-    expect(status.lemon).toMatchObject({
-      status: "legado_desactivado",
-      checkoutEnabled: false,
     });
     expect(status.stripe.publiclyVisible).toBe(true);
   });

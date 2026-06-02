@@ -4,7 +4,7 @@ import { fulfillBillingOrderManually } from "../../src/server/billing/admin/bill
 function makeOrder(overrides?: Record<string, unknown>) {
   return {
     id: "billing_order_1",
-    provider: "lemon_squeezy",
+    provider: "stripe",
     providerOrderId: "provider_order_1",
     planId: "starter_readiness",
     amountCents: 49000,
@@ -79,7 +79,7 @@ function fulfillmentParams(overrides?: Record<string, unknown>) {
     adminUserId: "admin_1",
     adminEmail: "admin@example.invalid",
     confirmationAccepted: true,
-    note: "Verified paid Lemon order.",
+    note: "Verified paid provider dashboard order.",
     ...overrides,
   };
 }

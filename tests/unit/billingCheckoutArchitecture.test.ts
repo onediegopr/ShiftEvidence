@@ -163,10 +163,6 @@ describe("billing checkout architecture", () => {
           id: "bank_transfer",
           label: "Manual invoice / bank transfer",
         }),
-        expect.objectContaining({
-          id: "lemon_squeezy_legacy",
-          status: "Rejected / legacy disabled",
-        }),
       ]),
     );
     expect(status.envPlaceholders.map((item) => item.name)).toEqual([...billingEnvPlaceholders]);

@@ -5,7 +5,7 @@ import { fulfillBillingOrderManually } from "../../src/server/billing/admin/bill
 function makePaidMatchedOrder() {
   return {
     id: "billing_order_1",
-    provider: "lemon_squeezy",
+    provider: "stripe",
     providerOrderId: "provider_order_1",
     planId: "starter_readiness",
     amountCents: 49000,
