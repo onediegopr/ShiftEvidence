@@ -1,17 +1,18 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import type { MigrationRecommendationPlan, MigrationPlanGate } from "./migrationPlanTypes";
+import { PRINT_REPORT_THEME } from "./reportTheme";
 
 const MARGIN = 48;
 const THEME = {
-  ink: "#111827",
-  muted: "#475569",
-  line: "#d8e0ea",
-  panel: "#f8fafc",
-  blue: "#2563eb",
-  green: "#059669",
-  amber: "#d97706",
-  red: "#dc2626",
+  ink: PRINT_REPORT_THEME.ink,
+  muted: PRINT_REPORT_THEME.muted,
+  line: PRINT_REPORT_THEME.line,
+  panel: PRINT_REPORT_THEME.panel,
+  blue: PRINT_REPORT_THEME.blue,
+  green: PRINT_REPORT_THEME.green,
+  amber: PRINT_REPORT_THEME.amber,
+  red: PRINT_REPORT_THEME.red,
 };
 
 function safeText(value: string | number | null | undefined) {

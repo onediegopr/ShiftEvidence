@@ -1,0 +1,6 @@
+{
+  "title": "Apollo Storage Constrained",
+  "scope": "96 VMs / 8 hosts / 2 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": []
+}

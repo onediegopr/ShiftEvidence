@@ -26,6 +26,15 @@ const featureDescriptions: Record<string, string> = {
   "PDF Report": "A polished, self-contained 12-page deliverable ready to be shared with stakeholders, partners, or internal compliance teams.",
 };
 
+const evidenceExpansionModules = [
+  ["RVTools baseline", "Inventory, VM flags, snapshots and datastore signals."],
+  ["Backup evidence", "Restore coverage and continuity confidence when supplied."],
+  ["Proxmox target", "Destination node, storage and HA readiness signals."],
+  ["Storage / SAN", "Capacity pressure, datastore mapping and target-storage constraints."],
+  ["Dependencies", "Application relationships that influence wave sequencing."],
+  ["Migration Plan PDF", "Gates, blockers, remediation and go/no-go guidance."],
+];
+
 const AUTO_ADVANCE_MS = 4200;
 type AudioCue = "tap" | "step" | "warning" | "complete";
 type WindowWithWebAudio = Window & typeof globalThis & { webkitAudioContext?: typeof AudioContext };
@@ -404,6 +413,31 @@ export default function MigrationReadinessReplay() {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="section shiftreadiness-section shiftreadiness-section-alt">
+        <div className="container">
+          <div className="shiftreadiness-section-heading">
+            <div className="badge badge-cyan">Evidence Expansion Library</div>
+            <h2>Use synthetic scenarios to see how extra evidence changes confidence.</h2>
+            <p>
+              The replay now maps to a public synthetic dataset library covering clean pilots, missing backup evidence,
+              constrained targets, dependency-heavy environments and advanced-ready scenarios. These examples support
+              demos and QA without using customer data.
+            </p>
+          </div>
+          <div className="demo-feature-card-grid">
+            {evidenceExpansionModules.map(([title, body]) => (
+              <article key={title} className="demo-premium-feature-card">
+                <div className="demo-feature-icon-wrapper">
+                  <CheckCircle2 size={21} />
+                </div>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>

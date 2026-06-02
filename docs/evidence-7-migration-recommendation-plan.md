@@ -118,6 +118,10 @@ The plan PDF is rendered through PDFKit using a light, print-friendly layout:
 
 The PDF avoids dark cover-heavy styling and is intended as a professional planning deliverable.
 
+## EVIDENCE-8 follow-up
+
+EVIDENCE-8 aligned this standalone PDF with the shared print-friendly report theme and added a synthetic evidence dataset library that includes expected Migration Recommendation Plan gate outputs. The plan remains a planning deliverable only; it does not certify cutover readiness or production migration success.
+
 ## Tests
 
 Added unit coverage verifies:

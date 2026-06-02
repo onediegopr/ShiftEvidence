@@ -87,6 +87,8 @@ EVIDENCE-7 adds the separate premium Migration Recommendation Plan deliverable. 
 
 EVIDENCE-7.1 validates the Migration Recommendation Plan with automated QA, entitlement checks and synthetic PDF parsing. It fixes page numbering in the standalone plan PDF; authenticated browser click-through remains pending/user-attested because the local Browser plugin could not initialize in this session. Full public launch remains NO.
 
+EVIDENCE-8 adds global print-friendly PDF theming, a deterministic `synthetic-data/` evidence library, expanded demo/sample/landing messaging and copy-safety tests. It does not close the separate EVIDENCE-7.1B authenticated browser QA gap. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

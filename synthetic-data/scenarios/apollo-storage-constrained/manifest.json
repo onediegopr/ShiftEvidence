@@ -1,0 +1,26 @@
+{
+  "id": "apollo-storage-constrained",
+  "title": "Apollo Storage Constrained",
+  "profile": "storage_constrained",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 96,
+    "hosts": 8,
+    "clusters": 2
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": true,
+    "storageSan": true,
+    "applicationDependencies": true
+  },
+  "expectedPlan": {
+    "planLevel": "conditional_after_storage_review",
+    "confidence": "medium",
+    "blockingGates": 1
+  }
+}

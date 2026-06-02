@@ -1,0 +1,26 @@
+{
+  "id": "orion-no-backup",
+  "title": "Orion No Backup Evidence",
+  "profile": "backup_missing",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 42,
+    "hosts": 4,
+    "clusters": 1
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": false,
+    "storageSan": true,
+    "applicationDependencies": true
+  },
+  "expectedPlan": {
+    "planLevel": "blocked_until_backup_evidence",
+    "confidence": "low",
+    "blockingGates": 2
+  }
+}

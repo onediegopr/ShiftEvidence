@@ -1,0 +1,26 @@
+{
+  "planLevel": "phased_assessment_required",
+  "confidence": "medium",
+  "gates": [
+    {
+      "key": "backup_restore_evidence",
+      "status": "warning",
+      "recommendation": "Review before early production waves."
+    },
+    {
+      "key": "target_capacity",
+      "status": "warning",
+      "recommendation": "Review before early production waves."
+    },
+    {
+      "key": "dependency_mapping",
+      "status": "fail",
+      "recommendation": "Do not approve production wave until remediated."
+    },
+    {
+      "key": "network_mapping",
+      "status": "warning",
+      "recommendation": "Review before early production waves."
+    }
+  ]
+}

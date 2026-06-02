@@ -750,3 +750,16 @@ Status: COMPLETE.
 - No secrets, raw files, prompts, raw responses or private storage paths were printed or persisted.
 - OpenAI remains inactive.
 - Full public launch remains NO.
+
+## EVIDENCE-8 PDF/Dataset/Demo Expansion
+
+Date: 2026-06-02.
+
+Status: implemented locally.
+
+- Global readiness PDFs and public sample PDFs were moved toward a light print-friendly visual system.
+- A deterministic `synthetic-data/` library was added for demo, parser and Migration Recommendation Plan QA scenarios.
+- Public `/demo`, `/sample-report`, landing and VMware-to-Proxmox offer copy were expanded with conservative evidence-expansion messaging.
+- Hostinger, DNS/env vars, DB schema, billing and deploy were not touched.
+- EVIDENCE-7.1B authenticated browser QA remains a separate pending item.
+- Full public launch remains NO.

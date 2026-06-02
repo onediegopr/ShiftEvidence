@@ -1,0 +1,6 @@
+{
+  "title": "Delta Target Insufficient",
+  "scope": "58 VMs / 6 hosts / 2 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": []
+}

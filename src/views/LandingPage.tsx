@@ -43,6 +43,13 @@ import {
 const privacyNote =
   "This is a representative, synthetic/anonymized-style evaluation example. It does not contain customer data and is not a public case study, testimonial, or verified customer review.";
 
+const evidenceExpansionHighlights = [
+  "Synthetic QA scenarios for clean, blocked and mixed-risk VMware estates.",
+  "Backup, target, storage and dependency evidence shown as confidence drivers.",
+  "Migration Recommendation Plan gates documented before production waves.",
+  "Print-friendly PDFs built for stakeholder review and manual sign-off.",
+];
+
 const industryEvaluations = [
   {
     id: "manufacturing-readiness",
@@ -723,6 +730,41 @@ export default function LandingPage() {
         </section>
 
         {/* Section 7 — Storage readiness section (Dedicated) */}
+        <section className="section" style={{ position: "relative", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
+              <div>
+                <div className="badge badge-cyan">Evidence Expansion</div>
+                <h2 className="mb-4" style={{ fontSize: "2rem", lineHeight: "1.2" }}>
+                  More evidence means clearer confidence, not bigger promises.
+                </h2>
+                <p className="mb-6" style={{ fontSize: "1.05rem", lineHeight: "1.6", color: "var(--text-muted)" }}>
+                  Shift Evidence can now demonstrate broader evidence modules using a synthetic dataset library. Missing
+                  backup, target, storage or dependency evidence is surfaced as a planning limitation rather than inferred.
+                </p>
+                <div style={{ display: "grid", gap: "0.8rem" }}>
+                  {evidenceExpansionHighlights.map((item) => (
+                    <div key={item} style={{ display: "flex", gap: "0.65rem", alignItems: "flex-start", color: "var(--text-muted)", fontSize: "0.95rem" }}>
+                      <Check size={16} className="text-cyan" style={{ marginTop: "0.15rem" }} />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="glass-card" style={{ padding: "1.5rem" }}>
+                <div className="badge">Synthetic library</div>
+                <h3 style={{ color: "white", fontSize: "1.4rem", margin: "0.7rem 0" }}>8 safe demo scenarios</h3>
+                <p style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+                  Demo and QA packs cover clean pilots, missing backup evidence, constrained targets, storage pressure,
+                  dependency-heavy estates and advanced-ready environments. They are not customer case studies.
+                </p>
+                <div className="sample-card-tag" style={{ marginTop: "1rem" }}>No customer data</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="section" style={{ position: "relative", background: "rgba(10, 15, 30, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
           <div className="bg-grid"></div>
           <div className="container">

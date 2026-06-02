@@ -63,6 +63,7 @@ const outputs = [
   ["VM Risk Matrix", Layers3],
   ["Proxmox Sizing Preview", Database],
   ["Migration Wave Plan", Waves],
+  ["Migration Recommendation Plan", ClipboardCheck],
   ["Evidence Missing Checklist", AlertTriangle],
   ["AI Advisory Notes", Brain],
   ["PDF Report", FileSpreadsheet],

@@ -746,3 +746,22 @@ Decision rationale:
 - Product flows and admin operations passed readiness checks.
 - Remaining gaps are commercial/operational rather than core product blockers for invited beta.
 - Full public launch requires a separate explicit owner/commercial decision.
+
+## EVIDENCE-8 Follow-up
+
+Date: 2026-06-02.
+
+Decision:
+
+- Broader invited beta: unchanged.
+- Full public launch: NO.
+- Hostinger touched: NO.
+- Billing touched: NO.
+- DB schema changed: NO.
+
+Result:
+
+- Print-friendly PDF theme and public sample PDF generator were improved.
+- `synthetic-data/` was added for safe evidence expansion demos and QA.
+- Demo/sample/landing messaging was expanded conservatively.
+- EVIDENCE-7.1B authenticated browser click-through remains pending.

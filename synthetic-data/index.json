@@ -1,0 +1,111 @@
+{
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "synthetic": true,
+  "scenarioCount": 8,
+  "scenarios": [
+    {
+      "slug": "northbridge-small-clean",
+      "title": "Northbridge Small Clean Pilot",
+      "profile": "small_clean",
+      "scope": {
+        "vms": 18,
+        "hosts": 3,
+        "clusters": 1
+      },
+      "planLevel": "pilot_ready",
+      "confidence": "high",
+      "blockingGates": 0
+    },
+    {
+      "slug": "atlas-medium-mixed-risk",
+      "title": "Atlas Medium Mixed Risk",
+      "profile": "medium_mixed_risk",
+      "scope": {
+        "vms": 74,
+        "hosts": 5,
+        "clusters": 2
+      },
+      "planLevel": "conditional_waves",
+      "confidence": "medium",
+      "blockingGates": 2
+    },
+    {
+      "slug": "meridian-large-enterprise",
+      "title": "Meridian Large Enterprise",
+      "profile": "large_enterprise",
+      "scope": {
+        "vms": 236,
+        "hosts": 12,
+        "clusters": 4
+      },
+      "planLevel": "phased_assessment_required",
+      "confidence": "medium",
+      "blockingGates": 3
+    },
+    {
+      "slug": "orion-no-backup",
+      "title": "Orion No Backup Evidence",
+      "profile": "backup_missing",
+      "scope": {
+        "vms": 42,
+        "hosts": 4,
+        "clusters": 1
+      },
+      "planLevel": "blocked_until_backup_evidence",
+      "confidence": "low",
+      "blockingGates": 2
+    },
+    {
+      "slug": "delta-target-insufficient",
+      "title": "Delta Target Insufficient",
+      "profile": "target_insufficient",
+      "scope": {
+        "vms": 58,
+        "hosts": 6,
+        "clusters": 2
+      },
+      "planLevel": "blocked_until_target_redesign",
+      "confidence": "medium",
+      "blockingGates": 2
+    },
+    {
+      "slug": "apollo-storage-constrained",
+      "title": "Apollo Storage Constrained",
+      "profile": "storage_constrained",
+      "scope": {
+        "vms": 96,
+        "hosts": 8,
+        "clusters": 2
+      },
+      "planLevel": "conditional_after_storage_review",
+      "confidence": "medium",
+      "blockingGates": 1
+    },
+    {
+      "slug": "helix-dependency-heavy",
+      "title": "Helix Dependency Heavy",
+      "profile": "dependency_heavy",
+      "scope": {
+        "vms": 121,
+        "hosts": 7,
+        "clusters": 3
+      },
+      "planLevel": "blocked_until_dependency_mapping",
+      "confidence": "low",
+      "blockingGates": 3
+    },
+    {
+      "slug": "phoenix-advanced-ready",
+      "title": "Phoenix Advanced Ready",
+      "profile": "advanced_ready",
+      "scope": {
+        "vms": 154,
+        "hosts": 9,
+        "clusters": 3
+      },
+      "planLevel": "advanced_waves_ready",
+      "confidence": "high",
+      "blockingGates": 0
+    }
+  ]
+}

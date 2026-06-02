@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"atlas-medium-mixed-risk-san-a","SAN","62","low","Synthetic shared storage row"
+"atlas-medium-mixed-risk-nfs-b","NFS","55","low","Synthetic NFS row"
+"atlas-medium-mixed-risk-archive","Local","34","low","Synthetic archive row"

@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"phoenix-advanced-ready-web-01","phoenix-advanced-ready-sql-03","database","high","true"
+"phoenix-advanced-ready-erp-06","phoenix-advanced-ready-domain-04","identity","critical","true"
+"phoenix-advanced-ready-file-05","phoenix-advanced-ready-backup-01","backup","medium","true"

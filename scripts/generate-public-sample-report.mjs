@@ -16,8 +16,8 @@ const colors = {
   line: "#d8e1ec",
   paper: "#ffffff",
   panel: "#f6f8fb",
-  navy: "#07111f",
-  navy2: "#102033",
+  panelStrong: "#edf6fb",
+  tableHeader: "#eaf2f8",
   cyan: "#0891b2",
   cyanSoft: "#e7f8fb",
   green: "#047857",
@@ -199,10 +199,11 @@ function footer() {
 }
 
 function header(kicker) {
-  doc.rect(0, 0, doc.page.width, 62).fill(colors.navy);
+  doc.rect(0, 0, doc.page.width, 62).fill(colors.panelStrong);
+  doc.strokeColor(colors.line).lineWidth(0.7).moveTo(0, 62).lineTo(doc.page.width, 62).stroke();
   drawMark(44, 19, 18);
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 70, 23, { characterSpacing: 1.3 });
-  doc.fillColor("#b6c5d6").font("Helvetica").fontSize(8).text(safeText(kicker).toUpperCase(), 315, 24, { width: 236, align: "right" });
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 70, 23, { characterSpacing: 1.3 });
+  doc.fillColor(colors.muted).font("Helvetica").fontSize(8).text(safeText(kicker).toUpperCase(), 315, 24, { width: 236, align: "right" });
 }
 
 function addPage(title, kicker = "Full Premium Synthetic Sample Report", subtitle = "") {
@@ -278,10 +279,10 @@ function table(title, headers, rows, widths, options = {}) {
   const startX = 44;
   let y = doc.y;
   const rowH = options.rowH ?? 32;
-  doc.roundedRect(startX, y, widths.reduce((a, b) => a + b, 0), 24, 7).fill(colors.navy2);
+  doc.roundedRect(startX, y, widths.reduce((a, b) => a + b, 0), 24, 7).fill(colors.tableHeader);
   let x = startX;
   headers.forEach((head, index) => {
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(7.3).text(safeText(head), x + 6, y + 8, { width: widths[index] - 12 });
+    doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(7.3).text(safeText(head), x + 6, y + 8, { width: widths[index] - 12 });
     x += widths[index];
   });
   y += 24;
@@ -314,22 +315,23 @@ function bullets(title, items) {
 
 function coverPage() {
   pageNumber = 1;
-  doc.rect(0, 0, doc.page.width, doc.page.height).fill(colors.navy);
-  doc.circle(510, 120, 190).fillOpacity(0.15).fill(colors.cyan).fillOpacity(1);
-  doc.circle(80, 740, 170).fillOpacity(0.11).fill("#8b5cf6").fillOpacity(1);
+  doc.rect(0, 0, doc.page.width, doc.page.height).fill(colors.paper);
+  doc.rect(0, 0, doc.page.width, 120).fill(colors.panelStrong);
+  doc.circle(510, 120, 190).fillOpacity(0.12).fill(colors.cyan).fillOpacity(1);
+  doc.circle(80, 740, 170).fillOpacity(0.08).fill("#8b5cf6").fillOpacity(1);
   drawMark(48, 42, 28);
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, { characterSpacing: 1.4 });
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, { characterSpacing: 1.4 });
   doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(11).text("Full Premium Synthetic Sample Report", 48, 118);
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(42).text(dataset.reportTitle, 48, 152, { width: 470, lineGap: -3 });
-  doc.fillColor("#d7e3ef").font("Helvetica").fontSize(15).text("VMware -> Proxmox migration decision pack", 48, 264);
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(18).text(dataset.client, 48, 318);
-  doc.fillColor("#b6c5d6").font("Helvetica").fontSize(11).text("Synthetic industrial environment. No customer data. No production access. No migration execution.", 48, 348, { width: 460, lineGap: 3 });
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(42).text(dataset.reportTitle, 48, 152, { width: 470, lineGap: -3 });
+  doc.fillColor(colors.muted).font("Helvetica").fontSize(15).text("VMware -> Proxmox migration decision pack", 48, 264);
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(18).text(dataset.client, 48, 318);
+  doc.fillColor(colors.muted).font("Helvetica").fontSize(11).text("Synthetic industrial environment. No customer data. No production access. No migration execution.", 48, 348, { width: 460, lineGap: 3 });
   miniMetric(48, 430, 150, "Readiness", `${dataset.readiness}/100`, "Medium posture", "warning");
   miniMetric(222, 430, 150, "Confidence", `${dataset.confidence}/100`, "Limited evidence", "warning");
   miniMetric(396, 430, 150, "Storage", `${dataset.storageReadiness}/100`, "Needs validation", "danger");
-  doc.roundedRect(48, 555, 498, 96, 12).fillAndStroke("#0e2135", "#21425d");
+  doc.roundedRect(48, 555, 498, 96, 12).fillAndStroke(colors.panel, colors.line);
   doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(9).text("PREMIUM SAMPLE MODULES", 68, 576);
-  doc.fillColor("#ffffff").font("Helvetica").fontSize(10.4).text(
+  doc.fillColor(colors.ink).font("Helvetica").fontSize(10.4).text(
     "Migration readiness, Storage Destination Readiness, Licensing & Cost Exposure, Business Continuity Risk, VM Risk Matrix, Senior AI Advisor, Project Memory and executive recommendations.",
     68,
     598,

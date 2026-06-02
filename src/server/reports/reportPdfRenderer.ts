@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
+import { PRINT_REPORT_THEME, PRINT_TONE_COLORS, type ReportTone } from "./reportTheme";
 
 export type PdfReportRenderInput = {
   assessmentTitle: string;
@@ -29,33 +30,16 @@ export type PdfReportBrandingInput = {
   whiteLabel: boolean;
 };
 
-type Tone = "neutral" | "good" | "warning" | "danger" | "info";
+type Tone = ReportTone;
 
 const MARGIN = 44;
 const THEME = {
-  ink: "#0f172a",
-  muted: "#475569",
-  faint: "#94a3b8",
-  line: "#dbe4ee",
-  paper: "#ffffff",
-  panel: "#f8fafc",
-  navy: "#0b1220",
-  navy2: "#111827",
-  cyan: "#0891b2",
-  blue: "#2563eb",
-  green: "#059669",
-  amber: "#d97706",
-  red: "#dc2626",
-  slate: "#334155",
+  ...PRINT_REPORT_THEME,
+  navy: PRINT_REPORT_THEME.panelStrong,
+  navy2: PRINT_REPORT_THEME.tableHeader,
 };
 
-const TONE_COLORS: Record<Tone, { fill: string; stroke: string; text: string }> = {
-  neutral: { fill: "#f1f5f9", stroke: "#cbd5e1", text: THEME.slate },
-  good: { fill: "#ecfdf5", stroke: "#a7f3d0", text: THEME.green },
-  warning: { fill: "#fffbeb", stroke: "#fde68a", text: THEME.amber },
-  danger: { fill: "#fef2f2", stroke: "#fecaca", text: THEME.red },
-  info: { fill: "#ecfeff", stroke: "#a5f3fc", text: THEME.cyan },
-};
+const TONE_COLORS = PRINT_TONE_COLORS;
 
 function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
   const scale = size / 32;
@@ -98,11 +82,11 @@ function drawLogoPanel(params: {
   logo: PdfReportBrandLogo | null;
 }) {
   const { doc, x, y, w, h, title, name, logo } = params;
-  doc.roundedRect(x, y, w, h, 10).fillAndStroke("#111827", "#334155");
-  doc.fillColor("#cbd5e1").font("Helvetica-Bold").fontSize(7.3).text(safeText(title).toUpperCase(), x + 12, y + 10, {
+  doc.roundedRect(x, y, w, h, 10).fillAndStroke(THEME.paper, THEME.line);
+  doc.fillColor(THEME.cyan).font("Helvetica-Bold").fontSize(7.3).text(safeText(title).toUpperCase(), x + 12, y + 10, {
     width: w - 24,
   });
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(9).text(safeText(name ?? "Not provided"), x + 12, y + 24, {
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(9).text(safeText(name ?? "Not provided"), x + 12, y + 24, {
     width: w - 24,
   });
 
@@ -116,12 +100,12 @@ function drawLogoPanel(params: {
         valign: "center",
       });
     } catch {
-      doc.fillColor("#94a3b8").font("Helvetica").fontSize(8).text("Logo could not be embedded", x + 12, logoY + 8, {
+      doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("Logo could not be embedded", x + 12, logoY + 8, {
         width: w - 24,
       });
     }
   } else {
-    doc.fillColor("#94a3b8").font("Helvetica").fontSize(8).text("Logo not provided", x + 12, logoY + 8, {
+    doc.fillColor(THEME.faint).font("Helvetica").fontSize(8).text("Logo not provided", x + 12, logoY + 8, {
       width: w - 24,
     });
   }
@@ -130,7 +114,7 @@ function drawLogoPanel(params: {
 function drawCoverBranding(doc: PDFKit.PDFDocument, input: PdfReportRenderInput, x: number, y: number) {
   const branding = input.reportBranding;
   if (!branding || (!branding.companyLogo && !branding.clientLogo && !branding.companyName && !branding.clientName)) {
-    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(9).text("Report branding: Shift Evidence / ShiftReadiness", x, y, {
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(9).text("Report branding: Shift Evidence / ShiftReadiness", x, y, {
       width: contentWidth(doc),
     });
     return;
@@ -157,7 +141,7 @@ function drawCoverBranding(doc: PDFKit.PDFDocument, input: PdfReportRenderInput,
     name: branding.audience === "client" ? branding.clientName : input.clientLabel,
     logo: branding.audience === "client" ? branding.clientLogo : null,
   });
-  doc.fillColor("#cbd5e1").font("Helvetica").fontSize(8).text("White-label output. Powered by Shift Evidence.", x, y + 92, {
+  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text("White-label output. Powered by Shift Evidence.", x, y + 92, {
     width: contentWidth(doc),
   });
 }
@@ -281,14 +265,15 @@ function titleCase(value: string | null | undefined) {
 function addContentPage(doc: PDFKit.PDFDocument, section: string, title: string, subtitle?: string) {
   doc.addPage();
   doc.rect(0, 0, doc.page.width, 64).fill(THEME.navy);
+  doc.strokeColor(THEME.line).lineWidth(0.7).moveTo(0, 64).lineTo(doc.page.width, 64).stroke();
   doc
-    .fillColor("#e2e8f0")
+    .fillColor(THEME.cyan)
     .font("Helvetica-Bold")
     .fontSize(8)
     .text(safeText(section).toUpperCase(), MARGIN, 18, { characterSpacing: 1.1 });
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(15).text(safeText(title), MARGIN, 33);
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(15).text(safeText(title), MARGIN, 33);
   if (subtitle) {
-    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(8.5).text(safeText(subtitle), MARGIN + 250, 35, {
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(8.5).text(safeText(subtitle), MARGIN + 250, 35, {
       width: doc.page.width - MARGIN * 2 - 250,
       align: "right",
     });
@@ -482,7 +467,7 @@ function coverageTable(doc: PDFKit.PDFDocument, rows: ReportCoverageRow[]) {
   doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
   let x = startX + 8;
   headers.forEach((header, index) => {
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
       width: widths[index],
     });
     x += widths[index];
@@ -629,7 +614,7 @@ function vmRiskTable(doc: PDFKit.PDFDocument, rows: ReportPreviewData["vmMatrixP
   doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
   let x = startX + 8;
   headers.forEach((header, index) => {
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
       width: widths[index],
     });
     x += widths[index];
@@ -726,7 +711,7 @@ function waveTable(doc: PDFKit.PDFDocument, rows: string[][]) {
   doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
   let x = startX + 8;
   headers.forEach((header, index) => {
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
       width: widths[index],
     });
     x += widths[index];
@@ -1364,7 +1349,7 @@ function licensingComparisonTable(doc: PDFKit.PDFDocument, preview: ReportPrevie
   doc.rect(startX, headerY, contentWidth(doc), 24).fill(THEME.navy2);
   let x = startX + 8;
   headers.forEach((header, index) => {
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(8).text(header, x, headerY + 8, {
       width: widths[index],
     });
     x += widths[index];
@@ -1615,20 +1600,20 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
           : "Executive + Technical Assessment";
 
     doc.addPage();
-    doc.rect(0, 0, doc.page.width, doc.page.height).fill(THEME.navy);
-    doc.rect(0, 0, doc.page.width, 168).fill("#111827");
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill(THEME.paper);
+    doc.rect(0, 0, doc.page.width, 168).fill(THEME.panel);
     doc.rect(0, 168, doc.page.width, 6).fill(THEME.cyan);
-    drawShiftEvidenceWordmark(doc, MARGIN, 48, true);
-    doc.fillColor("#67e8f9").font("Helvetica-Bold").fontSize(8).text("SHIFTREADINESS REPORT", MARGIN, 78, {
+    drawShiftEvidenceWordmark(doc, MARGIN, 48);
+    doc.fillColor(THEME.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFTREADINESS REPORT", MARGIN, 78, {
       characterSpacing: 2,
     });
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(26).text("Readiness Assessment", MARGIN, 124);
-    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(12).text("Infrastructure readiness before you migrate.", MARGIN, 186);
-    doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(18).text(safeText(input.assessmentTitle), MARGIN, 252, {
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(26).text("Readiness Assessment", MARGIN, 124);
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text("Infrastructure readiness before you migrate.", MARGIN, 186);
+    doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(18).text(safeText(input.assessmentTitle), MARGIN, 252, {
       width: contentWidth(doc),
     });
-    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(10).text(
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(10).text(
       safeText(`${input.clientLabel ?? "Current assessment"} | Workspace: ${input.workspaceName}`),
       MARGIN,
       282,
@@ -1668,7 +1653,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       tone: getScoreTone(preview.readinessScore),
     });
     drawCoverBranding(doc, input, MARGIN, 452);
-    doc.fillColor("#cbd5e1").font("Helvetica").fontSize(9.5).text(
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(
       "Confidential / Evidence-based assessment. This report is generated from the evidence available at assessment time.",
       MARGIN,
       input.reportBranding ? 562 : 510,

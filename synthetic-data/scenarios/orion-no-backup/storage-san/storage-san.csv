@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"orion-no-backup-san-a","SAN","62","low","Synthetic shared storage row"
+"orion-no-backup-nfs-b","NFS","55","low","Synthetic NFS row"
+"orion-no-backup-archive","Local","34","low","Synthetic archive row"

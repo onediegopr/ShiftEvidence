@@ -1,0 +1,26 @@
+{
+  "id": "northbridge-small-clean",
+  "title": "Northbridge Small Clean Pilot",
+  "profile": "small_clean",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 18,
+    "hosts": 3,
+    "clusters": 1
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": true,
+    "storageSan": true,
+    "applicationDependencies": true
+  },
+  "expectedPlan": {
+    "planLevel": "pilot_ready",
+    "confidence": "high",
+    "blockingGates": 0
+  }
+}

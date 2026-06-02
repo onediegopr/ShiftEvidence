@@ -1,0 +1,26 @@
+{
+  "planLevel": "conditional_after_storage_review",
+  "confidence": "medium",
+  "gates": [
+    {
+      "key": "backup_restore_evidence",
+      "status": "pass",
+      "recommendation": "Keep evidence attached and validate during wave planning."
+    },
+    {
+      "key": "target_capacity",
+      "status": "warning",
+      "recommendation": "Review before early production waves."
+    },
+    {
+      "key": "dependency_mapping",
+      "status": "pass",
+      "recommendation": "Keep evidence attached and validate during wave planning."
+    },
+    {
+      "key": "network_mapping",
+      "status": "pass",
+      "recommendation": "Keep evidence attached and validate during wave planning."
+    }
+  ]
+}

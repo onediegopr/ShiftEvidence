@@ -1,0 +1,9 @@
+{
+  "title": "Helix Dependency Heavy",
+  "scope": "121 VMs / 7 hosts / 3 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": [
+    "storageSan",
+    "applicationDependencies"
+  ]
+}

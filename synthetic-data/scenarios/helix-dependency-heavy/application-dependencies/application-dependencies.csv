@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"helix-dependency-heavy-web-01","helix-dependency-heavy-sql-03","database","high","false"
+"helix-dependency-heavy-erp-06","helix-dependency-heavy-domain-04","identity","critical","false"
+"helix-dependency-heavy-file-05","helix-dependency-heavy-backup-01","backup","medium","true"

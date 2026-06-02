@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"northbridge-small-clean-web-01","northbridge-small-clean-sql-03","database","high","true"
+"northbridge-small-clean-erp-06","northbridge-small-clean-domain-04","identity","critical","true"
+"northbridge-small-clean-file-05","northbridge-small-clean-backup-01","backup","medium","true"

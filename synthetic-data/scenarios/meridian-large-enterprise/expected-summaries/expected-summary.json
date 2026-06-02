@@ -1,0 +1,8 @@
+{
+  "title": "Meridian Large Enterprise",
+  "scope": "236 VMs / 12 hosts / 4 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": [
+    "applicationDependencies"
+  ]
+}

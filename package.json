@@ -28,6 +28,7 @@
     "ai:report-synthetic": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/generate-full-synthetic-gemini-report.mjs",
     "ai:report-synthetic:require-gemini": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/generate-full-synthetic-gemini-report.mjs --require-real-gemini --output-dir=qa-artifacts/ai-report-1b",
     "sample-report:generate": "node scripts/generate-public-sample-report.mjs",
+    "synthetic:evidence": "node scripts/generate-synthetic-evidence-datasets.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

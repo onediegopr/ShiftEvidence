@@ -1,0 +1,8 @@
+{
+  "source": "synthetic_proxmox_target",
+  "nodes": 4,
+  "storageDesign": "shared_storage_under_review",
+  "pbsConfigured": true,
+  "haEnabled": true,
+  "capacityHeadroomPercent": 14
+}

@@ -1,0 +1,9 @@
+{
+  "source": "synthetic_backup_evidence",
+  "provided": true,
+  "restoreTests": "partial",
+  "protectedCriticalWorkloadsPercent": 68,
+  "notes": [
+    "Synthetic restore evidence is present for QA coverage."
+  ]
+}

@@ -62,6 +62,13 @@ const evidenceRows = [
   ["Performance History", "Missing", "Low confidence"],
 ];
 
+const evidenceExpansionRows = [
+  ["Synthetic dataset library", "8 scenarios", "Demo and QA coverage without customer data."],
+  ["Migration Recommendation Plan", "Included", "Gates, blockers, remediation, wave strategy and go/no-go sections."],
+  ["Print-friendly PDFs", "Applied", "White report pages, readable tables and page numbering for stakeholder review."],
+  ["Missing evidence behavior", "Visible", "Missing backup, target, storage or dependency evidence lowers confidence instead of being guessed."],
+];
+
 const topRisks = [
   ["Backup evidence missing", "Critical"],
   ["Application dependencies missing", "High"],
@@ -267,6 +274,7 @@ export default function SampleReportPage() {
       <section className="section shiftreadiness-section shiftreadiness-section-alt">
         <div className="container sample-report-grid-stack">
           <TableBlock title="Evidence matrix" icon={<FileSpreadsheet size={22} />} headers={["Evidence", "Status", "Confidence"]} rows={evidenceRows} />
+          <TableBlock title="Evidence expansion coverage" icon={<ClipboardList size={22} />} headers={["Capability", "Status", "What it demonstrates"]} rows={evidenceExpansionRows} />
           <CardListBlock title="Top risks" icon={<AlertTriangle size={22} />} items={topRisks} />
           <TableBlock title="VM classification preview" icon={<Layers3 size={22} />} headers={["VM", "Role", "Complexity", "Action"]} rows={vmRows} />
         </div>

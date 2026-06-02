@@ -1,0 +1,26 @@
+{
+  "planLevel": "blocked_until_target_redesign",
+  "confidence": "medium",
+  "gates": [
+    {
+      "key": "backup_restore_evidence",
+      "status": "pass",
+      "recommendation": "Keep evidence attached and validate during wave planning."
+    },
+    {
+      "key": "target_capacity",
+      "status": "fail",
+      "recommendation": "Do not approve production wave until remediated."
+    },
+    {
+      "key": "dependency_mapping",
+      "status": "pass",
+      "recommendation": "Keep evidence attached and validate during wave planning."
+    },
+    {
+      "key": "network_mapping",
+      "status": "warning",
+      "recommendation": "Review before early production waves."
+    }
+  ]
+}

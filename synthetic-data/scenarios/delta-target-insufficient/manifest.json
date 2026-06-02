@@ -1,0 +1,26 @@
+{
+  "id": "delta-target-insufficient",
+  "title": "Delta Target Insufficient",
+  "profile": "target_insufficient",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 58,
+    "hosts": 6,
+    "clusters": 2
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": true,
+    "storageSan": true,
+    "applicationDependencies": true
+  },
+  "expectedPlan": {
+    "planLevel": "blocked_until_target_redesign",
+    "confidence": "medium",
+    "blockingGates": 2
+  }
+}

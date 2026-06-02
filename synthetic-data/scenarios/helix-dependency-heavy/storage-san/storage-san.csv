@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"helix-dependency-heavy-san-a","SAN","62","low","Synthetic shared storage row"
+"helix-dependency-heavy-nfs-b","NFS","55","low","Synthetic NFS row"
+"helix-dependency-heavy-archive","Local","34","low","Synthetic archive row"

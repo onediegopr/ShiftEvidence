@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"apollo-storage-constrained-san-a","SAN","88","high","Synthetic shared storage row"
+"apollo-storage-constrained-nfs-b","NFS","55","low","Synthetic NFS row"
+"apollo-storage-constrained-archive","Local","34","low","Synthetic archive row"

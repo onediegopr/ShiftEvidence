@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"delta-target-insufficient-san-a","SAN","62","low","Synthetic shared storage row"
+"delta-target-insufficient-nfs-b","NFS","84","high","Synthetic NFS row"
+"delta-target-insufficient-archive","Local","34","low","Synthetic archive row"

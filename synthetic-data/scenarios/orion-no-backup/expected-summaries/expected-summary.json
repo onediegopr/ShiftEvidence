@@ -1,0 +1,8 @@
+{
+  "title": "Orion No Backup Evidence",
+  "scope": "42 VMs / 4 hosts / 1 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": [
+    "backupEvidence"
+  ]
+}

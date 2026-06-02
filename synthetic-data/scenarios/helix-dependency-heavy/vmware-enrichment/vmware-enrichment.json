@@ -1,0 +1,14 @@
+{
+  "source": "synthetic_vmware_enrichment",
+  "clusterCount": 3,
+  "hostCount": 7,
+  "evidenceNotes": [
+    "Synthetic cluster inventory only.",
+    "No production credentials, paths or customer identifiers are included."
+  ],
+  "riskSignals": {
+    "snapshotsObserved": 15,
+    "legacyOsObserved": 10,
+    "oversizedVmCandidates": 7
+  }
+}

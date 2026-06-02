@@ -1,0 +1,6 @@
+{
+  "title": "Northbridge Small Clean Pilot",
+  "scope": "18 VMs / 3 hosts / 1 clusters",
+  "expectedDecision": "Synthetic evidence supports controlled pilot planning.",
+  "missingEvidence": []
+}

@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"orion-no-backup-web-01","orion-no-backup-sql-03","database","high","true"
+"orion-no-backup-erp-06","orion-no-backup-domain-04","identity","critical","true"
+"orion-no-backup-file-05","orion-no-backup-backup-01","backup","medium","true"

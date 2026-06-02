@@ -53,6 +53,14 @@ Sales page update:
 - Full public launch remains NO.
 - `SALES-PAGE-1.1` validates desktop/mobile visual QA and tightens copy around planning assessment, manual beta pricing and no instant purchase.
 
+EVIDENCE-8 update:
+
+- Global readiness PDFs and public sample PDFs now use a lighter print-friendly visual system.
+- `synthetic-data/` contains deterministic safe evidence scenarios for demos and QA.
+- Demo/sample/landing messaging explains evidence expansion without claiming automatic migration, cutover validation or production migration success.
+- EVIDENCE-7.1B authenticated browser QA remains pending.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.

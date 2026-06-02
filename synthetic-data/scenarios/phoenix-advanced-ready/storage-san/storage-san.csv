@@ -1,0 +1,4 @@
+"datastore","type","used_percent","risk","note"
+"phoenix-advanced-ready-san-a","SAN","62","low","Synthetic shared storage row"
+"phoenix-advanced-ready-nfs-b","NFS","55","low","Synthetic NFS row"
+"phoenix-advanced-ready-archive","Local","34","low","Synthetic archive row"

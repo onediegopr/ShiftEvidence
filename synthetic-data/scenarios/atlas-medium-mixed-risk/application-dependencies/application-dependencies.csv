@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"atlas-medium-mixed-risk-web-01","atlas-medium-mixed-risk-sql-03","database","high","true"
+"atlas-medium-mixed-risk-erp-06","atlas-medium-mixed-risk-domain-04","identity","critical","true"
+"atlas-medium-mixed-risk-file-05","atlas-medium-mixed-risk-backup-01","backup","medium","true"

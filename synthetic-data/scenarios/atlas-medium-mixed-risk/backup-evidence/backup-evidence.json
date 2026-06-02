@@ -1,0 +1,9 @@
+{
+  "source": "synthetic_backup_evidence",
+  "provided": false,
+  "restoreTests": "missing",
+  "protectedCriticalWorkloadsPercent": 0,
+  "notes": [
+    "Backup evidence intentionally omitted to exercise blocked plan behavior."
+  ]
+}

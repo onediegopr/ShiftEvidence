@@ -1,0 +1,26 @@
+{
+  "id": "meridian-large-enterprise",
+  "title": "Meridian Large Enterprise",
+  "profile": "large_enterprise",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 236,
+    "hosts": 12,
+    "clusters": 4
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": true,
+    "storageSan": true,
+    "applicationDependencies": false
+  },
+  "expectedPlan": {
+    "planLevel": "phased_assessment_required",
+    "confidence": "medium",
+    "blockingGates": 3
+  }
+}

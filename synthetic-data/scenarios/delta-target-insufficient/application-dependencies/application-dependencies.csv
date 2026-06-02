@@ -1,0 +1,4 @@
+"source_vm","target_service","dependency_type","criticality","known_owner"
+"delta-target-insufficient-web-01","delta-target-insufficient-sql-03","database","high","true"
+"delta-target-insufficient-erp-06","delta-target-insufficient-domain-04","identity","critical","true"
+"delta-target-insufficient-file-05","delta-target-insufficient-backup-01","backup","medium","true"

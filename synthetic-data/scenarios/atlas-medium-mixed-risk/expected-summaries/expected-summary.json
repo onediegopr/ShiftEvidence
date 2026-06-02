@@ -1,0 +1,8 @@
+{
+  "title": "Atlas Medium Mixed Risk",
+  "scope": "74 VMs / 5 hosts / 2 clusters",
+  "expectedDecision": "Synthetic evidence keeps one or more migration gates blocked.",
+  "missingEvidence": [
+    "backupEvidence"
+  ]
+}

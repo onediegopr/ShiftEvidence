@@ -40,7 +40,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-6 is complete in code and introduces vendor-neutral Application Dependency templates, parser, readiness engine, RVTools VM matching, VMware Enrichment hints and technical-vs-functional wave signals without a DB migration.
 - EVIDENCE-7 is complete in code and introduces the separate premium Migration Recommendation Plan, deterministic evidence gates, plan levels, a print-friendly standalone PDF, user workflow and admin visibility without a DB migration.
 - EVIDENCE-7.1 completed automated QA for Migration Recommendation Plan behavior, entitlement checks and PDF structure, and added page numbering to the standalone plan PDF. Authenticated browser click-through remains partial because the local Browser plugin could not initialize in this session.
-- The next recommended evidence hito is either a short EVIDENCE-7.1 manual/user-attested browser closeout or EVIDENCE-8: PDF Print-Friendly Global + Synthetic Dataset Library + Demo/Landing/Docs Expansion.
+- EVIDENCE-8 is implemented locally and adds a shared print-friendly PDF theme, a deterministic synthetic evidence dataset library, public demo/sample/landing expansion and no-secret/no-overpromise tests. It does not close the separate EVIDENCE-7.1B authenticated browser closeout.
+- The next recommended evidence hito is either EVIDENCE-7.1B manual/user-attested browser closeout or EVIDENCE-9 collector packaging / evidence module operationalization.
 
 ## B. Current State Audit
 

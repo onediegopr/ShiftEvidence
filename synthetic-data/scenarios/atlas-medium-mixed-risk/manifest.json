@@ -1,0 +1,26 @@
+{
+  "id": "atlas-medium-mixed-risk",
+  "title": "Atlas Medium Mixed Risk",
+  "profile": "medium_mixed_risk",
+  "synthetic": true,
+  "safeForPublicDemo": true,
+  "generatedBy": "scripts/generate-synthetic-evidence-datasets.mjs",
+  "scope": {
+    "vms": 74,
+    "hosts": 5,
+    "clusters": 2
+  },
+  "evidenceCoverage": {
+    "rvtools": true,
+    "vmwareEnrichment": true,
+    "proxmoxTarget": true,
+    "backupEvidence": false,
+    "storageSan": true,
+    "applicationDependencies": true
+  },
+  "expectedPlan": {
+    "planLevel": "conditional_waves",
+    "confidence": "medium",
+    "blockingGates": 2
+  }
+}

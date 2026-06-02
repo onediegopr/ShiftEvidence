@@ -328,6 +328,10 @@ QA artifacts under `qa-artifacts/evidence-7-1` are not intended for commit.
 - Synthetic datasets: 65%.
 - Readiness for EVIDENCE-8: 80%.
 
+## EVIDENCE-8 note
+
+EVIDENCE-8 proceeded with the authenticated browser closeout still pending. It improves global PDF print-friendliness, creates a synthetic evidence dataset library and expands public demo/sample/landing messaging, but it does not replace the required EVIDENCE-7.1B manual browser evidence.
+
 ## Decision
 
 EVIDENCE-7.1 is accepted as automated QA complete with partial authenticated browser QA.
