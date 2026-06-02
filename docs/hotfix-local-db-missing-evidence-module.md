@@ -142,7 +142,7 @@ Confirmed:
 
 - No Hostinger config was touched.
 - No production deploy was triggered.
-- No billing, Stripe, Lemon, checkout, pricing or landing changes were made.
+- No billing provider, checkout, pricing or landing changes were made.
 - No DB reset or destructive command was executed.
 - No secrets, env var values, tokens or cookies were printed.
 

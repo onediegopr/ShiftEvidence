@@ -25,7 +25,7 @@ Unrelated changes were present before continuing:
 - `prisma/schema.prisma`
 - billing config and pricing files
 - billing admin files
-- Lemon webhook and billing service deletions
+- retired billing-provider webhook and service deletions
 - bank-transfer billing route work
 - `prisma/migrations/20260602133000_billing_invoice_requests/`
 
