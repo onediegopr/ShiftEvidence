@@ -348,13 +348,19 @@ function coverPage() {
   miniMetric(48, 430, 150, "Readiness", `${dataset.readiness}/100`, "Medium posture", "warning");
   miniMetric(222, 430, 150, "Confidence", `${dataset.confidence}/100`, "Limited evidence", "warning");
   miniMetric(396, 430, 150, "Storage", `${dataset.storageReadiness}/100`, "Needs validation", "danger");
-  doc.roundedRect(48, 555, 498, 96, 12).fillAndStroke(colors.panel, colors.line);
-  doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(9).text("PREMIUM SAMPLE MODULES", 68, 576);
+  doc.roundedRect(48, 542, 498, 132, 12).fillAndStroke(colors.panel, colors.line);
+  doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(9).text("PREMIUM SAMPLE MODULES", 68, 564);
   doc.fillColor(colors.ink).font("Helvetica").fontSize(10.4).text(
     "Migration readiness, Storage Destination Readiness, Licensing & Cost Exposure, Business Continuity Risk, VM Risk Matrix, Senior AI Advisor, Project Memory and executive recommendations.",
     68,
-    598,
+    586,
     { width: 456, lineGap: 4 },
+  );
+  doc.fillColor(colors.muted).font("Helvetica").fontSize(9).text(
+    "Professional Assessment: evidence-backed report and VM decision pack. Migration Blueprint: scoped waves, validation gates, rollback expectations and remediation planning.",
+    68,
+    638,
+    { width: 456, lineGap: 3 },
   );
 }
 
@@ -367,6 +373,11 @@ twoColumnCards([
   ["Must not advance", "ERP, SQL, domain controllers and storage-heavy systems should not enter early waves without backup and dependency evidence.", "danger"],
   ["Executive recommendation", "Use the premium report to approve a pilot, not a broad production migration.", "warning"],
   ["Commercial takeaway", "Licensing exposure is meaningful, but savings should not override readiness and continuity risk.", "info"],
+]);
+bullets("What executives should take from this page", [
+  "Readiness and evidence confidence are separate decision signals.",
+  "Savings estimates remain directional until procurement and technical assumptions are validated.",
+  "Critical workloads remain gated by backup, dependency, storage and rollback evidence.",
 ]);
 callout("Recommended decision: approve a controlled pilot, require backup restore evidence, finalize storage design and use go/no-go gates before production waves.", "warning");
 
@@ -404,6 +415,12 @@ callout("A readiness score is not a migration approval. It is a decision signal 
 addPage("Evidence Confidence Score", "Section 5", "How missing evidence changes the migration recommendation.");
 paragraph("The assessment confidence score is 58/100. RVTools-style inventory and technical context are enough to plan a pilot, but not enough to authorize critical workload migration.");
 table("Evidence confidence matrix", ["Evidence", "Signal", "Confidence", "Action"], dataset.evidence, [135, 80, 75, 216], { rowH: 34 });
+bullets("Recommended next evidence", [
+  "Backup export and representative restore test result.",
+  "Application dependency map with owners and maintenance windows.",
+  "Target Proxmox storage and network design assumptions.",
+  "Performance history for SQL, ERP, file and identity workloads.",
+]);
 callout("Backup evidence, dependency mapping and performance history are the highest-impact confidence gaps.", "danger");
 
 addPage("VMware -> Proxmox Technical Readiness", "Section 6", "Technical blockers and pilot candidates.");
@@ -540,14 +557,15 @@ table("Calculation notes", ["Area", "Assumption"], [
 addPage("Ready To Assess Your Own Environment?", "Final CTA", "Use the premium sample to understand the deliverable before uploading approved evidence.");
 paragraph("Start your own readiness assessment, upload approved VMware evidence and use the premium report to support internal decision-making before migration spend or production movement.");
 twoColumnCards([
-  ["Start assessment", "Create a workspace and upload approved evidence for your environment.", "good"],
-  ["Review risks", "Use the report to identify blockers before migration execution.", "warning"],
-  ["Support decisions", "Share readiness, cost exposure and wave gates with stakeholders.", "info"],
-  ["Book review", "Use expert review when assumptions require deeper validation.", "info"],
+  ["Watch 90-second simulation", "See the value path quickly before opening the full demo workspace.", "info"],
+  ["Explore Demo Workspace", "Review synthetic scenarios, risk matrices, Advisor notes and demo PDFs.", "good"],
+  ["Start Professional Assessment", "Create a workspace and upload approved evidence for your environment.", "warning"],
+  ["Request Migration Blueprint", "Use expert review when waves, gates and rollback assumptions require deeper planning.", "info"],
 ]);
-doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(14).text("shiftevidence.com/demo", 44, 585);
-doc.text("shiftevidence.com/sign-up", 44, 615);
-doc.text("shiftevidence.com/contact", 44, 645);
+doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(14).text("shiftevidence.com/demo/replay", 44, 585);
+doc.text("shiftevidence.com/demo/workspace", 44, 615);
+doc.text("shiftevidence.com/pricing", 44, 645);
+doc.text("shiftevidence.com/contact", 44, 675);
 
 footer();
 doc.end();

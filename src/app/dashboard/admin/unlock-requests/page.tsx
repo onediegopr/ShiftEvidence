@@ -110,9 +110,19 @@ function RequestCard({
 
       {request.status === "pending" ? (
         <form className="unlock-admin-form">
+          <div className="dashboard-banner dashboard-banner-warning" role="alert">
+            Accion manual: revisar antes de confirmar. No completar si no verificaste el pago fuera de la
+            plataforma, el assessment, el usuario y el alcance solicitado. Aprobar no debe prometer fulfillment
+            automatico.
+          </div>
           <label className="form-label">
             Notas internas
-            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Nota interna opcional" />
+            <textarea
+              name="adminNotes"
+              className="form-input form-textarea"
+              rows={3}
+              placeholder="Nota interna opcional. No guardar secretos, passwords, API keys ni datos de tarjeta."
+            />
           </label>
           <div className="assessment-inline-actions">
             <button type="submit" className="btn btn-primary btn-glow" formAction={approveUnlockRequestAction.bind(null, request.id)}>
@@ -135,9 +145,18 @@ function RequestCard({
         </form>
       ) : request.status === "approved" ? (
         <form className="unlock-admin-form">
+          <div className="dashboard-banner dashboard-banner-warning" role="alert">
+            Accion manual: completar puede habilitar acceso real. No ejecutar si no verificaste el pago fuera de la
+            plataforma y el match usuario/workspace/assessment.
+          </div>
           <label className="form-label">
             Notas internas
-            <textarea name="adminNotes" className="form-input form-textarea" rows={3} placeholder="Nota interna opcional" />
+            <textarea
+              name="adminNotes"
+              className="form-input form-textarea"
+              rows={3}
+              placeholder="Nota interna opcional. No guardar secretos, passwords, API keys ni datos de tarjeta."
+            />
           </label>
           <div className="assessment-inline-actions">
             <button type="submit" className="btn btn-primary btn-glow" formAction={fulfillUnlockRequestAction.bind(null, request.id)}>
@@ -219,6 +238,12 @@ export default async function UnlockRequestsAdminPage({
 
       {saved ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">Acción administrativa guardada.</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+
+      <div className="dashboard-banner dashboard-banner-warning" role="alert">
+        <strong>Operacion interna sensible.</strong> Accion manual: revisar antes de confirmar. No concede acceso
+        automaticamente salvo que la accion lo indique. No ejecutar si no verificaste el pago fuera de la plataforma.
+        No guardar secretos, passwords, API keys ni datos de tarjeta en notas internas.
+      </div>
 
       <section className="assessment-summary-grid">
         <article className="glass-card assessment-summary-card">

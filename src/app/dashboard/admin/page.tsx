@@ -539,6 +539,13 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
         </div>
       </section>
 
+      <div className="dashboard-banner dashboard-banner-warning" role="alert">
+        <strong>Consola interna segura.</strong> Las acciones manuales pueden modificar accesos, usuarios,
+        oportunidades o configuracion operativa. Revisar contexto antes de confirmar. No guardar secretos,
+        passwords, API keys ni datos de tarjeta en notas internas. Los errores de proveedores deben mantenerse
+        sanitizados antes de compartirlos con clientes.
+      </div>
+
       <nav className="tabs-container" aria-label="Navegación de administración">
         {navItems.map(([label, key]) => (
           <Link key={key} href={`?tab=${key}`} className={`tab-btn ${activeTab === key ? "active" : ""}`}>

@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Footer() {
@@ -33,29 +34,12 @@ export default function Footer() {
               className="logo-container"
               style={{ marginBottom: "0.5rem" }}
             >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="16"
-                  r="8"
-                  fill="none"
-                  stroke="#06b6d4"
-                  strokeWidth="2.5"
-                />
-                <path
-                  d="M12 16H24M24 16L20 12M24 16L20 20"
-                  stroke="#8b5cf6"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Image
+                src="/brand/shift-evidence-icon-dark-transparent.png"
+                alt="Shift Evidence Logo"
+                width={28}
+                height={28}
+              />
               <span>Shift Evidence</span>
             </a>
             <p style={{ fontSize: "0.85rem" }}>{copy.brand}</p>

@@ -9657,6 +9657,54 @@ p {
     font-size: 1.8rem;
 }
 
+.sample-report-offer-bridge {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.sample-report-offer-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem;
+    border-color: rgba(34, 211, 238, 0.14);
+    background:
+        linear-gradient(140deg, rgba(34, 211, 238, 0.1), rgba(52, 211, 153, 0.035)),
+        rgba(3, 7, 18, 0.46);
+}
+
+.sample-report-offer-card::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    content: "";
+    background: linear-gradient(180deg, var(--demo-cyan), var(--demo-emerald));
+}
+
+.sample-report-offer-card span {
+    display: inline-flex;
+    color: var(--demo-cyan);
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.sample-report-offer-card p {
+    margin-top: 0.75rem;
+    color: white;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.sample-report-offer-card small {
+    display: block;
+    margin-top: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
 .sample-report-two-col,
 .sample-report-planning-grid {
     display: grid;
@@ -9830,6 +9878,7 @@ p {
     }
 
     .sample-report-stat-grid,
+    .sample-report-offer-bridge,
     .sample-report-risk-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -9844,6 +9893,7 @@ p {
     }
 
     .sample-report-stat-grid,
+    .sample-report-offer-bridge,
     .sample-report-toc,
     .sample-report-risk-grid,
     .sample-report-sizing-grid {
@@ -9855,6 +9905,7 @@ p {
     .sample-report-page .sample-report-cover,
     .sample-report-page .sample-report-cover-body,
     .sample-report-page .sample-report-panel,
+    .sample-report-page .sample-report-offer-card,
     .sample-report-page .sample-report-score-card,
     .sample-report-page .sample-report-score-note {
         min-width: 0;

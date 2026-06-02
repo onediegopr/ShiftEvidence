@@ -62,23 +62,29 @@ function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, si
   const scale = size / 32;
   const strokeWidth = Math.max(1, 2.5 * scale);
 
+  // Draw three rounded infrastructure layers simulating data flow
   doc
-    .circle(x + 12 * scale, y + 16 * scale, 8 * scale)
+    .moveTo(x + 6 * scale, y + 10 * scale)
+    .lineTo(x + 26 * scale, y + 10 * scale)
     .lineWidth(strokeWidth)
+    .lineCap("round")
     .strokeColor("#06b6d4")
     .stroke();
 
   doc
-    .moveTo(x + 12 * scale, y + 16 * scale)
-    .lineTo(x + 24 * scale, y + 16 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 12 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 20 * scale)
+    .moveTo(x + 9 * scale, y + 16 * scale)
+    .lineTo(x + 23 * scale, y + 16 * scale)
     .lineWidth(strokeWidth)
     .lineCap("round")
-    .lineJoin("round")
     .strokeColor("#8b5cf6")
+    .stroke();
+
+  doc
+    .moveTo(x + 12 * scale, y + 22 * scale)
+    .lineTo(x + 20 * scale, y + 22 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .strokeColor("#06b6d4")
     .stroke();
 }
 
@@ -1639,7 +1645,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     });
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(30).text("VMware to Proxmox", MARGIN, 90);
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(26).text("Readiness Assessment", MARGIN, 124);
-    doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text("Infrastructure readiness before you migrate.", MARGIN, 186);
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text("Evidence-based migration decision pack before production movement.", MARGIN, 186);
     doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(18).text(safeText(input.assessmentTitle), MARGIN, 252, {
       width: contentWidth(doc),
     });
@@ -1684,7 +1690,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     });
     drawCoverBranding(doc, input, MARGIN, 452);
     doc.fillColor(THEME.muted).font("Helvetica").fontSize(9.5).text(
-      "Confidential / Evidence-based assessment. This report is generated from the evidence available at assessment time.",
+      "Confidential / Evidence-based assessment. Professional Assessment focuses on readiness evidence and VM-level decision support; Blueprint work should validate waves, rollback and target architecture before production movement.",
       MARGIN,
       input.reportBranding ? 562 : 510,
       { width: contentWidth(doc), lineGap: 2 },
@@ -1726,6 +1732,11 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       tone: getSeverityTone(preview.costRiskPreview.riskLevel),
     });
     doc.y += 110;
+    callout(
+      doc,
+      "Executive decision lens: readiness describes the migration posture; confidence describes how complete the evidence is. Use both before approving waves, spend or production movement.",
+      "info",
+    );
     h2(doc, "What this means");
     bulletList(doc, getWhatThisMeans(input), 5);
     h2(doc, "Immediate actions");

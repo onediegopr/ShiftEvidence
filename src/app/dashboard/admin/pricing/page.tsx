@@ -149,6 +149,16 @@ function MetricCard({
   );
 }
 
+function PricingOpsSafetyBanner() {
+  return (
+    <div className="dashboard-banner dashboard-banner-warning" role="alert">
+      <strong>Operacion interna sensible.</strong> Accion manual: revisar antes de confirmar. No modifica precios
+      publicos, billing runtime, checkout, pagos ni entitlements automaticos. Aprobar snapshots requiere fuente
+      validada fuera de la plataforma y revision humana del impacto comercial.
+    </div>
+  );
+}
+
 function AccessDenied() {
   return (
     <main className="dashboard-page">
@@ -251,6 +261,10 @@ function PendingSnapshots({
                 <span>Items: {snapshot.items.length}</span>
                 <span>Ultimo check: {formatDate(snapshot.lastCheckedAt)}</span>
               </div>
+              <div className="dashboard-banner dashboard-banner-warning" role="alert" style={{ marginTop: "14px" }}>
+                Accion manual: aprobar o archivar solo despues de validar fuente, moneda, USD y alcance. No ejecutar
+                si no verificaste el impacto fuera de la plataforma.
+              </div>
               <div className="assessment-inline-actions" style={{ marginTop: "14px" }}>
                 <form action={approvePricingSnapshotAction.bind(null, snapshot.id)}>
                   <button className="btn btn-primary" type="submit">Aprobar</button>
@@ -329,6 +343,8 @@ export default async function PricingAdminPage({ searchParams }: PricingAdminPag
 
       {savedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{savedMessage}</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+
+      <PricingOpsSafetyBanner />
 
       <section id="resumen" className="assessment-summary-grid">
         <MetricCard icon={<CheckCircle2 size={22} />} label="Snapshots aprobados" value={summary.approvedCount} note="Unicos usables en futuros calculos." />

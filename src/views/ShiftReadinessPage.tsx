@@ -5,6 +5,7 @@
 // "Ceph as a default recommendation"
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -56,31 +57,14 @@ export default function ShiftReadinessPage() {
       <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
         <div className="container navbar-container">
           <Link href="/" className="logo-container">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <Image
+              src="/brand/shift-evidence-icon-dark-transparent.png"
+              alt="Shift Evidence Logo"
+              width={40}
+              height={40}
               className="nav-brand-logo"
-              aria-hidden="true"
-            >
-              <circle
-                cx="12"
-                cy="16"
-                r="8"
-                fill="none"
-                stroke="#06b6d4"
-                strokeWidth="2.5"
-              />
-              <path
-                d="M12 16H24M24 16L20 12M24 16L20 20"
-                stroke="#8b5cf6"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              priority
+            />
             <span>Shift Evidence</span>
             <span className="navbar-badge">ShiftReadiness</span>
           </Link>
@@ -127,7 +111,7 @@ export default function ShiftReadinessPage() {
               Assess your <span className="text-gradient">VMware exit</span> before committing budget.
             </h1>
             <p className="shiftreadiness-lead">
-              Verify licensing exposure, map target storage compatibility, and identify migration risks with a productized pre-flight check.
+              Turn exported VMware evidence into a senior-grade migration decision pack before workshops, pilots or production change windows.
             </p>
             <div className="shiftreadiness-actions">
               <a href="/sign-up" className="btn btn-primary btn-glow">
@@ -519,8 +503,8 @@ export default function ShiftReadinessPage() {
               <strong>Get consulting-grade insights at a fraction of the cost.</strong>
             </p>
             <p>
-              Start with a focused readiness assessment, request invoice support for larger engagements,
-              and keep payment expectations clear before checkout is activated.
+              Start with a focused readiness assessment, use Stripe card checkout when configured,
+              or request a reviewed Wise/manual invoice for larger engagements.
             </p>
             <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
               {paymentOptionsCopy.general} {paymentOptionsCopy.notActive}

@@ -56,19 +56,19 @@ export interface AddOn {
 }
 
 export const paymentOptionsCopy = {
-  cardCheckout: "Secure card checkout is routed through Stripe when the plan is configured.",
+  cardCheckout: "Card checkout is routed through Stripe when the plan is configured and approved for checkout.",
   bankTransfer: "Bank transfer invoices are available for business customers.",
-  general: "Card checkout uses secure checkout when configured. Bank transfer invoices are available for business customers.",
+  general: "Card checkout uses Stripe when configured. Bank transfer uses a manual invoice request reviewed before fulfillment.",
   pricingNote:
-    "Card checkout is available for configured fast-start plans. Bank transfer invoices are available for Professional, Blueprint and MSP agreements.",
+    "Card checkout is available for configured fast-start plans. Bank transfer is handled through reviewed manual invoice requests for Professional, Blueprint and MSP agreements.",
   faq:
-    "Card checkout supports configured fast starts. Bank transfer invoices are available for business customers and are especially recommended for larger assessments, blueprints and MSP agreements.",
+    "Card checkout supports configured fast starts through Stripe. Bank transfer is a reviewed manual invoice request, not an automatic transfer or instant fulfillment path.",
   blueprint:
-    "Blueprint engagements are scoped before payment. Request an invoice after confirming project scope.",
+    "Blueprint engagements are scoped before payment. Request a manual invoice after confirming project scope.",
   msp:
-    "MSP partner plans can be billed monthly by card or handled through business invoice depending on agreement size.",
+    "MSP partner plans can be billed monthly by configured Stripe checkout or handled through reviewed business invoice depending on agreement size.",
   notActive:
-    "If checkout is unavailable, requests are routed for manual follow-up and invoice handling.",
+    "If checkout is unavailable or account matching is required, requests are routed for manual follow-up, review and invoice handling.",
 } as const;
 
 export function getPaymentOptionLabel(option: PaymentOption) {
@@ -91,14 +91,14 @@ export const marketingPlans: Plan[] = [
     price: starterBillingPlan.priceLabel,
     priceAmountUsd: starterBillingPlan.priceAmountUsd,
     billingCadence: starterBillingPlan.cadence,
-    bestFor: "Teams that want a clear first assessment before committing to a larger migration plan.",
+    bestFor: "Teams that need a first evidence-based readiness checkpoint before committing budget or migration scope.",
     accent: "core",
     recommendedPayment: starterBillingPlan.recommendedPayment,
     paymentOptions: starterBillingPlan.paymentOptions,
     futureProvider: "stripe",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is available when Stripe is configured for this plan. Bank transfer invoice is available on request for business customers.",
+    paymentNote: "Card checkout uses Stripe when configured for this plan. Bank transfer invoice requests are reviewed before fulfillment.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools upload / guided evidence review",
@@ -122,14 +122,14 @@ export const marketingPlans: Plan[] = [
     price: professionalBillingPlan.priceLabel,
     priceAmountUsd: professionalBillingPlan.priceAmountUsd,
     billingCadence: professionalBillingPlan.cadence,
-    bestFor: "Infrastructure teams that need a fuller migration readiness assessment and stakeholder-ready report.",
+    bestFor: "Infrastructure teams that need a VM-by-VM readiness assessment and stakeholder-ready migration decision pack.",
     accent: "pro",
     recommendedPayment: professionalBillingPlan.recommendedPayment,
     paymentOptions: professionalBillingPlan.paymentOptions,
     futureProvider: "stripe",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
-    paymentNote: "Card checkout is available when Stripe is configured for this plan. Business invoice support is available for procurement workflows.",
+    paymentNote: "Card checkout uses Stripe when configured for this plan. Manual invoice requests are reviewed before access or fulfillment.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",
@@ -155,7 +155,7 @@ export const marketingPlans: Plan[] = [
     priceAmountUsd: blueprintBillingPlan.priceAmountUsd,
     pricePrefix: blueprintBillingPlan.pricePrefix,
     billingCadence: blueprintBillingPlan.cadence,
-    bestFor: "Teams preparing a serious migration plan with scope, waves, validation gates and rollback expectations.",
+    bestFor: "Teams preparing a serious migration plan with scope, architecture assumptions, waves, validation gates and rollback expectations.",
     accent: "blueprint",
     recommendedPayment: blueprintBillingPlan.recommendedPayment,
     paymentOptions: blueprintBillingPlan.paymentOptions,
@@ -169,6 +169,7 @@ export const marketingPlans: Plan[] = [
       "Pilot candidate selection",
       "Remediation roadmap",
       "Rollback framework",
+      "Migration day checklist",
       "Technical review session",
       "Executive decision pack",
       "Blueprint guidance",
@@ -187,7 +188,7 @@ export const marketingPlans: Plan[] = [
     priceAmountUsd: mspBillingPlan.priceAmountUsd,
     pricePrefix: mspBillingPlan.pricePrefix,
     billingCadence: mspBillingPlan.cadence,
-    bestFor: "Consultants, MSPs and integrators who need repeatable assessments for client conversations.",
+    bestFor: "Consultants, MSPs and integrators who need repeatable, client-ready assessments before workshops or proposals.",
     accent: "partner",
     recommendedPayment: mspBillingPlan.recommendedPayment,
     paymentOptions: mspBillingPlan.paymentOptions,
@@ -199,6 +200,7 @@ export const marketingPlans: Plan[] = [
       "Reusable methodology",
       "Client-ready PDFs",
       "Assessment templates",
+      "Reusable pre-sales evidence workflow",
       "Partner workflow",
       "Dedicated workspace management",
       "Billing and support priority",

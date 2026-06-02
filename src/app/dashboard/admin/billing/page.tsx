@@ -161,9 +161,9 @@ function formatStripeStatus(value: string) {
   const labels: Record<string, string> = {
     no_configurado: "No configurado",
     configuracion_invalida: "Configuracion invalida",
-    configurado_test: "Configurado test",
-    configurado_live_aprobado: "Live aprobado",
-    configurado_live_no_aprobado: "Live no aprobado",
+    configurado_test: "Configurado en modo test",
+    configurado_live_aprobado: "Modo live aprobado",
+    configurado_live_no_aprobado: "Modo live no aprobado",
     desactivado: "Desactivado",
   };
 
@@ -184,8 +184,8 @@ function formatWiseStatus(value: string) {
 
 function formatCheckoutMode(value: string) {
   const labels: Record<string, string> = {
-    test: "Test",
-    live: "Live",
+    test: "Modo test",
+    live: "Modo live",
     unknown: "Desconocido",
   };
 
@@ -194,9 +194,9 @@ function formatCheckoutMode(value: string) {
 
 function formatStripeSecretKeyMode(value: string) {
   const labels: Record<string, string> = {
-    live: "Live sk_live",
-    test: "Test sk_test",
-    restricted_live: "Live restringida rk_live",
+    live: "Modo live (sk_live)",
+    test: "Modo test (sk_test)",
+    restricted_live: "Live restringida (rk_live)",
     unknown: "Desconocida",
     missing: "Faltante",
   };
@@ -221,7 +221,7 @@ function formatWiseApiMode(value: string) {
 function formatInvoiceRequestStatus(value: BillingInvoiceRequestStatusInput) {
   const labels: Record<BillingInvoiceRequestStatusInput, string> = {
     pending: "Pendiente",
-    invoice_sent: "Invoice enviado",
+    invoice_sent: "Factura enviada",
     payment_received: "Pago recibido",
     cancelled: "Cancelado",
     rejected: "Rechazado",
@@ -246,6 +246,17 @@ function statusTone(value: string) {
   if (value.includes("test") || value.includes("ok") || value === "processed") return "good";
   if (value.includes("manual") || value.includes("pendiente") || value.includes("medio")) return "warning";
   return "neutral";
+}
+
+function BillingOpsSafetyBanner() {
+  return (
+    <div className="dashboard-banner dashboard-banner-warning" role="alert">
+      <strong>Operacion interna sensible.</strong> Accion manual: revisar antes de confirmar. No ejecutar si no
+      verificaste el pago fuera de la plataforma. Wise/bank transfer es solicitud manual, no transferencia
+      automatica. Stripe live debe permanecer desactivado salvo aprobacion explicita. Nunca guardar secretos,
+      datos de tarjeta, passwords ni API keys en notas internas.
+    </div>
+  );
 }
 
 function reconciliationTone(value: BillingReconciliationSeverity) {
@@ -501,7 +512,8 @@ function BillingFulfillmentPanel({
         ]}
       />
       <div className="dashboard-banner dashboard-banner-warning" role="alert" style={{ marginTop: "14px" }}>
-        Esta accion concede acceso real al assessment seleccionado.
+        Accion sensible: esta accion concede acceso real al assessment seleccionado. No ejecutar si no verificaste
+        el pago fuera de la plataforma, el match de usuario/workspace/assessment y el plan contratado.
       </div>
       {preview.reasons.length > 0 ? (
         <ul className="assessment-inline-note" style={{ marginTop: "12px" }}>
@@ -514,7 +526,7 @@ function BillingFulfillmentPanel({
         <input type="hidden" name="billingOrderId" value={order.id} />
         <label style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
           <input type="checkbox" name="confirmFulfillment" value="confirmed" disabled={disabled} />
-          <span>Confirmo que verifique el pago y el match.</span>
+          <span>Confirmo que verifique el pago fuera de la plataforma, el match y el impacto del acceso.</span>
         </label>
         <label style={{ display: "grid", gap: "6px" }}>
           <span className="assessment-preview-label">Nota interna</span>
@@ -573,7 +585,8 @@ function BillingRevocationReviewPanel({ reviewItems }: { reviewItems: BillingGra
             <form action={revokeBillingGrantedEntitlementAction} className="billing-match-form" style={{ marginTop: "14px" }}>
               <input type="hidden" name="billingEntitlementGrantId" value={item.id} />
               <div className="dashboard-banner dashboard-banner-error" role="alert" style={{ marginBottom: "12px" }}>
-                Esta accion puede quitar acceso real al assessment.
+                Accion sensible: esta accion puede quitar acceso real al assessment. Revisar refund/cancel,
+                historial de pago y contexto del cliente antes de confirmar.
               </div>
               <label style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
                 <input type="checkbox" name="confirmRevocation" value="confirmed" />
@@ -727,6 +740,10 @@ function InvoiceRequestsTable({ requests }: { requests: BillingInvoiceRequestRow
                 ) : (
                   <form action={updateBillingInvoiceRequestAction} style={{ display: "grid", gap: "8px", minWidth: "220px" }}>
                     <input type="hidden" name="billingInvoiceRequestId" value={request.id} />
+                    <div className="dashboard-banner dashboard-banner-warning" role="alert">
+                      Accion manual: marcar pago recibido solo despues de verificar el pago fuera de la plataforma.
+                      Esta actualizacion no concede acceso ni crea transferencias Wise.
+                    </div>
                     <label className="admin-form-label">
                       <span>Estado</span>
                       <select className="admin-input" name="status" defaultValue={request.status}>
@@ -744,7 +761,7 @@ function InvoiceRequestsTable({ requests }: { requests: BillingInvoiceRequestRow
                         name="internalNotes"
                         rows={2}
                         defaultValue={request.internalNotes ?? ""}
-                        placeholder="Sin secretos, sin datos bancarios sensibles."
+                        placeholder="Sin secretos, sin datos bancarios sensibles. Registrar evidencia operativa revisada."
                       />
                     </label>
                     <button type="submit" className="btn btn-secondary">Actualizar solicitud</button>
@@ -1075,13 +1092,15 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         </div>
       </section>
 
+      <BillingOpsSafetyBanner />
+
       <section className="assessment-summary-grid">
-        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout test-mode" value={status.operations.checkoutTestMode ? "OK" : "NO"} note="Modo seguro esperado" />
-        <MetricCard icon={<AlertTriangle size={22} />} label="Live payments" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" />
+        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout modo test" value={status.operations.checkoutTestMode ? "OK" : "NO"} note="Modo seguro esperado" />
+        <MetricCard icon={<AlertTriangle size={22} />} label="Pagos live" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" />
         <MetricCard icon={<ShieldCheck size={22} />} label="Manual fulfillment" value={status.operations.manualFulfillment ? "ON" : "OFF"} note="Runbook manual activo" />
         <MetricCard icon={<LinkIcon size={22} />} label="Webhooks" value={status.operations.webhooks ? "ON" : "OFF"} note="Endpoint disponible, secret separado" />
         <MetricCard icon={<Database size={22} />} label="Ledger" value={status.operations.ledger ? "ON" : "OFF"} note="Eventos y ledger comercial" />
-        <MetricCard icon={<BadgePercent size={22} />} label="Entitlements automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" />
+        <MetricCard icon={<BadgePercent size={22} />} label="Accesos automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" />
         <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin match automatico" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Eventos fallidos" value={status.operations.failedEventsCount} note="Requieren revision segura" />
         <MetricCard icon={<AlertTriangle size={22} />} label="Acciones requeridas" value={reconciliation.actionRequiredCount} note="Billing owner debe revisar" />
@@ -1099,16 +1118,16 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
             <>
               <FieldList
                 rows={[
-                  ["Secret key mode", formatStripeSecretKeyMode(stripeDiagnostics.runtimeEnv.secretKeyMode)],
-                  ["Webhook secret", formatBooleanPresence(stripeDiagnostics.runtimeEnv.webhookSecretPresent)],
-                  ["Checkout mode", formatCheckoutMode(stripeDiagnostics.runtimeEnv.checkoutMode)],
+                  ["Modo de clave secreta", formatStripeSecretKeyMode(stripeDiagnostics.runtimeEnv.secretKeyMode)],
+                  ["Webhook secret presente", formatBooleanPresence(stripeDiagnostics.runtimeEnv.webhookSecretPresent)],
+                  ["Modo checkout", formatCheckoutMode(stripeDiagnostics.runtimeEnv.checkoutMode)],
                   ["Checkout habilitado", formatBooleanYesNo(stripeDiagnostics.runtimeEnv.checkoutEnabled)],
                   ["Live aprobado", formatBooleanYesNo(stripeDiagnostics.runtimeEnv.livePaymentsApproved)],
-                  ["Stripe API reachable", formatDiagnosticOk(stripeDiagnostics.stripeApi.stripeAccountReachable)],
+                  ["Stripe API accesible", formatDiagnosticOk(stripeDiagnostics.stripeApi.stripeAccountReachable)],
                   ["Starter price", formatDiagnosticOk(stripeDiagnostics.prices.starter.sane)],
                   ["Professional price", formatDiagnosticOk(stripeDiagnostics.prices.professional.sane)],
                   ["MSP price", formatDiagnosticOk(stripeDiagnostics.prices.msp.sane)],
-                  ["Ready pre-payment", formatBooleanYesNo(stripeDiagnostics.overall.readyForLiveCheckoutPrepaymentSmoke)],
+                  ["Listo pre-pago", formatBooleanYesNo(stripeDiagnostics.overall.readyForLiveCheckoutPrepaymentSmoke)],
                   ["Chequeado", formatDate(stripeDiagnostics.checkedAt)],
                 ]}
               />
@@ -1141,13 +1160,13 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         >
           <FieldList
             rows={[
-              ["Secret key", formatBooleanPresence(status.stripe.secretKeyPresent)],
-              ["Webhook secret", formatBooleanPresence(status.stripe.webhookSecretPresent)],
+              ["Clave secreta presente", formatBooleanPresence(status.stripe.secretKeyPresent)],
+              ["Webhook secret presente", formatBooleanPresence(status.stripe.webhookSecretPresent)],
               ["Starter Price ID", formatBooleanPresence(status.stripe.starterPricePresent)],
               ["Professional Price ID", formatBooleanPresence(status.stripe.professionalPricePresent)],
               ["MSP Price ID", formatBooleanPresence(status.stripe.mspPricePresent)],
-              ["Secret key mode", formatStripeSecretKeyMode(status.stripe.secretKeyMode)],
-              ["Checkout mode", formatCheckoutMode(status.stripe.checkoutMode)],
+              ["Modo de clave secreta", formatStripeSecretKeyMode(status.stripe.secretKeyMode)],
+              ["Modo checkout", formatCheckoutMode(status.stripe.checkoutMode)],
               ["Live aprobado", formatBooleanYesNo(status.stripe.livePaymentsApproved)],
               ["Checkout habilitado", formatBooleanYesNo(status.stripe.checkoutEnabled)],
               ["Checkout activo", formatBooleanYesNo(status.stripe.checkoutActive)],
@@ -1172,7 +1191,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
               ["Profile ID", formatBooleanPresence(status.wise.profileIdPresent)],
               ["Uso actual", status.wise.currentUse],
               ["Automatizacion", "Desactivada"],
-              ["Flow invoice", status.wise.requestFlowEnabled ? "Activo" : "OFF"],
+              ["Flujo factura manual", status.wise.requestFlowEnabled ? "Activo" : "OFF"],
               ["Solicitudes pendientes", status.wise.pendingInvoiceRequestsCount],
               ["Ultima verificacion", status.wise.lastVerification],
             ]}
@@ -1189,14 +1208,14 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         >
           <FieldList
             rows={[
-              ["Checkout test-mode", status.operations.checkoutTestMode ? "OK" : "NO"],
-              ["Live payments", status.operations.livePayments ? "ON" : "OFF"],
+              ["Checkout modo test", status.operations.checkoutTestMode ? "OK" : "NO"],
+              ["Pagos live", status.operations.livePayments ? "ON" : "OFF"],
               ["Fulfillment manual", status.operations.manualFulfillment ? "ON" : "OFF"],
-              ["Bank transfer requests", status.operations.bankTransferRequests ? "ON" : "OFF"],
+              ["Solicitudes transferencia", status.operations.bankTransferRequests ? "ON" : "OFF"],
               ["Invoice pendientes", status.operations.pendingInvoiceRequestsCount],
               ["Webhooks", status.operations.webhooks ? "ON" : "OFF"],
               ["Ledger", status.operations.ledger ? "ON" : "OFF"],
-              ["Entitlements automaticos", "OFF"],
+              ["Accesos automaticos", "OFF"],
               ["Reconciliacion", "Manual"],
               ["Ordenes persistidas", ledger.recentOrdersCount],
               ["Pagos persistidos", ledger.recentPaymentsCount],
@@ -1221,9 +1240,9 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         <div className="assessment-section-title">
           <div className="assessment-section-eyebrow">
             <Landmark size={18} />
-            <span>Bank transfer</span>
+            <span>Factura manual / transferencia</span>
           </div>
-          <h2>Solicitudes de invoice</h2>
+          <h2>Solicitudes de factura manual</h2>
           <p>
             Solicitudes creadas desde el flujo publico de transferencia bancaria. Las acciones son manuales y no
             crean pagos, recipients, transfers, balances ni grants automaticos.
@@ -1232,7 +1251,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         <section className="assessment-summary-grid">
           <MetricCard icon={<FileText size={22} />} label="Total" value={invoiceSummary.total} note="Solicitudes registradas" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Pendientes" value={invoiceSummary.pending} note="Requiere revision admin" />
-          <MetricCard icon={<Banknote size={22} />} label="Invoice enviado" value={invoiceSummary.invoiceSent} note="Follow-up manual" />
+          <MetricCard icon={<Banknote size={22} />} label="Factura enviada" value={invoiceSummary.invoiceSent} note="Seguimiento manual" />
           <MetricCard icon={<CheckCircle2 size={22} />} label="Pago recibido" value={invoiceSummary.paymentReceived} note="Sin auto-grant" />
         </section>
         <InvoiceRequestsTable requests={invoiceRequests} />
