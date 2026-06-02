@@ -119,3 +119,66 @@ Recommended next action:
   - Browser control smoke to `http://127.0.0.1:3000/sign-in`.
 
 Only after browser control works should EVIDENCE-7.1B be retried.
+
+## Post-Restart Smoke
+
+Date: 2026-06-02
+Status: FAILED
+Context: Codex and Chrome were restarted before this retry.
+
+### Chrome / Extension
+
+Observed after restart:
+
+- Chrome installed: yes.
+- Chrome running: yes.
+- Codex Chrome Extension installed: yes.
+- Codex Chrome Extension enabled: yes.
+
+### Native Host
+
+Observed after restart:
+
+- HKCU registry key exists.
+- HKCU default value points to the expected native host manifest.
+- HKLM registry key remains absent.
+- Manifest exists.
+- Manifest JSON is valid.
+- Manifest `name` is `com.openai.codexextension`.
+- Manifest `type` is `stdio`.
+- Manifest executable exists.
+- Allowed origins include the expected Codex Chrome Extension origin.
+
+The Chrome plugin helper still reports `registryManifestPath: null` and `correct: false`, while `reg query` and PowerShell registry APIs both confirm that the HKCU default value exists. The direct Windows/manifest checks therefore look healthy, but the plugin helper still cannot confirm the registry value.
+
+### Browser Control
+
+In-app Browser retry:
+
+- Failed before tab/page control.
+- Error:
+  - `failed to write kernel assets: El sistema no puede encontrar la ruta especificada. (os error 3)`
+
+Chrome extension-backed retry:
+
+- Failed before Chrome tab control.
+- Error:
+  - `failed to write kernel assets: El sistema no puede encontrar la ruta especificada. (os error 3)`
+
+### Route Smoke
+
+`http://127.0.0.1:3000/sign-in` was not opened because browser control failed before navigation.
+
+No credentials were entered.
+
+### Decision After Restart
+
+BROWSER-TOOLING-1 remains NOT READY.
+
+EVIDENCE-7.1B remains NO CERRADO.
+
+Recommended next action:
+
+- Repair/reinstall the Browser/Chrome plugin from the Codex plugin UI, not by manual registry editing.
+- If the plugin UI has a browser runtime/cache repair option, use that first because the remaining failure is the Codex browser runtime asset-path error.
+- Retry this smoke only after browser control can create/list tabs.
