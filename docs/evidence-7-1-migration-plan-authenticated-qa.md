@@ -660,3 +660,24 @@ Then rerun the authenticated checklist:
 - EVIDENCE-7.1B manual browser closeout: 20%.
 - Collector/template packaging: 95%.
 - Full public launch: NO.
+
+## BROWSER-TOOLING-1 Note
+
+Date: 2026-06-02
+
+Browser tooling repair/smoke was attempted after this EVIDENCE-7.1B retry and documented in `docs/browser-tooling-codex-chrome-native-host.md`.
+
+Result:
+
+- Chrome is installed and running.
+- Codex Chrome Extension is installed and enabled.
+- HKCU native host registry key appears present.
+- Native host manifest exists, is valid and points to an existing executable.
+- Codex browser control still fails before Chrome tab control with a local browser-runtime asset-path error.
+- `/sign-in` browser smoke was not executed.
+
+Decision:
+
+- Browser tooling is not ready.
+- EVIDENCE-7.1B remains NO CERRADO.
+- Retry EVIDENCE-7.1B only after Browser/Chrome plugin repair from the Codex plugin UI and a successful browser-control smoke.
