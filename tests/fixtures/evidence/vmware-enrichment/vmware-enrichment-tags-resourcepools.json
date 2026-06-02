@@ -1,0 +1,25 @@
+{
+  "schema": "shift-evidence.vmware-enrichment.v1",
+  "collector": { "name": "shift-vmware-evidence-collector", "displayName": "Shift Evidence VMware Enrichment Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "vmware-vsphere" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": { "vmCount": 3, "tagAssignmentCount": 5 },
+  "entities": {
+    "vms": [
+      { "name": "erp-01", "instanceUuid": "66666666-6666-6666-6666-666666666666", "biosUuid": "abababab-abab-abab-abab-abababababab", "resourcePool": "BusinessCritical/ERP", "tags": ["tier-1", "owner-finance"] },
+      { "name": "erp-02", "instanceUuid": "77777777-7777-7777-7777-777777777777", "biosUuid": "bcbcbcbc-bcbc-bcbc-bcbc-bcbcbcbcbcbc", "resourcePool": "BusinessCritical/ERP", "tags": ["tier-1", "owner-finance"] },
+      { "name": "batch-01", "instanceUuid": "88888888-8888-8888-8888-888888888888", "biosUuid": "cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd", "resourcePool": "Batch", "tags": ["batch"] }
+    ],
+    "snapshots": [],
+    "tags": [
+      { "vmName": "erp-01", "tag": "tier-1", "category": "criticality" },
+      { "vmName": "erp-01", "tag": "owner-finance", "category": "owner" },
+      { "vmName": "erp-02", "tag": "tier-1", "category": "criticality" },
+      { "vmName": "erp-02", "tag": "owner-finance", "category": "owner" },
+      { "vmName": "batch-01", "tag": "batch", "category": "role" }
+    ],
+    "hosts": [], "clusters": [], "datastores": [], "networks": [], "drsRules": []
+  },
+  "warnings": [],
+  "errors": []
+}

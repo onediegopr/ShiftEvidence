@@ -580,6 +580,7 @@ export async function getAdminConsoleData(params?: {
                 status: true,
                 parserKey: true,
                 parserVersion: true,
+                summaryJson: true,
                 warningsJson: true,
                 errorsJson: true,
                 createdAt: true,
@@ -1132,6 +1133,7 @@ export async function getAdminConsoleData(params?: {
             reviewedAt: null,
             lastUpload: null,
             lastParseResult: null,
+            vmwareMetrics: null,
             requiresReview: false,
           };
         }
@@ -1142,6 +1144,22 @@ export async function getAdminConsoleData(params?: {
         const errors = Array.isArray(evidenceModule.lastParseResult?.errorsJson)
           ? evidenceModule.lastParseResult.errorsJson.length
           : 0;
+        const summaryJson =
+          typeof evidenceModule.lastParseResult?.summaryJson === "object" &&
+          evidenceModule.lastParseResult.summaryJson &&
+          !Array.isArray(evidenceModule.lastParseResult.summaryJson)
+            ? evidenceModule.lastParseResult.summaryJson as Record<string, unknown>
+            : null;
+        const vmwareSummary =
+          typeof summaryJson?.vmwareEnrichmentSummary === "object" &&
+          summaryJson.vmwareEnrichmentSummary &&
+          !Array.isArray(summaryJson.vmwareEnrichmentSummary)
+            ? summaryJson.vmwareEnrichmentSummary as Record<string, unknown>
+            : null;
+        const vmwareNumber = (key: string) => {
+          const value = vmwareSummary?.[key];
+          return typeof value === "number" && Number.isFinite(value) ? value : null;
+        };
 
         return {
           moduleKey: evidenceModule.moduleKey,
@@ -1168,6 +1186,17 @@ export async function getAdminConsoleData(params?: {
                 warnings,
                 errors,
                 createdAt: evidenceModule.lastParseResult.createdAt,
+              }
+            : null,
+          vmwareMetrics: vmwareSummary
+            ? {
+                vmCount: vmwareNumber("vmCount"),
+                matchedVmCount: vmwareNumber("matchedVmCount"),
+                unmatchedVmCount: vmwareNumber("unmatchedVmCount"),
+                oldSnapshotCount: vmwareNumber("oldSnapshotCount"),
+                taggedVmCount: vmwareNumber("taggedVmCount"),
+                tagAssignmentCount: vmwareNumber("tagAssignmentCount"),
+                drsRuleCount: vmwareNumber("drsRuleCount"),
               }
             : null,
           requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",

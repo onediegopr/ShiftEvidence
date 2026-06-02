@@ -52,6 +52,34 @@ function jsonStringArray(value: unknown) {
   return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+}
+
+function getVmwareSummary(value: unknown) {
+  const summary = asRecord(value);
+  const vmware = asRecord(summary?.vmwareEnrichmentSummary);
+  if (!vmware) return null;
+
+  const numberValue = (key: string) => {
+    const value = vmware[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  };
+
+  return {
+    vmCount: numberValue("vmCount"),
+    matchedVmCount: numberValue("matchedVmCount"),
+    unmatchedVmCount: numberValue("unmatchedVmCount"),
+    oldSnapshotCount: numberValue("oldSnapshotCount"),
+    taggedVmCount: numberValue("taggedVmCount"),
+    resourcePoolCount: numberValue("resourcePoolCount"),
+    drsRuleCount: numberValue("drsRuleCount"),
+    networkBindingCount: numberValue("networkBindingCount"),
+  };
+}
+
 export function EvidenceExpansionCenter({
   assessmentId,
   summary,
@@ -96,6 +124,8 @@ export function EvidenceExpansionCenter({
           const warnings = jsonStringArray(module.record.lastParseResult?.warningsJson);
           const errors = jsonStringArray(module.record.lastParseResult?.errorsJson);
           const evidenceType = evidenceTypeForModule(module.metadata.key);
+          const isVmwareEnrichment = module.metadata.key === EvidenceModuleKey.vmware_enrichment;
+          const vmwareSummary = getVmwareSummary(module.record.lastParseResult?.summaryJson);
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -107,6 +137,12 @@ export function EvidenceExpansionCenter({
                   <strong>{module.metadata.displayName}</strong>
                   <span>{module.metadata.description}</span>
                   <span>{module.metadata.preparedMessage}</span>
+                  {isVmwareEnrichment ? (
+                    <span>
+                      Read-only collector available. Run it locally against vCenter, review the JSON output,
+                      and upload it here.
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
@@ -130,6 +166,45 @@ export function EvidenceExpansionCenter({
                 <p className="assessment-inline-note">
                   Last upload: {module.record.lastUpload.evidenceFile.originalFilename}
                 </p>
+              ) : null}
+
+              {isVmwareEnrichment ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Read-only collector safety</strong>
+                  <p className="assessment-storage-note">
+                    The collector does not change vCenter configuration, create or delete snapshots,
+                    modify VMs, store credentials, or upload data externally.
+                  </p>
+                </div>
+              ) : null}
+
+              {vmwareSummary ? (
+                <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">VMs</span>
+                    <strong>{vmwareSummary.vmCount}</strong>
+                  </article>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">Matched</span>
+                    <strong>{vmwareSummary.matchedVmCount}</strong>
+                  </article>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">Unmatched</span>
+                    <strong>{vmwareSummary.unmatchedVmCount}</strong>
+                  </article>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">Old snapshots</span>
+                    <strong>{vmwareSummary.oldSnapshotCount}</strong>
+                  </article>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">Tagged VMs</span>
+                    <strong>{vmwareSummary.taggedVmCount}</strong>
+                  </article>
+                  <article className="assessment-preview-card">
+                    <span className="assessment-preview-label">DRS rules</span>
+                    <strong>{vmwareSummary.drsRuleCount}</strong>
+                  </article>
+                </div>
               ) : null}
 
               {module.reportWarning ? (
@@ -186,12 +261,29 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                <button type="button" className="btn btn-secondary btn-sm" disabled>
-                  <Download size={14} />
-                  Template soon
-                </button>
+                {isVmwareEnrichment ? (
+                  <a
+                    href="/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                    className="btn btn-secondary btn-sm"
+                    download
+                  >
+                    <Download size={14} />
+                    Download collector
+                  </a>
+                ) : (
+                  <button type="button" className="btn btn-secondary btn-sm" disabled>
+                    <Download size={14} />
+                    Template soon
+                  </button>
+                )}
 
-                <span className="assessment-inline-note">Collector coming soon</span>
+                {isVmwareEnrichment ? (
+                  <a href="/collectors/vmware/README.md" className="assessment-inline-note">
+                    Collector instructions
+                  </a>
+                ) : (
+                  <span className="assessment-inline-note">Collector coming soon</span>
+                )}
 
                 {status !== EvidenceModuleStatus.skipped ? (
                   <form action={skipEvidenceModuleAction.bind(null, assessmentId, module.metadata.key)}>

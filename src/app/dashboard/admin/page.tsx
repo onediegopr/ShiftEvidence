@@ -1564,6 +1564,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Estado del modulo</th>
                   <th>Confianza</th>
                   <th>Ultima carga</th>
+                  <th>Metrica VMware</th>
                   <th>Resultado del parser</th>
                   <th>Advertencias</th>
                   <th>Errores</th>
@@ -1586,6 +1587,11 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                         {module.lastUpload
                           ? `${module.lastUpload.originalFilename} (${formatStatusLabel(module.lastUpload.uploadKind)})`
                           : "Sin carga"}
+                      </td>
+                      <td>
+                        {module.vmwareMetrics
+                          ? `VMs ${module.vmwareMetrics.vmCount ?? "-"} / matched ${module.vmwareMetrics.matchedVmCount ?? "-"} / unmatched ${module.vmwareMetrics.unmatchedVmCount ?? "-"} / snapshots viejos ${module.vmwareMetrics.oldSnapshotCount ?? "-"} / tags ${module.vmwareMetrics.tagAssignmentCount ?? "-"} / DRS ${module.vmwareMetrics.drsRuleCount ?? "-"}`
+                          : "-"}
                       </td>
                       <td>
                         {module.lastParseResult

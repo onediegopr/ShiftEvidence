@@ -39,7 +39,7 @@ export const evidenceModuleCatalog = [
     phase: "prepared",
     userVisible: true,
     adminVisible: true,
-    preparedMessage: "Prepared for future VMware collector/template ingestion. This does not block RVTools reports.",
+    preparedMessage: "Download the read-only VMware collector, review the JSON output locally, then upload it here. This does not block RVTools reports.",
   },
   {
     key: EvidenceModuleKey.proxmox_target,

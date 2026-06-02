@@ -131,11 +131,12 @@ Implemented behavior:
 - return safe unsupported result
 - convert thrown parser exceptions into failed parse results
 
-Current parser:
+Parsers after EVIDENCE-2:
 
+- `vmware-enrichment-parser-v1`
 - `evidence-metadata-only-v1`
 
-This parser intentionally records upload metadata and warning state only. It does not claim domain-specific VMware, Proxmox, Veeam, storage or dependency analysis.
+The metadata-only parser intentionally records upload metadata and warning state only. It does not claim domain-specific Proxmox, Veeam, storage or dependency analysis.
 
 ## Evidence Expansion Service
 

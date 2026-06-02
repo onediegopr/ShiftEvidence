@@ -616,6 +616,8 @@ Deliverables:
 
 ### Hito 3: EVIDENCE-2, VMware enrichment collector and parser
 
+Status: implemented locally on 2026-06-01.
+
 Deliverables:
 
 - Proprietary PowerCLI collector.

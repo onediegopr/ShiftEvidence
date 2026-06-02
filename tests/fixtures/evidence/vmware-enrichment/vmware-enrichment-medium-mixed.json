@@ -1,0 +1,24 @@
+{
+  "schema": "shift-evidence.vmware-enrichment.v1",
+  "collector": { "name": "shift-vmware-evidence-collector", "displayName": "Shift Evidence VMware Enrichment Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "vmware-vsphere", "server": "synthetic-vcenter.local", "collectionStartedAt": "2026-06-01T10:00:00.000Z", "collectionEndedAt": "2026-06-01T10:02:00.000Z" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": { "vmCount": 4, "hostCount": 2, "clusterCount": 1, "datastoreCount": 2, "networkCount": 4, "snapshotCount": 1, "tagAssignmentCount": 3, "warningCount": 1, "errorCount": 0 },
+  "entities": {
+    "vms": [
+      { "name": "app-01", "instanceUuid": "11111111-1111-1111-1111-111111111111", "biosUuid": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "resourcePool": "Production", "cluster": "Cluster-A", "vmHost": "esx-01.local", "tags": ["production"], "snapshotCount": 0, "networks": ["VLAN100-App"], "datastores": ["ds-prod-01"] },
+      { "name": "db-01", "instanceUuid": "22222222-2222-2222-2222-222222222222", "biosUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "resourcePool": "Production", "cluster": "Cluster-A", "vmHost": "esx-01.local", "tags": ["database"], "snapshotCount": 0, "networks": ["VLAN110-DB"], "datastores": ["ds-prod-01"] },
+      { "name": "web-02", "instanceUuid": "33333333-3333-3333-3333-333333333333", "biosUuid": "cccccccc-cccc-cccc-cccc-cccccccccccc", "resourcePool": "Web", "cluster": "Cluster-A", "vmHost": "esx-02.local", "tags": ["web"], "snapshotCount": 1, "networks": ["VLAN100-App"], "datastores": ["ds-prod-02"] },
+      { "name": "legacy-01", "instanceUuid": null, "biosUuid": "dddddddd-dddd-dddd-dddd-dddddddddddd", "resourcePool": "Legacy", "cluster": "Cluster-A", "vmHost": "esx-02.local", "tags": [], "snapshotCount": 0, "networks": ["VLAN120-Legacy"], "datastores": ["ds-prod-02"] }
+    ],
+    "snapshots": [{ "vmName": "web-02", "snapshotName": "patch-window", "created": "2026-05-20T10:00:00.000Z", "ageDays": 12, "sizeGB": 4, "description": "Synthetic patch snapshot" }],
+    "tags": [{ "vmName": "app-01", "tag": "production", "category": "environment" }, { "vmName": "db-01", "tag": "database", "category": "role" }, { "vmName": "web-02", "tag": "web", "category": "role" }],
+    "hosts": [{ "hostName": "esx-01.local", "clusterName": "Cluster-A" }, { "hostName": "esx-02.local", "clusterName": "Cluster-A" }],
+    "clusters": [{ "clusterName": "Cluster-A", "haEnabled": true, "drsEnabled": true }],
+    "datastores": [{ "datastoreName": "ds-prod-01", "type": "VMFS", "capacityGB": 4096, "freeGB": 2048, "vmNames": ["app-01", "db-01"] }, { "datastoreName": "ds-prod-02", "type": "NFS", "capacityGB": 8192, "freeGB": 4096, "vmNames": ["web-02", "legacy-01"] }],
+    "networks": [{ "vmName": "app-01", "networkName": "VLAN100-App", "connected": true }, { "vmName": "db-01", "networkName": "VLAN110-DB", "connected": true }, { "vmName": "web-02", "networkName": "VLAN100-App", "connected": true }, { "vmName": "legacy-01", "networkName": "VLAN120-Legacy", "connected": true }],
+    "drsRules": []
+  },
+  "warnings": [{ "code": "vm_instance_uuid_missing", "message": "VM has no instance UUID available.", "target": "legacy-01" }],
+  "errors": []
+}

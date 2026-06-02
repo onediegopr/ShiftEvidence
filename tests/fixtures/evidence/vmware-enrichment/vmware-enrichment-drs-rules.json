@@ -1,0 +1,18 @@
+{
+  "schema": "shift-evidence.vmware-enrichment.v1",
+  "collector": { "name": "shift-vmware-evidence-collector", "displayName": "Shift Evidence VMware Enrichment Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "vmware-vsphere" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": { "vmCount": 2 },
+  "entities": {
+    "vms": [
+      { "name": "app-01", "instanceUuid": "11111111-1111-1111-1111-111111111111", "biosUuid": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "tags": [] },
+      { "name": "db-01", "instanceUuid": "22222222-2222-2222-2222-222222222222", "biosUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "tags": [] }
+    ],
+    "snapshots": [], "tags": [], "hosts": [], "clusters": [{ "clusterName": "Cluster-A", "drsEnabled": true }],
+    "datastores": [], "networks": [],
+    "drsRules": [{ "name": "keep-app-db-together", "enabled": true, "type": "VMAffinity", "cluster": "Cluster-A", "vmNames": ["app-01", "db-01"] }]
+  },
+  "warnings": [],
+  "errors": []
+}

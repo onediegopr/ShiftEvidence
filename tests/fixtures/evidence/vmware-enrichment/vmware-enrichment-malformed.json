@@ -1,0 +1,1 @@
+{ "schema": "shift-evidence.vmware-enrichment.v1", "collector": { "name": "shift-vmware-evidence-collector" },

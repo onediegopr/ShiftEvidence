@@ -4,6 +4,7 @@ import {
   EvidenceModuleSourceType,
 } from "@prisma/client";
 import { getEvidenceModuleCatalog } from "./evidenceModuleRegistry";
+import { createVmwareEnrichmentParser } from "./parsers/vmwareEnrichmentParser";
 
 export type EvidenceParserInput = {
   assessmentId: string;
@@ -146,6 +147,7 @@ export function createMetadataOnlyParser(): EvidenceParser {
 
 export function createDefaultEvidenceParserRegistry() {
   const registry = new EvidenceParserRegistry();
+  registry.register(createVmwareEnrichmentParser());
   registry.register(createMetadataOnlyParser());
   return registry;
 }

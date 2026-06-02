@@ -1,0 +1,108 @@
+{
+  "schema": "shift-evidence.vmware-enrichment.v1",
+  "collector": {
+    "name": "shift-vmware-evidence-collector",
+    "displayName": "Shift Evidence VMware Enrichment Collector",
+    "version": "0.1.0",
+    "owner": "Shift Evidence",
+    "mode": "read-only"
+  },
+  "source": {
+    "platform": "vmware-vsphere",
+    "server": "synthetic-vcenter.local",
+    "collectionStartedAt": "2026-06-01T10:00:00.000Z",
+    "collectionEndedAt": "2026-06-01T10:01:00.000Z"
+  },
+  "safety": {
+    "persistentCredentialsStored": false,
+    "configurationChanged": false,
+    "rawSecretsIncluded": false,
+    "networkUploadPerformed": false
+  },
+  "summary": {
+    "vmCount": 2,
+    "hostCount": 1,
+    "clusterCount": 1,
+    "datastoreCount": 1,
+    "networkCount": 2,
+    "snapshotCount": 0,
+    "tagAssignmentCount": 2,
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "entities": {
+    "vms": [
+      {
+        "name": "app-01",
+        "id": "VirtualMachine-vm-101",
+        "instanceUuid": "11111111-1111-1111-1111-111111111111",
+        "biosUuid": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "powerState": "PoweredOn",
+        "guestId": "windows9Server64Guest",
+        "guestFullName": "Microsoft Windows Server 2019",
+        "numCpu": 4,
+        "memoryGB": 16,
+        "folder": "Production/App",
+        "resourcePool": "Production",
+        "vmHost": "esx-01.local",
+        "cluster": "Cluster-A",
+        "datastores": ["ds-prod-01"],
+        "networks": ["VLAN100-App"],
+        "toolsStatus": "toolsOk",
+        "hardwareVersion": "vmx-19",
+        "notes": "Synthetic app server",
+        "tags": ["production"],
+        "customAttributes": [],
+        "snapshotCount": 0,
+        "newestSnapshotAgeDays": null,
+        "oldestSnapshotAgeDays": null
+      },
+      {
+        "name": "db-01",
+        "id": "VirtualMachine-vm-102",
+        "instanceUuid": "22222222-2222-2222-2222-222222222222",
+        "biosUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "powerState": "PoweredOn",
+        "guestId": "rhel8_64Guest",
+        "guestFullName": "Red Hat Enterprise Linux 8",
+        "numCpu": 8,
+        "memoryGB": 32,
+        "folder": "Production/Database",
+        "resourcePool": "Production",
+        "vmHost": "esx-01.local",
+        "cluster": "Cluster-A",
+        "datastores": ["ds-prod-01"],
+        "networks": ["VLAN110-DB"],
+        "toolsStatus": "toolsOk",
+        "hardwareVersion": "vmx-19",
+        "notes": "Synthetic DB server",
+        "tags": ["database"],
+        "customAttributes": [],
+        "snapshotCount": 0,
+        "newestSnapshotAgeDays": null,
+        "oldestSnapshotAgeDays": null
+      }
+    ],
+    "snapshots": [],
+    "tags": [
+      { "vmName": "app-01", "tag": "production", "category": "environment", "entityType": "VirtualMachine" },
+      { "vmName": "db-01", "tag": "database", "category": "role", "entityType": "VirtualMachine" }
+    ],
+    "hosts": [
+      { "hostName": "esx-01.local", "clusterName": "Cluster-A", "cpuModel": "Synthetic CPU", "cpuTotalMhz": 96000, "memoryTotalGB": 256, "version": "8.0", "build": "synthetic", "connectionState": "Connected", "maintenanceMode": false }
+    ],
+    "clusters": [
+      { "clusterName": "Cluster-A", "haEnabled": true, "drsEnabled": true, "drsAutomationLevel": "FullyAutomated" }
+    ],
+    "datastores": [
+      { "datastoreName": "ds-prod-01", "type": "VMFS", "capacityGB": 4096, "freeGB": 2048, "vmNames": ["app-01", "db-01"] }
+    ],
+    "networks": [
+      { "vmName": "app-01", "networkName": "VLAN100-App", "adapterName": "Network adapter 1", "macAddress": "00:50:56:aa:00:01", "connected": true, "distributedPortGroup": "dvpg-app" },
+      { "vmName": "db-01", "networkName": "VLAN110-DB", "adapterName": "Network adapter 1", "macAddress": "00:50:56:bb:00:01", "connected": true, "distributedPortGroup": "dvpg-db" }
+    ],
+    "drsRules": []
+  },
+  "warnings": [],
+  "errors": []
+}

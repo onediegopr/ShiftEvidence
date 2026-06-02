@@ -1,0 +1,15 @@
+{
+  "schema": "shift-evidence.vmware-enrichment.v1",
+  "collector": { "name": "shift-vmware-evidence-collector", "displayName": "Shift Evidence VMware Enrichment Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "vmware-vsphere" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": { "vmCount": 1 },
+  "entities": {
+    "vms": [
+      { "name": "pre-rvtools-01", "instanceUuid": "abababab-abab-abab-abab-abababababab", "biosUuid": "cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd", "tags": ["pre-upload"], "snapshotCount": 0 }
+    ],
+    "snapshots": [], "tags": [{ "vmName": "pre-rvtools-01", "tag": "pre-upload", "category": "state" }], "hosts": [], "clusters": [], "datastores": [], "networks": [], "drsRules": []
+  },
+  "warnings": [],
+  "errors": []
+}
