@@ -1765,62 +1765,84 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                         dur="8s"
                         repeatCount="indefinite"
                       />
-                      <g transform="scale(2.1)">
+                      <g transform="scale(2)">
+                        {/* Outer rotating scanning dash ring */}
                         <circle
-                          cx="-4"
+                          cx="0"
                           cy="0"
-                          r="7.2"
+                          r="15"
                           fill="none"
                           stroke="#22d3ee"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M -8,0 H 8"
-                          fill="none"
-                          stroke="#8b5cf6"
-                          strokeWidth="2.4"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M 3,-3 L 8,0 L 3,3"
-                          fill="none"
-                          stroke="#8b5cf6"
-                          strokeWidth="2.4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                          strokeWidth="0.8"
+                          strokeDasharray="4 8"
+                          opacity="0.7"
                         >
                           <animateTransform
                             attributeName="transform"
-                            type="translate"
-                            values="-2 0; 2 0; -2 0"
-                            dur="2.1s"
+                            type="rotate"
+                            from="0"
+                            to="360"
+                            dur="6s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                        {/* Inner reverse-rotating ring */}
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r="11"
+                          fill="none"
+                          stroke="#8b5cf6"
+                          strokeWidth="0.8"
+                          strokeDasharray="3 6"
+                          opacity="0.6"
+                        >
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            from="360"
+                            to="0"
+                            dur="4s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                        {/* Core Shield / Hexagon Node representing Safe Transition */}
+                        <polygon
+                          points="0,-8 7,-4 7,4 0,8 -7,4 -7,-4"
+                          fill="rgba(6, 182, 212, 0.15)"
+                          stroke="#22d3ee"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        >
+                          <animate
+                            attributeName="fill"
+                            values="rgba(6, 182, 212, 0.15); rgba(139, 92, 246, 0.25); rgba(6, 182, 212, 0.15)"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="stroke"
+                            values="#22d3ee;#8b5cf6;#22d3ee"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                        </polygon>
+                        {/* Inner check / validate pulse */}
+                        <path
+                          d="M -3,0 L -1,2 L 3,-2"
+                          fill="none"
+                          stroke="#10b981"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <animate
+                            attributeName="opacity"
+                            values="0.4;1;0.4"
+                            dur="2s"
                             repeatCount="indefinite"
                           />
                         </path>
-                      <circle cx="-8" cy="0" r="1.6" fill="#22d3ee">
-                        <animate
-                          attributeName="opacity"
-                          values="1;0.35;1"
-                          dur="1.8s"
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                        <g transform="translate(0, -4)">
-                          <path
-                            d="M -5.5,1 H 5.5"
-                            fill="none"
-                            stroke="rgba(34, 211, 238, 0.5)"
-                            strokeWidth="1.2"
-                            strokeDasharray="2 4"
-                          >
-                            <animate
-                              attributeName="stroke-dashoffset"
-                              values="0;-10"
-                              dur="1.8s"
-                              repeatCount="indefinite"
-                            />
-                          </path>
-                        </g>
                       </g>
                     </g>
                   </g>

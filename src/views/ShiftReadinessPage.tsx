@@ -5,6 +5,7 @@
 // "Ceph as a default recommendation"
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -56,31 +57,14 @@ export default function ShiftReadinessPage() {
       <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
         <div className="container navbar-container">
           <Link href="/" className="logo-container">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <Image
+              src="/brand/shift-evidence-icon-dark-transparent.png"
+              alt="Shift Evidence Logo"
+              width={40}
+              height={40}
               className="nav-brand-logo"
-              aria-hidden="true"
-            >
-              <circle
-                cx="12"
-                cy="16"
-                r="8"
-                fill="none"
-                stroke="#06b6d4"
-                strokeWidth="2.5"
-              />
-              <path
-                d="M12 16H24M24 16L20 12M24 16L20 20"
-                stroke="#8b5cf6"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              priority
+            />
             <span>Shift Evidence</span>
             <span className="navbar-badge">ShiftReadiness</span>
           </Link>

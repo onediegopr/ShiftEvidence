@@ -62,23 +62,29 @@ function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, si
   const scale = size / 32;
   const strokeWidth = Math.max(1, 2.5 * scale);
 
+  // Draw three rounded infrastructure layers simulating data flow
   doc
-    .circle(x + 12 * scale, y + 16 * scale, 8 * scale)
+    .moveTo(x + 6 * scale, y + 10 * scale)
+    .lineTo(x + 26 * scale, y + 10 * scale)
     .lineWidth(strokeWidth)
+    .lineCap("round")
     .strokeColor("#06b6d4")
     .stroke();
 
   doc
-    .moveTo(x + 12 * scale, y + 16 * scale)
-    .lineTo(x + 24 * scale, y + 16 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 12 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 20 * scale)
+    .moveTo(x + 9 * scale, y + 16 * scale)
+    .lineTo(x + 23 * scale, y + 16 * scale)
     .lineWidth(strokeWidth)
     .lineCap("round")
-    .lineJoin("round")
     .strokeColor("#8b5cf6")
+    .stroke();
+
+  doc
+    .moveTo(x + 12 * scale, y + 22 * scale)
+    .lineTo(x + 20 * scale, y + 22 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .strokeColor("#06b6d4")
     .stroke();
 }
 

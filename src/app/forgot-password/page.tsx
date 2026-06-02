@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
@@ -43,33 +44,16 @@ export default function ForgotPasswordPage() {
         <div className="auth-glow-2"></div>
 
         <section className="auth-shell glass-card">
-          <div className="auth-logo-header">
-            <Link href="/" className="logo-container">
-              <svg
-                width="35"
-                height="35"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          <div className="auth-logo-center">
+            <Link href="/" className="logo-container" style={{ fontSize: "1.4rem" }}>
+              <Image
+                src="/brand/shift-evidence-icon-dark-transparent.png"
+                alt="Shift Evidence Logo"
+                width={35}
+                height={35}
                 className="nav-brand-logo"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="12"
-                  cy="16"
-                  r="8"
-                  fill="none"
-                  stroke="#06b6d4"
-                  strokeWidth="2.5"
-                />
-                <path
-                  d="M12 16H24M24 16L20 12M24 16L20 20"
-                  stroke="#8b5cf6"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                priority
+              />
               <span>Shift Evidence</span>
             </Link>
           </div>
