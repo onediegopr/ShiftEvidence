@@ -9,6 +9,7 @@ import {
   matchBillingOrder,
   matchBillingSubscription,
 } from "../../../../server/billing/admin/billingManualMatchService";
+import { updateBillingInvoiceRequestFromAdmin } from "../../../../server/billing/invoiceRequestService";
 
 function getBillingRedirect(params: string): never {
   redirect(`/dashboard/admin/billing?${params}`);
@@ -96,6 +97,24 @@ export async function revokeBillingGrantedEntitlementAction(formData: FormData) 
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo revocar el acceso manual.";
+    redirectParams = `error=${safeRedirectError(message)}`;
+  }
+
+  getBillingRedirect(redirectParams);
+}
+
+export async function updateBillingInvoiceRequestAction(formData: FormData) {
+  const session = await requireAdminSession();
+  let redirectParams = "saved=invoice-request";
+
+  try {
+    await updateBillingInvoiceRequestFromAdmin({
+      adminUserId: session.user.id,
+      adminEmail: session.user.email,
+      formData,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudo actualizar la solicitud de invoice.";
     redirectParams = `error=${safeRedirectError(message)}`;
   }
 

@@ -1,11 +1,6 @@
 import { billingPlans } from "../../../config/billing";
 import type { BillingRiskLevel } from "./billingAdminLabels";
 
-export type LemonBillingStatus =
-  | "no_configurado"
-  | "legado_desactivado"
-  | "rechazado_legacy";
-
 export type WiseBillingStatus =
   | "factura_manual"
   | "api_no_configurada"
@@ -31,24 +26,6 @@ export type BillingProviderLedgerSummary = {
 };
 
 export type BillingProviderStatusSnapshot = {
-  lemon: {
-    providerName: "Lemon Squeezy";
-    status: LemonBillingStatus;
-    storeIdPresent: boolean;
-    apiKeyPresent: boolean;
-    apiKeyAliasPresent: boolean;
-    starterVariantPresent: boolean;
-    professionalVariantPresent: boolean;
-    mspVariantPresent: boolean;
-    checkoutMode: "test" | "live" | "unknown";
-    checkoutEnabled: false;
-    webhookSecretPresent: boolean;
-    webhookEndpointAvailable: boolean;
-    webhookStatus: "legado" | "eventos_recibidos" | "errores";
-    lastSmokeStatus: "legacy_disabled";
-    recommendedAction: string;
-    riskLevel: BillingRiskLevel;
-  };
   wise: {
     providerName: "Wise";
     status: WiseBillingStatus;
@@ -57,6 +34,8 @@ export type BillingProviderStatusSnapshot = {
     profileIdPresent: boolean;
     currentUse: "Transferencia bancaria manual / invoice";
     automationEnabled: false;
+    requestFlowEnabled: true;
+    pendingInvoiceRequestsCount: number;
     lastVerification: "No verificada";
     recommendedAction: string;
     riskLevel: BillingRiskLevel;
@@ -81,6 +60,8 @@ export type BillingProviderStatusSnapshot = {
     checkoutTestMode: boolean;
     livePayments: boolean;
     manualFulfillment: boolean;
+    bankTransferRequests: boolean;
+    pendingInvoiceRequestsCount: number;
     webhooks: boolean;
     ledger: boolean;
     automaticEntitlements: boolean;
@@ -101,13 +82,6 @@ function hasEnv(name: string) {
 function parseEnvBoolean(value: string | undefined) {
   const normalized = value?.trim().replace(/^["']|["']$/g, "").toLowerCase();
   return normalized === "true" || normalized === "1" || normalized === "yes";
-}
-
-function getLemonCheckoutMode() {
-  const raw = process.env.LEMON_SQUEEZY_CHECKOUT_MODE?.trim().toLowerCase();
-  if (raw === "live") return "live" as const;
-  if (raw === "test" || !raw) return "test" as const;
-  return "unknown" as const;
 }
 
 function getStripeCheckoutMode() {
@@ -177,29 +151,11 @@ export function getBillingProviderStatusSnapshot(
     ignoredEventsCount: 0,
     lastEventAt: null,
   },
+  invoiceSummary: {
+    pendingInvoiceRequestsCount?: number;
+  } = {},
 ): BillingProviderStatusSnapshot {
-  const storeIdPresent = hasEnv("LEMON_SQUEEZY_STORE_ID");
-  const apiKeyPresent = hasEnv("LEMON_SQUEEZY_API_KEY");
-  const apiKeyAliasPresent = hasEnv("LEMONSQUEEZY_API_KEY");
-  const starterVariantPresent = hasEnv("LEMON_STARTER_VARIANT_ID");
-  const professionalVariantPresent = hasEnv("LEMON_PROFESSIONAL_VARIANT_ID");
-  const mspVariantPresent = hasEnv("LEMON_MSP_VARIANT_ID");
-  const webhookSecretPresent = hasEnv("LEMON_SQUEEZY_WEBHOOK_SECRET") || hasEnv("LEMONSQUEEZY_WEBHOOK_SECRET");
-  const checkoutMode = getLemonCheckoutMode();
-  const checkoutEnabled = false;
-  const requiredCheckoutConfigured =
-    storeIdPresent &&
-    (apiKeyPresent || apiKeyAliasPresent) &&
-    starterVariantPresent &&
-    professionalVariantPresent &&
-    mspVariantPresent;
-  const lemonStatus: LemonBillingStatus = requiredCheckoutConfigured ? "rechazado_legacy" : "legado_desactivado";
-  const webhookStatus = ledgerSummary.failedEventsCount > 0
-    ? "errores"
-    : ledgerSummary.recentEventsCount > 0
-      ? "eventos_recibidos"
-      : "legado";
-  const lemonRiskLevel: BillingRiskLevel = ledgerSummary.failedEventsCount > 0 ? "medio" : "bajo";
+  const pendingInvoiceRequestsCount = invoiceSummary.pendingInvoiceRequestsCount ?? 0;
   const stripeSecretKeyPresent = hasEnv("STRIPE_SECRET_KEY");
   const stripeWebhookSecretPresent = hasEnv("STRIPE_WEBHOOK_SECRET");
   const stripeSecretKeyMode = getStripeSecretKeyMode();
@@ -247,25 +203,6 @@ export function getBillingProviderStatusSnapshot(
         : "api_no_configurada";
 
   return {
-    lemon: {
-      providerName: "Lemon Squeezy",
-      status: lemonStatus,
-      storeIdPresent,
-      apiKeyPresent,
-      apiKeyAliasPresent,
-      starterVariantPresent,
-      professionalVariantPresent,
-      mspVariantPresent,
-      checkoutMode,
-      checkoutEnabled,
-      webhookSecretPresent,
-      webhookEndpointAvailable: true,
-      webhookStatus,
-      lastSmokeStatus: "legacy_disabled",
-      recommendedAction:
-        "Lemon Squeezy queda como legado historico deshabilitado tras rechazo del offering como servicios. No crear nuevos checkouts Lemon.",
-      riskLevel: lemonRiskLevel,
-    },
     wise: {
       providerName: "Wise",
       status: wiseStatus,
@@ -274,9 +211,11 @@ export function getBillingProviderStatusSnapshot(
       profileIdPresent: wiseProfileIdPresent,
       currentUse: "Transferencia bancaria manual / invoice",
       automationEnabled: false,
+      requestFlowEnabled: true,
+      pendingInvoiceRequestsCount,
       lastVerification: "No verificada",
       recommendedAction:
-        "Wise se usa actualmente como soporte operativo para facturas y transferencias manuales. No automatizar todavia.",
+        "Wise se usa como referencia manual para facturas y transferencias bancarias. No automatizar recipients, balances ni transfers.",
       riskLevel: wiseTokenPresent && wiseApiUrlMode === "production" ? "medio" : "bajo",
     },
     stripe: {
@@ -312,7 +251,9 @@ export function getBillingProviderStatusSnapshot(
       checkoutTestMode: stripeCheckoutMode === "test" && stripeCheckoutActive,
       livePayments,
       manualFulfillment: true,
-      webhooks: stripeWebhookSecretPresent || webhookSecretPresent || ledgerSummary.recentEventsCount > 0,
+      bankTransferRequests: true,
+      pendingInvoiceRequestsCount,
+      webhooks: stripeWebhookSecretPresent || ledgerSummary.recentEventsCount > 0,
       ledger: true,
       automaticEntitlements: false,
       reconciliation: "manual",

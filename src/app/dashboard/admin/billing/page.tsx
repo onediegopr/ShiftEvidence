@@ -10,6 +10,7 @@ import {
   Database,
   FileText,
   Gauge,
+  Landmark,
   LinkIcon,
   Search,
   ShieldCheck,
@@ -19,6 +20,7 @@ import {
   matchBillingOrderAction,
   matchBillingSubscriptionAction,
   revokeBillingGrantedEntitlementAction,
+  updateBillingInvoiceRequestAction,
 } from "./actions";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
 import {
@@ -72,7 +74,15 @@ import {
   getBillingProviderStatusSnapshot,
   getCheckoutPlanLinks,
 } from "../../../../server/billing/admin/billingProviderStatusService";
+import {
+  billingInvoiceRequestStatuses,
+  getBillingInvoiceRequestSummary,
+  listBillingInvoiceRequestsForAdmin,
+  type BillingInvoiceRequestStatusInput,
+} from "../../../../server/billing/invoiceRequestService";
 import { getStripeLiveDiagnostics } from "../../../../server/billing/stripeLiveDiagnostics";
+
+type BillingInvoiceRequestRow = Awaited<ReturnType<typeof listBillingInvoiceRequestsForAdmin>>[number];
 
 type AdminBillingPageProps = {
   searchParams?: Promise<{
@@ -98,7 +108,6 @@ function formatDate(value: Date | string | null | undefined) {
 
 function formatProvider(value: string) {
   const labels: Record<string, string> = {
-    lemon_squeezy: "Lemon Squeezy",
     wise: "Wise",
     stripe: "Stripe",
   };
@@ -146,16 +155,6 @@ function formatQueryMessage(value: string | null | undefined) {
   } catch {
     return value;
   }
-}
-
-function formatLemonStatus(value: string) {
-  const labels: Record<string, string> = {
-    no_configurado: "No configurado",
-    legado_desactivado: "Legado desactivado",
-    rechazado_legacy: "Rechazado / legacy",
-  };
-
-  return labels[value] ?? value;
 }
 
 function formatStripeStatus(value: string) {
@@ -218,6 +217,29 @@ function formatWiseApiMode(value: string) {
   return labels[value] ?? value;
 }
 
+function formatInvoiceRequestStatus(value: BillingInvoiceRequestStatusInput) {
+  const labels: Record<BillingInvoiceRequestStatusInput, string> = {
+    pending: "Pendiente",
+    invoice_sent: "Invoice enviado",
+    payment_received: "Pago recibido",
+    cancelled: "Cancelado",
+    rejected: "Rechazado",
+  };
+
+  return labels[value] ?? value;
+}
+
+function invoiceRequestStatusTone(value: BillingInvoiceRequestStatusInput) {
+  const tones: Record<BillingInvoiceRequestStatusInput, "neutral" | "good" | "warning" | "danger"> = {
+    pending: "warning",
+    invoice_sent: "neutral",
+    payment_received: "good",
+    cancelled: "danger",
+    rejected: "danger",
+  };
+
+  return tones[value];
+}
 function statusTone(value: string) {
   if (value.includes("live") || value.includes("alto") || value === "failed") return "danger";
   if (value.includes("test") || value.includes("ok") || value === "processed") return "good";
@@ -649,6 +671,92 @@ function EventsTable({ events }: { events: BillingAdminLedgerEvent[] }) {
   );
 }
 
+function InvoiceRequestsTable({ requests }: { requests: BillingInvoiceRequestRow[] }) {
+  if (requests.length === 0) {
+    return <p className="assessment-empty-note">No hay solicitudes de invoice por transferencia bancaria.</p>;
+  }
+
+  return (
+    <div className="assessment-table-wrap">
+      <table className="assessment-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Plan</th>
+            <th>Cliente</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Vinculos</th>
+            <th>Accion manual</th>
+          </tr>
+        </thead>
+        <tbody>
+          {requests.map((request) => (
+            <tr key={request.id}>
+              <td>{formatDate(request.createdAt)}</td>
+              <td>
+                <strong>{request.planName}</strong>
+                <p className="assessment-inline-note">{request.planSlug}</p>
+              </td>
+              <td>
+                <strong>{request.companyName}</strong>
+                <p className="assessment-inline-note">
+                  {request.contactName} / {request.customerEmail}
+                </p>
+              </td>
+              <td>{formatAmount(request.amountCents, request.currency)}</td>
+              <td>
+                <Chip
+                  label={formatInvoiceRequestStatus(request.status)}
+                  tone={invoiceRequestStatusTone(request.status)}
+                />
+              </td>
+              <td>
+                <FieldList
+                  rows={[
+                    ["Usuario", request.user?.email ?? request.userId ?? "-"],
+                    ["Workspace", request.workspace?.companyName ?? request.workspace?.name ?? request.workspaceId ?? "-"],
+                    ["Assessment", request.assessment?.title ?? request.assessmentId ?? "-"],
+                  ]}
+                />
+              </td>
+              <td>
+                {request.status === "payment_received" || request.status === "cancelled" || request.status === "rejected" ? (
+                  <p className="assessment-inline-note">Estado terminal. No hay grant automatico.</p>
+                ) : (
+                  <form action={updateBillingInvoiceRequestAction} style={{ display: "grid", gap: "8px", minWidth: "220px" }}>
+                    <input type="hidden" name="billingInvoiceRequestId" value={request.id} />
+                    <label className="admin-form-label">
+                      <span>Estado</span>
+                      <select className="admin-input" name="status" defaultValue={request.status}>
+                        {billingInvoiceRequestStatuses.map((status) => (
+                          <option key={status} value={status}>
+                            {formatInvoiceRequestStatus(status)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="admin-form-label">
+                      <span>Nota interna</span>
+                      <textarea
+                        className="admin-input"
+                        name="internalNotes"
+                        rows={2}
+                        defaultValue={request.internalNotes ?? ""}
+                        placeholder="Sin secretos, sin datos bancarios sensibles."
+                      />
+                    </label>
+                    <button type="submit" className="btn btn-secondary">Actualizar solicitud</button>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 function ReconciliationPanel({ items }: { items: BillingReconciliationItem[] }) {
   if (items.length === 0) {
     return <p className="assessment-empty-note">No hay inconsistencias visibles en el snapshot actual.</p>;
@@ -912,7 +1020,11 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
     ledger = getBillingLedgerFallback();
   }
 
-  const status = getBillingProviderStatusSnapshot(ledger);
+  const invoiceSummary = await getBillingInvoiceRequestSummary();
+  const invoiceRequests = await listBillingInvoiceRequestsForAdmin(25);
+  const status = getBillingProviderStatusSnapshot(ledger, {
+    pendingInvoiceRequestsCount: invoiceSummary.pending,
+  });
   const checkoutLinks = getCheckoutPlanLinks();
   const matchCandidates = await getBillingAdminMatchCandidates({
     query: matchSearch,
@@ -933,7 +1045,9 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           ? "Acceso manual concedido o confirmado idempotentemente."
           : query.saved === "revocation"
             ? "Revocacion manual registrada o confirmada idempotentemente."
-            : "Cambios guardados."
+            : query.saved === "invoice-request"
+              ? "Solicitud de invoice actualizada."
+              : "Cambios guardados."
     : null;
   const errorMessage = formatQueryMessage(query?.error);
 
@@ -1055,35 +1169,14 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
               ["Profile ID", formatBooleanPresence(status.wise.profileIdPresent)],
               ["Uso actual", status.wise.currentUse],
               ["Automatizacion", "Desactivada"],
+              ["Flow invoice", status.wise.requestFlowEnabled ? "Activo" : "OFF"],
+              ["Solicitudes pendientes", status.wise.pendingInvoiceRequestsCount],
               ["Ultima verificacion", status.wise.lastVerification],
             ]}
           />
           <p className="assessment-inline-note">{status.wise.recommendedAction}</p>
         </ProviderCard>
 
-        <ProviderCard
-          icon={<BadgePercent size={22} />}
-          title="Lemon Squeezy"
-          status={formatLemonStatus(status.lemon.status)}
-          risk={formatBillingRiskLevel(status.lemon.riskLevel)}
-        >
-          <FieldList
-            rows={[
-              ["Store ID", formatBooleanPresence(status.lemon.storeIdPresent)],
-              ["API key", formatBooleanPresence(status.lemon.apiKeyPresent)],
-              ["API key alias MCP", formatBooleanPresence(status.lemon.apiKeyAliasPresent)],
-              ["Starter Variant ID", formatBooleanPresence(status.lemon.starterVariantPresent)],
-              ["Professional Variant ID", formatBooleanPresence(status.lemon.professionalVariantPresent)],
-              ["MSP Variant ID", formatBooleanPresence(status.lemon.mspVariantPresent)],
-              ["Checkout mode historico", formatCheckoutMode(status.lemon.checkoutMode)],
-              ["Checkout habilitado", "No"],
-              ["Webhook secret historico", formatBooleanPresence(status.lemon.webhookSecretPresent)],
-              ["Estado webhook", status.lemon.webhookStatus],
-              ["Motivo", "Provider legado: rechazo del offering como servicios."],
-            ]}
-          />
-          <p className="assessment-inline-note">{status.lemon.recommendedAction}</p>
-        </ProviderCard>
 
         <ProviderCard
           icon={<Database size={22} />}
@@ -1096,6 +1189,8 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
               ["Checkout test-mode", status.operations.checkoutTestMode ? "OK" : "NO"],
               ["Live payments", status.operations.livePayments ? "ON" : "OFF"],
               ["Fulfillment manual", status.operations.manualFulfillment ? "ON" : "OFF"],
+              ["Bank transfer requests", status.operations.bankTransferRequests ? "ON" : "OFF"],
+              ["Invoice pendientes", status.operations.pendingInvoiceRequestsCount],
               ["Webhooks", status.operations.webhooks ? "ON" : "OFF"],
               ["Ledger", status.operations.ledger ? "ON" : "OFF"],
               ["Entitlements automaticos", "OFF"],
@@ -1116,6 +1211,28 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
             ))}
           </div>
         </ProviderCard>
+      </section>
+
+
+      <section className="assessment-section glass-card">
+        <div className="assessment-section-title">
+          <div className="assessment-section-eyebrow">
+            <Landmark size={18} />
+            <span>Bank transfer</span>
+          </div>
+          <h2>Solicitudes de invoice</h2>
+          <p>
+            Solicitudes creadas desde el flujo publico de transferencia bancaria. Las acciones son manuales y no
+            crean pagos, recipients, transfers, balances ni grants automaticos.
+          </p>
+        </div>
+        <section className="assessment-summary-grid">
+          <MetricCard icon={<FileText size={22} />} label="Total" value={invoiceSummary.total} note="Solicitudes registradas" />
+          <MetricCard icon={<AlertTriangle size={22} />} label="Pendientes" value={invoiceSummary.pending} note="Requiere revision admin" />
+          <MetricCard icon={<Banknote size={22} />} label="Invoice enviado" value={invoiceSummary.invoiceSent} note="Follow-up manual" />
+          <MetricCard icon={<CheckCircle2 size={22} />} label="Pago recibido" value={invoiceSummary.paymentReceived} note="Sin auto-grant" />
+        </section>
+        <InvoiceRequestsTable requests={invoiceRequests} />
       </section>
 
       <section className="assessment-section glass-card">
@@ -1242,13 +1359,13 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         </div>
         <div className="report-history-grid">
           {[
-            ["Checkout devuelve not_configured", "Revisar API key, Store ID, Variant IDs, checkout disabled y redeploy pendiente."],
-            ["Cliente pago pero no tiene acceso", "No hay grant automatico. Verificar Lemon, usar runbook manual y revisar solicitudes de desbloqueo."],
-            ["Webhook no llega", "Revisar secret, URL configurada en Lemon, deploy del endpoint y firma invalida."],
-            ["Pago aparece en Lemon pero no en Shift Evidence", "Revisar entrega webhook, firma, evento fallido, ID estable y procesamiento comercial pendiente."],
+            ["Checkout devuelve not_configured", "Revisar Stripe secret, Price IDs, checkout disabled y redeploy pendiente."],
+            ["Cliente pago pero no tiene acceso", "No hay grant automatico. Verificar Stripe/admin ledger, usar runbook manual y revisar solicitudes de desbloqueo."],
+            ["Webhook Stripe no llega", "Revisar secret, URL configurada en Stripe, deploy del endpoint y firma invalida."],
+            ["Pago por transferencia pendiente", "Revisar solicitudes de invoice y actualizar estado manualmente sin crear grants automaticos."],
             ["Orden sin match", "Verificar email, workspace y assessment. El match manual queda para un hito posterior."],
             ["Pago visible pero sin acceso", "Correcto por diseno: el ledger no concede acceso. Usar fulfillment manual."],
-            ["Evento fallido", "Revisar error safe. No otorgar acceso manual sin verificar Lemon."],
+            ["Evento fallido", "Revisar error safe. No otorgar acceso manual sin verificar evidencia de pago."],
             ["Refund o cancelacion", "No borrar datos. Marcar revision manual y usar runbook."],
           ].map(([title, description]) => (
             <article key={title} className="glass-card report-history-card">
