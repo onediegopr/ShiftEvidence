@@ -135,7 +135,7 @@ Not allowed:
 - Code signing is not implemented.
 - Vendor-specific storage APIs remain future scope.
 - Automatic dependency discovery remains future scope.
-- EVIDENCE-7.1B authenticated browser/manual closeout remains pending and is not closed by this hito.
+- EVIDENCE-7.1B was not closed by this hito, but was later closed by owner user-attested localhost/Chrome manual QA on 2026-06-02.
 
 ## Decision
 

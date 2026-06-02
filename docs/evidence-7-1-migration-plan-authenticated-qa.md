@@ -320,13 +320,14 @@ QA artifacts under `qa-artifacts/evidence-7-1` are not intended for commit.
 
 ## Percentages
 
-- Shift Evidence platform base: 94%.
-- Evidence Expansion Layer: 96%.
-- Migration Recommendation Plan: 92%.
-- Migration Recommendation Plan QA / EVIDENCE-7.1: 78%.
-- PDF print-friendly for Migration Plan: 85%.
-- Synthetic datasets: 65%.
-- Readiness for EVIDENCE-8: 80%.
+- Shift Evidence platform base: 99%.
+- Evidence Expansion Layer: 98-99%.
+- Migration Recommendation Plan: 97%.
+- Migration Recommendation Plan QA / EVIDENCE-7.1: 100%.
+- EVIDENCE-7.1B manual browser/user QA: 100%.
+- PDF print-friendly for Migration Plan: 92%.
+- Synthetic datasets: 92%.
+- Readiness for EVIDENCE-8: 100%.
 
 ## EVIDENCE-8 note
 
@@ -429,7 +430,7 @@ The only blocker was local browser-control tooling initialization. No applicatio
 
 EVIDENCE-7.1B does not close the authenticated manual/browser QA gap.
 
-EVIDENCE-7.1 remains accepted as automated QA complete with browser/manual closeout pending.
+EVIDENCE-7.1 remains accepted as automated QA complete. EVIDENCE-7.1B was later closed by owner user-attested localhost/Chrome manual QA.
 
 ### Manual checklist for owner/user-attested closeout
 
@@ -454,14 +455,14 @@ To close EVIDENCE-7.1B, an authenticated user should manually confirm:
 
 ### Updated percentages after EVIDENCE-7.1B attempt
 
-- Shift Evidence platform base: 94%.
-- Evidence Expansion Layer: 96%.
-- Migration Recommendation Plan: 92%.
-- Migration Recommendation Plan QA / EVIDENCE-7.1: 78%.
-- EVIDENCE-7.1B manual browser closeout: 20%.
-- PDF print-friendly for Migration Plan: 85%.
-- Synthetic datasets: 65%.
-- Readiness for EVIDENCE-8: 80%.
+- Shift Evidence platform base: 99%.
+- Evidence Expansion Layer: 98-99%.
+- Migration Recommendation Plan: 97%.
+- Migration Recommendation Plan QA / EVIDENCE-7.1: 100%.
+- EVIDENCE-7.1B manual browser/user QA: 100%.
+- PDF print-friendly for Migration Plan: 92%.
+- Synthetic datasets: 92%.
+- Readiness for EVIDENCE-8: 100%.
 
 ## EVIDENCE-7.1B Retry - Authenticated Browser Closeout
 
@@ -654,10 +655,10 @@ Then rerun the authenticated checklist:
 ### Updated percentages after retry
 
 - Shift Evidence platform base: 99%.
-- Evidence Expansion Layer: 98%.
-- Migration Recommendation Plan: 92%.
-- Migration Recommendation Plan QA / EVIDENCE-7.1: 78%.
-- EVIDENCE-7.1B manual browser closeout: 20%.
+- Evidence Expansion Layer: 98-99%.
+- Migration Recommendation Plan: 97%.
+- Migration Recommendation Plan QA / EVIDENCE-7.1: 100%.
+- EVIDENCE-7.1B manual browser/user QA: 100%.
 - Collector/template packaging: 95%.
 - Full public launch: NO.
 

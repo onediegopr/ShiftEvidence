@@ -784,7 +784,7 @@ After EVIDENCE-9 closeout:
 - Backup Evidence: 95% code/docs; real Veeam environment pending.
 - Storage/SAN Evidence: 93% vendor-neutral; vendor-specific APIs future.
 - Application Dependency Mapping: 93% template-based; automatic discovery future.
-- Migration Recommendation Plan: 92%; EVIDENCE-7.1B browser/manual closeout pending.
+- Migration Recommendation Plan: 97%; EVIDENCE-7.1B closed by owner user-attested localhost/Chrome manual QA.
 - PDF print-friendly global: 90%.
 - Synthetic dataset library: 90%.
 - Demo/sample/landing evidence messaging: 90%.
@@ -798,7 +798,7 @@ After EVIDENCE-10 packaging:
 - Artifact manifest/checksums: 100% for current controlled-beta artifacts.
 - Download UX integrity guidance: 95%.
 - Upload safety guidance: 95%.
-- Migration Recommendation Plan: 92%; EVIDENCE-7.1B browser/manual closeout pending.
+- Migration Recommendation Plan: 97%; EVIDENCE-7.1B closed by owner user-attested localhost/Chrome manual QA.
 - Full public launch: NO.
 
 ## Q. Risk Register

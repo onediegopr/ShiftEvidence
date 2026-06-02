@@ -13,7 +13,7 @@ Public launch decision: unchanged, full public launch remains NO
 
 EVIDENCE-8 strengthens the evidence expansion line without changing production configuration or billing. It makes customer-facing PDFs more print-friendly, adds a deterministic synthetic evidence dataset library, expands the demo/sample/landing messaging and documents the state of the broader evidence story.
 
-This hito does not close the authenticated manual browser QA pending from EVIDENCE-7.1B. That browser/user-attested click-through remains a separate pending closeout.
+This hito did not close the authenticated manual browser QA from EVIDENCE-7.1B at the time. That gap was later closed by owner user-attested localhost/Chrome manual QA on 2026-06-02.
 
 ## PDF Print-Friendly Work
 

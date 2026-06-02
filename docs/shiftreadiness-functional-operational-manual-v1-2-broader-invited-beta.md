@@ -58,13 +58,13 @@ EVIDENCE-8 update:
 - Global readiness PDFs and public sample PDFs now use a lighter print-friendly visual system.
 - `synthetic-data/` contains deterministic safe evidence scenarios for demos and QA.
 - Demo/sample/landing messaging explains evidence expansion without claiming automatic migration, cutover validation or production migration success.
-- EVIDENCE-7.1B authenticated browser QA remains pending.
+- EVIDENCE-7.1B authenticated/manual QA is closed by owner user-attested localhost/Chrome manual QA.
 - Full public launch remains NO.
 
 EVIDENCE-9 closeout update:
 
 - Evidence Expansion is operationally closed for controlled beta readiness.
-- Migration Recommendation Plan remains code-complete and automated-QA accepted, but browser/manual closeout is still pending.
+- Migration Recommendation Plan remains code-complete, automated-QA accepted and user-attested browser/manual QA passed for localhost/Chrome.
 - Real customer use requires customer authorization, data review expectations and support/operator readiness.
 - Full public launch remains NO.
 
@@ -73,7 +73,7 @@ EVIDENCE-10 packaging update:
 - Existing Evidence Expansion collectors/templates are packaged through `/evidence-artifacts/manifest.json`.
 - Current collector/template artifacts include deterministic SHA-256 checksums and `.sha256` sidecar files.
 - The Evidence Expansion Center shows manifest-driven downloads, checksum links and upload safety guidance.
-- This does not add new collectors/parsers, does not perform auto-upload, does not modify infrastructure and does not close EVIDENCE-7.1B.
+- This does not add new collectors/parsers, does not perform auto-upload and does not modify infrastructure. EVIDENCE-7.1B was closed separately by owner user-attested localhost/Chrome manual QA.
 - Full public launch remains NO.
 
 Producto: ShiftReadiness / Proxmox Migration Readiness.
@@ -1020,11 +1020,11 @@ Rules:
 - If backup/target/storage/dependency evidence is missing, the plan level and confidence must remain limited.
 - Functional waves are normally candidates unless strong dependency and business evidence supports validation.
 - AI narrative, when present, must not override deterministic gates or scores.
-- EVIDENCE-7.1B browser/manual QA remains pending before the plan is sold or described as fully browser-validated.
+- EVIDENCE-7.1B browser/manual QA is closed by owner user-attested localhost/Chrome manual QA; Codex Browser tooling remained broken/not used.
 
 Before commercial use of the Migration Recommendation Plan:
 
-- Close EVIDENCE-7.1B.
+- Maintain EVIDENCE-7.1B user-attested QA evidence and avoid overstating it as Codex Browser automation.
 - Confirm authenticated browser generation/download/open.
 - Confirm admin browser visibility.
 - Confirm entitlement/ownership denial behavior if feasible.

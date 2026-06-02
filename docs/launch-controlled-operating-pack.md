@@ -761,7 +761,7 @@ Status: implemented locally.
 - A deterministic `synthetic-data/` library was added for demo, parser and Migration Recommendation Plan QA scenarios.
 - Public `/demo`, `/sample-report`, landing and VMware-to-Proxmox offer copy were expanded with conservative evidence-expansion messaging.
 - Hostinger, DNS/env vars, DB schema, billing and deploy were not touched.
-- EVIDENCE-7.1B authenticated browser QA remains a separate pending item.
+- EVIDENCE-7.1B authenticated/manual QA was later closed by owner user-attested localhost/Chrome manual QA.
 - Full public launch remains NO.
 
 ## EVIDENCE-9 Evidence Expansion Closeout
@@ -774,7 +774,7 @@ Status: operational closeout.
 - Final closeout and checklist docs exist under `docs/`.
 - Manual operating rules were added for Evidence Expansion, Migration Recommendation Plan and collectors.
 - No new collectors, parsers, billing, Hostinger change, deploy or DB schema change were introduced.
-- EVIDENCE-7.1B authenticated browser QA remains pending.
+- EVIDENCE-7.1B authenticated/manual QA is closed by owner user-attested localhost/Chrome manual QA.
 - Full public launch remains NO.
 
 ## EVIDENCE-10 Collector Packaging
@@ -788,5 +788,5 @@ Status: controlled-beta packaging complete.
 - Download UX now shows version, schema, requirement summary, checksum link and README link.
 - Upload UX reminds users to review files locally and remove secrets, credentials, tokens and private paths before upload.
 - No new collectors/parsers, billing, Hostinger change, deploy or DB schema change were introduced.
-- EVIDENCE-7.1B authenticated browser QA remains pending.
+- EVIDENCE-7.1B authenticated/manual QA is closed by owner user-attested localhost/Chrome manual QA.
 - Full public launch remains NO.

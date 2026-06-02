@@ -764,7 +764,7 @@ Result:
 - Print-friendly PDF theme and public sample PDF generator were improved.
 - `synthetic-data/` was added for safe evidence expansion demos and QA.
 - Demo/sample/landing messaging was expanded conservatively.
-- EVIDENCE-7.1B authenticated browser click-through remains pending.
+- EVIDENCE-7.1B authenticated/manual QA was later closed by owner user-attested localhost/Chrome manual QA.
 
 ## EVIDENCE-9 Follow-up
 
@@ -783,7 +783,7 @@ Result:
 
 - Final closeout and checklist documentation were created.
 - The current operating manual was updated with Evidence Expansion, Migration Recommendation Plan and Collector operating rules.
-- EVIDENCE-7.1B authenticated browser/manual closeout remains mandatory before the Migration Recommendation Plan is sold or positioned as fully browser-validated.
+- EVIDENCE-7.1B authenticated/manual closeout is closed by owner user-attested localhost/Chrome QA; Migration Recommendation Plan may be positioned as controlled-beta validated, not public-launch ready.
 
 ## EVIDENCE-10 Follow-up
 
@@ -803,4 +803,4 @@ Result:
 - Existing Evidence Expansion collectors/templates now have deterministic SHA-256 checksums and `.sha256` sidecars.
 - `/evidence-artifacts/manifest.json` is the controlled-beta artifact source of truth.
 - The Evidence Expansion Center uses the manifest for download cards, checksum links and upload safety guidance.
-- EVIDENCE-7.1B authenticated browser/manual closeout remains pending.
+- EVIDENCE-7.1B authenticated/manual closeout is closed by owner user-attested localhost/Chrome manual QA.
