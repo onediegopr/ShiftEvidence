@@ -12,7 +12,7 @@ Full public launch: NO
 
 ## Executive Summary
 
-EVIDENCE-9 closes the main Evidence Expansion line as an operational and documentation milestone. The feature line is implemented in code and documentation from EVIDENCE-0 through EVIDENCE-8, with one explicit exception: EVIDENCE-7.1B authenticated/manual browser closeout remains pending.
+EVIDENCE-9 closes the main Evidence Expansion line as an operational and documentation milestone. The feature line is implemented in code and documentation from EVIDENCE-0 through EVIDENCE-10, and the prior EVIDENCE-7.1B authenticated/manual browser gap was closed by owner user-attested localhost/Chrome QA on 2026-06-02.
 
 This hito does not add new collectors, parsers, product modules, billing flows, deployment changes or Hostinger changes. It consolidates the operating rules, readiness status, launch boundaries and final checklists required before customer pilots, Migration Recommendation Plan commercialization and any future full public launch decision.
 
@@ -20,10 +20,10 @@ This hito does not add new collectors, parsers, product modules, billing flows, 
 
 - Evidence Expansion code/docs line: closed for controlled beta readiness.
 - Full public launch: NO.
-- Migration Recommendation Plan browser/manual validation: pending.
+- Migration Recommendation Plan browser/manual validation: closed by user-attested manual QA.
 - Real customer collector execution: pending.
-- Commercial sale of Migration Recommendation Plan as fully browser-validated: not approved until EVIDENCE-7.1B closes.
-- Next recommended path: EVIDENCE-7.1B browser closeout or EVIDENCE-10 Collector Packaging.
+- Migration Recommendation Plan controlled-beta positioning: allowed as automated-QA accepted and user-attested manual QA passed.
+- Next recommended path: first real-customer collector pilot with operator-assisted checksum verification.
 
 ## Module Status Matrix
 
@@ -35,7 +35,7 @@ This hito does not add new collectors, parsers, product modules, billing flows, 
 | Backup Evidence | Code/docs complete | Veeam-oriented collector/parser, backup readiness gates, restore-evidence limitations | Real Veeam environment execution and restore-test evidence remain pending |
 | Storage/SAN Evidence | Vendor-neutral complete | CSV/JSON templates, parser, readiness engine, RVTools/Proxmox mapping signals | Vendor-specific storage APIs are future scope |
 | Application Dependency Mapping | Template-based complete | CSV/JSON templates, parser, readiness engine, technical/functional wave signal model | Automatic dependency discovery is future scope |
-| Migration Recommendation Plan | Code/automated QA complete | Separate premium deliverable, deterministic gates, plan levels, PDF, entitlement behavior, admin visibility | EVIDENCE-7.1B browser/manual closeout pending |
+| Migration Recommendation Plan | Code/automated/user QA complete | Separate premium deliverable, deterministic gates, plan levels, PDF, entitlement behavior, admin visibility | Real customer pilot evidence remains pending |
 | PDF Print-Friendly | Mostly complete | Shared theme, readiness/sample/Migration Plan alignment, regenerated public sample PDFs | Final visual render tooling was limited by missing PyMuPDF in EVIDENCE-8 |
 | Synthetic Dataset Library | Complete for beta QA | `synthetic-data/`, generator script, no-secret tests, expected gates and summaries | Extend only if new modules/scenarios are added |
 | Demo/Sample/Landing Messaging | Complete for controlled beta | Public copy added with no-overpromise guardrails and tests | Keep reviewing before broader marketing changes |
@@ -65,10 +65,8 @@ Current accepted evidence:
 
 Still pending:
 
-- Authenticated real browser plan panel closeout.
-- Browser-generated PDF generation/download/open.
-- Admin visual browser confirmation.
 - Manual denial path for non-entitled user if feasible.
+- Real customer pilot validation with customer-safe data.
 
 ## Public Copy Safety Decision
 
@@ -102,7 +100,7 @@ Not yet allowed:
 - Backup Evidence: 95% code/docs; real Veeam environment pending.
 - Storage/SAN Evidence: 93% vendor-neutral; vendor-specific APIs future.
 - Application Dependency Mapping: 93% template-based; automatic discovery future.
-- Migration Recommendation Plan: 92%; browser/manual closeout pending.
+- Migration Recommendation Plan: 97%; user-attested manual browser QA passed.
 - PDF print-friendly global: 90%.
 - Synthetic dataset library: 90%.
 - Demo/sample/landing evidence messaging: 90%.
@@ -111,8 +109,8 @@ Not yet allowed:
 
 ## Next Recommended Hito
 
-Recommended next hito: EVIDENCE-7.1B retry / user-attested browser closeout.
+Recommended next hito: first real-customer collector pilot with operator-assisted checksum verification.
 
-EVIDENCE-10 follow-up: implemented locally on 2026-06-02. Existing collectors/templates now have deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance. EVIDENCE-7.1B remains pending.
+EVIDENCE-10 follow-up: implemented locally on 2026-06-02. Existing collectors/templates now have deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance.
 
 Alternative next hito after EVIDENCE-10: first real-customer collector pilot with operator-assisted checksum verification.

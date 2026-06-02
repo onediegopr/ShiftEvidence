@@ -788,3 +788,63 @@ Reason:
 - The authenticated browser closeout still requires real browser control/manual attestation, and Codex browser tooling remains blocked.
 
 Full public launch remains NO.
+
+## EVIDENCE-7.1B User-Attested Manual QA PASS
+
+Date: 2026-06-02
+Status: CLOSED by owner/user-attested manual QA
+Environment: localhost / user's normal Chrome browser
+Validation type: user-attested manual browser QA
+Codex Browser tooling: not used; still broken
+Production touched: no
+Hostinger touched: no
+Billing touched: no
+Landing/pricing touched: no
+Database touched in this closeout: no
+Deploy performed: no
+Full public launch: NO
+
+### Context
+
+After the local/dev database migration fix, the owner validated the flow directly in a normal Chrome browser against localhost.
+
+Codex browser tooling remained unavailable because of the local browser-runtime asset-path issue, but the product itself did not fail. This closeout is therefore recorded as user-attested manual QA, not Codex-controlled browser automation.
+
+### User-attested results
+
+- Login local: PASS.
+- Dashboard: PASS.
+- Assessment opens: PASS.
+- Migration Recommendation Plan panel: PASS.
+- Plan flow functional locally: PASS.
+- PDF generation: PASS.
+- PDF download: PASS.
+- PDF opens: PASS.
+- Functional local flow: PASS.
+- Product error from missing `AssessmentEvidenceModule`: resolved before this closeout.
+- No visible product failure reported by owner.
+
+### Safety assertions
+
+Confirmed for this closeout:
+
+- No Hostinger changes.
+- No deploy.
+- No billing/checkout/pricing changes.
+- No landing changes.
+- No DB changes during this documentation closeout.
+- No secrets printed or committed.
+- No full public launch declaration.
+
+### Decision
+
+EVIDENCE-7.1B: CERRADO by user-attested manual browser QA PASS.
+
+Full public launch remains NO.
+
+### Updated percentages
+
+- Migration Recommendation Plan: 97%.
+- EVIDENCE-7.1B manual browser/user QA: 100%.
+- Evidence Expansion Layer: 99%.
+- Full public launch: NO.

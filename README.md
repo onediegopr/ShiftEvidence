@@ -85,13 +85,13 @@ SALES-PAGE-1.1 completes visual QA and conversion polish for `/vmware-to-proxmox
 
 EVIDENCE-7 adds the separate premium Migration Recommendation Plan deliverable. It uses parsed evidence, deterministic gates and plan levels to produce a light print-friendly PDF through existing private report history; AI narrative remains deterministic fallback only and cannot override gates. Full public launch remains NO.
 
-EVIDENCE-7.1 validates the Migration Recommendation Plan with automated QA, entitlement checks and synthetic PDF parsing. It fixes page numbering in the standalone plan PDF; authenticated browser click-through remains pending/user-attested because the local Browser plugin could not initialize in this session. Full public launch remains NO.
+EVIDENCE-7.1 validates the Migration Recommendation Plan with automated QA, entitlement checks and synthetic PDF parsing. It fixes page numbering in the standalone plan PDF. EVIDENCE-7.1B is closed by owner user-attested localhost/Chrome manual QA PASS: login, dashboard, assessment, Migration Recommendation Plan and PDF generation/download/open worked locally. Codex Browser tooling remained broken/not used. Full public launch remains NO.
 
-EVIDENCE-8 adds global print-friendly PDF theming, a deterministic `synthetic-data/` evidence library, expanded demo/sample/landing messaging and copy-safety tests. It does not close the separate EVIDENCE-7.1B authenticated browser QA gap. Full public launch remains NO.
+EVIDENCE-8 adds global print-friendly PDF theming, a deterministic `synthetic-data/` evidence library, expanded demo/sample/landing messaging and copy-safety tests. The prior EVIDENCE-7.1B authenticated/manual QA gap is now closed by user attestation. Full public launch remains NO.
 
-EVIDENCE-9 closes the main Evidence Expansion line operationally for controlled beta readiness with a final closeout document, checklist and operating rules. It does not add new features, does not touch Hostinger/billing/deploy/schema, and keeps EVIDENCE-7.1B browser/manual closeout pending. Full public launch remains NO.
+EVIDENCE-9 closes the main Evidence Expansion line operationally for controlled beta readiness with a final closeout document, checklist and operating rules. It does not add new features and does not touch Hostinger/billing/deploy/schema. EVIDENCE-7.1B is closed by user-attested manual localhost/Chrome QA. Full public launch remains NO.
 
-EVIDENCE-10 packages the existing Evidence Expansion collectors/templates with deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance. It does not add new collectors/parsers, does not touch Hostinger/billing/deploy/schema and does not close EVIDENCE-7.1B. Full public launch remains NO.
+EVIDENCE-10 packages the existing Evidence Expansion collectors/templates with deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance. It does not add new collectors/parsers and does not touch Hostinger/billing/deploy/schema. Full public launch remains NO.
 
 ## Stack
 - Next.js App Router
