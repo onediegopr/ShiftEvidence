@@ -155,7 +155,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 <ArrowRight size={18} />
               </Link>
               <Link href="/demo" className="btn btn-secondary">
-                Watch readiness replay
+                Explore a Sample Assessment
               </Link>
               <Link href="/sample-report" className="btn btn-secondary">
                 View full sample report
@@ -223,15 +223,14 @@ export default function VMwareToProxmoxReadinessPage() {
         <div className="container sales-two-up">
           <article className="glass-card sample-report-inline-cta sales-mini-cta">
             <div>
-              <div className="badge badge-cyan">Watch the replay</div>
-              <h2>See the assessment before you start.</h2>
+              <div className="badge badge-cyan">Demo Workspace</div>
+              <h2>See how a VMware export becomes a migration readiness plan.</h2>
               <p>
-                Watch a simulated Migration Readiness Replay and see how a raw RVTools export becomes a Proxmox
-                migration decision pack.
+                Explore a synthetic Demo Workspace before starting your own assessment.
               </p>
             </div>
             <Link href="/demo" className="btn btn-primary btn-glow">
-              Watch the readiness replay
+              Explore a Sample Assessment
               <ArrowRight size={18} />
             </Link>
           </article>
@@ -409,7 +408,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 <ArrowRight size={18} />
               </Link>
               <Link href="/demo" className="btn btn-secondary">
-                Watch replay
+                Explore a Sample Assessment
                 <Waves size={17} />
               </Link>
               <Link href="/sample-report" className="btn btn-secondary">

@@ -2632,6 +2632,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 <ArrowRight size={18} />
               </button>
               <a
+                href="/demo"
+                className="btn btn-secondary"
+              >
+                Explore a Sample Assessment
+                <FileText size={18} className="text-cyan" />
+              </a>
+              <a
                 href="/sample-report"
                 className="btn btn-secondary"
               >

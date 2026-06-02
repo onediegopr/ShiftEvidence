@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import MigrationReadinessReplay from "../../components/demo/MigrationReadinessReplay";
+import DemoWorkspacePage from "../../components/demo/DemoWorkspacePage";
 
 export const metadata: Metadata = {
-  title: "Migration Readiness Replay | Shift Evidence",
+  title: "Demo Workspace | Shift Evidence",
   description:
-    "Watch a simulated VMware to Proxmox readiness replay and see how evidence becomes a migration decision pack.",
+    "Explore a read-only synthetic VMware to Proxmox Demo Workspace before purchasing Shift Evidence.",
   alternates: {
     canonical: "https://shiftevidence.com/demo",
   },
 };
 
 export default function DemoPage() {
-  return <MigrationReadinessReplay />;
+  return <DemoWorkspacePage />;
 }

@@ -4,6 +4,7 @@ import { logger } from "../logging/logger";
 import { ensureDefaultWorkspace } from "../workspace/workspaceService";
 import { assertCanCreateAssessment } from "../admin/runtimeSettingsService";
 import { INPUT_LIMITS, normalizeOptionalTextInput } from "../validation/inputLimits";
+import { assertNotDemoMode } from "../demo/demoGuards";
 
 export const assessmentCoreInclude = {
   workspace: {
@@ -472,6 +473,11 @@ export async function updateAssessmentBasics(params: {
   title: string;
   clientLabel?: string | null;
 }) {
+  assertNotDemoMode({
+    assessmentId: params.assessmentId,
+    kind: "edit_assessment",
+  });
+
   const assessment = await ensureAssessmentOwnership({
     userId: params.userId,
     assessmentId: params.assessmentId,
@@ -517,6 +523,11 @@ export async function setStorageReadinessEnabled(params: {
   assessmentId: string;
   enabled: boolean;
 }) {
+  assertNotDemoMode({
+    assessmentId: params.assessmentId,
+    kind: "edit_assessment",
+  });
+
   const assessment = await ensureAssessmentOwnership({
     userId: params.userId,
     assessmentId: params.assessmentId,
@@ -593,6 +604,11 @@ export async function archiveAssessment(params: {
   userId: string;
   assessmentId: string;
 }) {
+  assertNotDemoMode({
+    assessmentId: params.assessmentId,
+    kind: "edit_assessment",
+  });
+
   const assessment = await ensureAssessmentOwnership({
     userId: params.userId,
     assessmentId: params.assessmentId,

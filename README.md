@@ -2,6 +2,9 @@
 
 Shift Evidence is the public brand. ShiftReadiness is the first product module.
 
+Demo Workspace:
+`/demo` exposes a read-only synthetic Demo Workspace with eight VMware to Proxmox scenarios, demo PDF downloads and synthetic Advisor transcripts. It does not upload customer data, mutate production data, call live AI, or replace paid assessments.
+
 Tagline:
 Infrastructure readiness before you migrate.
 

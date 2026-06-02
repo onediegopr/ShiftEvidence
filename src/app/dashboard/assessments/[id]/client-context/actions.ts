@@ -26,6 +26,7 @@ import { deletePhysicalFileIfExists, writeUploadedFile } from "../../../../../se
 import { validateEvidenceUpload } from "../../../../../server/evidence/uploadValidation";
 import { assertRateLimit, getClientIpFromHeaders } from "../../../../../server/security/rateLimit";
 import { logger } from "../../../../../server/logging/logger";
+import { assertNotDemoMode } from "../../../../../server/demo/demoGuards";
 
 async function requireSession() {
   const session = await auth.api.getSession({
@@ -57,6 +58,8 @@ export async function saveClientContextDraftAction(assessmentId: string, formDat
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "edit_assessment" });
+
     await upsertAssessmentClientContextDraft({
       userId: session.user.id,
       assessmentId,
@@ -75,6 +78,8 @@ export async function submitClientContextAction(assessmentId: string, formData: 
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "edit_assessment" });
+
     await submitAssessmentClientContext({
       userId: session.user.id,
       assessmentId,
@@ -93,6 +98,8 @@ export async function skipClientContextAction(assessmentId: string) {
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "edit_assessment" });
+
     await skipAssessmentClientContext({
       userId: session.user.id,
       assessmentId,
@@ -110,6 +117,8 @@ export async function runClientContextAnalysisAction(assessmentId: string) {
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "live_advisor" });
+
     await runAssessmentClientContextAnalysis({
       userId: session.user.id,
       assessmentId,
@@ -128,6 +137,8 @@ export async function uploadAdditionalEvidenceAction(assessmentId: string, formD
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "upload_evidence" });
+
     const requestHeaders = await headers();
     await assertRateLimit({
       limiter: "uploadEvidenceUser",
@@ -241,6 +252,8 @@ export async function classifyAdditionalEvidenceAction(
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "edit_assessment" });
+
     await createOrUpdateAdditionalEvidenceClassification({
       userId: session.user.id,
       assessmentId,
@@ -265,6 +278,8 @@ export async function setAdditionalEvidenceIncludedAction(
   let redirectTarget = getAssessmentRedirectPath(assessmentId, "saved=1");
 
   try {
+    assertNotDemoMode({ email: session.user.email, assessmentId, kind: "edit_assessment" });
+
     await setAdditionalEvidenceIncluded({
       userId: session.user.id,
       assessmentId,

@@ -152,7 +152,7 @@ export default function SampleReportPage() {
                 <ArrowRight size={18} />
               </a>
               <Link href="/demo" className="btn btn-secondary">
-                Watch the readiness replay
+                Explore a Sample Assessment
               </Link>
               <a
                 href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf"
@@ -363,15 +363,15 @@ export default function SampleReportPage() {
         <div className="container">
           <div className="glass-card sample-report-inline-cta">
             <div>
-              <div className="badge badge-cyan">Assessment offer</div>
-              <h2>Want to understand the full assessment?</h2>
+              <div className="badge badge-cyan">Want more than a PDF?</div>
+              <h2>Open the Demo Workspace behind the report.</h2>
               <p>
-                The premium sample report shows the deliverable. The offer page explains how the assessment works, what evidence
-                improves confidence and how to start with your own VMware environment.
+                Explore a read-only synthetic assessment with scoring, evidence gaps, Storage Destination Readiness,
+                migration waves and Advisor transcript before starting your own assessment.
               </p>
             </div>
-            <Link href="/vmware-to-proxmox-readiness" className="btn btn-secondary">
-              View the assessment offer
+            <Link href="/demo" className="btn btn-primary btn-glow">
+              Explore a Sample Assessment
               <ArrowRight size={18} />
             </Link>
           </div>
@@ -392,7 +392,7 @@ export default function SampleReportPage() {
                 <ArrowRight size={18} />
               </Link>
               <Link href="/demo" className="btn btn-secondary">
-                Watch the replay
+                Explore a Sample Assessment
                 <Waves size={17} />
               </Link>
               <Link href="/contact" className="btn btn-secondary">

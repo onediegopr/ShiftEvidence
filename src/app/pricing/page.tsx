@@ -222,6 +222,21 @@ export default function PricingPage() {
             <p className="assessment-inline-note" style={{ maxWidth: "1000px", margin: "2rem auto 0", textAlign: "center" }}>
               {paymentOptionsCopy.pricingNote} Checkout availability is resolved securely at runtime.
             </p>
+
+            <article className="glass-card sample-report-inline-cta" style={{ maxWidth: "1000px", margin: "2rem auto 0" }}>
+              <div>
+                <div className="badge badge-cyan">Not ready to purchase yet?</div>
+                <h2>Explore a read-only sample assessment.</h2>
+                <p>
+                  Open Demo Workspace to see what each paid plan unlocks: synthetic evidence, risk scoring, Storage
+                  Destination Readiness, migration waves and demo reports.
+                </p>
+              </div>
+              <a href="/demo" className="btn btn-primary btn-glow">
+                Explore a Sample Assessment
+                <ArrowRight size={16} />
+              </a>
+            </article>
           </div>
         </section>
 

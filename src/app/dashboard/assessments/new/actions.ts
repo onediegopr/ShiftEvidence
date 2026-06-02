@@ -13,6 +13,7 @@ import {
   safeRedirectError,
 } from "../../../../server/assessments/formUtils";
 import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
+import { assertNotDemoMode } from "../../../../server/demo/demoGuards";
 
 export async function createAssessmentAction(formData: FormData) {
   const session = await auth.api.getSession({
@@ -26,6 +27,11 @@ export async function createAssessmentAction(formData: FormData) {
   let redirectTarget: string;
 
   try {
+    assertNotDemoMode({
+      email: session.user.email,
+      kind: "create_assessment",
+    });
+
     const title = parseRequiredString(formData.get("title"), "Assessment title", {
       maxLength: INPUT_LIMITS.assessmentTitle,
     });

@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "../../lib/auth";
 import { env } from "../../lib/env";
 import { upsertUserProfileFromSession } from "../user/userProfileService";
+import { isDemoUserEmail } from "../demo/demoGuards";
 
 function normalizeEmailForAdmin(email: string) {
   return email.trim().toLowerCase();
@@ -55,7 +56,7 @@ export async function getCurrentAdminUser() {
     authProvider: "better-auth",
   });
 
-  if (!isAdminEmail(session.user.email)) {
+  if (isDemoUserEmail(session.user.email) || !isAdminEmail(session.user.email)) {
     notFound();
   }
 
@@ -81,7 +82,7 @@ export async function getCurrentAdminUserForConsole() {
 
   return {
     session,
-    isAdmin: isAdminEmail(session.user.email),
+    isAdmin: !isDemoUserEmail(session.user.email) && isAdminEmail(session.user.email),
   };
 }
 
