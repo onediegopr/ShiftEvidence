@@ -20,6 +20,10 @@ describe("Shift Evidence Veeam backup collector static safety", () => {
     expect(content).toContain("proprietary tooling");
     expect(content).toContain("read-only evidence collection");
     expect(content).toContain("does not modify backup jobs");
+    expect(content).toContain("Version: 0.1.0");
+    expect(content).toContain("Owner: Shift Evidence");
+    expect(content).toContain("Mode: read-only");
+    expect(content).toContain("Output schema: shift-evidence.backup-evidence.v1");
   });
 
   it("declares the expected collector schema and safety metadata", () => {

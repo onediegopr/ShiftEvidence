@@ -8,6 +8,7 @@ const publicCopyFiles = [
   "src/views/LandingPage.tsx",
   "src/views/ShiftReadinessPage.tsx",
   "src/app/vmware-to-proxmox-readiness/page.tsx",
+  "src/components/assessments/EvidenceExpansionCenter.tsx",
 ];
 
 function readPublicCopy() {
@@ -38,6 +39,9 @@ describe("EVIDENCE-8 public copy safety", () => {
       "self-service public checkout final",
       "full public launch",
       "move vms automatically",
+      "no human review needed",
+      "restore tested",
+      "production migration approved",
     ];
 
     for (const phrase of forbiddenPhrases) {

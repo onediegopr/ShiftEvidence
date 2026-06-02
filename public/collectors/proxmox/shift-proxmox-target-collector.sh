@@ -4,6 +4,12 @@
 # Copyright (c) Shift Evidence.
 # Developed as proprietary tooling for Shift Evidence migration readiness assessments.
 #
+# Version: 0.1.0
+# Owner: Shift Evidence
+# Mode: read-only
+# Output schema: shift-evidence.proxmox-target.v1
+# Last reviewed: 2026-06-02
+#
 # This script is designed for read-only evidence collection from Proxmox VE.
 # It does not modify infrastructure, create resources, delete resources,
 # change configuration, restart services, install packages, or persist credentials.

@@ -2,6 +2,18 @@
 
 These are proprietary Shift Evidence templates for optional Application Dependency Mapping.
 
+## Version and Integrity
+
+- Version: `0.1.0`.
+- Mode: customer-provided evidence.
+- Output schema: `shift-evidence.application-dependencies.v1`.
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Checksum files:
+  - `/templates/dependencies/shift-application-dependency-template.csv.sha256`
+  - `/templates/dependencies/shift-application-dependency-template.json.sha256`
+
+The CSV template does not include comment headers because the parser expects the first row to be the CSV header.
+
 ## Safety
 
 - Do not include passwords.

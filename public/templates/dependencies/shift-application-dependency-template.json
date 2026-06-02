@@ -1,5 +1,7 @@
 {
   "schema": "shift-evidence.application-dependencies.v1",
+  "templateVersion": "0.1.0",
+  "owner": "Shift Evidence",
   "source": {
     "type": "manual_template",
     "generatedAt": "2026-06-02T00:00:00.000Z",

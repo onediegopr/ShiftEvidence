@@ -91,6 +91,8 @@ EVIDENCE-8 adds global print-friendly PDF theming, a deterministic `synthetic-da
 
 EVIDENCE-9 closes the main Evidence Expansion line operationally for controlled beta readiness with a final closeout document, checklist and operating rules. It does not add new features, does not touch Hostinger/billing/deploy/schema, and keeps EVIDENCE-7.1B browser/manual closeout pending. Full public launch remains NO.
 
+EVIDENCE-10 packages the existing Evidence Expansion collectors/templates with deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance. It does not add new collectors/parsers, does not touch Hostinger/billing/deploy/schema and does not close EVIDENCE-7.1B. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -154,6 +156,7 @@ EVIDENCE-9 closes the main Evidence Expansion line operationally for controlled 
 - `npm run storage:check`
 - `npm run ai:guardrails`
 - `npm run sample-report:generate`
+- `npm run evidence:artifacts`
 
 ## Environment variables
 Required:
@@ -238,6 +241,7 @@ Optional for future work:
 - `docs/local-storage-security-v1.md`
 - `docs/evidence-upload-flow-v1.md`
 - `docs/evidence-7-migration-recommendation-plan.md`
+- `docs/evidence-10-collector-packaging-download-ux.md`
 - `docs/secure-download-delete-v1.md`
 - `docs/hostinger-storage-runbook-v1.md`
 - `docs/hito-4-rvtools-parser-basic-inventory.md`

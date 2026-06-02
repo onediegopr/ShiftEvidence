@@ -776,3 +776,17 @@ Status: operational closeout.
 - No new collectors, parsers, billing, Hostinger change, deploy or DB schema change were introduced.
 - EVIDENCE-7.1B authenticated browser QA remains pending.
 - Full public launch remains NO.
+
+## EVIDENCE-10 Collector Packaging
+
+Date: 2026-06-02.
+
+Status: controlled-beta packaging complete.
+
+- Existing collectors/templates are listed in `/evidence-artifacts/manifest.json`.
+- Each packaged artifact has a deterministic SHA-256 checksum and `.sha256` sidecar.
+- Download UX now shows version, schema, requirement summary, checksum link and README link.
+- Upload UX reminds users to review files locally and remove secrets, credentials, tokens and private paths before upload.
+- No new collectors/parsers, billing, Hostinger change, deploy or DB schema change were introduced.
+- EVIDENCE-7.1B authenticated browser QA remains pending.
+- Full public launch remains NO.

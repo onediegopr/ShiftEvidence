@@ -20,6 +20,10 @@ describe("Shift Evidence Proxmox target collector static safety", () => {
     expect(content).toContain("proprietary tooling");
     expect(content).toContain("read-only evidence collection");
     expect(content).toContain("does not modify infrastructure");
+    expect(content).toContain("Version: 0.1.0");
+    expect(content).toContain("Owner: Shift Evidence");
+    expect(content).toContain("Mode: read-only");
+    expect(content).toContain("Output schema: shift-evidence.proxmox-target.v1");
   });
 
   it("declares the expected collector schema and safety metadata", () => {

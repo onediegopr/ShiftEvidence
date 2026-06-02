@@ -2,6 +2,18 @@
 
 These are proprietary Shift Evidence vendor-neutral templates for optional Storage / SAN Evidence.
 
+## Version and Integrity
+
+- Version: `0.1.0`.
+- Mode: customer-provided evidence.
+- Output schema: `shift-evidence.storage-san.v1`.
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Checksum files:
+  - `/templates/storage/shift-storage-san-template.csv.sha256`
+  - `/templates/storage/shift-storage-san-template.json.sha256`
+
+The CSV template does not include comment headers because the parser expects the first row to be the CSV header.
+
 ## Safety
 
 - Do not include storage credentials.

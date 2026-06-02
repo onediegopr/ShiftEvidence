@@ -6,6 +6,14 @@ This folder contains the proprietary Shift Evidence VMware Enrichment Collector.
 
 The collector gathers read-only VMware vCenter metadata that can improve a Shift Evidence migration readiness assessment beyond the base RVTools inventory.
 
+## Version and Integrity
+
+- Version: `0.1.0`.
+- Mode: read-only.
+- Output schema: `shift-evidence.vmware-enrichment.v1`.
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Checksum file: `/collectors/vmware/shift-vmware-evidence-collector.ps1.sha256`.
+
 ## Safety
 
 The collector:

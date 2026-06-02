@@ -2,6 +2,14 @@
 
 `shift-veeam-backup-collector.ps1` is proprietary Shift Evidence tooling for optional Backup Evidence analysis.
 
+## Version and Integrity
+
+- Version: `0.1.0`.
+- Mode: read-only.
+- Output schema: `shift-evidence.backup-evidence.v1`.
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Checksum file: `/collectors/backup/shift-veeam-backup-collector.ps1.sha256`.
+
 ## Safety
 
 - Read-only collection only.

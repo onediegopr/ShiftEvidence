@@ -68,6 +68,14 @@ EVIDENCE-9 closeout update:
 - Real customer use requires customer authorization, data review expectations and support/operator readiness.
 - Full public launch remains NO.
 
+EVIDENCE-10 packaging update:
+
+- Existing Evidence Expansion collectors/templates are packaged through `/evidence-artifacts/manifest.json`.
+- Current collector/template artifacts include deterministic SHA-256 checksums and `.sha256` sidecar files.
+- The Evidence Expansion Center shows manifest-driven downloads, checksum links and upload safety guidance.
+- This does not add new collectors/parsers, does not perform auto-upload, does not modify infrastructure and does not close EVIDENCE-7.1B.
+- Full public launch remains NO.
+
 Producto: ShiftReadiness / Proxmox Migration Readiness.
 
 Publico objetivo: operador, owner, admin interno y equipo comercial/tecnico autorizado.
@@ -1037,6 +1045,20 @@ Rules:
 - Collector output should avoid secrets, tokens, cookies, private paths and passwords.
 - Collectors should be tested in a controlled environment before real customer use.
 - Collector use does not replace customer authorization or human review.
+
+## 37D. Collector Packaging and Integrity Rule
+
+Collector/template downloads must use the current evidence artifact manifest as the source of truth:
+
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Regeneration command: `npm run evidence:artifacts`.
+- Every packaged artifact must have a SHA-256 checksum and `.sha256` sidecar.
+- Collector/template version, owner, mode and output schema must remain visible.
+- Operators should verify checksums before running collectors in customer environments.
+- Operators/customers must review outputs locally before upload.
+- Secrets, credentials, tokens, cookies, private storage paths and sensitive comments must not be uploaded.
+- Missing optional evidence remains a confidence limitation, not an execution blocker for the base assessment.
+- Packaging does not approve full public launch and does not close EVIDENCE-7.1B.
 
 ## 38. Criterios para full public launch
 

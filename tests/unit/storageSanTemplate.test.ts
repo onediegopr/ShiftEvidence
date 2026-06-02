@@ -23,6 +23,8 @@ describe("Storage/SAN customer templates", () => {
   it("ships a JSON template with safety flags and schema metadata", () => {
     const json = JSON.parse(readFileSync(path.join(templateDir, "shift-storage-san-template.json"), "utf8"));
 
+    expect(json.templateVersion).toBe("0.1.0");
+    expect(json.owner).toBe("Shift Evidence");
     expect(json.schema).toBe(STORAGE_SAN_SCHEMA);
     expect(json.source).toMatchObject({
       owner: "Shift Evidence",

@@ -5,6 +5,29 @@ import {
   skipEvidenceModuleAction,
   uploadEvidenceAction,
 } from "../../app/dashboard/assessments/[id]/evidence/actions";
+import evidenceArtifactManifest from "../../../public/evidence-artifacts/manifest.json";
+
+type EvidenceArtifact = (typeof evidenceArtifactManifest.artifacts)[number];
+
+function artifactsForModule(moduleKey: EvidenceModuleKey) {
+  return evidenceArtifactManifest.artifacts.filter((artifact) => artifact.moduleKey === moduleKey);
+}
+
+function downloadArtifactsForModule(moduleKey: EvidenceModuleKey) {
+  return artifactsForModule(moduleKey).filter((artifact) => artifact.type === "collector" || artifact.type === "template");
+}
+
+function readmeArtifactForModule(moduleKey: EvidenceModuleKey) {
+  return artifactsForModule(moduleKey).find((artifact) => artifact.type === "readme");
+}
+
+function shortSha(value: string) {
+  return `${value.slice(0, 12)}...${value.slice(-8)}`;
+}
+
+function artifactTypeLabel(type: EvidenceArtifact["type"]) {
+  return type === "collector" ? "Collector" : type === "template" ? "Template" : "Instructions";
+}
 
 function statusLabel(value: string) {
   return value
@@ -270,6 +293,8 @@ export function EvidenceExpansionCenter({
           const applicationDependencySummary = getApplicationDependencySummary(
             module.record.lastParseResult?.summaryJson,
           );
+          const downloadArtifacts = downloadArtifactsForModule(module.metadata.key);
+          const readmeArtifact = readmeArtifactForModule(module.metadata.key);
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -333,6 +358,46 @@ export function EvidenceExpansionCenter({
               <p className="assessment-storage-note" style={{ marginTop: "0.75rem" }}>
                 Report impact: {module.metadata.reportImpact.join(", ")}.
               </p>
+
+              {downloadArtifacts.length > 0 ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Download package integrity</strong>
+                  <p className="assessment-storage-note">
+                    Review output locally before upload. Do not include secrets, credentials, tokens, private paths or
+                    sensitive comments. Missing evidence remains visible as a confidence limitation.
+                  </p>
+                  <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                    {downloadArtifacts.map((artifact) => (
+                      <article key={artifact.key} className="assessment-preview-card">
+                        <span className="assessment-preview-label">{artifactTypeLabel(artifact.type)}</span>
+                        <strong>{artifact.displayName}</strong>
+                        <span className="assessment-storage-note">
+                          v{artifact.version} / {artifact.status.replace("_", " ")}
+                        </span>
+                        <span className="assessment-storage-note">Schema: {artifact.outputSchema}</span>
+                        <span className="assessment-storage-note">SHA-256: {shortSha(artifact.sha256)}</span>
+                        <span className="assessment-storage-note">Requirement: {artifact.requirement}</span>
+                        <div className="assessment-inline-actions" style={{ marginTop: "0.55rem" }}>
+                          <a href={artifact.path} className="btn btn-secondary btn-sm" download>
+                            <Download size={14} />
+                            Download
+                          </a>
+                          <a href={artifact.sha256Path} className="assessment-inline-note">
+                            checksum
+                          </a>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                  {readmeArtifact ? (
+                    <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
+                      Instructions: <a href={readmeArtifact.path}>open README</a>. Last reviewed:{" "}
+                      {downloadArtifacts[0]?.lastReviewedAt ?? readmeArtifact.lastReviewedAt}. Accepted formats:{" "}
+                      {module.metadata.acceptedInputTypes.join(", ")}.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
 
               {module.record.lastUpload?.evidenceFile ? (
                 <p className="assessment-inline-note">
@@ -671,6 +736,16 @@ export function EvidenceExpansionCenter({
                 </div>
               ) : null}
 
+              <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                <strong>Upload guidance</strong>
+                <ul className="assessment-bullet-list">
+                  <li>Review the collector output or template locally before upload.</li>
+                  <li>Remove secrets, credentials, tokens, private paths and sensitive comments.</li>
+                  <li>This module improves confidence but remains optional.</li>
+                  <li>After parsing, review warnings/errors and matched/unmatched counts where available.</li>
+                </ul>
+              </div>
+
               <div className="assessment-inline-actions" style={{ marginTop: "0.9rem" }}>
                 {uploadUnlocked ? (
                   <form
@@ -699,25 +774,17 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan || isApplicationDependency ? (
-                  <a
-                    href={
-                      isProxmoxTarget
-                        ? "/collectors/proxmox/shift-proxmox-target-collector.sh"
-                        : isBackupEvidence
-                          ? "/collectors/backup/shift-veeam-backup-collector.ps1"
-                          : isStorageSan
-                            ? "/templates/storage/shift-storage-san-template.csv"
-                            : isApplicationDependency
-                              ? "/templates/dependencies/shift-application-dependency-template.csv"
-                              : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
-                    }
-                    className="btn btn-secondary btn-sm"
-                    download
-                  >
-                    <Download size={14} />
-                    {isStorageSan || isApplicationDependency ? "Download CSV" : "Download collector"}
-                  </a>
+                {downloadArtifacts.length > 0 ? (
+                  downloadArtifacts.map((artifact) => (
+                    <a key={artifact.key} href={artifact.path} className="btn btn-secondary btn-sm" download>
+                      <Download size={14} />
+                      {artifact.language === "CSV"
+                        ? "Download CSV"
+                        : artifact.language === "JSON"
+                          ? "Download JSON"
+                          : "Download collector"}
+                    </a>
+                  ))
                 ) : (
                   <button type="button" className="btn btn-secondary btn-sm" disabled>
                     <Download size={14} />
@@ -725,43 +792,8 @@ export function EvidenceExpansionCenter({
                   </button>
                 )}
 
-                {isStorageSan ? (
-                  <a
-                    href="/templates/storage/shift-storage-san-template.json"
-                    className="btn btn-secondary btn-sm"
-                    download
-                  >
-                    <Download size={14} />
-                    Download JSON
-                  </a>
-                ) : null}
-
-                {isApplicationDependency ? (
-                  <a
-                    href="/templates/dependencies/shift-application-dependency-template.json"
-                    className="btn btn-secondary btn-sm"
-                    download
-                  >
-                    <Download size={14} />
-                    Download JSON
-                  </a>
-                ) : null}
-
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan || isApplicationDependency ? (
-                  <a
-                    href={
-                      isProxmoxTarget
-                        ? "/collectors/proxmox/README.md"
-                        : isBackupEvidence
-                          ? "/collectors/backup/README.md"
-                          : isStorageSan
-                            ? "/templates/storage/README.md"
-                            : isApplicationDependency
-                              ? "/templates/dependencies/README.md"
-                              : "/collectors/vmware/README.md"
-                    }
-                    className="assessment-inline-note"
-                  >
+                {readmeArtifact ? (
+                  <a href={readmeArtifact.path} className="assessment-inline-note">
                     {isStorageSan || isApplicationDependency ? "Template instructions" : "Collector instructions"}
                   </a>
                 ) : (

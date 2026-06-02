@@ -42,7 +42,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-7.1 completed automated QA for Migration Recommendation Plan behavior, entitlement checks and PDF structure, and added page numbering to the standalone plan PDF. Authenticated browser click-through remains partial because the local Browser plugin could not initialize in this session.
 - EVIDENCE-8 is implemented locally and adds a shared print-friendly PDF theme, a deterministic synthetic evidence dataset library, public demo/sample/landing expansion and no-secret/no-overpromise tests. It does not close the separate EVIDENCE-7.1B authenticated browser closeout.
 - EVIDENCE-9 closes the Evidence Expansion line operationally with final status documentation, operating rules and a final QA/commercialization checklist. It does not add new collectors/parsers and does not close the separate EVIDENCE-7.1B browser closeout.
-- The next recommended evidence hito is either EVIDENCE-7.1B manual/user-attested browser closeout or EVIDENCE-10 Collector Packaging + Checksums + Download UX.
+- EVIDENCE-10 packages existing collectors/templates with deterministic SHA-256 checksums, sidecar checksum files, `/evidence-artifacts/manifest.json`, manifest-driven download UX and upload safety guidance. It does not add new collectors/parsers and does not close EVIDENCE-7.1B.
+- The next recommended evidence hito is either EVIDENCE-7.1B manual/user-attested browser closeout or a first real-customer collector pilot with operator-assisted checksum verification.
 
 ## B. Current State Audit
 
@@ -736,6 +737,20 @@ Deliverables:
 - Public copy safety guardrail update.
 - No Hostinger, billing, deploy or DB schema changes.
 
+### Hito 11: EVIDENCE-10, Collector Packaging + Checksums + Download UX
+
+Status: implemented locally on 2026-06-02.
+
+Deliverables:
+
+- Deterministic evidence artifact manifest at `/evidence-artifacts/manifest.json`.
+- SHA-256 checksum sidecar files for collector, template and README artifacts.
+- Collector/template version, owner, mode and schema metadata.
+- Manifest-driven Evidence Expansion Center download UX.
+- Upload safety guidance for customer/operator review before upload.
+- Static tests for manifest integrity, checksum matching and unsafe public/download claims.
+- No Hostinger, billing, deploy or DB schema changes.
+
 ## P. Estimates and Completion Percentages
 
 Before EVIDENCE-0:
@@ -774,6 +789,16 @@ After EVIDENCE-9 closeout:
 - Synthetic dataset library: 90%.
 - Demo/sample/landing evidence messaging: 90%.
 - Broader invited beta readiness: high, controlled only.
+- Full public launch: NO.
+
+After EVIDENCE-10 packaging:
+
+- Evidence Expansion Layer: 98%.
+- Collector/template packaging: 95%; real customer execution and code signing remain pending.
+- Artifact manifest/checksums: 100% for current controlled-beta artifacts.
+- Download UX integrity guidance: 95%.
+- Upload safety guidance: 95%.
+- Migration Recommendation Plan: 92%; EVIDENCE-7.1B browser/manual closeout pending.
 - Full public launch: NO.
 
 ## Q. Risk Register

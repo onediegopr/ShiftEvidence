@@ -113,4 +113,6 @@ Not yet allowed:
 
 Recommended next hito: EVIDENCE-7.1B retry / user-attested browser closeout.
 
-Alternative next hito: EVIDENCE-10 Collector Packaging + Checksums + Download UX.
+EVIDENCE-10 follow-up: implemented locally on 2026-06-02. Existing collectors/templates now have deterministic SHA-256 checksums, `.sha256` sidecars, `/evidence-artifacts/manifest.json`, manifest-driven download UX and explicit upload safety guidance. EVIDENCE-7.1B remains pending.
+
+Alternative next hito after EVIDENCE-10: first real-customer collector pilot with operator-assisted checksum verification.

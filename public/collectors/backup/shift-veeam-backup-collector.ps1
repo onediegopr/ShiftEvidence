@@ -3,6 +3,12 @@ Shift Evidence Veeam Backup Evidence Collector
 Copyright (c) Shift Evidence.
 Developed as proprietary tooling for Shift Evidence migration readiness assessments.
 
+Version: 0.1.0
+Owner: Shift Evidence
+Mode: read-only
+Output schema: shift-evidence.backup-evidence.v1
+Last reviewed: 2026-06-02
+
 This script is designed for read-only evidence collection from Veeam Backup & Replication.
 It does not modify backup jobs, start jobs, stop jobs, delete restore points,
 change repositories, perform restores, change configuration, or persist credentials.

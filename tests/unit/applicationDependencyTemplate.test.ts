@@ -20,6 +20,8 @@ describe("Application Dependency customer templates", () => {
       expect(csv).toContain(recordType);
       expect(readme).toContain(recordType);
     }
+    expect(json.templateVersion).toBe("0.1.0");
+    expect(json.owner).toBe("Shift Evidence");
     expect(json.schema).toBe(APPLICATION_DEPENDENCY_SCHEMA);
     expect(json.source).toMatchObject({ owner: "Shift Evidence", mode: "customer-provided" });
     expect(json.safety).toMatchObject({

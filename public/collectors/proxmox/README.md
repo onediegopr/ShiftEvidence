@@ -2,6 +2,14 @@
 
 `shift-proxmox-target-collector.sh` is proprietary Shift Evidence tooling for optional Proxmox Target Validation evidence.
 
+## Version and Integrity
+
+- Version: `0.1.0`.
+- Mode: read-only.
+- Output schema: `shift-evidence.proxmox-target.v1`.
+- Manifest: `/evidence-artifacts/manifest.json`.
+- Checksum file: `/collectors/proxmox/shift-proxmox-target-collector.sh.sha256`.
+
 ## Safety
 
 - Read-only collection only.

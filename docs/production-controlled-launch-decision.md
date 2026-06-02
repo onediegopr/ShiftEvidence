@@ -784,3 +784,23 @@ Result:
 - Final closeout and checklist documentation were created.
 - The current operating manual was updated with Evidence Expansion, Migration Recommendation Plan and Collector operating rules.
 - EVIDENCE-7.1B authenticated browser/manual closeout remains mandatory before the Migration Recommendation Plan is sold or positioned as fully browser-validated.
+
+## EVIDENCE-10 Follow-up
+
+Date: 2026-06-02.
+
+Decision:
+
+- Collector/template packaging: accepted for controlled beta readiness.
+- Full public launch: NO.
+- Hostinger touched: NO.
+- Billing touched: NO.
+- DB schema changed: NO.
+- Deploy performed: NO.
+
+Result:
+
+- Existing Evidence Expansion collectors/templates now have deterministic SHA-256 checksums and `.sha256` sidecars.
+- `/evidence-artifacts/manifest.json` is the controlled-beta artifact source of truth.
+- The Evidence Expansion Center uses the manifest for download cards, checksum links and upload safety guidance.
+- EVIDENCE-7.1B authenticated browser/manual closeout remains pending.

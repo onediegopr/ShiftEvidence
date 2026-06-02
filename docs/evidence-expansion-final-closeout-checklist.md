@@ -19,7 +19,8 @@ Full public launch: NO
 | EVIDENCE-7.1 Automated QA | Accepted | Automated plan, entitlement and PDF checks complete. |
 | EVIDENCE-7.1B Manual/browser QA | Pending | Must close before selling the plan as fully browser-validated. |
 | EVIDENCE-8 PDF/Datasets/Demo/Landing | Closed | Print-friendly PDFs, synthetic datasets and public messaging updated. |
-| EVIDENCE-9 Operational closeout | In progress | This checklist and closeout documentation. |
+| EVIDENCE-9 Operational closeout | Closed | Final closeout/checklist documentation and operating rules. |
+| EVIDENCE-10 Collector Packaging | Closed in code/docs | Manifest/checksums/download UX complete; real customer execution and code signing pending. |
 
 ## 2. Pre-Customer Pilot Checklist
 
@@ -31,8 +32,8 @@ Full public launch: NO
 | Docs updated | Required before pilot |
 | Sample PDFs regenerated | Required before pilot |
 | Synthetic datasets regenerated and safe | Required before pilot |
-| Collectors downloadable or operator-ready | Pending packaging decision |
-| Templates downloadable or operator-ready | Pending packaging decision |
+| Collectors downloadable or operator-ready | Ready for controlled beta with checksum verification |
+| Templates downloadable or operator-ready | Ready for controlled beta with checksum verification |
 | Admin visibility confirmed | Implemented; browser closeout still recommended |
 | Manual updated | Required in EVIDENCE-9 |
 | Support/operator aware | Required before pilot |
@@ -46,6 +47,7 @@ Full public launch: NO
 | NDA/terms confirmed if applicable | Required |
 | Read-only collectors explained | Required |
 | Customer can review collector output before upload | Required |
+| Customer/operator verifies checksum before running collector | Recommended |
 | Avoid secrets in uploaded evidence | Required |
 | Retention expectations defined | Required |
 | Support channel defined | Required |
