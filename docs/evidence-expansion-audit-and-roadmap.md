@@ -39,7 +39,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-5 is complete in code and introduces vendor-neutral Storage/SAN templates, parser, readiness engine, RVTools datastore matching and Proxmox Target comparison signals without a DB migration.
 - EVIDENCE-6 is complete in code and introduces vendor-neutral Application Dependency templates, parser, readiness engine, RVTools VM matching, VMware Enrichment hints and technical-vs-functional wave signals without a DB migration.
 - EVIDENCE-7 is complete in code and introduces the separate premium Migration Recommendation Plan, deterministic evidence gates, plan levels, a print-friendly standalone PDF, user workflow and admin visibility without a DB migration.
-- The next recommended evidence hito is EVIDENCE-7.1: authenticated QA of Migration Recommendation Plan generation, download/open behavior, admin visibility and entitlement handling.
+- EVIDENCE-7.1 completed automated QA for Migration Recommendation Plan behavior, entitlement checks and PDF structure, and added page numbering to the standalone plan PDF. Authenticated browser click-through remains partial because the local Browser plugin could not initialize in this session.
+- The next recommended evidence hito is either a short EVIDENCE-7.1 manual/user-attested browser closeout or EVIDENCE-8: PDF Print-Friendly Global + Synthetic Dataset Library + Demo/Landing/Docs Expansion.
 
 ## B. Current State Audit
 

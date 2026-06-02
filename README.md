@@ -85,6 +85,8 @@ SALES-PAGE-1.1 completes visual QA and conversion polish for `/vmware-to-proxmox
 
 EVIDENCE-7 adds the separate premium Migration Recommendation Plan deliverable. It uses parsed evidence, deterministic gates and plan levels to produce a light print-friendly PDF through existing private report history; AI narrative remains deterministic fallback only and cannot override gates. Full public launch remains NO.
 
+EVIDENCE-7.1 validates the Migration Recommendation Plan with automated QA, entitlement checks and synthetic PDF parsing. It fixes page numbering in the standalone plan PDF; authenticated browser click-through remains pending/user-attested because the local Browser plugin could not initialize in this session. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19

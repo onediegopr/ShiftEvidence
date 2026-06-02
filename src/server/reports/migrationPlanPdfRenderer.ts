@@ -99,10 +99,27 @@ function drawGate(doc: PDFKit.PDFDocument, gate: MigrationPlanGate) {
   doc.y = y + 74;
 }
 
+function addPageNumbers(doc: PDFKit.PDFDocument) {
+  const range = doc.bufferedPageRange();
+  for (let index = range.start; index < range.start + range.count; index += 1) {
+    doc.switchToPage(index);
+    doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text(
+      `Page ${index + 1} of ${range.count}`,
+      MARGIN,
+      doc.page.height - 32,
+      {
+        align: "right",
+        width: contentWidth(doc),
+      },
+    );
+  }
+}
+
 export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendationPlan) {
   const doc = new PDFDocument({
     size: "A4",
     margin: MARGIN,
+    bufferPages: true,
     info: {
       Title: "Shift Evidence Migration Recommendation Plan",
       Author: "Shift Evidence",
@@ -163,6 +180,7 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
   const open = plan.sections.find((section) => section.key === "open_evidence_requests");
   bulletList(doc, open?.actionItems ?? []);
 
+  addPageNumbers(doc);
   doc.end();
   return finished;
 }

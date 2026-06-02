@@ -126,6 +126,7 @@ Added unit coverage verifies:
 - Technical plan behavior when backup and Proxmox target evidence exist.
 - Advanced plan behavior when advanced evidence and functional wave evidence exist.
 - Standalone PDF rendering returns a valid PDF buffer.
+- EVIDENCE-7.1 added entitlement checks for blueprint generation/download behavior and fixed page numbering in the standalone Migration Recommendation Plan PDF.
 
 ## Out of scope
 
@@ -143,7 +144,7 @@ This hito did not:
 
 Recommended next hito:
 
-- EVIDENCE-7.1: authenticated browser QA for the Migration Recommendation Plan panel, generated PDF download/open, admin visibility and entitlement behavior.
+- EVIDENCE-7.1 follow-up/manual closeout: authenticated browser QA for the Migration Recommendation Plan panel, generated PDF download/open, admin visibility and multiuser ownership behavior. Automated QA is documented in `docs/evidence-7-1-migration-plan-authenticated-qa.md`.
 
 Optional future hito:
 
