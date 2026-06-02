@@ -33,6 +33,7 @@ model User {
   billingOrders         BillingOrder[]
   billingSubscriptions  BillingSubscription[]
   billingEntitlementGrants BillingEntitlementGrant[]
+  billingInvoiceRequests BillingInvoiceRequest[]
   createdAdvisorConversations AssessmentAdvisorConversation[] @relation("AssessmentAdvisorConversationCreatedBy")
   advisorMessages       AssessmentAdvisorMessage[] @relation("AssessmentAdvisorMessageUser")
   createdAdvisorMemoryItems AssessmentAdvisorMemoryItem[] @relation("AssessmentAdvisorMemoryItemCreatedBy")
@@ -148,6 +149,7 @@ model Workspace {
   billingOrders  BillingOrder[]
   billingSubscriptions BillingSubscription[]
   billingEntitlementGrants BillingEntitlementGrant[]
+  billingInvoiceRequests BillingInvoiceRequest[]
   advisorConversations AssessmentAdvisorConversation[]
   advisorMessages      AssessmentAdvisorMessage[]
   advisorMemoryItems   AssessmentAdvisorMemoryItem[]
@@ -217,6 +219,7 @@ model Assessment {
   supportRequests             SupportRequest[]
   billingOrders               BillingOrder[]
   billingEntitlementGrants    BillingEntitlementGrant[]
+  billingInvoiceRequests      BillingInvoiceRequest[]
   advisorConversation         AssessmentAdvisorConversation?
   advisorMessages             AssessmentAdvisorMessage[]
   advisorMemoryItems          AssessmentAdvisorMemoryItem[]
@@ -1395,6 +1398,46 @@ model BillingEntitlementGrant {
   @@unique([billingOrderId, entitlementKey])
 }
 
+model BillingInvoiceRequest {
+  id                String                         @id @default(cuid())
+  planId            String
+  planSlug          String
+  planName          String
+  amountCents       Int
+  currency          String                         @default("USD")
+  cadence           String
+  customerEmail     String
+  contactName       String
+  companyName       String
+  country           String?
+  taxId             String?
+  purchaseOrder     String?
+  notes             String?
+  userId            String?
+  workspaceId       String?
+  assessmentId      String?
+  status            BillingInvoiceRequestStatus   @default(pending)
+  provider          BillingInvoiceRequestProvider @default(wise)
+  internalNotes     String?
+  invoiceSentAt     DateTime?
+  paymentReceivedAt DateTime?
+  cancelledAt       DateTime?
+  rejectedAt        DateTime?
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+  user              User?                          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workspace         Workspace?                     @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  assessment        Assessment?                    @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([provider])
+  @@index([planSlug])
+  @@index([customerEmail])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([assessmentId])
+  @@index([createdAt])
+}
 enum WorkspacePlan {
   free
   readiness_report
@@ -1452,6 +1495,18 @@ enum BillingGrantStatus {
   rejected
 }
 
+enum BillingInvoiceRequestStatus {
+  pending
+  invoice_sent
+  payment_received
+  cancelled
+  rejected
+}
+
+enum BillingInvoiceRequestProvider {
+  wise
+  bank_transfer
+}
 enum WorkspaceRole {
   owner
   admin
