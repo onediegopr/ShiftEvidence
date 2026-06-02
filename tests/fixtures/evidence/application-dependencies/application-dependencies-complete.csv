@@ -1,0 +1,10 @@
+recordType,applicationName,applicationId,componentName,vmName,vmInstanceUuid,vmBiosUuid,role,dependencyType,dependsOnVmName,dependsOnApplicationName,ownerName,ownerTeam,criticality,downtimeTolerance,maintenanceWindow,migrationGroup,waveCandidate,source,confidence,notes
+application,ERP Core,APP-ERP-001,,,,,,,,,Maria Owner,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+application_component,ERP Core,APP-ERP-001,ERP Web,erp-web-01,,,frontend,,,,,,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+application_component,ERP Core,APP-ERP-001,ERP DB,erp-db-01,,,database,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+vm_role,ERP Core,,ERP Web,erp-web-01,,,web,,,,,Enterprise Apps,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+dependency,ERP Core,,,erp-web-01,,,web,frontend_to_backend,erp-db-01,ERP Core,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic dependency
+owner,ERP Core,,,,,,,,,,Maria Owner,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+maintenance_window,ERP Core,,,,,,,,,,,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic
+migration_group,ERP Core,,,erp-web-01,,,,,,,,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,mustMoveTogether=true; canMoveSeparately=false
+business_criticality,ERP Core,,,erp-db-01,,,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Synthetic

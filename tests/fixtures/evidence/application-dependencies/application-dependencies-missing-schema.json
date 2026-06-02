@@ -1,0 +1,5 @@
+{
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "entities": { "applications": [], "components": [], "vmRoles": [], "dependencies": [], "owners": [], "maintenanceWindows": [], "migrationGroups": [], "criticalities": [], "constraints": [] }
+}

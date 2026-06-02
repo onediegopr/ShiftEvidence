@@ -198,6 +198,14 @@ function formatStatusLabel(value: string | null | undefined) {
     storage_requires_remediation: "Storage requiere remediacion",
     storage_insufficient: "Storage insuficiente",
     storage_not_validated: "Storage no validado",
+    dependency_validated: "Dependencias validadas",
+    dependency_partially_ready: "Dependencias parcialmente listas",
+    dependency_requires_remediation: "Dependencias requieren remediacion",
+    dependency_insufficient: "Dependencias insuficientes",
+    dependency_not_validated: "Dependencias no validadas",
+    technical_only: "Oleadas tecnicas",
+    functional_candidate: "Candidato funcional",
+    functional_validated: "Funcional validado",
   };
 
   return labels[value] ?? value;
@@ -1612,7 +1620,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                               ? `Backup ${formatStatusLabel(module.backupMetrics.backupReadinessStatus)} / jobs ${module.backupMetrics.jobCount ?? "-"} / protected ${module.backupMetrics.protectedObjectCount ?? "-"} / matched ${module.backupMetrics.matchedVmCount ?? "-"} / unprotected ${module.backupMetrics.unprotectedVmCount ?? "-"} / stale ${module.backupMetrics.staleBackupCount ?? "-"} / failed ${module.backupMetrics.failedJobCount ?? "-"} / repo pressure ${module.backupMetrics.repositoryPressureCount ?? "-"}`
                               : module.storageSanMetrics
                                 ? `Storage ${formatStatusLabel(module.storageSanMetrics.storageReadinessStatus)} / arrays ${module.storageSanMetrics.arrayCount ?? "-"} / pools ${module.storageSanMetrics.poolCount ?? "-"} / vol+lun ${(module.storageSanMetrics.volumeCount ?? 0) + (module.storageSanMetrics.lunCount ?? 0)} / mappings ${module.storageSanMetrics.datastoreMappingCount ?? "-"} / high ${module.storageSanMetrics.highUsagePoolCount ?? "-"} / critical ${module.storageSanMetrics.criticalUsagePoolCount ?? "-"} / perf ${module.storageSanMetrics.performanceSampleCount ?? "-"} / repl ${module.storageSanMetrics.replicationRecordCount ?? "-"} / targets ${module.storageSanMetrics.targetStorageCandidateCount ?? "-"}`
-                                : "-"}
+                                : module.dependencyMetrics
+                                  ? `Deps ${formatStatusLabel(module.dependencyMetrics.dependencyReadinessStatus)} / mode ${formatStatusLabel(module.dependencyMetrics.wavePlanningMode)} / apps ${module.dependencyMetrics.applicationCount ?? "-"} / deps ${module.dependencyMetrics.dependencyCount ?? "-"} / critical ${module.dependencyMetrics.criticalApplicationCount ?? "-"}/${module.dependencyMetrics.criticalVmCount ?? "-"} / owners missing ${module.dependencyMetrics.unownedApplicationCount ?? "-"} / windows missing ${module.dependencyMetrics.missingMaintenanceWindowCount ?? "-"} / matched ${module.dependencyMetrics.matchedVmCount ?? "-"} / unmatched ${module.dependencyMetrics.unmatchedVmCount ?? "-"} / func candidates ${module.dependencyMetrics.functionalWaveCandidateCount ?? "-"}`
+                                  : "-"}
                       </td>
                       <td>
                         {module.lastParseResult

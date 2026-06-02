@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "CRM", "ownerTeam": "Sales Ops", "criticality": "critical", "downtimeTolerance": "minutes" }],
+    "components": [{ "applicationName": "CRM", "componentName": "CRM App", "componentType": "backend", "vmName": "crm-app-01" }],
+    "vmRoles": [{ "applicationName": "CRM", "vmName": "crm-app-01", "role": "app", "criticality": "critical", "ownerTeam": "Sales Ops" }],
+    "dependencies": [],
+    "owners": [{ "applicationName": "CRM", "ownerTeam": "Sales Ops" }],
+    "maintenanceWindows": [],
+    "migrationGroups": [],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

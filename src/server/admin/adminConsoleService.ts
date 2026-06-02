@@ -1137,6 +1137,7 @@ export async function getAdminConsoleData(params?: {
             proxmoxMetrics: null,
             backupMetrics: null,
             storageSanMetrics: null,
+            dependencyMetrics: null,
             requiresReview: false,
           };
         }
@@ -1218,6 +1219,22 @@ export async function getAdminConsoleData(params?: {
         const storageSanBoolean = (key: string) => {
           const value = storageSanSummary?.[key];
           return typeof value === "boolean" ? value : null;
+        };
+        const dependencySummary =
+          typeof summaryJson?.applicationDependencySummary === "object" &&
+          summaryJson.applicationDependencySummary &&
+          !Array.isArray(summaryJson.applicationDependencySummary)
+            ? summaryJson.applicationDependencySummary as Record<string, unknown>
+            : null;
+        const dependencyReadiness =
+          typeof summaryJson?.readiness === "object" &&
+          summaryJson.readiness &&
+          !Array.isArray(summaryJson.readiness)
+            ? summaryJson.readiness as Record<string, unknown>
+            : null;
+        const dependencyNumber = (key: string) => {
+          const value = dependencySummary?.[key];
+          return typeof value === "number" && Number.isFinite(value) ? value : null;
         };
 
         return {
@@ -1313,6 +1330,33 @@ export async function getAdminConsoleData(params?: {
                 targetStorageCandidateCount: storageSanNumber("targetStorageCandidateCount"),
                 performanceEvidencePresent: storageSanBoolean("performanceEvidencePresent"),
                 replicationEvidencePresent: storageSanBoolean("replicationEvidencePresent"),
+              }
+            : null,
+          dependencyMetrics: dependencySummary
+            ? {
+                dependencyReadinessStatus:
+                  typeof dependencyReadiness?.dependencyReadinessStatus === "string"
+                    ? dependencyReadiness.dependencyReadinessStatus
+                    : null,
+                confidence: typeof dependencyReadiness?.confidence === "string" ? dependencyReadiness.confidence : null,
+                wavePlanningMode:
+                  typeof dependencyReadiness?.wavePlanningMode === "string"
+                    ? dependencyReadiness.wavePlanningMode
+                    : null,
+                applicationCount: dependencyNumber("applicationCount"),
+                dependencyCount: dependencyNumber("dependencyCount"),
+                criticalApplicationCount: dependencyNumber("criticalApplicationCount"),
+                criticalVmCount: dependencyNumber("criticalVmCount"),
+                ownerCount: dependencyNumber("ownerCount"),
+                unownedApplicationCount: dependencyNumber("unownedApplicationCount"),
+                maintenanceWindowCount: dependencyNumber("maintenanceWindowCount"),
+                missingMaintenanceWindowCount: dependencyNumber("missingMaintenanceWindowCount"),
+                migrationGroupCount: dependencyNumber("migrationGroupCount"),
+                technicalOnlyWaveCount: dependencyNumber("technicalOnlyWaveCount"),
+                functionalWaveCandidateCount: dependencyNumber("functionalWaveCandidateCount"),
+                matchedVmCount: dependencyNumber("matchedVmCount"),
+                unmatchedVmCount: dependencyNumber("unmatchedVmCount"),
+                unmappedRvtoolsVmCount: dependencyNumber("unmappedRvtoolsVmCount"),
               }
             : null,
           requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",

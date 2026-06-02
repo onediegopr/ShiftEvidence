@@ -99,7 +99,7 @@ export const evidenceModuleCatalog = [
     phase: "prepared",
     userVisible: true,
     adminVisible: true,
-    preparedMessage: "Prepared for future dependency mapping. No dependency completeness is claimed yet.",
+    preparedMessage: "Download the Shift Evidence Application Dependency template, review owners, criticality, maintenance windows and dependencies locally, then upload it here. No network discovery is performed.",
   },
   {
     key: EvidenceModuleKey.migration_plan_readiness,

@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "Billing", "ownerTeam": "Finance Apps", "criticality": "high", "downtimeTolerance": "hours" }],
+    "components": [{ "applicationName": "Billing", "componentName": "Billing App", "vmName": "bill-app-01" }, { "applicationName": "Billing", "componentName": "Billing MQ", "vmName": "bill-mq-01" }],
+    "vmRoles": [{ "applicationName": "Billing", "vmName": "bill-app-01", "role": "app", "criticality": "high", "ownerTeam": "Finance Apps" }, { "applicationName": "Billing", "vmName": "bill-mq-01", "role": "middleware", "criticality": "high", "ownerTeam": "Finance Apps" }],
+    "dependencies": [{ "applicationName": "Billing", "vmName": "bill-app-01", "dependencyType": "app_to_queue", "dependsOnVmName": "bill-mq-01", "source": "customer_provided", "confidence": "medium" }, { "applicationName": "Billing", "vmName": "bill-mq-01", "dependencyType": "app_to_queue", "dependsOnVmName": "bill-app-01", "source": "customer_provided", "confidence": "medium" }],
+    "owners": [{ "applicationName": "Billing", "ownerTeam": "Finance Apps" }],
+    "maintenanceWindows": [{ "applicationName": "Billing", "maintenanceWindow": "Sunday 03:00-05:00" }],
+    "migrationGroups": [{ "migrationGroup": "BILL-WAVE-01", "applicationName": "Billing", "vmName": "bill-app-01", "waveCandidate": "functional_candidate", "mustMoveTogether": true, "canMoveSeparately": false }],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

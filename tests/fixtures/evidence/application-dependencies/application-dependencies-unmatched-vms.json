@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "Legacy", "ownerTeam": "Ops", "criticality": "medium", "downtimeTolerance": "hours" }],
+    "components": [{ "applicationName": "Legacy", "componentName": "Legacy App", "vmName": "legacy-not-in-rvtools" }],
+    "vmRoles": [{ "applicationName": "Legacy", "vmName": "legacy-not-in-rvtools", "role": "app", "criticality": "medium", "ownerTeam": "Ops" }],
+    "dependencies": [],
+    "owners": [{ "applicationName": "Legacy", "ownerTeam": "Ops" }],
+    "maintenanceWindows": [],
+    "migrationGroups": [],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

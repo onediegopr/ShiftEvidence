@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "Payments", "criticality": "critical", "downtimeTolerance": "minutes" }],
+    "components": [{ "applicationName": "Payments", "componentName": "Payments DB", "componentType": "database", "vmName": "pay-db-01" }],
+    "vmRoles": [{ "applicationName": "Payments", "vmName": "pay-db-01", "role": "db", "criticality": "critical" }],
+    "dependencies": [],
+    "owners": [],
+    "maintenanceWindows": [{ "applicationName": "Payments", "maintenanceWindow": "Saturday 01:00-02:00" }],
+    "migrationGroups": [],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

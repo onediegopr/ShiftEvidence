@@ -1,0 +1,13 @@
+recordType,applicationName,applicationId,componentName,vmName,vmInstanceUuid,vmBiosUuid,role,dependencyType,dependsOnVmName,dependsOnApplicationName,ownerName,ownerTeam,criticality,downtimeTolerance,maintenanceWindow,migrationGroup,waveCandidate,source,confidence,notes
+application,ERP Core,APP-ERP-001,,,,,,,,,Maria Owner,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Primary ERP business application
+application_component,ERP Core,APP-ERP-001,ERP Web,erp-web-01,,,frontend,,,,,,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Web tier
+application_component,ERP Core,APP-ERP-001,ERP Database,erp-db-01,,,database,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Database tier
+vm_role,ERP Core,,ERP Web,erp-web-01,,,web,,,,,Enterprise Apps,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Customer-provided role
+vm_role,ERP Core,,ERP Database,erp-db-01,,,db,,,,,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Customer-provided role
+dependency,ERP Core,,,erp-web-01,,,web,frontend_to_backend,erp-db-01,ERP Core,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,ERP web depends on database
+owner,ERP Core,,,,,,,,,,Maria Owner,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Business and technical owner
+maintenance_window,ERP Core,,,,,,,,,,,Enterprise Apps,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,Approved recurring maintenance window
+migration_group,ERP Core,,,erp-web-01,,,,,,,,high,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,mustMoveTogether=true; canMoveSeparately=false
+migration_group,ERP Core,,,erp-db-01,,,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,mustMoveTogether=true; canMoveSeparately=false
+business_criticality,ERP Core,,,erp-db-01,,,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,RTO=60m; RPO=15m
+constraint,ERP Core,,,erp-db-01,,,,,,,,critical,minutes,Sunday 02:00-04:00,ERP-WAVE-01,functional_candidate,customer_provided,medium,constraintType=latency_sensitive; severity=high

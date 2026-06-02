@@ -37,7 +37,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-3 is complete in code and introduces the proprietary Proxmox Target Validation collector/parser/readiness engine without a DB migration.
 - EVIDENCE-4 is complete in code and introduces the proprietary Veeam Backup Evidence collector/parser/readiness engine without a DB migration.
 - EVIDENCE-5 is complete in code and introduces vendor-neutral Storage/SAN templates, parser, readiness engine, RVTools datastore matching and Proxmox Target comparison signals without a DB migration.
-- The next recommended evidence hito is EVIDENCE-6: Application Dependency Mapping + Migration Plan Readiness.
+- EVIDENCE-6 is complete in code and introduces vendor-neutral Application Dependency templates, parser, readiness engine, RVTools VM matching, VMware Enrichment hints and technical-vs-functional wave signals without a DB migration.
+- The next recommended evidence hito is EVIDENCE-7: Migration Recommendation Plan + Evidence Gates + Premium Report.
 
 ## B. Current State Audit
 

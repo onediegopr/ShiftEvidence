@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [],
+    "components": [],
+    "vmRoles": [{ "vmName": "misc-01", "role": "unknown", "criticality": "medium" }],
+    "dependencies": [],
+    "owners": [],
+    "maintenanceWindows": [],
+    "migrationGroups": [{ "migrationGroup": "TECH-WAVE-01", "vmName": "misc-01", "waveCandidate": "technical_only" }],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

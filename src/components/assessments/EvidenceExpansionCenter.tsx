@@ -176,6 +176,44 @@ function getStorageSanSummary(value: unknown) {
   };
 }
 
+function getApplicationDependencySummary(value: unknown) {
+  const summary = asRecord(value);
+  const dependencies = asRecord(summary?.applicationDependencySummary);
+  const readiness = asRecord(summary?.readiness);
+  if (!dependencies) return null;
+
+  const numberValue = (key: string) => {
+    const value = dependencies[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  };
+
+  return {
+    dependencyReadinessStatus:
+      typeof readiness?.dependencyReadinessStatus === "string"
+        ? readiness.dependencyReadinessStatus
+        : "dependency_not_validated",
+    confidence: typeof readiness?.confidence === "string" ? readiness.confidence : "low",
+    wavePlanningMode: typeof readiness?.wavePlanningMode === "string" ? readiness.wavePlanningMode : "technical_only",
+    recommendations: Array.isArray(readiness?.recommendations)
+      ? readiness.recommendations.filter((item): item is string => typeof item === "string")
+      : [],
+    applicationCount: numberValue("applicationCount"),
+    dependencyCount: numberValue("dependencyCount"),
+    criticalApplicationCount: numberValue("criticalApplicationCount"),
+    criticalVmCount: numberValue("criticalVmCount"),
+    ownerCount: numberValue("ownerCount"),
+    unownedApplicationCount: numberValue("unownedApplicationCount"),
+    maintenanceWindowCount: numberValue("maintenanceWindowCount"),
+    missingMaintenanceWindowCount: numberValue("missingMaintenanceWindowCount"),
+    migrationGroupCount: numberValue("migrationGroupCount"),
+    functionalWaveCandidateCount: numberValue("functionalWaveCandidateCount"),
+    technicalOnlyWaveCount: numberValue("technicalOnlyWaveCount"),
+    matchedVmCount: numberValue("matchedVmCount"),
+    unmatchedVmCount: numberValue("unmatchedVmCount"),
+    unmappedRvtoolsVmCount: numberValue("unmappedRvtoolsVmCount"),
+  };
+}
+
 export function EvidenceExpansionCenter({
   assessmentId,
   summary,
@@ -224,10 +262,14 @@ export function EvidenceExpansionCenter({
           const isProxmoxTarget = module.metadata.key === EvidenceModuleKey.proxmox_target;
           const isBackupEvidence = module.metadata.key === EvidenceModuleKey.backup_evidence;
           const isStorageSan = module.metadata.key === EvidenceModuleKey.storage_san;
+          const isApplicationDependency = module.metadata.key === EvidenceModuleKey.application_dependency;
           const vmwareSummary = getVmwareSummary(module.record.lastParseResult?.summaryJson);
           const proxmoxSummary = getProxmoxSummary(module.record.lastParseResult?.summaryJson);
           const backupSummary = getBackupSummary(module.record.lastParseResult?.summaryJson);
           const storageSanSummary = getStorageSanSummary(module.record.lastParseResult?.summaryJson);
+          const applicationDependencySummary = getApplicationDependencySummary(
+            module.record.lastParseResult?.summaryJson,
+          );
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -264,6 +306,13 @@ export function EvidenceExpansionCenter({
                       Download the Shift Evidence Storage/SAN template, fill it with capacity, datastore
                       mapping, performance and replication evidence, review it locally, and upload it here
                       to improve storage readiness confidence.
+                    </span>
+                  ) : null}
+                  {isApplicationDependency ? (
+                    <span>
+                      Download the Shift Evidence Application Dependency template, map applications, owners,
+                      criticality, maintenance windows and VM dependencies, review it locally, and upload it
+                      here to improve migration wave planning.
                     </span>
                   ) : null}
                 </div>
@@ -327,6 +376,16 @@ export function EvidenceExpansionCenter({
                   <p className="assessment-storage-note">
                     Do not include storage credentials, API tokens, passwords or raw configuration secrets.
                     This module uses customer-provided evidence files only in this version.
+                  </p>
+                </div>
+              ) : null}
+
+              {isApplicationDependency ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Customer-provided dependency safety</strong>
+                  <p className="assessment-storage-note">
+                    Do not include passwords, tokens, secrets or credentials. This module uses
+                    customer-provided dependency evidence and does not perform network discovery in this version.
                   </p>
                 </div>
               ) : null}
@@ -517,6 +576,75 @@ export function EvidenceExpansionCenter({
                 </>
               ) : null}
 
+              {applicationDependencySummary ? (
+                <>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Dependencies: {statusLabel(applicationDependencySummary.dependencyReadinessStatus)}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Confidence: {applicationDependencySummary.confidence}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Wave mode: {statusLabel(applicationDependencySummary.wavePlanningMode)}
+                    </span>
+                  </div>
+                  <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Apps</span>
+                      <strong>{applicationDependencySummary.applicationCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Dependencies</span>
+                      <strong>{applicationDependencySummary.dependencyCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Critical apps/VMs</span>
+                      <strong>
+                        {applicationDependencySummary.criticalApplicationCount}/
+                        {applicationDependencySummary.criticalVmCount}
+                      </strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Owners missing</span>
+                      <strong>{applicationDependencySummary.unownedApplicationCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Windows missing</span>
+                      <strong>{applicationDependencySummary.missingMaintenanceWindowCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Matched/unmatched</span>
+                      <strong>
+                        {applicationDependencySummary.matchedVmCount}/
+                        {applicationDependencySummary.unmatchedVmCount}
+                      </strong>
+                    </article>
+                  </div>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Migration groups: {applicationDependencySummary.migrationGroupCount}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Functional candidates: {applicationDependencySummary.functionalWaveCandidateCount}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Technical-only: {applicationDependencySummary.technicalOnlyWaveCount}
+                    </span>
+                  </div>
+                  {applicationDependencySummary.recommendations.length > 0 ? (
+                    <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                      <strong>Dependency recommendations</strong>
+                      <ul className="assessment-bullet-list">
+                        {applicationDependencySummary.recommendations.slice(0, 3).map((recommendation) => (
+                          <li key={recommendation}>{recommendation}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
               {module.reportWarning ? (
                 <p className="assessment-inline-note">{module.reportWarning}</p>
               ) : null}
@@ -571,7 +699,7 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan ? (
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan || isApplicationDependency ? (
                   <a
                     href={
                       isProxmoxTarget
@@ -580,13 +708,15 @@ export function EvidenceExpansionCenter({
                           ? "/collectors/backup/shift-veeam-backup-collector.ps1"
                           : isStorageSan
                             ? "/templates/storage/shift-storage-san-template.csv"
-                            : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                            : isApplicationDependency
+                              ? "/templates/dependencies/shift-application-dependency-template.csv"
+                              : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
                     }
                     className="btn btn-secondary btn-sm"
                     download
                   >
                     <Download size={14} />
-                    {isStorageSan ? "Download CSV" : "Download collector"}
+                    {isStorageSan || isApplicationDependency ? "Download CSV" : "Download collector"}
                   </a>
                 ) : (
                   <button type="button" className="btn btn-secondary btn-sm" disabled>
@@ -606,7 +736,18 @@ export function EvidenceExpansionCenter({
                   </a>
                 ) : null}
 
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan ? (
+                {isApplicationDependency ? (
+                  <a
+                    href="/templates/dependencies/shift-application-dependency-template.json"
+                    className="btn btn-secondary btn-sm"
+                    download
+                  >
+                    <Download size={14} />
+                    Download JSON
+                  </a>
+                ) : null}
+
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan || isApplicationDependency ? (
                   <a
                     href={
                       isProxmoxTarget
@@ -615,11 +756,13 @@ export function EvidenceExpansionCenter({
                           ? "/collectors/backup/README.md"
                           : isStorageSan
                             ? "/templates/storage/README.md"
-                            : "/collectors/vmware/README.md"
+                            : isApplicationDependency
+                              ? "/templates/dependencies/README.md"
+                              : "/collectors/vmware/README.md"
                     }
                     className="assessment-inline-note"
                   >
-                    {isStorageSan ? "Template instructions" : "Collector instructions"}
+                    {isStorageSan || isApplicationDependency ? "Template instructions" : "Collector instructions"}
                   </a>
                 ) : (
                   <span className="assessment-inline-note">Collector coming soon</span>

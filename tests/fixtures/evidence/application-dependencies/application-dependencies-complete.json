@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "generatedAt": "2026-06-02T00:00:00.000Z", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "ERP Core", "businessOwner": "Maria Owner", "technicalOwner": "Enterprise Apps", "ownerTeam": "Enterprise Apps", "criticality": "critical", "downtimeTolerance": "minutes" }],
+    "components": [{ "applicationName": "ERP Core", "componentName": "ERP Web", "componentType": "frontend", "vmName": "erp-web-01" }, { "applicationName": "ERP Core", "componentName": "ERP DB", "componentType": "database", "vmName": "erp-db-01" }],
+    "vmRoles": [{ "applicationName": "ERP Core", "vmName": "erp-web-01", "role": "web", "criticality": "high", "ownerTeam": "Enterprise Apps" }, { "applicationName": "ERP Core", "vmName": "erp-db-01", "role": "db", "criticality": "critical", "ownerTeam": "Enterprise Apps" }],
+    "dependencies": [{ "applicationName": "ERP Core", "vmName": "erp-web-01", "dependencyType": "frontend_to_backend", "dependsOnVmName": "erp-db-01", "source": "customer_provided", "confidence": "medium", "notes": "Customer-reviewed dependency." }],
+    "owners": [{ "applicationName": "ERP Core", "ownerName": "Maria Owner", "ownerTeam": "Enterprise Apps", "responsibilityType": "business_and_technical" }],
+    "maintenanceWindows": [{ "applicationName": "ERP Core", "maintenanceWindow": "Sunday 02:00-04:00", "timezone": "America/Buenos_Aires", "approvalRequired": true }],
+    "migrationGroups": [{ "migrationGroup": "ERP-WAVE-01", "applicationName": "ERP Core", "vmName": "erp-web-01", "waveCandidate": "functional_candidate", "mustMoveTogether": true, "canMoveSeparately": false }, { "migrationGroup": "ERP-WAVE-01", "applicationName": "ERP Core", "vmName": "erp-db-01", "waveCandidate": "functional_candidate", "mustMoveTogether": true, "canMoveSeparately": false }],
+    "criticalities": [{ "applicationName": "ERP Core", "vmName": "erp-db-01", "criticality": "critical", "downtimeTolerance": "minutes", "rto": "60m", "rpo": "15m" }],
+    "constraints": [{ "constraintType": "latency_sensitive", "applicationName": "ERP Core", "vmName": "erp-db-01", "description": "Review latency before cutover.", "severity": "high" }]
+  },
+  "warnings": [],
+  "errors": []
+}

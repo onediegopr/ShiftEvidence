@@ -1,0 +1,3 @@
+recordType,applicationName,applicationId,componentName,vmName,vmInstanceUuid,vmBiosUuid,role,dependencyType,dependsOnVmName,dependsOnApplicationName,ownerName,ownerTeam,criticality,downtimeTolerance,maintenanceWindow,migrationGroup,waveCandidate,source,confidence,notes
+application,Portal,APP-PORTAL,,,,,,,,,,Digital,medium,hours,,,technical_only,customer_provided,medium,Synthetic
+vm_role,Portal,,,portal-web-01,,,web,,,,,Digital,medium,hours,,,technical_only,customer_provided,medium,Synthetic

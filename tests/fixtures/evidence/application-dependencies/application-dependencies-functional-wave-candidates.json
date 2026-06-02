@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "Warehouse", "ownerTeam": "Operations", "criticality": "high", "downtimeTolerance": "hours" }],
+    "components": [{ "applicationName": "Warehouse", "componentName": "Warehouse App", "vmName": "wms-app-01" }, { "applicationName": "Warehouse", "componentName": "Warehouse DB", "vmName": "wms-db-01" }],
+    "vmRoles": [{ "applicationName": "Warehouse", "vmName": "wms-app-01", "role": "app", "criticality": "high", "ownerTeam": "Operations" }, { "applicationName": "Warehouse", "vmName": "wms-db-01", "role": "db", "criticality": "high", "ownerTeam": "Operations" }],
+    "dependencies": [{ "applicationName": "Warehouse", "vmName": "wms-app-01", "dependencyType": "backend_to_db", "dependsOnVmName": "wms-db-01", "source": "customer_provided", "confidence": "medium" }],
+    "owners": [{ "applicationName": "Warehouse", "ownerTeam": "Operations" }],
+    "maintenanceWindows": [{ "applicationName": "Warehouse", "maintenanceWindow": "Sunday 01:00-03:00" }],
+    "migrationGroups": [{ "migrationGroup": "WMS-WAVE-01", "applicationName": "Warehouse", "vmName": "wms-app-01", "waveCandidate": "functional_candidate", "mustMoveTogether": true, "canMoveSeparately": false }],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

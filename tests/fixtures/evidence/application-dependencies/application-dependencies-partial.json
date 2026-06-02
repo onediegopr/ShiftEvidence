@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "Portal", "ownerTeam": "Digital", "criticality": "medium", "downtimeTolerance": "hours" }],
+    "components": [{ "applicationName": "Portal", "componentName": "Portal Web", "componentType": "frontend", "vmName": "portal-web-01" }],
+    "vmRoles": [{ "applicationName": "Portal", "vmName": "portal-web-01", "role": "web", "criticality": "medium", "ownerTeam": "Digital" }],
+    "dependencies": [],
+    "owners": [{ "applicationName": "Portal", "ownerTeam": "Digital" }],
+    "maintenanceWindows": [],
+    "migrationGroups": [],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

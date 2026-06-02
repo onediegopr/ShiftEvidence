@@ -1,0 +1,19 @@
+{
+  "schema": "shift-evidence.application-dependencies.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": {
+    "applications": [{ "applicationName": "No RVTools App", "ownerTeam": "Ops", "criticality": "medium", "downtimeTolerance": "hours" }],
+    "components": [{ "applicationName": "No RVTools App", "componentName": "App", "vmName": "norv-app-01" }],
+    "vmRoles": [{ "applicationName": "No RVTools App", "vmName": "norv-app-01", "role": "app", "criticality": "medium", "ownerTeam": "Ops" }],
+    "dependencies": [],
+    "owners": [{ "applicationName": "No RVTools App", "ownerTeam": "Ops" }],
+    "maintenanceWindows": [],
+    "migrationGroups": [],
+    "criticalities": [],
+    "constraints": []
+  },
+  "warnings": [],
+  "errors": []
+}

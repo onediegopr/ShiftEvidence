@@ -14,6 +14,8 @@ dist-ssr
 storage
 !public/templates/storage/
 !public/templates/storage/**
+!public/templates/dependencies/
+!public/templates/dependencies/**
 uploads
 .qa-storage/
 qa-artifacts/
