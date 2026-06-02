@@ -21,6 +21,47 @@ Stable PDF-capable assets:
 - `/brand/shift-evidence-icon-light-transparent.png`
 - `/brand/shift-evidence-icon-dark-transparent.png`
 - `/brand/shift-evidence-icon-outline-transparent.png`
+- `/brand/shift-evidence-icon-badge.png`
+
+## Favicon and app icons
+
+Source asset:
+
+- `/brand/shift-evidence-icon-badge.png`
+
+Generated files:
+
+- `/favicon.ico`
+- `/icon.png`
+- `/apple-icon.png`
+
+Implementation:
+
+- Metadata/layout updated in `src/app/layout.tsx`.
+- Favicon uses a dedicated badge/app-icon source, not the PDF logo.
+- PDF generators continue using stable PDF-capable assets, not favicon assets.
+- The badge source was generated from the clean alpha-capable incoming icon, then placed on a dark rounded-square background for small-size legibility.
+
+Validation:
+
+- `/brand/shift-evidence-icon-badge.png`: `1024x1024` PNG.
+- `/icon.png`: `512x512` PNG.
+- `/apple-icon.png`: `180x180` PNG.
+- `/favicon.ico`: contains `16x16`, `32x32`, and `48x48` entries.
+- Favicon files were generated and verified as non-empty.
+- No active runtime references to `_incoming`, `ChatGPT Image...`, `Logo Favicon.png`, or `imagegen.png`.
+
+Incoming asset classification:
+
+| Archivo original | Dimensiones | Alpha real | Checkerboard incrustado | Descripcion | Clasificacion propuesta | Nombre final | Confianza | Accion |
+|---|---:|---|---|---|---|---|---|---|
+| `ChatGPT Image 2 jun 2026, 14_51_38.png` | 1254x1254 | No | Si | Icon mark on baked checkerboard-style background, no alpha channel. | Descartable for runtime transparent assets | None | Alta | Keep in `_incoming`; not referenced |
+| `ChatGPT Image 2 jun 2026, 14_51_46.png` | 1254x1254 | No | Si | Similar icon mark variant on baked checkerboard-style background, no alpha channel. | Descartable for runtime transparent assets | None | Alta | Keep in `_incoming`; not referenced |
+| `ChatGPT Image 2 jun 2026, 14_52_02.png` | 1254x1254 | No | Si | Smaller icon mark variant on baked checkerboard-style background, no alpha channel. | Descartable for runtime transparent assets | None | Alta | Keep in `_incoming`; not referenced |
+| `ChatGPT Image 31 may 2026, 20_14_14.png` | 1254x1254 | No | No | Full Shift Evidence wordmark on dark square background. | Possible full logo dark reference only | None | Media | Keep in `_incoming`; not referenced |
+| `Logo Favicon.png` | 1254x1254 | No | Si | Badge-like icon with baked checkerboard-style background and no alpha channel. | Descartable for favicon/runtime transparent assets | None | Alta | Keep in `_incoming`; not referenced |
+| `shift-evidence-icon-transparent-1024.png` | 1024x1024 | Si | No | Clean transparent icon mark with high-resolution square canvas. | Favicon badge source / icon dark source | `/brand/shift-evidence-icon-badge.png` | Alta | Used to generate canonical badge and app icons |
+| `shift-evidence-icon-transparent.png` | 382x375 | Si | No | Clean transparent icon mark, smaller optimized version. | PDF-capable transparent icon source | Stable PDF icon variants already created | Alta | Used for stable PDF-capable assets |
 
 ## PDF/report branding
 
