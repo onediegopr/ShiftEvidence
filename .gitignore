@@ -12,6 +12,8 @@ dist
 dist-ssr
 .next
 storage
+!public/templates/storage/
+!public/templates/storage/**
 uploads
 .qa-storage/
 qa-artifacts/

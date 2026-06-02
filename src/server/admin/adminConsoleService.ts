@@ -1136,6 +1136,7 @@ export async function getAdminConsoleData(params?: {
             vmwareMetrics: null,
             proxmoxMetrics: null,
             backupMetrics: null,
+            storageSanMetrics: null,
             requiresReview: false,
           };
         }
@@ -1197,6 +1198,26 @@ export async function getAdminConsoleData(params?: {
         const backupNumber = (key: string) => {
           const value = backupSummary?.[key];
           return typeof value === "number" && Number.isFinite(value) ? value : null;
+        };
+        const storageSanSummary =
+          typeof summaryJson?.storageSanSummary === "object" &&
+          summaryJson.storageSanSummary &&
+          !Array.isArray(summaryJson.storageSanSummary)
+            ? summaryJson.storageSanSummary as Record<string, unknown>
+            : null;
+        const storageSanReadiness =
+          typeof summaryJson?.readiness === "object" &&
+          summaryJson.readiness &&
+          !Array.isArray(summaryJson.readiness)
+            ? summaryJson.readiness as Record<string, unknown>
+            : null;
+        const storageSanNumber = (key: string) => {
+          const value = storageSanSummary?.[key];
+          return typeof value === "number" && Number.isFinite(value) ? value : null;
+        };
+        const storageSanBoolean = (key: string) => {
+          const value = storageSanSummary?.[key];
+          return typeof value === "boolean" ? value : null;
         };
 
         return {
@@ -1271,6 +1292,27 @@ export async function getAdminConsoleData(params?: {
                 warningJobCount: backupNumber("warningJobCount"),
                 repositoryPressureCount: backupNumber("repositoryPressureCount"),
                 backupCopyJobCount: backupNumber("backupCopyJobCount"),
+              }
+            : null,
+          storageSanMetrics: storageSanSummary
+            ? {
+                storageReadinessStatus:
+                  typeof storageSanReadiness?.storageReadinessStatus === "string"
+                    ? storageSanReadiness.storageReadinessStatus
+                    : null,
+                confidence: typeof storageSanReadiness?.confidence === "string" ? storageSanReadiness.confidence : null,
+                arrayCount: storageSanNumber("arrayCount"),
+                poolCount: storageSanNumber("poolCount"),
+                volumeCount: storageSanNumber("volumeCount"),
+                lunCount: storageSanNumber("lunCount"),
+                datastoreMappingCount: storageSanNumber("datastoreMappingCount"),
+                highUsagePoolCount: storageSanNumber("highUsagePoolCount"),
+                criticalUsagePoolCount: storageSanNumber("criticalUsagePoolCount"),
+                performanceSampleCount: storageSanNumber("performanceSampleCount"),
+                replicationRecordCount: storageSanNumber("replicationRecordCount"),
+                targetStorageCandidateCount: storageSanNumber("targetStorageCandidateCount"),
+                performanceEvidencePresent: storageSanBoolean("performanceEvidencePresent"),
+                replicationEvidencePresent: storageSanBoolean("replicationEvidencePresent"),
               }
             : null,
           requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",

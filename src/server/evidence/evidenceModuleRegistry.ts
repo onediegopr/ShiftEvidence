@@ -84,7 +84,7 @@ export const evidenceModuleCatalog = [
     phase: "prepared",
     userVisible: true,
     adminVisible: true,
-    preparedMessage: "Prepared for future storage/SAN parsing. Existing storage readiness remains unchanged.",
+    preparedMessage: "Download the vendor-neutral Storage/SAN template, review it locally, then upload it here. Existing storage readiness remains unchanged.",
   },
   {
     key: EvidenceModuleKey.application_dependency,

@@ -1,0 +1,121 @@
+{
+  "schema": "shift-evidence.storage-san.v1",
+  "source": {
+    "type": "manual_template",
+    "generatedAt": "2026-06-02T00:00:00.000Z",
+    "owner": "Shift Evidence",
+    "mode": "customer-provided"
+  },
+  "safety": {
+    "persistentCredentialsStored": false,
+    "rawSecretsIncluded": false,
+    "networkUploadPerformed": false
+  },
+  "summary": {
+    "arrayCount": 1,
+    "poolCount": 1,
+    "volumeCount": 1,
+    "lunCount": 0,
+    "datastoreMappingCount": 1,
+    "performanceSampleCount": 1,
+    "replicationRecordCount": 1,
+    "snapshotPolicyCount": 1,
+    "targetStorageCandidateCount": 1
+  },
+  "entities": {
+    "arrays": [
+      {
+        "arrayName": "shift-array-01",
+        "vendor": "ExampleVendor",
+        "model": "ExampleModel",
+        "notes": "Synthetic example. Replace with customer-provided sanitized values."
+      }
+    ],
+    "pools": [
+      {
+        "arrayName": "shift-array-01",
+        "poolName": "pool-a",
+        "totalGb": 10000,
+        "usedGb": 6200,
+        "freeGb": 3800,
+        "usagePercent": 62,
+        "thinProvisioned": true
+      }
+    ],
+    "volumes": [
+      {
+        "arrayName": "shift-array-01",
+        "poolName": "pool-a",
+        "volumeName": "vol-ds-prod-01",
+        "datastoreName": "DS-PROD-01",
+        "protocol": "nfs",
+        "totalGb": 4000,
+        "usedGb": 2300,
+        "freeGb": 1700,
+        "usagePercent": 57.5,
+        "replicated": true,
+        "snapshotEnabled": true,
+        "thinProvisioned": true,
+        "criticality": "high"
+      }
+    ],
+    "luns": [],
+    "datastoreMappings": [
+      {
+        "datastoreName": "DS-PROD-01",
+        "arrayName": "shift-array-01",
+        "poolName": "pool-a",
+        "volumeName": "vol-ds-prod-01",
+        "lunName": "lun-101",
+        "protocol": "nfs",
+        "multipath": "unknown",
+        "shared": "yes"
+      }
+    ],
+    "performanceSamples": [
+      {
+        "sourceSystem": "manual",
+        "arrayName": "shift-array-01",
+        "poolName": "pool-a",
+        "volumeName": "vol-ds-prod-01",
+        "datastoreName": "DS-PROD-01",
+        "sampleWindow": "24h",
+        "iopsRead": 1200,
+        "iopsWrite": 600,
+        "latencyMs": 4.5,
+        "throughputMBps": 850
+      }
+    ],
+    "replication": [
+      {
+        "sourceVolume": "vol-ds-prod-01",
+        "targetVolume": "vol-ds-prod-01-dr",
+        "replicated": true,
+        "mode": "async",
+        "lagMinutes": 15,
+        "replicationStatus": "healthy"
+      }
+    ],
+    "snapshotPolicies": [
+      {
+        "volumeName": "vol-ds-prod-01",
+        "snapshotEnabled": true,
+        "frequency": "daily",
+        "retention": "14d"
+      }
+    ],
+    "targetStorageCandidates": [
+      {
+        "targetName": "target-proxmox-01",
+        "storageType": "nfs",
+        "totalGb": 12000,
+        "freeGb": 12000,
+        "protocol": "nfs",
+        "shared": true,
+        "confidence": "medium"
+      }
+    ]
+  },
+  "warnings": [],
+  "errors": []
+}

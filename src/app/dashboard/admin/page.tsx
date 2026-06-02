@@ -193,6 +193,11 @@ function formatStatusLabel(value: string | null | undefined) {
     backup_requires_remediation: "Backup requiere remediacion",
     backup_insufficient: "Backup insuficiente",
     backup_not_validated: "Backup no validado",
+    storage_validated: "Storage validado",
+    storage_partially_ready: "Storage parcialmente listo",
+    storage_requires_remediation: "Storage requiere remediacion",
+    storage_insufficient: "Storage insuficiente",
+    storage_not_validated: "Storage no validado",
   };
 
   return labels[value] ?? value;
@@ -1605,7 +1610,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                             ? `Target ${formatStatusLabel(module.proxmoxMetrics.targetStatus)} / nodes ${module.proxmoxMetrics.onlineNodeCount ?? "-"}/${module.proxmoxMetrics.nodeCount ?? "-"} / storage ${formatPercent(module.proxmoxMetrics.storageUsagePercent)} / HA ${module.proxmoxMetrics.haConfigured ? "si" : "no"} / PBS ${module.proxmoxMetrics.pbsDetected ? "si" : "no"} / Ceph ${module.proxmoxMetrics.cephDetected ? module.proxmoxMetrics.cephHealth ?? "detectado" : "no"}`
                             : module.backupMetrics
                               ? `Backup ${formatStatusLabel(module.backupMetrics.backupReadinessStatus)} / jobs ${module.backupMetrics.jobCount ?? "-"} / protected ${module.backupMetrics.protectedObjectCount ?? "-"} / matched ${module.backupMetrics.matchedVmCount ?? "-"} / unprotected ${module.backupMetrics.unprotectedVmCount ?? "-"} / stale ${module.backupMetrics.staleBackupCount ?? "-"} / failed ${module.backupMetrics.failedJobCount ?? "-"} / repo pressure ${module.backupMetrics.repositoryPressureCount ?? "-"}`
-                              : "-"}
+                              : module.storageSanMetrics
+                                ? `Storage ${formatStatusLabel(module.storageSanMetrics.storageReadinessStatus)} / arrays ${module.storageSanMetrics.arrayCount ?? "-"} / pools ${module.storageSanMetrics.poolCount ?? "-"} / vol+lun ${(module.storageSanMetrics.volumeCount ?? 0) + (module.storageSanMetrics.lunCount ?? 0)} / mappings ${module.storageSanMetrics.datastoreMappingCount ?? "-"} / high ${module.storageSanMetrics.highUsagePoolCount ?? "-"} / critical ${module.storageSanMetrics.criticalUsagePoolCount ?? "-"} / perf ${module.storageSanMetrics.performanceSampleCount ?? "-"} / repl ${module.storageSanMetrics.replicationRecordCount ?? "-"} / targets ${module.storageSanMetrics.targetStorageCandidateCount ?? "-"}`
+                                : "-"}
                       </td>
                       <td>
                         {module.lastParseResult

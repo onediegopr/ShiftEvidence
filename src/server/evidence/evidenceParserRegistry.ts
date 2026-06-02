@@ -6,6 +6,7 @@ import {
 import { getEvidenceModuleCatalog } from "./evidenceModuleRegistry";
 import { createBackupEvidenceParser } from "./parsers/backupEvidenceParser";
 import { createProxmoxTargetParser } from "./parsers/proxmoxTargetParser";
+import { createStorageSanParser } from "./parsers/storageSanParser";
 import { createVmwareEnrichmentParser } from "./parsers/vmwareEnrichmentParser";
 
 export type EvidenceParserInput = {
@@ -152,6 +153,7 @@ export function createDefaultEvidenceParserRegistry() {
   registry.register(createVmwareEnrichmentParser());
   registry.register(createProxmoxTargetParser());
   registry.register(createBackupEvidenceParser());
+  registry.register(createStorageSanParser());
   registry.register(createMetadataOnlyParser());
   return registry;
 }

@@ -141,6 +141,41 @@ function getBackupSummary(value: unknown) {
   };
 }
 
+function getStorageSanSummary(value: unknown) {
+  const summary = asRecord(value);
+  const storage = asRecord(summary?.storageSanSummary);
+  const readiness = asRecord(summary?.readiness);
+  if (!storage) return null;
+
+  const numberValue = (key: string) => {
+    const value = storage[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  };
+
+  const booleanValue = (key: string) => storage[key] === true;
+
+  return {
+    storageReadinessStatus:
+      typeof readiness?.storageReadinessStatus === "string"
+        ? readiness.storageReadinessStatus
+        : "storage_not_validated",
+    confidence: typeof readiness?.confidence === "string" ? readiness.confidence : "low",
+    recommendations: Array.isArray(readiness?.recommendations)
+      ? readiness.recommendations.filter((item): item is string => typeof item === "string")
+      : [],
+    arrayCount: numberValue("arrayCount"),
+    poolCount: numberValue("poolCount"),
+    volumeCount: numberValue("volumeCount"),
+    lunCount: numberValue("lunCount"),
+    datastoreMappingCount: numberValue("datastoreMappingCount"),
+    highUsagePoolCount: numberValue("highUsagePoolCount"),
+    criticalUsagePoolCount: numberValue("criticalUsagePoolCount"),
+    performanceEvidencePresent: booleanValue("performanceEvidencePresent"),
+    replicationEvidencePresent: booleanValue("replicationEvidencePresent"),
+    targetStorageCandidateCount: numberValue("targetStorageCandidateCount"),
+  };
+}
+
 export function EvidenceExpansionCenter({
   assessmentId,
   summary,
@@ -188,9 +223,11 @@ export function EvidenceExpansionCenter({
           const isVmwareEnrichment = module.metadata.key === EvidenceModuleKey.vmware_enrichment;
           const isProxmoxTarget = module.metadata.key === EvidenceModuleKey.proxmox_target;
           const isBackupEvidence = module.metadata.key === EvidenceModuleKey.backup_evidence;
+          const isStorageSan = module.metadata.key === EvidenceModuleKey.storage_san;
           const vmwareSummary = getVmwareSummary(module.record.lastParseResult?.summaryJson);
           const proxmoxSummary = getProxmoxSummary(module.record.lastParseResult?.summaryJson);
           const backupSummary = getBackupSummary(module.record.lastParseResult?.summaryJson);
+          const storageSanSummary = getStorageSanSummary(module.record.lastParseResult?.summaryJson);
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -220,6 +257,13 @@ export function EvidenceExpansionCenter({
                       Download the Shift Evidence Veeam Backup Evidence Collector, run it locally in your
                       Veeam environment, review the generated JSON output, and upload it here to validate
                       backup readiness before migration.
+                    </span>
+                  ) : null}
+                  {isStorageSan ? (
+                    <span>
+                      Download the Shift Evidence Storage/SAN template, fill it with capacity, datastore
+                      mapping, performance and replication evidence, review it locally, and upload it here
+                      to improve storage readiness confidence.
                     </span>
                   ) : null}
                 </div>
@@ -273,6 +317,16 @@ export function EvidenceExpansionCenter({
                   <p className="assessment-storage-note">
                     The collector is read-only. It does not start or stop jobs, delete restore points,
                     perform restores, modify repositories, change Veeam configuration, or persist credentials.
+                  </p>
+                </div>
+              ) : null}
+
+              {isStorageSan ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Customer-provided evidence safety</strong>
+                  <p className="assessment-storage-note">
+                    Do not include storage credentials, API tokens, passwords or raw configuration secrets.
+                    This module uses customer-provided evidence files only in this version.
                   </p>
                 </div>
               ) : null}
@@ -404,6 +458,65 @@ export function EvidenceExpansionCenter({
                 </>
               ) : null}
 
+              {storageSanSummary ? (
+                <>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Storage: {statusLabel(storageSanSummary.storageReadinessStatus)}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Confidence: {storageSanSummary.confidence}
+                    </span>
+                  </div>
+                  <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Arrays</span>
+                      <strong>{storageSanSummary.arrayCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Pools</span>
+                      <strong>{storageSanSummary.poolCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Volumes/LUNs</span>
+                      <strong>{storageSanSummary.volumeCount + storageSanSummary.lunCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Mappings</span>
+                      <strong>{storageSanSummary.datastoreMappingCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">High/Critical</span>
+                      <strong>
+                        {storageSanSummary.highUsagePoolCount}/{storageSanSummary.criticalUsagePoolCount}
+                      </strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Target candidates</span>
+                      <strong>{storageSanSummary.targetStorageCandidateCount}</strong>
+                    </article>
+                  </div>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Performance: {storageSanSummary.performanceEvidencePresent ? "present" : "missing"}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Replication: {storageSanSummary.replicationEvidencePresent ? "present" : "missing"}
+                    </span>
+                  </div>
+                  {storageSanSummary.recommendations.length > 0 ? (
+                    <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                      <strong>Storage recommendations</strong>
+                      <ul className="assessment-bullet-list">
+                        {storageSanSummary.recommendations.slice(0, 3).map((recommendation) => (
+                          <li key={recommendation}>{recommendation}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
               {module.reportWarning ? (
                 <p className="assessment-inline-note">{module.reportWarning}</p>
               ) : null}
@@ -458,20 +571,22 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence ? (
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan ? (
                   <a
                     href={
                       isProxmoxTarget
                         ? "/collectors/proxmox/shift-proxmox-target-collector.sh"
                         : isBackupEvidence
                           ? "/collectors/backup/shift-veeam-backup-collector.ps1"
-                          : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                          : isStorageSan
+                            ? "/templates/storage/shift-storage-san-template.csv"
+                            : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
                     }
                     className="btn btn-secondary btn-sm"
                     download
                   >
                     <Download size={14} />
-                    Download collector
+                    {isStorageSan ? "Download CSV" : "Download collector"}
                   </a>
                 ) : (
                   <button type="button" className="btn btn-secondary btn-sm" disabled>
@@ -480,18 +595,31 @@ export function EvidenceExpansionCenter({
                   </button>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence ? (
+                {isStorageSan ? (
+                  <a
+                    href="/templates/storage/shift-storage-san-template.json"
+                    className="btn btn-secondary btn-sm"
+                    download
+                  >
+                    <Download size={14} />
+                    Download JSON
+                  </a>
+                ) : null}
+
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence || isStorageSan ? (
                   <a
                     href={
                       isProxmoxTarget
                         ? "/collectors/proxmox/README.md"
                         : isBackupEvidence
                           ? "/collectors/backup/README.md"
-                          : "/collectors/vmware/README.md"
+                          : isStorageSan
+                            ? "/templates/storage/README.md"
+                            : "/collectors/vmware/README.md"
                     }
                     className="assessment-inline-note"
                   >
-                    Collector instructions
+                    {isStorageSan ? "Template instructions" : "Collector instructions"}
                   </a>
                 ) : (
                   <span className="assessment-inline-note">Collector coming soon</span>

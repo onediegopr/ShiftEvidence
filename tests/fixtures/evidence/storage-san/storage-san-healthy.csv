@@ -1,0 +1,8 @@
+recordType,sourceSystem,vendor,model,arrayName,poolName,volumeName,lunName,datastoreName,protocol,totalGb,usedGb,freeGb,usagePercent,thinProvisioned,replicated,snapshotEnabled,iopsRead,iopsWrite,latencyMs,throughputMBps,sampleWindow,notes,criticality
+array,manual,ExampleVendor,ExampleModel,array-a,,,,,,,,,,,,,,,,,,Synthetic,medium
+pool,manual,ExampleVendor,ExampleModel,array-a,pool-a,,,,,1000,500,500,50,false,,,,,,,,Synthetic,medium
+datastore_mapping,manual,ExampleVendor,ExampleModel,array-a,pool-a,vol-a,lun-a,DS-PROD-01,nfs,,,,,,,,,,,,,Synthetic,high
+performance_sample,manual,ExampleVendor,ExampleModel,array-a,pool-a,vol-a,,DS-PROD-01,nfs,,,,,,,,1000,500,4,500,24h,Synthetic,high
+replication,manual,ExampleVendor,ExampleModel,array-a,pool-a,vol-a,vol-a-dr,DS-PROD-01,nfs,,,,,,true,,,,,,24h,healthy,high
+snapshot_policy,manual,ExampleVendor,ExampleModel,array-a,pool-a,vol-a,,DS-PROD-01,nfs,,,,,,,true,,,,,daily,Synthetic,high
+target_storage_candidate,manual,Proxmox,Target,target-a,pool-target,target-vol,,DS-PROD-01,nfs,2000,0,2000,0,false,false,false,,,,,,Synthetic,medium

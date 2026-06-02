@@ -36,7 +36,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-2 is complete and introduced the proprietary VMware enrichment collector/parser.
 - EVIDENCE-3 is complete in code and introduces the proprietary Proxmox Target Validation collector/parser/readiness engine without a DB migration.
 - EVIDENCE-4 is complete in code and introduces the proprietary Veeam Backup Evidence collector/parser/readiness engine without a DB migration.
-- The next recommended evidence hito is EVIDENCE-5: Storage/SAN Evidence Enrichment + Vendor-Neutral Templates + Storage Readiness Signals.
+- EVIDENCE-5 is complete in code and introduces vendor-neutral Storage/SAN templates, parser, readiness engine, RVTools datastore matching and Proxmox Target comparison signals without a DB migration.
+- The next recommended evidence hito is EVIDENCE-6: Application Dependency Mapping + Migration Plan Readiness.
 
 ## B. Current State Audit
 
@@ -658,6 +659,27 @@ Deliverables:
 - Report/advisor integration.
 
 ### Hito 6: EVIDENCE-5, storage/SAN enrichment
+
+Implementation update: complete in code as of 2026-06-02.
+
+Delivered:
+
+- Vendor-neutral CSV and JSON templates.
+- `storage-san-parser-v1`.
+- `shift-evidence.storage-san.v1` schema.
+- Storage/SAN readiness engine.
+- RVTools datastore matching.
+- Proxmox Target storage comparison signal.
+- User Evidence Expansion Center integration.
+- Admin advanced evidence metrics.
+- Synthetic fixtures and unit tests.
+
+Out of scope and still recommended for later:
+
+- Vendor-specific NetApp, Dell PowerStore, Pure, HPE, Synology/QNAP or other storage collectors.
+- API credential handling for storage vendors.
+- XLSX template variant.
+- First-class normalized storage tables.
 
 Deliverables:
 

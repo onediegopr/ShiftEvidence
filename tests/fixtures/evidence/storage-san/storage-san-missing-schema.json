@@ -1,0 +1,8 @@
+{
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": { "arrays": [], "pools": [], "volumes": [], "luns": [], "datastoreMappings": [], "performanceSamples": [], "replication": [], "snapshotPolicies": [], "targetStorageCandidates": [] },
+  "warnings": [],
+  "errors": []
+}

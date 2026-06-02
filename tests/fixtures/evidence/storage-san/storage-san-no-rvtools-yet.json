@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.storage-san.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": { "arrays": [{ "arrayName": "array-a" }], "pools": [{ "arrayName": "array-a", "poolName": "pool-a", "totalGb": 1000, "usedGb": 500, "freeGb": 500, "usagePercent": 50 }], "volumes": [], "luns": [], "datastoreMappings": [{ "datastoreName": "DS-PROD-01" }], "performanceSamples": [{ "datastoreName": "DS-PROD-01", "sampleWindow": "24h", "latencyMs": 4 }], "replication": [{ "sourceVolume": "vol-a", "replicated": true, "replicationStatus": "healthy" }], "snapshotPolicies": [{ "volumeName": "vol-a", "snapshotEnabled": true }], "targetStorageCandidates": [] },
+  "warnings": [],
+  "errors": []
+}

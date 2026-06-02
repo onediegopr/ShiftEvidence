@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.storage-san.v1",
+  "source": { "type": "manual_template", "owner": "Shift Evidence", "mode": "customer-provided" },
+  "safety": { "persistentCredentialsStored": false, "rawSecretsIncluded": false, "networkUploadPerformed": false },
+  "summary": {},
+  "entities": { "arrays": [], "pools": [], "volumes": [], "luns": [], "datastoreMappings": [], "performanceSamples": [], "replication": [], "snapshotPolicies": [], "targetStorageCandidates": [{ "targetName": "target-proxmox-01", "storageType": "nfs", "totalGb": 12000, "freeGb": 12000, "protocol": "nfs", "shared": true, "confidence": "medium" }] },
+  "warnings": [],
+  "errors": []
+}

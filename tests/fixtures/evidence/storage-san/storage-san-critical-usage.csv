@@ -1,0 +1,4 @@
+recordType,sourceSystem,vendor,model,arrayName,poolName,volumeName,lunName,datastoreName,protocol,totalGb,usedGb,freeGb,usagePercent,thinProvisioned,replicated,snapshotEnabled,iopsRead,iopsWrite,latencyMs,throughputMBps,sampleWindow,notes,criticality
+array,manual,ExampleVendor,ExampleModel,array-a,,,,,,,,,,,,,,,,,,Synthetic,medium
+pool,manual,ExampleVendor,ExampleModel,array-a,pool-critical,,,,,1000,930,70,93,false,,,,,,,,Synthetic,high
+datastore_mapping,manual,ExampleVendor,ExampleModel,array-a,pool-critical,vol-a,lun-a,DS-PROD-01,nfs,,,,,,,,,,,,,Synthetic,high
