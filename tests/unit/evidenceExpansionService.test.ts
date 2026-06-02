@@ -227,6 +227,51 @@ describe("evidence expansion service", () => {
     );
   });
 
+  it("updates Backup Evidence module to parsed_with_warnings when backup parser returns warnings", async () => {
+    prismaMock.evidenceUpload.findUnique.mockResolvedValueOnce({
+      id: "upload_1",
+      assessmentId: "assessment_1",
+      evidenceFileId: "file_1",
+      moduleKey: EvidenceModuleKey.backup_evidence,
+      originalFilename: "shift-veeam-backup-output.json",
+      schemaVersion: null,
+      evidenceFile: {
+        id: "file_1",
+        relativePath: "private/backup-evidence.json",
+        mimeType: "application/json",
+      },
+    });
+    prismaMock.evidenceParseResult.create.mockResolvedValueOnce({ id: "parse_1" });
+
+    await parseEvidenceUpload({
+      userId: "user_1",
+      workspaceId: "workspace_1",
+      evidenceUploadId: "upload_1",
+      registry: {
+        parse: vi.fn().mockResolvedValue({
+          status: EvidenceParseResultStatus.parsed_with_warnings,
+          summary: { backupEvidenceSummary: { jobCount: 1 } },
+          warnings: ["No restore testing evidence."],
+          errors: [],
+          normalizedEntities: {},
+          parserKey: "backup-evidence-parser-v1",
+          parserVersion: "1.0.0",
+        }),
+      } as never,
+    });
+
+    expect(prismaMock.assessmentEvidenceModule.update).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: EvidenceModuleStatus.parsed_with_warnings,
+          confidenceLevel: EvidenceModuleConfidenceLevel.low,
+          completionPercent: 60,
+          lastParseResultId: "parse_1",
+        }),
+      }),
+    );
+  });
+
   it("marks an optional module as skipped without blocking base assessment", async () => {
     prismaMock.assessmentEvidenceModule.findMany.mockResolvedValueOnce(
       Object.values(EvidenceModuleKey).map((moduleKey) => ({ moduleKey })),

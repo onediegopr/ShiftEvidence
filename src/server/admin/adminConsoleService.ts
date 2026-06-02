@@ -1135,6 +1135,7 @@ export async function getAdminConsoleData(params?: {
             lastParseResult: null,
             vmwareMetrics: null,
             proxmoxMetrics: null,
+            backupMetrics: null,
             requiresReview: false,
           };
         }
@@ -1180,6 +1181,22 @@ export async function getAdminConsoleData(params?: {
         const proxmoxBoolean = (key: string) => {
           const value = proxmoxSummary?.[key];
           return typeof value === "boolean" ? value : null;
+        };
+        const backupSummary =
+          typeof summaryJson?.backupEvidenceSummary === "object" &&
+          summaryJson.backupEvidenceSummary &&
+          !Array.isArray(summaryJson.backupEvidenceSummary)
+            ? summaryJson.backupEvidenceSummary as Record<string, unknown>
+            : null;
+        const backupReadiness =
+          typeof summaryJson?.readiness === "object" &&
+          summaryJson.readiness &&
+          !Array.isArray(summaryJson.readiness)
+            ? summaryJson.readiness as Record<string, unknown>
+            : null;
+        const backupNumber = (key: string) => {
+          const value = backupSummary?.[key];
+          return typeof value === "number" && Number.isFinite(value) ? value : null;
         };
 
         return {
@@ -1234,6 +1251,26 @@ export async function getAdminConsoleData(params?: {
                 pbsDetected: proxmoxBoolean("pbsDetected"),
                 cephDetected: proxmoxBoolean("cephDetected"),
                 cephHealth: typeof proxmoxSummary.cephHealth === "string" ? proxmoxSummary.cephHealth : null,
+              }
+            : null,
+          backupMetrics: backupSummary
+            ? {
+                backupReadinessStatus:
+                  typeof backupReadiness?.backupReadinessStatus === "string"
+                    ? backupReadiness.backupReadinessStatus
+                    : null,
+                confidence: typeof backupReadiness?.confidence === "string" ? backupReadiness.confidence : null,
+                jobCount: backupNumber("jobCount"),
+                enabledJobCount: backupNumber("enabledJobCount"),
+                disabledJobCount: backupNumber("disabledJobCount"),
+                protectedObjectCount: backupNumber("protectedObjectCount"),
+                matchedVmCount: backupNumber("matchedVmCount"),
+                unprotectedVmCount: backupNumber("unprotectedVmCount"),
+                staleBackupCount: backupNumber("staleBackupCount"),
+                failedJobCount: backupNumber("failedJobCount"),
+                warningJobCount: backupNumber("warningJobCount"),
+                repositoryPressureCount: backupNumber("repositoryPressureCount"),
+                backupCopyJobCount: backupNumber("backupCopyJobCount"),
               }
             : null,
           requiresReview: evidenceModule.status === "parsed_with_warnings" || evidenceModule.status === "failed",

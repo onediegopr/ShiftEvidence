@@ -69,7 +69,7 @@ export const evidenceModuleCatalog = [
     phase: "prepared",
     userVisible: true,
     adminVisible: true,
-    preparedMessage: "Prepared for future backup analysis. The base report remains available without backup evidence.",
+    preparedMessage: "Download the read-only Veeam backup collector, review the JSON output locally, then upload it here. The base report remains available without backup evidence.",
   },
   {
     key: EvidenceModuleKey.storage_san,

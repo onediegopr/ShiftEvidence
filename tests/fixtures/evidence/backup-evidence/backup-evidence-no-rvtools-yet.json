@@ -1,0 +1,10 @@
+{
+  "schema": "shift-evidence.backup-evidence.v1",
+  "collector": { "name": "shift-veeam-backup-collector", "displayName": "Shift Evidence Veeam Backup Evidence Collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "source": { "platform": "veeam-backup-replication", "hostname": "veeam-lab", "collectedAt": "2026-06-01T00:00:00Z" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "jobsStarted": false, "jobsStopped": false, "restorePerformed": false, "restorePointsDeleted": false },
+  "summary": {},
+  "entities": { "jobs": [{ "name": "No RVTools", "enabled": true, "lastResult": "Success" }], "sessions": [], "protectedObjects": [{ "name": "app-01" }, { "name": "db-01" }], "restorePoints": [{ "objectName": "app-01", "creationTime": "2026-05-31T01:00:00Z" }, { "objectName": "db-01", "creationTime": "2026-05-31T01:00:00Z" }], "repositories": [{ "name": "repo-main", "capacity": 1000, "free": 500, "used": 500 }], "backupCopyJobs": [] },
+  "warnings": [],
+  "errors": []
+}

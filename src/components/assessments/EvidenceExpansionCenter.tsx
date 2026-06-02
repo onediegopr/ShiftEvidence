@@ -110,6 +110,37 @@ function getProxmoxSummary(value: unknown) {
   };
 }
 
+function getBackupSummary(value: unknown) {
+  const summary = asRecord(value);
+  const backup = asRecord(summary?.backupEvidenceSummary);
+  const readiness = asRecord(summary?.readiness);
+  if (!backup) return null;
+
+  const numberValue = (key: string) => {
+    const value = backup[key];
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  };
+
+  return {
+    backupReadinessStatus:
+      typeof readiness?.backupReadinessStatus === "string"
+        ? readiness.backupReadinessStatus
+        : "backup_not_validated",
+    confidence: typeof readiness?.confidence === "string" ? readiness.confidence : "low",
+    recommendations: Array.isArray(readiness?.recommendations)
+      ? readiness.recommendations.filter((item): item is string => typeof item === "string")
+      : [],
+    jobCount: numberValue("jobCount"),
+    protectedObjectCount: numberValue("protectedObjectCount"),
+    matchedVmCount: numberValue("matchedVmCount"),
+    unmatchedProtectedObjectCount: numberValue("unmatchedProtectedObjectCount"),
+    unprotectedVmCount: numberValue("unprotectedVmCount"),
+    staleBackupCount: numberValue("staleBackupCount"),
+    failedJobCount: numberValue("failedJobCount"),
+    repositoryPressureCount: numberValue("repositoryPressureCount"),
+  };
+}
+
 export function EvidenceExpansionCenter({
   assessmentId,
   summary,
@@ -156,8 +187,10 @@ export function EvidenceExpansionCenter({
           const evidenceType = evidenceTypeForModule(module.metadata.key);
           const isVmwareEnrichment = module.metadata.key === EvidenceModuleKey.vmware_enrichment;
           const isProxmoxTarget = module.metadata.key === EvidenceModuleKey.proxmox_target;
+          const isBackupEvidence = module.metadata.key === EvidenceModuleKey.backup_evidence;
           const vmwareSummary = getVmwareSummary(module.record.lastParseResult?.summaryJson);
           const proxmoxSummary = getProxmoxSummary(module.record.lastParseResult?.summaryJson);
+          const backupSummary = getBackupSummary(module.record.lastParseResult?.summaryJson);
 
           return (
             <article key={module.metadata.key} className="glass-card assessment-subcard">
@@ -180,6 +213,13 @@ export function EvidenceExpansionCenter({
                       Download the Shift Evidence Proxmox Target Collector, run it locally on a Proxmox VE
                       node, review the generated JSON output, and upload it here to validate whether your
                       target environment is ready for migration.
+                    </span>
+                  ) : null}
+                  {isBackupEvidence ? (
+                    <span>
+                      Download the Shift Evidence Veeam Backup Evidence Collector, run it locally in your
+                      Veeam environment, review the generated JSON output, and upload it here to validate
+                      backup readiness before migration.
                     </span>
                   ) : null}
                 </div>
@@ -223,6 +263,16 @@ export function EvidenceExpansionCenter({
                   <p className="assessment-storage-note">
                     The collector is read-only. It does not change Proxmox configuration, create or delete VMs,
                     modify storage, restart services, install packages, persist credentials, or upload data externally.
+                  </p>
+                </div>
+              ) : null}
+
+              {isBackupEvidence ? (
+                <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                  <strong>Read-only collector safety</strong>
+                  <p className="assessment-storage-note">
+                    The collector is read-only. It does not start or stop jobs, delete restore points,
+                    perform restores, modify repositories, change Veeam configuration, or persist credentials.
                   </p>
                 </div>
               ) : null}
@@ -305,6 +355,55 @@ export function EvidenceExpansionCenter({
                 </>
               ) : null}
 
+              {backupSummary ? (
+                <>
+                  <div className="assessment-status-row" style={{ marginTop: "0.75rem" }}>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Backup: {statusLabel(backupSummary.backupReadinessStatus)}
+                    </span>
+                    <span className="assessment-chip assessment-chip-neutral">
+                      Confidence: {backupSummary.confidence}
+                    </span>
+                  </div>
+                  <div className="assessment-summary-mini-grid" style={{ marginTop: "0.75rem" }}>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Jobs</span>
+                      <strong>{backupSummary.jobCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Protected</span>
+                      <strong>{backupSummary.protectedObjectCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Matched</span>
+                      <strong>{backupSummary.matchedVmCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Unprotected</span>
+                      <strong>{backupSummary.unprotectedVmCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Stale</span>
+                      <strong>{backupSummary.staleBackupCount}</strong>
+                    </article>
+                    <article className="assessment-preview-card">
+                      <span className="assessment-preview-label">Failed jobs</span>
+                      <strong>{backupSummary.failedJobCount}</strong>
+                    </article>
+                  </div>
+                  {backupSummary.recommendations.length > 0 ? (
+                    <div className="assessment-warning-box" style={{ marginTop: "0.75rem" }}>
+                      <strong>Backup recommendations</strong>
+                      <ul className="assessment-bullet-list">
+                        {backupSummary.recommendations.slice(0, 3).map((recommendation) => (
+                          <li key={recommendation}>{recommendation}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
               {module.reportWarning ? (
                 <p className="assessment-inline-note">{module.reportWarning}</p>
               ) : null}
@@ -359,12 +458,14 @@ export function EvidenceExpansionCenter({
                   <span className="assessment-inline-note">Upload gate must be ready before attaching evidence.</span>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget ? (
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence ? (
                   <a
                     href={
                       isProxmoxTarget
                         ? "/collectors/proxmox/shift-proxmox-target-collector.sh"
-                        : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
+                        : isBackupEvidence
+                          ? "/collectors/backup/shift-veeam-backup-collector.ps1"
+                          : "/collectors/vmware/shift-vmware-evidence-collector.ps1"
                     }
                     className="btn btn-secondary btn-sm"
                     download
@@ -379,9 +480,15 @@ export function EvidenceExpansionCenter({
                   </button>
                 )}
 
-                {isVmwareEnrichment || isProxmoxTarget ? (
+                {isVmwareEnrichment || isProxmoxTarget || isBackupEvidence ? (
                   <a
-                    href={isProxmoxTarget ? "/collectors/proxmox/README.md" : "/collectors/vmware/README.md"}
+                    href={
+                      isProxmoxTarget
+                        ? "/collectors/proxmox/README.md"
+                        : isBackupEvidence
+                          ? "/collectors/backup/README.md"
+                          : "/collectors/vmware/README.md"
+                    }
                     className="assessment-inline-note"
                   >
                     Collector instructions

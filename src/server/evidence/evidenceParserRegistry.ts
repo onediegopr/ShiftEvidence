@@ -4,6 +4,7 @@ import {
   EvidenceModuleSourceType,
 } from "@prisma/client";
 import { getEvidenceModuleCatalog } from "./evidenceModuleRegistry";
+import { createBackupEvidenceParser } from "./parsers/backupEvidenceParser";
 import { createProxmoxTargetParser } from "./parsers/proxmoxTargetParser";
 import { createVmwareEnrichmentParser } from "./parsers/vmwareEnrichmentParser";
 
@@ -150,6 +151,7 @@ export function createDefaultEvidenceParserRegistry() {
   const registry = new EvidenceParserRegistry();
   registry.register(createVmwareEnrichmentParser());
   registry.register(createProxmoxTargetParser());
+  registry.register(createBackupEvidenceParser());
   registry.register(createMetadataOnlyParser());
   return registry;
 }

@@ -35,7 +35,8 @@ Implementation update after EVIDENCE-3:
 - EVIDENCE-1 is complete and introduced the common Evidence Expansion framework.
 - EVIDENCE-2 is complete and introduced the proprietary VMware enrichment collector/parser.
 - EVIDENCE-3 is complete in code and introduces the proprietary Proxmox Target Validation collector/parser/readiness engine without a DB migration.
-- The next recommended evidence hito is EVIDENCE-4: Backup Evidence Analysis + Veeam Collector + Backup Readiness Gates.
+- EVIDENCE-4 is complete in code and introduces the proprietary Veeam Backup Evidence collector/parser/readiness engine without a DB migration.
+- The next recommended evidence hito is EVIDENCE-5: Storage/SAN Evidence Enrichment + Vendor-Neutral Templates + Storage Readiness Signals.
 
 ## B. Current State Audit
 

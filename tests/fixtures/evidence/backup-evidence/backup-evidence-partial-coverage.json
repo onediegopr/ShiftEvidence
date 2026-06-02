@@ -1,0 +1,9 @@
+{
+  "schema": "shift-evidence.backup-evidence.v1",
+  "collector": { "name": "shift-veeam-backup-collector", "version": "0.1.0", "owner": "Shift Evidence", "mode": "read-only" },
+  "safety": { "persistentCredentialsStored": false, "configurationChanged": false, "rawSecretsIncluded": false, "networkUploadPerformed": false, "jobsStarted": false, "jobsStopped": false, "restorePerformed": false, "restorePointsDeleted": false },
+  "summary": {},
+  "entities": { "jobs": [{ "name": "Partial", "enabled": true, "lastResult": "Success" }], "sessions": [], "protectedObjects": [{ "name": "app-01", "instanceUuid": "11111111-1111-1111-1111-111111111111", "restorePointCount": 2 }, { "name": "db-01", "biosUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "restorePointCount": 2 }], "restorePoints": [{ "objectName": "app-01", "creationTime": "2026-05-31T01:00:00Z" }, { "objectName": "db-01", "creationTime": "2026-05-31T01:00:00Z" }], "repositories": [{ "name": "repo-main", "capacity": 1000, "free": 500, "used": 500 }], "backupCopyJobs": [] },
+  "warnings": [],
+  "errors": []
+}

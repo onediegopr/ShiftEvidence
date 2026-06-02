@@ -188,6 +188,11 @@ function formatStatusLabel(value: string | null | undefined) {
     target_insufficient: "Target insuficiente",
     target_not_validated: "Target no validado",
     target_requires_remediation: "Target requiere remediacion",
+    backup_validated: "Backup validado",
+    backup_partially_ready: "Backup parcialmente listo",
+    backup_requires_remediation: "Backup requiere remediacion",
+    backup_insufficient: "Backup insuficiente",
+    backup_not_validated: "Backup no validado",
   };
 
   return labels[value] ?? value;
@@ -1598,7 +1603,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                           ? `VMs ${module.vmwareMetrics.vmCount ?? "-"} / matched ${module.vmwareMetrics.matchedVmCount ?? "-"} / unmatched ${module.vmwareMetrics.unmatchedVmCount ?? "-"} / snapshots viejos ${module.vmwareMetrics.oldSnapshotCount ?? "-"} / tags ${module.vmwareMetrics.tagAssignmentCount ?? "-"} / DRS ${module.vmwareMetrics.drsRuleCount ?? "-"}`
                           : module.proxmoxMetrics
                             ? `Target ${formatStatusLabel(module.proxmoxMetrics.targetStatus)} / nodes ${module.proxmoxMetrics.onlineNodeCount ?? "-"}/${module.proxmoxMetrics.nodeCount ?? "-"} / storage ${formatPercent(module.proxmoxMetrics.storageUsagePercent)} / HA ${module.proxmoxMetrics.haConfigured ? "si" : "no"} / PBS ${module.proxmoxMetrics.pbsDetected ? "si" : "no"} / Ceph ${module.proxmoxMetrics.cephDetected ? module.proxmoxMetrics.cephHealth ?? "detectado" : "no"}`
-                            : "-"}
+                            : module.backupMetrics
+                              ? `Backup ${formatStatusLabel(module.backupMetrics.backupReadinessStatus)} / jobs ${module.backupMetrics.jobCount ?? "-"} / protected ${module.backupMetrics.protectedObjectCount ?? "-"} / matched ${module.backupMetrics.matchedVmCount ?? "-"} / unprotected ${module.backupMetrics.unprotectedVmCount ?? "-"} / stale ${module.backupMetrics.staleBackupCount ?? "-"} / failed ${module.backupMetrics.failedJobCount ?? "-"} / repo pressure ${module.backupMetrics.repositoryPressureCount ?? "-"}`
+                              : "-"}
                       </td>
                       <td>
                         {module.lastParseResult
