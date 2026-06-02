@@ -38,3 +38,25 @@ Before any live smoke, confirm:
 - No automatic financial reconciliation.
 - No bank transfer automation.
 - No environment or dashboard changes in source control.
+
+## STRIPE-2 Result
+
+Date: 2026-06-02.
+
+The first STRIPE-2 attempt completed local preflight and fallback smoke. Stripe connector access required authentication, so product and Price ID creation stayed pending.
+
+Observed local fallback:
+
+- Checkout pages load for Starter, Professional, and MSP.
+- Checkout start routes redirect safely to the checkout page with `error=not_configured`.
+- No Stripe hosted checkout URL is generated while server-side Stripe env is incomplete.
+- Bank transfer invoice routes remain available.
+- Admin billing remains non-public without an admin session.
+
+Next Stripe-specific work:
+
+- Authenticate to Stripe test mode through an approved method.
+- Create or verify the three test-mode products and Price IDs.
+- Configure test-mode runtime env outside source control.
+- Redeploy only if the runtime requires it and the hito explicitly approves it.
+- Repeat checkout smoke and stop at the hosted Stripe checkout page without completing payment.

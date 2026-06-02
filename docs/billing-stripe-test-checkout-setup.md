@@ -55,6 +55,44 @@ If either gate is missing, live checkout stays blocked. A test key, unknown key 
 
 The server derives amount and mode from billing config, not from the client.
 
+## STRIPE-2 Test-Mode Setup Attempt
+
+Date: 2026-06-02.
+
+Preflight:
+
+- HEAD and `origin/main` were both `afcbd25`.
+- Working tree was clean except the two untracked logo PNGs.
+- Local `.env` had `NEXT_PUBLIC_APP_URL=http://localhost:3000` and `BETTER_AUTH_URL=http://localhost:3000`.
+- Local runtime did not have `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, or the three Stripe Price IDs.
+
+Stripe access:
+
+- Stripe connector access required authentication.
+- Stripe Dashboard was not used.
+- No Stripe product was created or modified.
+- No Stripe Price ID was obtained.
+- No live mode resource was touched.
+
+Required test-mode products and prices remain:
+
+| Plan | Product | Price | Cadence | Runtime env |
+| --- | --- | ---: | --- | --- |
+| Starter Readiness | Starter Readiness | USD 490 | one-time | `STRIPE_STARTER_PRICE_ID` |
+| Professional Assessment | Professional Assessment | USD 1,500 | one-time | `STRIPE_PROFESSIONAL_PRICE_ID` |
+| MSP Partner | MSP Partner | USD 399/month | monthly | `STRIPE_MSP_PRICE_ID` |
+
+Local fallback smoke:
+
+- `/billing/checkout/starter`: 200.
+- `/billing/checkout/professional`: 200.
+- `/billing/checkout/msp`: 200.
+- `/billing/checkout/starter/start`: 303 to `?error=not_configured`.
+- `/billing/checkout/professional/start`: 303 to `?error=not_configured`.
+- `/billing/checkout/msp/start`: 303 to `?error=not_configured`.
+
+Result: fallback safe. No Stripe hosted checkout redirect was created because runtime config was incomplete.
+
 ## Current Boundary
 
 - No real payment is completed in this hito.

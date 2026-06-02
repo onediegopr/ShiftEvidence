@@ -37,3 +37,18 @@ Fulfillment is manual. Payment evidence and account matching must be reviewed by
 - No assessment entitlement writes from checkout creation.
 - No sensitive bank details in public UI.
 - No real secrets in source control or docs.
+
+## STRIPE-2 Verification
+
+Date: 2026-06-02.
+
+Current outcome:
+
+- Stripe test-mode products and Price IDs were not created or verified because Stripe connector access required authentication.
+- Runtime env was not changed locally or in production.
+- Local checkout fallback was verified for Starter, Professional, and MSP.
+- Each checkout start route returned a safe `not_configured` redirect with incomplete Stripe env.
+- Bank transfer routes for Starter, Professional, and MSP returned 200.
+- Admin billing stayed protected with a 307 redirect when no admin session was present.
+
+No payment, live mode, webhook smoke, Wise API action, grant, unlock, or assessment entitlement action was performed.

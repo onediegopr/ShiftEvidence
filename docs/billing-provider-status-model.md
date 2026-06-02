@@ -45,3 +45,17 @@ Wise status stays manual:
 ## Operational Boundary
 
 Provider status is read-only visibility. It does not create payments, perform transfers, grant access, or modify assessment entitlements.
+
+## STRIPE-2 Status Notes
+
+Date: 2026-06-02.
+
+With local Stripe env incomplete, admin provider status is expected to classify Stripe as not configured or fallback-safe, depending on runtime env presence. Test-mode readiness requires:
+
+- `STRIPE_SECRET_KEY` present with a test key.
+- Starter, Professional, and MSP Price IDs present.
+- `STRIPE_CHECKOUT_MODE=test` or unset.
+- `STRIPE_LIVE_PAYMENTS_APPROVED=false` or unset.
+- `STRIPE_CHECKOUT_ENABLED` not set to `false`.
+
+Local smoke confirmed `/dashboard/admin/billing` returned 307 without an admin session. Authenticated visual admin review remains pending.
