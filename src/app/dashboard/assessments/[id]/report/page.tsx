@@ -27,6 +27,7 @@ import { findAssessmentForAdmin, findAssessmentForUser, type AssessmentDetail } 
 import { getAssessmentCompletionStatus } from "../../../../../server/assessments/assessmentCompletionService";
 import { getReportPreviewData, type ReportPreviewData } from "../../../../../server/reports/reportPreviewService";
 import { getReportStatusLabel, getReportStatusTone, getReportTypeLabel } from "../../../../../server/reports/reportHistoryService";
+import { buildMigrationRecommendationPlanForAssessment } from "../../../../../server/reports/migrationPlanService";
 import { trackReportPreviewViewed } from "../../../../../server/reports/upgradeEventService";
 import {
   getUnlockRequestStatusLabel,
@@ -44,6 +45,7 @@ type ReportPageProps = {
       upgrade?: string;
       error?: string;
       generated?: string;
+      migrationPlan?: string;
       deleted?: string;
       unlock?: string;
     }
@@ -51,6 +53,7 @@ type ReportPageProps = {
         upgrade?: string;
         error?: string;
         generated?: string;
+        migrationPlan?: string;
         deleted?: string;
         unlock?: string;
       }>;
@@ -138,6 +141,12 @@ function statusLabel(value: string) {
     .join(" ");
 }
 
+function evidenceCoverageLabel(value: string) {
+  return value
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (part) => part.toUpperCase());
+}
+
 function renderStatusPill(label: string, tone: "neutral" | "good" | "warning" | "danger") {
   return <span className={`assessment-chip assessment-chip-${tone}`}>{label}</span>;
 }
@@ -152,6 +161,9 @@ function renderStatusTone(value: string) {
     case "moderate":
     case "generated":
     case "completed":
+    case "pass":
+    case "advanced_plan":
+    case "functional_validated":
     case "fresh":
     case "high":
     case "fulfilled":
@@ -166,6 +178,12 @@ function renderStatusTone(value: string) {
     case "not_available_yet":
     case "not_generated":
     case "generating":
+    case "preliminary_plan":
+    case "technical_plan":
+    case "warning":
+    case "insufficient_evidence":
+    case "functional_candidate":
+    case "technical_only":
     case "limited":
     case "limited_with_warnings":
     case "missing":
@@ -184,6 +202,8 @@ function renderStatusTone(value: string) {
     case "rejected":
       return "danger" as const;
     case "failed":
+    case "fail":
+    case "plan_not_available":
     case "blocked":
     case "low":
     case "ceph_underdesigned":
@@ -418,14 +438,17 @@ export default async function ReportPreviewPage({
   const assessment = await getAssessment(params);
   const completion = getAssessmentCompletionStatus(assessment);
   const report = await getReportPreviewData(assessment);
+  const migrationPlan = buildMigrationRecommendationPlanForAssessment(assessment);
   const query = await Promise.resolve(searchParams);
   const upgrade = query?.upgrade === "1";
   const error = query?.error ? decodeURIComponent(query.error) : null;
   const generated = query?.generated === "1";
+  const migrationPlanGenerated = query?.migrationPlan === "generated";
   const deleted = query?.deleted === "1";
   const unlock = query?.unlock ?? null;
   const upgradeMessage = upgrade ? "Package request captured. Checkout is not available yet." : null;
   const generatedMessage = generated ? "PDF Preview generated and stored privately." : null;
+  const migrationPlanMessage = migrationPlanGenerated ? "Migration Recommendation Plan generated and stored privately." : null;
   const deletedMessage = deleted ? "PDF Preview deleted and removed from private storage." : null;
   const unlockMessage =
     unlock === "created" || unlock === "existing"
@@ -435,6 +458,10 @@ export default async function ReportPreviewPage({
         : null;
   const matrixRows = report.vmMatrixPreview.rows;
   const reportHistory = (assessment.reports ?? []).filter((entry) => entry.deletedAt === null);
+  const migrationPlanReports = reportHistory.filter((entry) => entry.reportType === "blueprint");
+  const migrationBlockingGates = migrationPlan.gates.filter((gate) => gate.blocksAdvancedPlan || gate.blocksProductionWave);
+  const migrationGatePreview = migrationPlan.gates.slice(0, 4);
+  const migrationCoverageEntries = Object.entries(migrationPlan.evidenceSummary.evidenceCoverage);
   const generateButtonLabel = report.commercialStatus.hasFullReportUnlocked
     ? "Generate Readiness Report PDF"
     : "Generate PDF Preview";
@@ -473,9 +500,82 @@ export default async function ReportPreviewPage({
 
       {upgradeMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{upgradeMessage}</div> : null}
       {generatedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{generatedMessage}</div> : null}
+      {migrationPlanMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{migrationPlanMessage}</div> : null}
       {deletedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{deletedMessage}</div> : null}
       {unlockMessage ? <div className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite">{unlockMessage}</div> : null}
       {error ? <div className="dashboard-banner dashboard-banner-error" role="alert">{error}</div> : null}
+
+      <section className="assessment-section glass-card">
+        <SectionTitle
+          icon={<BookOpen size={18} />}
+          eyebrow="Premium deliverable"
+          title="Migration Recommendation Plan"
+          description="A separate migration-planning PDF driven by deterministic evidence gates. AI narrative can support wording, but it cannot override missing evidence or readiness blockers."
+        />
+        <div className="assessment-preview-grid report-preview-grid">
+          <article className="assessment-preview-card">
+            <span className="assessment-preview-label">Plan level</span>
+            <strong>{statusLabel(migrationPlan.planLevel)}</strong>
+            <p>{migrationPlan.executiveDecision}</p>
+          </article>
+          <article className="assessment-preview-card">
+            <span className="assessment-preview-label">Evidence confidence</span>
+            <strong>{statusLabel(migrationPlan.evidenceSummary.confidence)}</strong>
+            <p>{migrationCoverageEntries.filter(([, included]) => included).length}/{migrationCoverageEntries.length} inputs available</p>
+          </article>
+          <article className="assessment-preview-card">
+            <span className="assessment-preview-label">Blocking gates</span>
+            <strong>{migrationBlockingGates.length}</strong>
+            <p>{migrationBlockingGates.length === 0 ? "No deterministic blockers detected." : "Remediation required before advanced claims."}</p>
+          </article>
+        </div>
+
+        <div className="assessment-status-row">
+          {migrationCoverageEntries.map(([key, included]) => (
+            <span key={key} className={`assessment-chip assessment-chip-${included ? "good" : "warning"}`}>
+              {evidenceCoverageLabel(key)}: {included ? "available" : "missing"}
+            </span>
+          ))}
+        </div>
+
+        <div className="report-findings-list">
+          {migrationGatePreview.map((gate) => (
+            <article key={gate.key} className="glass-card report-finding-card">
+              <div className="report-finding-head">
+                <div>
+                  <span className="assessment-preview-label">{statusLabel(gate.severity)}</span>
+                  <h3>{statusLabel(gate.key)}</h3>
+                </div>
+                {renderStatusPill(statusLabel(gate.status), renderStatusTone(gate.status))}
+              </div>
+              <p>{gate.explanation}</p>
+              <p className="assessment-inline-note">{gate.recommendation}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="assessment-inline-actions">
+          <form
+            action={`/api/assessments/${assessment.id}/reports/generate`}
+            method="post"
+            encType="multipart/form-data"
+          >
+            <input type="hidden" name="reportKind" value="migration_plan" />
+            <button type="submit" className="btn btn-primary btn-glow">
+              <BookOpen size={16} />
+              Generate Migration Plan PDF
+            </button>
+          </form>
+          {migrationPlanReports.length > 0 ? (
+            <a href={`#generated-reports`} className="btn btn-secondary">
+              View generated plans
+            </a>
+          ) : null}
+          <span className="assessment-inline-note">
+            Stored in report history as a private premium deliverable. Full-report access is required before generation.
+          </span>
+        </div>
+      </section>
 
       <section className="assessment-section glass-card report-branding-section">
         <SectionTitle
@@ -1220,7 +1320,7 @@ export default async function ReportPreviewPage({
         )}
       </section>
 
-      <section className="assessment-section glass-card">
+      <section id="generated-reports" className="assessment-section glass-card">
         <SectionTitle
           icon={<FileText size={18} />}
           eyebrow="PDF Preview"

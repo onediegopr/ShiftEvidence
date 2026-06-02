@@ -5,6 +5,7 @@ import { auth } from "../../../../../../lib/auth";
 import { findAssessmentForUser } from "../../../../../../server/assessments/assessmentService";
 import { safeRedirectError } from "../../../../../../server/assessments/formUtils";
 import { generatePdfReportForAssessment } from "../../../../../../server/reports/reportGenerationService";
+import { generateMigrationRecommendationPlanPdf } from "../../../../../../server/reports/migrationPlanService";
 import type { PdfReportBrandingInput, PdfReportBrandLogo } from "../../../../../../server/reports/reportPdfRenderer";
 import {
   buildRateLimitHeaders,
@@ -58,13 +59,17 @@ async function parseLogo(value: FormDataEntryValue | null, label: string): Promi
   };
 }
 
-async function parseReportBranding(request: Request): Promise<PdfReportBrandingInput | null> {
+async function parseReportForm(request: Request): Promise<{
+  reportBranding: PdfReportBrandingInput | null;
+  reportKind: string | null;
+}> {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("multipart/form-data")) {
-    return null;
+    return { reportBranding: null, reportKind: null };
   }
 
   const formData = await request.formData();
+  const reportKind = typeof formData.get("reportKind") === "string" ? String(formData.get("reportKind")) : null;
   const audience = formData.get("reportAudience") === "client" ? "client" : "own_company";
   const companyName = normalizeOptionalTextInput(formData.get("companyName"), "Company name", INPUT_LIMITS.companyName);
   const clientName = normalizeOptionalTextInput(formData.get("clientName"), "Client name", INPUT_LIMITS.companyName);
@@ -72,16 +77,19 @@ async function parseReportBranding(request: Request): Promise<PdfReportBrandingI
   const clientLogo = audience === "client" ? await parseLogo(formData.get("clientLogo"), "Client logo") : null;
 
   if (!companyName && !clientName && !companyLogo && !clientLogo) {
-    return null;
+    return { reportBranding: null, reportKind };
   }
 
   return {
-    audience,
-    companyName,
-    clientName,
-    companyLogo,
-    clientLogo,
-    whiteLabel: true,
+    reportKind,
+    reportBranding: {
+      audience,
+      companyName,
+      clientName,
+      companyLogo,
+      clientLogo,
+      whiteLabel: true,
+    },
   };
 }
 
@@ -116,12 +124,22 @@ export async function POST(
       throw new Error("Assessment not found or access denied.");
     }
 
+    const { reportBranding, reportKind } = await parseReportForm(request);
+    if (reportKind === "migration_plan") {
+      await generateMigrationRecommendationPlanPdf({
+        userId: session.user.id,
+        assessmentId,
+      });
+
+      return NextResponse.redirect(getReportUrl(assessmentId, "migrationPlan=generated"), {
+        status: 303,
+      });
+    }
+
     const commercialStatus = getCommercialStatusForAssessment(assessment);
     const reportType = commercialStatus.hasFullReportUnlocked
       ? ReportType.readiness_report
       : ReportType.free_preview;
-
-    const reportBranding = await parseReportBranding(request);
 
     await generatePdfReportForAssessment({
       userId: session.user.id,

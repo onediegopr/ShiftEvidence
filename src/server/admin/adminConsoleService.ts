@@ -17,6 +17,8 @@ import { DEFAULT_RUNTIME_SETTINGS, getOperationalRuntimeSettings } from "./runti
 import { getAdminSupportRequests, getSupportRequestFallback } from "../support/supportRequestService";
 import { getBillingAdminStatus } from "../billing/billingConfiguration";
 import { getEvidenceModuleCatalog } from "../evidence/evidenceModuleRegistry";
+import type { AssessmentDetail } from "../assessments/assessmentService";
+import { buildMigrationRecommendationPlanForAssessment } from "../reports/migrationPlanService";
 
 function isConfigured(value: string | undefined) {
   return Boolean(value && value.trim());
@@ -593,8 +595,32 @@ export async function getAdminConsoleData(params?: {
         },
         reports: {
           where: { deletedAt: null },
+          orderBy: [{ generatedAt: "desc" }, { createdAt: "desc" }],
           select: {
+            reportType: true,
             status: true,
+            generatedAt: true,
+          },
+        },
+        parsedSnapshots: {
+          select: {
+            id: true,
+          },
+        },
+        parsedInventorySummaries: {
+          orderBy: [
+            {
+              parsedAt: "desc",
+            },
+            {
+              createdAt: "desc",
+            },
+          ],
+          take: 1,
+          select: {
+            vmCount: true,
+            hostCount: true,
+            datastoreCount: true,
           },
         },
         assessmentScore: {
@@ -1110,6 +1136,13 @@ export async function getAdminConsoleData(params?: {
     recentAssessments: recentAssessments.map((assessment) => {
       const parsedFiles = assessment.evidenceFiles.filter((file) => file.processingStatus === "parsed").length;
       const generatedReports = assessment.reports.filter((report) => report.status === "generated").length;
+      const latestMigrationPlanReport = assessment.reports.find((report) => report.reportType === "blueprint") ?? null;
+      const migrationPlanPreview = buildMigrationRecommendationPlanForAssessment(
+        assessment as unknown as AssessmentDetail,
+      );
+      const migrationBlockingGates = migrationPlanPreview.gates.filter(
+        (gate) => gate.blocksAdvancedPlan || gate.blocksProductionWave,
+      ).length;
       const assumptions = assessment.costRiskAssumptions?.assumptionsJson;
       const hasContext = Boolean(
         assumptions &&
@@ -1395,6 +1428,14 @@ export async function getAdminConsoleData(params?: {
         },
         context: hasContext ? "Con contexto" : "Pendiente",
         pdf: generatedReports > 0 ? `${generatedReports} generado(s)` : "Pendiente",
+        migrationPlan: {
+          planLevel: migrationPlanPreview.planLevel,
+          confidence: migrationPlanPreview.evidenceSummary.confidence,
+          gateCount: migrationPlanPreview.gates.length,
+          blockingGateCount: migrationBlockingGates,
+          latestStatus: latestMigrationPlanReport?.status ?? null,
+          generatedAt: latestMigrationPlanReport?.generatedAt ?? null,
+        },
         ai: aiStatus.iaActiva ? "Disponible" : "Desactivada",
         aiCalls: usage?.calls ?? 0,
         aiTokens: usage?.tokens ?? 0,

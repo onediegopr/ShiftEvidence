@@ -1702,6 +1702,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Evidencia avanzada</th>
                   <th>Contexto</th>
                   <th>PDF</th>
+                  <th>Plan migraciÃ³n</th>
                   <th>IA</th>
                   <th>Readiness</th>
                   <th>Confianza</th>
@@ -1760,6 +1761,27 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     </td>
                     <td>{assessment.context}</td>
                     <td>{assessment.pdf}</td>
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                        <span
+                          className={`assessment-chip assessment-chip-${
+                            assessment.migrationPlan.planLevel === "advanced_plan"
+                              ? "good"
+                              : assessment.migrationPlan.planLevel === "plan_not_available"
+                                ? "danger"
+                                : "warning"
+                          }`}
+                        >
+                          {formatStatusLabel(assessment.migrationPlan.planLevel)}
+                        </span>
+                        <span className="assessment-inline-note" style={{ fontSize: "10px" }}>
+                          {assessment.migrationPlan.blockingGateCount}/{assessment.migrationPlan.gateCount} gates bloqueantes
+                        </span>
+                        <span className="assessment-inline-note" style={{ fontSize: "10px" }}>
+                          PDF: {assessment.migrationPlan.latestStatus ? formatStatusLabel(assessment.migrationPlan.latestStatus) : "Pendiente"}
+                        </span>
+                      </div>
+                    </td>
                     <td>{assessment.ai}</td>
                     <td>{assessment.readiness ?? "No disponible"}</td>
                     <td>{assessment.confidence ?? "No disponible"}</td>

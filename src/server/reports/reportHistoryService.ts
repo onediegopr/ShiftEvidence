@@ -43,7 +43,7 @@ export function getReportTypeLabel(reportType: ReportType) {
     case ReportType.readiness_report_pro:
       return "Professional Assessment Report";
     case ReportType.blueprint:
-      return "Migration Blueprint";
+      return "Migration Recommendation Plan";
     default:
       return "PDF Preview";
   }

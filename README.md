@@ -83,6 +83,8 @@ SALES-PAGE-1 adds a standalone VMware -> Proxmox readiness offer page at `/vmwar
 
 SALES-PAGE-1.1 completes visual QA and conversion polish for `/vmware-to-proxmox-readiness`: desktop/mobile screenshots were reviewed, pricing copy was tightened around manual beta access, and the hero now states the offer is a planning assessment, not migration execution. Full public launch remains NO.
 
+EVIDENCE-7 adds the separate premium Migration Recommendation Plan deliverable. It uses parsed evidence, deterministic gates and plan levels to produce a light print-friendly PDF through existing private report history; AI narrative remains deterministic fallback only and cannot override gates. Full public launch remains NO.
+
 ## Stack
 - Next.js App Router
 - React 19
@@ -129,6 +131,7 @@ SALES-PAGE-1.1 completes visual QA and conversion polish for `/vmware-to-proxmox
 - Public synthetic sample readiness report page at `/sample-report`.
 - Public synthetic sample PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - Standalone VMware -> Proxmox readiness offer page at `/vmware-to-proxmox-readiness`, linked only from `/demo` and `/sample-report`.
+- Separate premium Migration Recommendation Plan PDF with deterministic evidence gates and admin visibility.
 
 ## Scripts
 - `npm run dev`
@@ -228,6 +231,7 @@ Optional for future work:
 - `docs/evidence-file-model-v1.md`
 - `docs/local-storage-security-v1.md`
 - `docs/evidence-upload-flow-v1.md`
+- `docs/evidence-7-migration-recommendation-plan.md`
 - `docs/secure-download-delete-v1.md`
 - `docs/hostinger-storage-runbook-v1.md`
 - `docs/hito-4-rvtools-parser-basic-inventory.md`
