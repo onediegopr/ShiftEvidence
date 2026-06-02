@@ -10,6 +10,7 @@ export type WiseBillingStatus =
 
 export type StripeBillingStatus =
   | "no_configurado"
+  | "configuracion_invalida"
   | "configurado_test"
   | "configurado_live_aprobado"
   | "configurado_live_no_aprobado"
@@ -48,7 +49,9 @@ export type BillingProviderStatusSnapshot = {
     starterPricePresent: boolean;
     professionalPricePresent: boolean;
     mspPricePresent: boolean;
-    checkoutMode: "test" | "live";
+    secretKeyMode: "test" | "live" | "restricted_live" | "unknown";
+    checkoutMode: "test" | "live" | "unknown";
+    livePaymentsApproved: boolean;
     checkoutEnabled: boolean;
     checkoutActive: boolean;
     publiclyVisible: boolean;
@@ -85,13 +88,17 @@ function parseEnvBoolean(value: string | undefined) {
 }
 
 function getStripeCheckoutMode() {
-  return process.env.STRIPE_CHECKOUT_MODE?.trim().toLowerCase() === "live" ? "live" : "test";
+  const mode = process.env.STRIPE_CHECKOUT_MODE?.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  if (!mode || mode === "test") return "test" as const;
+  if (mode === "live") return "live" as const;
+  return "unknown" as const;
 }
 
 function getStripeSecretKeyMode() {
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim().replace(/^["']|["']$/g, "");
   if (secretKey?.startsWith("sk_live_")) return "live" as const;
   if (secretKey?.startsWith("sk_test_")) return "test" as const;
+  if (secretKey?.startsWith("rk_live_")) return "restricted_live" as const;
   return "unknown" as const;
 }
 
@@ -113,7 +120,7 @@ function isStripeCheckoutExplicitlyDisabled() {
 function getStripeRecommendedAction(params: {
   configured: boolean;
   checkoutEnabled: boolean;
-  checkoutMode: "test" | "live";
+  checkoutMode: "test" | "live" | "unknown";
   keyModeMatches: boolean;
   livePaymentsApproved: boolean;
   webhookSecretPresent: boolean;
@@ -122,12 +129,16 @@ function getStripeRecommendedAction(params: {
     return "Checkout Stripe desactivado por configuracion. Mantener invoice manual.";
   }
 
+  if (params.checkoutMode === "unknown") {
+    return "STRIPE_CHECKOUT_MODE tiene un valor invalido. Usar test o live; hasta corregirlo se mantiene checkout bloqueado.";
+  }
+
   if (!params.configured) {
     return "Completar STRIPE_SECRET_KEY y Price IDs server-side antes de operar checkout.";
   }
 
   if (!params.keyModeMatches) {
-    return "STRIPE_CHECKOUT_MODE no coincide con el modo de STRIPE_SECRET_KEY. Corregir env vars en Hostinger y reiniciar antes de checkout.";
+    return "STRIPE_CHECKOUT_MODE no coincide con el modo de STRIPE_SECRET_KEY. Corregir runtime env antes de checkout.";
   }
 
   if (params.checkoutMode === "live") {
@@ -168,7 +179,9 @@ export function getBillingProviderStatusSnapshot(
   const stripeConfigured = stripeSecretKeyPresent && stripeStarterPricePresent && stripeProfessionalPricePresent && stripeMspPricePresent;
   const stripeKeyModeMatches =
     !stripeSecretKeyPresent ||
-    (stripeCheckoutMode === "live" ? stripeSecretKeyMode === "live" : stripeSecretKeyMode === "test");
+    (stripeCheckoutMode === "live"
+      ? stripeSecretKeyMode === "live"
+      : stripeCheckoutMode === "test" && stripeSecretKeyMode === "test");
   const livePayments =
     stripeConfigured &&
     stripeCheckoutMode === "live" &&
@@ -182,6 +195,8 @@ export function getBillingProviderStatusSnapshot(
     (stripeCheckoutMode === "test" || livePayments);
   const stripeStatus: StripeBillingStatus = !stripeCheckoutEnabled
     ? "desactivado"
+    : stripeCheckoutMode === "unknown"
+      ? "configuracion_invalida"
     : !stripeConfigured
       ? "no_configurado"
       : !stripeKeyModeMatches
@@ -226,7 +241,9 @@ export function getBillingProviderStatusSnapshot(
       starterPricePresent: stripeStarterPricePresent,
       professionalPricePresent: stripeProfessionalPricePresent,
       mspPricePresent: stripeMspPricePresent,
+      secretKeyMode: stripeSecretKeyMode,
       checkoutMode: stripeCheckoutMode,
+      livePaymentsApproved: stripeLivePaymentsApproved,
       checkoutEnabled: stripeCheckoutEnabled,
       checkoutActive: stripeCheckoutActive,
       publiclyVisible: true,
@@ -236,6 +253,8 @@ export function getBillingProviderStatusSnapshot(
           : "Stripe es el provider principal configurable en test-mode."
         : stripeCheckoutMode === "live"
           ? "Live detectado pero bloqueado por policy hasta aprobacion explicita."
+          : stripeCheckoutMode === "unknown"
+            ? "Modo Stripe invalido; checkout bloqueado hasta corregir STRIPE_CHECKOUT_MODE."
           : "Faltan variables Stripe o checkout esta desactivado.",
       recommendedAction: getStripeRecommendedAction({
         configured: stripeConfigured,
@@ -245,7 +264,13 @@ export function getBillingProviderStatusSnapshot(
         livePaymentsApproved: stripeLivePaymentsApproved,
         webhookSecretPresent: stripeWebhookSecretPresent,
       }),
-      riskLevel: stripeCheckoutMode === "live" ? (stripeLivePaymentsApproved ? "medio" : "alto") : stripeConfigured ? "bajo" : "medio",
+      riskLevel: stripeCheckoutMode === "live"
+        ? (stripeLivePaymentsApproved ? "medio" : "alto")
+        : stripeCheckoutMode === "unknown"
+          ? "alto"
+          : stripeConfigured
+            ? "bajo"
+            : "medio",
     },
     operations: {
       checkoutTestMode: stripeCheckoutMode === "test" && stripeCheckoutActive,
