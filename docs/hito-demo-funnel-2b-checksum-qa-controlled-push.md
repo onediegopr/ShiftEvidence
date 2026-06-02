@@ -141,16 +141,40 @@ Full public launch was not declared.
 
 ## Push Decision
 
-The blocker was resolved and the branch is ready for controlled push to
-`origin/main`.
+The blocker was resolved and the branch was pushed to `origin/main`.
 
-If pushed successfully, Hostinger auto-deploy can pick up the updated main
-commit. Production smoke should then validate:
+Push result:
+
+- command: `git push origin feature/demo-funnel-2:main`
+- previous `origin/main`: `0880c4b`
+- pushed `origin/main`: `2831a3d`
+- force push: no
+
+Hostinger auto-deploy can pick up the updated main commit. Production smoke
+should then validate:
 
 - `/demo`
 - `/demo/replay`
 - `/demo/workspace`
 - `/demo/reports/balanced-mid-market`
+
+## Post-Push Production Smoke
+
+Immediate HTTP smoke after push:
+
+- `https://shiftevidence.com/demo` - 200
+- `https://shiftevidence.com/demo/reports/balanced-mid-market` - 200 `application/pdf`
+- `https://shiftevidence.com/demo/replay` - 404
+- `https://shiftevidence.com/demo/workspace` - 404
+
+Result:
+
+- GitHub main is updated.
+- Production is still serving a pre-DEMO-FUNNEL-2 deploy at the time of this
+  check.
+- No manual Hostinger deploy or restart was executed in this hito.
+- Final production visual smoke remains pending until Hostinger completes or is
+  instructed to redeploy the latest main commit.
 
 ## Updated Readiness
 
