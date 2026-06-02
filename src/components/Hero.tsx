@@ -49,9 +49,9 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </span>
             </div>
             <h1 className="hero-title">
-              Audit your VMware exit risk
+              Senior-grade migration readiness
               <br />
-              before <span className="text-gradient">production moves</span>.
+              before <span className="text-gradient">touching production</span>.
             </h1>
             <div className="hero-description-group">
               <p className="text-muted">
@@ -2628,7 +2628,7 @@ export default function Hero({ onOpenScanner }: HeroProps) {
 
             <div className="hero-actions">
               <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
-                Start Free Assessment
+                Start readiness assessment
                 <ArrowRight size={18} />
               </button>
               <a
@@ -2650,6 +2650,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 className="btn btn-secondary"
               >
                 View Full Sample Report
+                <FileText size={18} className="text-cyan" />
+              </a>
+              <a
+                href="/pricing"
+                className="btn btn-secondary"
+              >
+                View Pricing
                 <FileText size={18} className="text-cyan" />
               </a>
               <a

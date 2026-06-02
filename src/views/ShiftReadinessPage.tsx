@@ -127,7 +127,7 @@ export default function ShiftReadinessPage() {
               Assess your <span className="text-gradient">VMware exit</span> before committing budget.
             </h1>
             <p className="shiftreadiness-lead">
-              Verify licensing exposure, map target storage compatibility, and identify migration risks with a productized pre-flight check.
+              Turn exported VMware evidence into a senior-grade migration decision pack before workshops, pilots or production change windows.
             </p>
             <div className="shiftreadiness-actions">
               <a href="/sign-up" className="btn btn-primary btn-glow">
@@ -519,8 +519,8 @@ export default function ShiftReadinessPage() {
               <strong>Get consulting-grade insights at a fraction of the cost.</strong>
             </p>
             <p>
-              Start with a focused readiness assessment, request invoice support for larger engagements,
-              and keep payment expectations clear before checkout is activated.
+              Start with a focused readiness assessment, use Stripe card checkout when configured,
+              or request a reviewed Wise/manual invoice for larger engagements.
             </p>
             <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
               {paymentOptionsCopy.general} {paymentOptionsCopy.notActive}

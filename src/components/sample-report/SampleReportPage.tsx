@@ -139,6 +139,10 @@ export default function SampleReportPage() {
               deliverable: readiness, storage destination, licensing exposure, continuity risk, VM matrix, migration
               waves, Senior AI Advisor examples and Project Memory decisions.
             </p>
+            <p className="assessment-inline-note">
+              Professional Assessment focuses on the evidence-backed report and VM-by-VM decision pack. Migration
+              Blueprint extends that output into scoped waves, validation gates, rollback expectations and remediation planning.
+            </p>
             <div className="demo-badge-row" aria-label="Sample report safety notes">
               <span>Synthetic sample</span>
               <span>No customer data</span>
@@ -153,6 +157,9 @@ export default function SampleReportPage() {
               </a>
               <Link href="/demo/workspace" className="btn btn-secondary">
                 Explore a Sample Assessment
+              </Link>
+              <Link href="/pricing" className="btn btn-secondary">
+                View pricing
               </Link>
               <a
                 href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf"
@@ -367,9 +374,14 @@ export default function SampleReportPage() {
               <h2>Open the Demo Workspace behind the report.</h2>
               <p>
                 Explore a read-only synthetic assessment with scoring, evidence gaps, Storage Destination Readiness,
-                migration waves and Advisor transcript before starting your own assessment.
+                migration waves and Advisor transcript before starting your own assessment. The quick replay shows the
+                same value path in 90 seconds; the workspace shows the deeper proof.
               </p>
             </div>
+            <Link href="/demo/replay" className="btn btn-secondary">
+              Watch Quick Simulation
+              <ArrowRight size={18} />
+            </Link>
             <Link href="/demo/workspace" className="btn btn-primary btn-glow">
               Explore a Sample Assessment
               <ArrowRight size={18} />
@@ -384,12 +396,16 @@ export default function SampleReportPage() {
             <div>
               <div className="badge badge-cyan">Ready for your own evidence?</div>
               <h2>Ready to assess your own VMware environment?</h2>
-              <p>Use the sample report to set expectations, then start a real readiness assessment with your own exported evidence.</p>
+              <p>Use the sample report to set expectations, compare plans, then start a real readiness assessment with your own exported evidence.</p>
             </div>
             <div className="sr-final-actions">
               <Link href="/sign-up" className="btn btn-primary btn-glow">
                 Start readiness assessment
                 <ArrowRight size={18} />
+              </Link>
+              <Link href="/pricing" className="btn btn-secondary">
+                View pricing
+                <Waves size={17} />
               </Link>
               <Link href="/demo/replay" className="btn btn-secondary">
                 Watch Quick Simulation

@@ -99,7 +99,7 @@ const notAList = [
 const faqs = [
   [
     "Do I need a credit card to start?",
-    "No. You can start the intake and choose a payment path during follow-up. Card checkout will be available for fast starts, and bank transfer invoices are available for business customers.",
+    "No. You can review the demo and sample first, then choose a payment path. Stripe card checkout is used when configured, and manual invoice requests are available for business customers.",
   ],
   [
     "How do payments work?",
@@ -141,8 +141,8 @@ export default function VMwareToProxmoxReadinessPage() {
             <p className="demo-hero-subtitle">Before migrating VMware to Proxmox, know what can break.</p>
             <p className="demo-hero-body">
               ShiftReadiness turns VMware evidence into a professional migration decision pack: VM risk classification,
-              Proxmox sizing, evidence gaps, migration waves, AI Advisory notes and executive-ready reports. It is a
-              planning assessment, not a migration execution tool.
+              Proxmox sizing, evidence gaps, migration waves, AI Advisory notes and executive-ready reports. It gives
+              infrastructure teams, MSPs and consultants a stronger starting point before workshops, pilots or execution.
             </p>
             <div className="demo-badge-row sales-trust-row" aria-label="Readiness assessment operating boundaries">
               {trustBullets.map((bullet) => (
@@ -330,7 +330,8 @@ export default function VMwareToProxmoxReadinessPage() {
             <div className="badge badge-cyan">Pricing preview</div>
             <h2>Simple packages for companies, consultants and MSPs.</h2>
             <p>
-              Pricing is a preview for broader invited beta. {paymentOptionsCopy.notActive}
+              Choose a package, then use Stripe card checkout when configured or request a reviewed manual invoice.
+              {` ${paymentOptionsCopy.notActive}`}
             </p>
           </div>
           <div className="sales-pricing-grid">

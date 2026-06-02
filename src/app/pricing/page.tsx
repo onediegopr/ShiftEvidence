@@ -29,16 +29,16 @@ export default function PricingPage() {
             <div className="section-header" style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
               <span className="badge badge-cyan">Pricing Models</span>
               <h1 style={{ fontSize: "2.75rem", lineHeight: "1.2", margin: "1rem 0" }}>
-                Transparent, modular pricing for infrastructure teams.
+                Choose the right evidence-backed migration decision pack.
               </h1>
               <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", lineHeight: "1.6" }}>
-                Choose a readiness assessment path, then pay by card through secure checkout when configured or request a business invoice for bank transfer.
+                Start with RVTools, add evidence when you need higher confidence, and choose a package that matches how much risk, reporting and planning depth your VMware to Proxmox decision needs.
               </p>
               <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
-                {paymentOptionsCopy.notActive} {paymentOptionsCopy.cardCheckout}
+                {paymentOptionsCopy.cardCheckout} {paymentOptionsCopy.bankTransfer}
               </p>
               <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
-                Card payments are processed securely by Stripe. Assessment access may require manual verification and fulfillment depending on plan and account match.
+                Manual invoice requests are reviewed before fulfillment. Bank transfer is not an automatic transfer, balance action or instant fulfillment path.
               </p>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function PricingPage() {
             </div>
 
             <p className="assessment-inline-note" style={{ maxWidth: "1000px", margin: "2rem auto 0", textAlign: "center" }}>
-              {paymentOptionsCopy.pricingNote} Checkout availability is resolved securely at runtime.
+              {paymentOptionsCopy.pricingNote} Checkout availability and access matching are resolved securely at runtime.
             </p>
 
             <article className="glass-card sample-report-inline-cta" style={{ maxWidth: "1000px", margin: "2rem auto 0" }}>
@@ -229,9 +229,13 @@ export default function PricingPage() {
                 <h2>Explore a read-only sample assessment.</h2>
                 <p>
                   Open Demo Workspace to see what each paid plan unlocks: synthetic evidence, risk scoring, Storage
-                  Destination Readiness, migration waves and demo reports.
+                  Destination Readiness, migration waves and demo reports. Start with the quick simulation if you want the 90-second version first.
                 </p>
               </div>
+              <a href="/demo/replay" className="btn btn-secondary">
+                Watch 90-second simulation
+                <ArrowRight size={16} />
+              </a>
               <a href="/demo/workspace" className="btn btn-primary btn-glow">
                 Explore a Sample Assessment
                 <ArrowRight size={16} />

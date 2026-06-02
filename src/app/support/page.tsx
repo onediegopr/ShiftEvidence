@@ -113,7 +113,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   <li id="partners"><LifeBuoy size={14} /> Partners: {SUPPORT_CONTACTS.partners}</li>
                 </ul>
                 <p className="assessment-inline-note">
-                  {paymentOptionsCopy.bankTransfer} There is no live chat, attachment upload, automated SLA, or automated billing provider workflow in this support layer.
+                  {paymentOptionsCopy.bankTransfer} There is no live chat, attachment upload, automated SLA, automatic bank transfer execution, or automated billing provider workflow in this support layer.
                 </p>
                 <p className="assessment-inline-note">
                   Support can help with paid-but-no-access, wrong email, invoice requests, duplicate payment checks, refund requests, failed payment follow-up, and MSP subscription questions.

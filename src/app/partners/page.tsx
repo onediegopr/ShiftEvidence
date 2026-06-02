@@ -23,8 +23,8 @@ export default function PartnersPage() {
               <span className="badge badge-cyan">Partners</span>
               <h1>Support for MSPs and technical partners evaluating migration readiness.</h1>
               <p>
-                Shift Evidence can help partner teams structure assessment intake, evidence review, and
-                client-facing migration readiness conversations.
+                Shift Evidence helps MSPs, consultants and infrastructure partners turn client VMware evidence into
+                repeatable readiness conversations, client-ready PDFs and a clearer path before workshops or proposals.
               </p>
               <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
                 {marketingPlans.find((plan) => plan.id === "msp_partner")?.paymentNote ?? paymentOptionsCopy.msp}
@@ -35,19 +35,19 @@ export default function PartnersPage() {
                 <Building2 size={24} className="text-cyan" />
                 <span className="assessment-summary-label">MSP context</span>
                 <strong>Client-ready</strong>
-                <p>Use assessment workspaces to separate client evidence and decision context.</p>
+                <p>Use assessment workspaces to separate each client&apos;s evidence, decision context and report history.</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <Handshake size={24} className="text-emerald" />
                 <span className="assessment-summary-label">Partner inquiry</span>
                 <strong>Manual review</strong>
-                <p>Partner requests are routed through support for human review and follow-up.</p>
+                <p>Partner access and invoice terms are reviewed manually before activation or fulfillment.</p>
               </article>
               <article className="glass-card assessment-summary-card">
                 <ShieldCheck size={24} style={{ color: "#f59e0b" }} />
                 <span className="assessment-summary-label">Boundaries</span>
                 <strong>No shared learning</strong>
-                <p>Client workspaces and assessments remain isolated from each other.</p>
+                <p>No production access is required, and client workspaces remain isolated from each other.</p>
               </article>
             </div>
             <div className="assessment-inline-actions" style={{ marginTop: "2rem" }}>
