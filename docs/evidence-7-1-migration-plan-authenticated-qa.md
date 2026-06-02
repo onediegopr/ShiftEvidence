@@ -462,3 +462,201 @@ To close EVIDENCE-7.1B, an authenticated user should manually confirm:
 - PDF print-friendly for Migration Plan: 85%.
 - Synthetic datasets: 65%.
 - Readiness for EVIDENCE-8: 80%.
+
+## EVIDENCE-7.1B Retry - Authenticated Browser Closeout
+
+Date: 2026-06-02
+Status: attempted, not closed
+Environment: local Codex desktop session after EVIDENCE-10
+Browser surfaces attempted: in-app Browser and Chrome extension-backed browser control
+Production touched: no
+Hostinger touched: no
+Billing touched: no
+Landing/pricing touched: no
+Collectors touched: no
+Database schema changed: no
+Deploy performed: no
+Full public launch: NO
+
+### Local/Git
+
+- Branch: `main`.
+- Initial HEAD: `75c37c5 feat: package evidence collectors with checksums`.
+- `HEAD == origin/main` before retry.
+- Working tree before retry: clean except preserved untracked logo images.
+- Preserved untracked:
+  - `images/shift-evidence-logo-transparent-1024.png`
+  - `images/shift-evidence-logo-transparent-512.png`
+
+### Validation before browser retry
+
+Executed successfully:
+
+- `npm run lint`.
+- `npm run typecheck` after removing only stale generated `.next/dev` route types from a prior dev/browser attempt.
+- `npm run test:run`.
+- `npm run build`.
+- `npm run ai:guardrails`.
+- `npm run hostinger:diagnose` as safe local diagnostic only.
+
+Known warning:
+
+- `npm run build` still reports the known Turbopack/NFT warning related to `localStorageService` and the report download route.
+
+### Browser retry result
+
+The authenticated browser closeout could not be completed.
+
+In-app Browser result:
+
+- Browser runtime failed before page navigation.
+- Error class: local browser runtime assets path unavailable.
+- No `/sign-in` navigation was established.
+- No login was attempted.
+- No assessment was opened.
+
+Chrome extension-backed browser result:
+
+- Chrome is installed and running.
+- Codex Chrome Extension is installed and enabled in the selected Chrome profile.
+- Native host manifest file exists.
+- Native host registration is not correct on Windows because the expected registry key is missing:
+  - `HKCU\Software\Google\Chrome\NativeMessagingHosts\com.openai.codexextension`
+- Browser control failed before page navigation.
+- No authenticated Chrome tab control was established.
+
+Decision from browser retry:
+
+- Do not mark browser QA as passed.
+- Do not mark admin visual QA as passed.
+- Do not mark browser-generated PDF as passed.
+- Do not close EVIDENCE-7.1B.
+
+### User/browser QA
+
+Not completed in this retry.
+
+Still pending:
+
+- Authenticated login.
+- Dashboard navigation.
+- Opening a QA assessment.
+- Visual confirmation that Evidence Expansion does not break the page.
+- Visual confirmation of the Migration Recommendation Plan panel.
+- Visual confirmation of plan level, confidence, evidence coverage, blocking gates, total gates and missing evidence.
+- Browser click on `Generate Migration Plan PDF`.
+- Browser confirmation that the generated plan appears in report history.
+- Browser validation that existing readiness report generation/download still works.
+
+### PDF generated/downloaded/opened
+
+No new browser-generated PDF was produced in this retry.
+
+Current evidence remains automated only:
+
+- The Migration Recommendation Plan PDF renderer is tested.
+- Prior synthetic PDF parsing confirmed required sections and page numbering.
+- No new browser download/open visual QA was completed.
+
+Still pending:
+
+- Browser-generated plan PDF.
+- Report history appearance after browser generation.
+- Browser download.
+- PDF open/visual review.
+- Confirmation of light/white print-friendly layout in a real browser-opened file.
+
+### Admin QA
+
+Not completed in this retry.
+
+Current evidence remains automated/code-level only:
+
+- Admin implementation exposes migration plan level.
+- Admin implementation exposes blocking gate count and total gate count.
+- Admin implementation exposes latest Migration Recommendation Plan PDF status.
+- Admin microcopy remains Spanish by implementation.
+
+Still pending:
+
+- Authenticated `/dashboard/admin` visual browser confirmation.
+- Visual confirmation of no raw JSON, no `[object Object]`, no stack traces and no secrets.
+
+### Entitlement / ownership
+
+Not completed manually in this retry.
+
+Current evidence remains automated only:
+
+- Entitlement tests cover generation allowed/blocked paths.
+- Download entitlement tests cover blocked download without entitlement.
+
+Still pending if feasible:
+
+- Authorized user browser generation/download.
+- Non-entitled user browser denial.
+- Multiuser ownership denial in browser.
+
+### Bugs / hotfixes
+
+No product bug was found.
+
+No application code hotfix was applied.
+
+The only blocker was local browser-control tooling:
+
+- in-app Browser runtime assets path unavailable;
+- Chrome native host registry key missing for Codex extension communication.
+
+### Security
+
+Confirmed during this retry:
+
+- No secrets were printed.
+- No env var values were printed.
+- No Hostinger config was touched.
+- No production deploy was triggered.
+- No billing, checkout, pricing or landing files were touched.
+- No DB schema change was made.
+- No raw customer data was used.
+
+### Decision
+
+EVIDENCE-7.1B: NO CERRADO.
+
+Reason:
+
+- The acceptance criteria require a real authenticated browser flow.
+- Both available browser surfaces failed before page control.
+- There is no browser evidence for login, assessment opening, panel visibility, PDF generation/download/open or admin visual confirmation.
+
+### Next action to close EVIDENCE-7.1B
+
+Repair browser tooling first:
+
+- Reinstall or repair the Codex Chrome plugin/native host registration from the Codex plugin UI.
+- Confirm the Windows registry key exists for:
+  - `HKCU\Software\Google\Chrome\NativeMessagingHosts\com.openai.codexextension`
+- Retry Chrome extension-backed browser control.
+
+Then rerun the authenticated checklist:
+
+- login;
+- dashboard;
+- QA assessment;
+- Migration Recommendation Plan panel;
+- browser PDF generation;
+- report history;
+- PDF download/open;
+- admin visual QA;
+- entitlement/ownership if feasible.
+
+### Updated percentages after retry
+
+- Shift Evidence platform base: 99%.
+- Evidence Expansion Layer: 98%.
+- Migration Recommendation Plan: 92%.
+- Migration Recommendation Plan QA / EVIDENCE-7.1: 78%.
+- EVIDENCE-7.1B manual browser closeout: 20%.
+- Collector/template packaging: 95%.
+- Full public launch: NO.
