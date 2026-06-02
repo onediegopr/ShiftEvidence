@@ -1,4 +1,4 @@
-import { Shield, ArrowRight, Check, FileText } from "lucide-react";
+import { Shield, ArrowRight, Check, FileText, Play } from "lucide-react";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -2632,10 +2632,17 @@ export default function Hero({ onOpenScanner }: HeroProps) {
                 <ArrowRight size={18} />
               </button>
               <a
-                href="/demo"
+                href="/demo/replay"
                 className="btn btn-secondary"
               >
-                Explore a Sample Assessment
+                Watch Quick Simulation
+                <Play size={18} className="text-cyan" />
+              </a>
+              <a
+                href="/demo/workspace"
+                className="btn btn-secondary"
+              >
+                Explore Demo Workspace
                 <FileText size={18} className="text-cyan" />
               </a>
               <a

@@ -149,6 +149,7 @@ export default function MigrationReadinessReplay() {
         <div className="container demo-hero-grid">
           <div className="demo-hero-copy">
             <div className="badge badge-cyan">Cognitive TAM Methodology</div>
+            <p className="assessment-inline-note">Migration Readiness Replay</p>
             <h1 className="demo-hero-title">
               Stop Guessing. Map Your <span className="demo-vmware-word">VMware</span> Exit with Precision.
             </h1>
@@ -165,12 +166,16 @@ export default function MigrationReadinessReplay() {
             </div>
             <div className="shiftreadiness-actions">
               <a href="#replay" className="btn btn-primary btn-glow" onClick={() => setIsPlaying(true)} data-event="demo_started">
-                Start replay
+                Start Simulation
                 <Play size={18} />
               </a>
               <a href="#final-report" className="btn btn-secondary" onClick={skipToReport} data-event="demo_skipped_to_report">
                 Skip to final report
               </a>
+              <Link href="/demo/workspace" className="btn btn-secondary" data-event="demo_workspace_clicked">
+                Explore Full Demo Workspace
+                <ArrowRight size={18} />
+              </Link>
               <Link href="/sign-up?plan=free" className="btn btn-secondary" data-event="demo_cta_clicked">
                 Start Free Assessment
                 <ArrowRight size={18} />

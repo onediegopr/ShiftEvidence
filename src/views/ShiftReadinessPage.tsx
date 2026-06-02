@@ -134,8 +134,8 @@ export default function ShiftReadinessPage() {
                 Start Free Readiness Check
                 <ArrowRight size={18} />
               </a>
-              <a href="/demo" className="btn btn-secondary">
-                Explore a Sample Assessment
+              <a href="/demo/replay" className="btn btn-secondary">
+                Watch Quick Simulation
               </a>
               <a href="/sample-report" className="btn btn-secondary">
                 View full sample report
@@ -240,10 +240,10 @@ export default function ShiftReadinessPage() {
               missing, and what should be validated before moving from VMware to Proxmox.
             </p>
             <p className="assessment-inline-note">
-              See the platform before uploading your own RVTools export. Explore a complete synthetic assessment in
-              Demo Workspace.
+              See the platform before uploading your own RVTools export. Start with the quick simulation or explore a
+              complete synthetic assessment in Demo Workspace.
             </p>
-            <a href="/demo" className="btn btn-secondary">
+            <a href="/demo/workspace" className="btn btn-secondary">
               Explore a Sample Assessment
               <ArrowRight size={18} />
             </a>

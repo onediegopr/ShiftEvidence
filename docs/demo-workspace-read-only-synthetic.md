@@ -4,7 +4,11 @@
 
 Demo Workspace permite que un prospecto explore Shift Evidence antes de comprar sin obtener una herramienta gratuita para analizar su propia infraestructura.
 
-La ruta implementada es `/demo`.
+La experiencia ahora forma parte de un funnel de demos:
+
+- `/demo`: hub publico para elegir entre simulacion rapida y workspace profundo.
+- `/demo/replay`: Migration Readiness Replay, una simulacion guiada de 60-120 segundos.
+- `/demo/workspace`: Demo Workspace profundo read-only con 8 escenarios sinteticos.
 
 ## Decisiones de producto
 
@@ -21,10 +25,21 @@ El usuario reservado es `demo@shiftevidence.com`.
 
 La experiencia publica no inicia sesion como ese usuario. Se implemento demo mode server-side con fixtures para evitar interferir con sesiones reales y para no depender de DB productiva, cookies ni credenciales visibles.
 
-## Ruta demo
+## Rutas demo
 
-- `/demo`: Demo Workspace publico/read-only.
+- `/demo`: hub publico de demos. Explica las dos experiencias y no analiza infraestructura real.
+- `/demo/replay`: simulacion rapida, visual y sintetica para entender el flujo sin login.
+- `/demo/workspace`: Demo Workspace publico/read-only.
 - `/demo/reports/[scenario]`: PDF demo dinamico, generado desde fixtures sinteticos, sin escribir archivos ni mutar DB.
+
+## Experiencias complementarias
+
+`/demo/replay` y `/demo/workspace` no compiten entre si:
+
+- Replay es educativo, rapido y marketing-friendly. Muestra como evidencia VMware/RVTools se convierte en un decision pack Proxmox.
+- Workspace es exploracion tecnica profunda. Permite ver escenarios, scores, riesgos, Advisor transcript sintetico y PDFs demo.
+
+Ambas experiencias usan datos sinteticos, no suben archivos, no acceden a produccion, no llaman Gemini/OpenAI y no mutan DB.
 
 ## Paginas publicas con CTA
 
@@ -71,7 +86,7 @@ Cada dataset incluye slug, nombre, descripcion, badges, VM count, host count, da
 
 ## Acceso one-click
 
-Los CTAs publicos llevan a `/demo`. No se solicita password ni se reemplaza la sesion de un usuario real. Si un usuario real esta logueado, puede ver `/demo` sin perder su sesion.
+Los CTAs publicos llevan a `/demo/replay` o `/demo/workspace` segun contexto. No se solicita password ni se reemplaza la sesion de un usuario real. Si un usuario real esta logueado, puede ver las rutas demo sin perder su sesion.
 
 ## Aislamiento y datos reales
 

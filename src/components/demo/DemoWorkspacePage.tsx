@@ -221,11 +221,17 @@ export default function DemoWorkspacePage() {
                 required. No credentials. No production access. This demo is read-only and uses synthetic infrastructure
                 data.
               </p>
+              <p className="assessment-inline-note">
+                Want the quick version first? Watch the 90-second simulation before opening the full workspace.
+              </p>
               <div className="shiftreadiness-actions">
                 <a href={`#${primary.slug}`} className="btn btn-primary btn-glow">
                   Explore a Sample Assessment
                   <ArrowRight size={18} />
                 </a>
+                <Link href="/demo/replay" className="btn btn-secondary">
+                  Watch Quick Simulation
+                </Link>
                 <Link href="/pricing" className="btn btn-secondary">
                   View Plans
                 </Link>

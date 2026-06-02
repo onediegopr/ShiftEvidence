@@ -2,8 +2,8 @@
 
 Shift Evidence is the public brand. ShiftReadiness is the first product module.
 
-Demo Workspace:
-`/demo` exposes a read-only synthetic Demo Workspace with eight VMware to Proxmox scenarios, demo PDF downloads and synthetic Advisor transcripts. It does not upload customer data, mutate production data, call live AI, or replace paid assessments.
+Demo funnel:
+`/demo` is the public demo hub. `/demo/replay` restores the quick synthetic Migration Readiness Replay, while `/demo/workspace` exposes the read-only Demo Workspace with eight VMware to Proxmox scenarios, demo PDF downloads and synthetic Advisor transcripts. These demos do not upload customer data, mutate production data, call live AI, or replace paid assessments.
 
 Tagline:
 Infrastructure readiness before you migrate.
@@ -108,6 +108,8 @@ EVIDENCE-10 packages the existing Evidence Expansion collectors/templates with d
 - `/`
 - `/shiftreadiness`
 - `/demo`
+- `/demo/replay`
+- `/demo/workspace`
 - `/sample-report`
 - `/vmware-to-proxmox-readiness`
 - `/contact`
@@ -138,7 +140,7 @@ EVIDENCE-10 packages the existing Evidence Expansion collectors/templates with d
 - AI consumption panel with memory metrics plus persistent estimated tokens/costs by user and assessment.
 - Admin budgets, manual entitlements, commercial opportunities and advanced audit events.
 - Runtime operational settings and basic enforcement for AI, PDF/report downloads and assessment creation.
-- Public synthetic Migration Readiness Replay at `/demo`.
+- Public demo hub at `/demo`, quick synthetic Migration Readiness Replay at `/demo/replay` and deep read-only Demo Workspace at `/demo/workspace`.
 - Public synthetic sample readiness report page at `/sample-report`.
 - Public synthetic sample PDF at `/sample-reports/proxmox-migration-readiness-sample-report.pdf`.
 - Standalone VMware -> Proxmox readiness offer page at `/vmware-to-proxmox-readiness`, linked only from `/demo` and `/sample-report`.

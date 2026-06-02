@@ -232,7 +232,7 @@ export default function PricingPage() {
                   Destination Readiness, migration waves and demo reports.
                 </p>
               </div>
-              <a href="/demo" className="btn btn-primary btn-glow">
+              <a href="/demo/workspace" className="btn btn-primary btn-glow">
                 Explore a Sample Assessment
                 <ArrowRight size={16} />
               </a>

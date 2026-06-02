@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import DemoWorkspacePage from "../../components/demo/DemoWorkspacePage";
+import DemoHubPage from "../../components/demo/DemoHubPage";
 
 export const metadata: Metadata = {
-  title: "Demo Workspace | Shift Evidence",
+  title: "Demos | Shift Evidence",
   description:
-    "Explore a read-only synthetic VMware to Proxmox Demo Workspace before purchasing Shift Evidence.",
+    "Choose a quick simulation or a read-only synthetic Demo Workspace before purchasing Shift Evidence.",
   alternates: {
     canonical: "https://shiftevidence.com/demo",
   },
 };
 
 export default function DemoPage() {
-  return <DemoWorkspacePage />;
+  return <DemoHubPage />;
 }

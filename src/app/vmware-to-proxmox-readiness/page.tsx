@@ -154,8 +154,8 @@ export default function VMwareToProxmoxReadinessPage() {
                 Start readiness assessment
                 <ArrowRight size={18} />
               </Link>
-              <Link href="/demo" className="btn btn-secondary">
-                Explore a Sample Assessment
+              <Link href="/demo/replay" className="btn btn-secondary">
+                Watch 90-second simulation
               </Link>
               <Link href="/sample-report" className="btn btn-secondary">
                 View full sample report
@@ -229,7 +229,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 Explore a synthetic Demo Workspace before starting your own assessment.
               </p>
             </div>
-            <Link href="/demo" className="btn btn-primary btn-glow">
+            <Link href="/demo/workspace" className="btn btn-primary btn-glow">
               Explore a Sample Assessment
               <ArrowRight size={18} />
             </Link>
@@ -407,7 +407,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 Start readiness assessment
                 <ArrowRight size={18} />
               </Link>
-              <Link href="/demo" className="btn btn-secondary">
+              <Link href="/demo/workspace" className="btn btn-secondary">
                 Explore a Sample Assessment
                 <Waves size={17} />
               </Link>

@@ -151,7 +151,7 @@ export default function SampleReportPage() {
                 View premium sample structure
                 <ArrowRight size={18} />
               </a>
-              <Link href="/demo" className="btn btn-secondary">
+              <Link href="/demo/workspace" className="btn btn-secondary">
                 Explore a Sample Assessment
               </Link>
               <a
@@ -370,7 +370,7 @@ export default function SampleReportPage() {
                 migration waves and Advisor transcript before starting your own assessment.
               </p>
             </div>
-            <Link href="/demo" className="btn btn-primary btn-glow">
+            <Link href="/demo/workspace" className="btn btn-primary btn-glow">
               Explore a Sample Assessment
               <ArrowRight size={18} />
             </Link>
@@ -391,7 +391,11 @@ export default function SampleReportPage() {
                 Start readiness assessment
                 <ArrowRight size={18} />
               </Link>
-              <Link href="/demo" className="btn btn-secondary">
+              <Link href="/demo/replay" className="btn btn-secondary">
+                Watch Quick Simulation
+                <Waves size={17} />
+              </Link>
+              <Link href="/demo/workspace" className="btn btn-secondary">
                 Explore a Sample Assessment
                 <Waves size={17} />
               </Link>
