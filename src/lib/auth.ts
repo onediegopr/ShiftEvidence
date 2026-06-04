@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { getAuthTrustedOrigins } from "../server/security/trustedOrigins";
 import { env } from "./env";
 import { prisma } from "./prisma";
 
@@ -7,12 +8,7 @@ export const auth = betterAuth({
   appName: "ShiftReadiness",
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://shiftevidence.com",
-    "https://www.shiftevidence.com",
-  ],
+  trustedOrigins: getAuthTrustedOrigins(),
   allowLocalhost: true,
   database: prismaAdapter(prisma, {
     provider: "postgresql",

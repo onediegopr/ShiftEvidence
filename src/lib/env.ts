@@ -15,6 +15,7 @@ export const env = {
   NEXT_PUBLIC_APP_URL: required("NEXT_PUBLIC_APP_URL"),
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
+  PREVIEW_TRUSTED_ORIGINS: process.env.PREVIEW_TRUSTED_ORIGINS ?? "",
   ADMIN_EMAILS: process.env.ADMIN_EMAILS ?? "",
   STORAGE_DRIVER: process.env.STORAGE_DRIVER?.trim() || "local",
   HOSTINGER_STORAGE_ROOT: process.env.HOSTINGER_STORAGE_ROOT?.trim() || "./storage",
