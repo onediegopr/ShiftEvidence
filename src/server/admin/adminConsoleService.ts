@@ -960,7 +960,16 @@ export async function getAdminConsoleData(params?: {
   );
   const databaseConfigured = isConfigured(process.env.DATABASE_URL);
   const authConfigured = isConfigured(process.env.BETTER_AUTH_SECRET) && isConfigured(process.env.BETTER_AUTH_URL);
-  const storageConfigured = isConfigured(process.env.HOSTINGER_STORAGE_ROOT);
+  const storageDriver = process.env.STORAGE_DRIVER?.trim().toLowerCase() ?? "local";
+  const storageConfigured =
+    storageDriver === "r2"
+      ? isConfigured(process.env.R2_ACCOUNT_ID) &&
+        isConfigured(process.env.R2_S3_ENDPOINT) &&
+        isConfigured(process.env.R2_BUCKET_PREVIEW) &&
+        isConfigured(process.env.R2_BUCKET_PROD) &&
+        isConfigured(process.env.R2_ACCESS_KEY_ID) &&
+        isConfigured(process.env.R2_SECRET_ACCESS_KEY)
+      : true;
   const emailConfigured = isConfigured(process.env.RESEND_API_KEY) || isConfigured(process.env.EMAIL_FROM);
   const billingStatus = getBillingAdminStatus();
 
@@ -1030,7 +1039,11 @@ export async function getAdminConsoleData(params?: {
       {
         title: "Storage privado",
         status: storageConfigured ? "Operativo" : "Atención",
-        description: storageConfigured ? "Storage root configurado sin exponer ruta." : "Storage root usa fallback o no está configurado.",
+        description: storageConfigured
+          ? storageDriver === "r2"
+            ? "R2 configurado sin exponer credenciales."
+            : "Local fallback de storage disponible."
+          : "Falta configuración segura para el driver de storage elegido.",
         recommendation: "No exponer rutas privadas; validar uploads en controlled launch.",
       },
       {
@@ -1089,6 +1102,13 @@ export async function getAdminConsoleData(params?: {
       { name: "BETTER_AUTH_URL", value: safeVisibleValue(process.env.BETTER_AUTH_URL), secret: false },
       { name: "NEXT_PUBLIC_APP_URL", value: safeVisibleValue(process.env.NEXT_PUBLIC_APP_URL), secret: false },
       { name: "HOSTINGER_STORAGE_ROOT", value: configState(process.env.HOSTINGER_STORAGE_ROOT), secret: true },
+      { name: "STORAGE_DRIVER", value: safeVisibleValue(process.env.STORAGE_DRIVER), secret: false },
+      { name: "R2_ACCOUNT_ID", value: configState(process.env.R2_ACCOUNT_ID), secret: true },
+      { name: "R2_S3_ENDPOINT", value: safeVisibleValue(process.env.R2_S3_ENDPOINT), secret: false },
+      { name: "R2_BUCKET_PREVIEW", value: safeVisibleValue(process.env.R2_BUCKET_PREVIEW), secret: false },
+      { name: "R2_BUCKET_PROD", value: safeVisibleValue(process.env.R2_BUCKET_PROD), secret: false },
+      { name: "R2_ACCESS_KEY_ID", value: configState(process.env.R2_ACCESS_KEY_ID), secret: true },
+      { name: "R2_SECRET_ACCESS_KEY", value: configState(process.env.R2_SECRET_ACCESS_KEY), secret: true },
       { name: "ADMIN_EMAILS", value: configState(process.env.ADMIN_EMAILS), secret: true },
       { name: "GEMINI_API_KEY", value: configState(process.env.GEMINI_API_KEY), secret: true },
       { name: "OPENCODE_API_KEY", value: configState(process.env.OPENCODE_API_KEY), secret: true },

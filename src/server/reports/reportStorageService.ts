@@ -1,12 +1,12 @@
-import { createHash, randomBytes } from "crypto";
-import { mkdir, readFile, rm, writeFile } from "fs/promises";
-import path from "path";
+import { createHash, randomBytes } from "node:crypto";
 import { sanitizeOriginalFilename } from "../evidence/uploadValidation";
 import {
-  assertAbsolutePathInsideStorageRoot,
   getStorageRoot,
+  joinStorageRelativePath,
   resolveInsideStorageRoot,
-} from "../evidence/localStorageService";
+  toStorageRelativePath,
+} from "../evidence/storagePaths";
+import { deleteStorageObject, readStorageObject, writeStorageObject } from "../evidence/storageService";
 
 function sanitizeSegment(value: string) {
   const trimmed = value.trim();
@@ -31,26 +31,13 @@ export function getReportStorageRoot() {
   return getStorageRoot();
 }
 
-function ensureDirectoryExists(directoryPath: string) {
-  return mkdir(directoryPath, {
-    recursive: true,
-  });
-}
-
-function toRelativePath(absolutePath: string) {
-  const root = getReportStorageRoot();
-  const containedPath = assertAbsolutePathInsideStorageRoot(absolutePath, "Invalid report path.");
-  const relative = path.relative(root, containedPath);
-  return relative.split(path.sep).join("/");
-}
-
-export function buildReportStorageDirectory(params: {
+function buildReportRelativeDirectory(params: {
   userId: string;
   workspaceId: string;
   assessmentId: string;
   reportType: string;
 }) {
-  return resolveInsideStorageRoot(path.join(
+  return joinStorageRelativePath(
     "users",
     sanitizeSegment(params.userId),
     "workspaces",
@@ -59,7 +46,16 @@ export function buildReportStorageDirectory(params: {
     sanitizeSegment(params.assessmentId),
     "reports",
     sanitizeSegment(params.reportType),
-  ), "Invalid report path.");
+  );
+}
+
+export function buildReportStorageDirectory(params: {
+  userId: string;
+  workspaceId: string;
+  assessmentId: string;
+  reportType: string;
+}) {
+  return resolveInsideStorageRoot(buildReportRelativeDirectory(params), "Invalid report path.");
 }
 
 export function buildSafeReportFilename(params: {
@@ -103,13 +99,22 @@ export function prepareReportFileLocation(params: {
     assessmentTitle: params.assessmentTitle,
     extension: params.extension ?? ".pdf",
   });
-  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename), "Invalid report path.");
+  const relativePath = joinStorageRelativePath(
+    buildReportRelativeDirectory({
+      userId: params.userId,
+      workspaceId: params.workspaceId,
+      assessmentId: params.assessmentId,
+      reportType: params.reportType,
+    }),
+    storedFilename,
+  );
+  const absolutePath = resolveInsideStorageRoot(relativePath, "Invalid report path.");
 
   return {
     directoryPath,
     storedFilename,
     absolutePath,
-    relativePath: toRelativePath(absolutePath),
+    relativePath: toStorageRelativePath(absolutePath),
   };
 }
 
@@ -122,17 +127,12 @@ export async function writeReportFile(params: {
   buffer: Buffer;
   storedFilename?: string;
 }) {
-  const root = getReportStorageRoot();
-  await ensureDirectoryExists(root);
-
-  const directoryPath = buildReportStorageDirectory({
+  const relativeDirectoryPath = buildReportRelativeDirectory({
     userId: params.userId,
     workspaceId: params.workspaceId,
     assessmentId: params.assessmentId,
     reportType: params.reportType,
   });
-
-  await ensureDirectoryExists(directoryPath);
 
   const storedFilename =
     params.storedFilename ??
@@ -141,16 +141,15 @@ export async function writeReportFile(params: {
       assessmentTitle: params.assessmentTitle,
       extension: ".pdf",
     });
-  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename), "Invalid report path.");
-
-  await writeFile(absolutePath, params.buffer);
+  const relativePath = joinStorageRelativePath(relativeDirectoryPath, storedFilename);
+  const persisted = await writeStorageObject(relativePath, params.buffer, "application/pdf");
 
   return {
     storedFilename,
-    absolutePath,
-    relativePath: toRelativePath(absolutePath),
+    absolutePath: persisted.absolutePath,
+    relativePath: persisted.relativePath,
     fileHash: await calculateReportSha256(params.buffer),
-    sizeBytes: params.buffer.byteLength,
+    sizeBytes: persisted.sizeBytes,
     mimeType: "application/pdf",
   };
 }
@@ -160,13 +159,9 @@ export function resolveReportAbsolutePath(relativePath: string) {
 }
 
 export async function readReportFile(relativePath: string) {
-  const absolutePath = resolveReportAbsolutePath(relativePath);
-  return readFile(absolutePath);
+  return readStorageObject(relativePath);
 }
 
 export async function deletePhysicalReportIfExists(relativePath: string) {
-  const absolutePath = resolveReportAbsolutePath(relativePath);
-  await rm(absolutePath, {
-    force: true,
-  });
+  await deleteStorageObject(relativePath);
 }

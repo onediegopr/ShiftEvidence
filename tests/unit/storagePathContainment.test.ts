@@ -4,7 +4,7 @@ import {
   assertAbsolutePathInsideStorageRoot,
   getStorageRoot,
   resolveInsideStorageRoot,
-} from "../../src/server/evidence/localStorageService";
+} from "../../src/server/evidence/storagePaths";
 
 describe("local storage path containment", () => {
   const originalStorageRoot = process.env.HOSTINGER_STORAGE_ROOT;

@@ -1,9 +1,8 @@
-import { createHash, randomBytes } from "crypto";
-import { mkdir, readFile, rm, writeFile } from "fs/promises";
-import path from "path";
+import { createHash, randomBytes } from "node:crypto";
+import path from "node:path";
 import { sanitizeOriginalFilename } from "./uploadValidation";
-
-const DEFAULT_STORAGE_ROOT = "storage";
+import { joinStorageRelativePath, resolveInsideStorageRoot } from "./storagePaths";
+import { deleteStorageObject, readStorageObject, writeStorageObject } from "./storageService";
 
 function sanitizeSegment(value: string) {
   const trimmed = value.trim();
@@ -15,67 +14,13 @@ function sanitizeSegment(value: string) {
   return trimmed.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
-export function getStorageRoot() {
-  const configuredRoot = process.env.HOSTINGER_STORAGE_ROOT?.trim();
-
-  if (configuredRoot && path.isAbsolute(configuredRoot)) {
-    return path.resolve(configuredRoot);
-  }
-
-  return path.resolve(/*turbopackIgnore: true*/ process.cwd(), DEFAULT_STORAGE_ROOT);
-}
-
-async function ensureDirectoryExists(directoryPath: string) {
-  await mkdir(directoryPath, {
-    recursive: true,
-  });
-}
-
-function toRelativePath(absolutePath: string) {
-  const root = getStorageRoot();
-  const containedPath = assertAbsolutePathInsideStorageRoot(absolutePath);
-  const relative = path.relative(root, containedPath);
-  return relative.split(path.sep).join("/");
-}
-
-function assertInsideStorageRoot(storageRoot: string, absolutePath: string, errorMessage: string) {
-  const resolvedRoot = path.resolve(storageRoot);
-  const resolvedTarget = path.resolve(absolutePath);
-  const rootWithSeparator = resolvedRoot.endsWith(path.sep) ? resolvedRoot : `${resolvedRoot}${path.sep}`;
-
-  if (resolvedTarget !== resolvedRoot && !resolvedTarget.startsWith(rootWithSeparator)) {
-    throw new Error(errorMessage);
-  }
-
-  return resolvedTarget;
-}
-
-export function assertAbsolutePathInsideStorageRoot(absolutePath: string, errorMessage = "Invalid storage path.") {
-  return assertInsideStorageRoot(getStorageRoot(), absolutePath, errorMessage);
-}
-
-export function resolveInsideStorageRoot(relativePath: string, errorMessage = "Invalid storage path.") {
-  if (path.isAbsolute(relativePath)) {
-    throw new Error(errorMessage);
-  }
-
-  const normalizedRelativePath = relativePath.replaceAll("/", path.sep);
-
-  if (path.isAbsolute(normalizedRelativePath)) {
-    throw new Error(errorMessage);
-  }
-
-  const root = getStorageRoot();
-  return assertInsideStorageRoot(root, path.resolve(root, normalizedRelativePath), errorMessage);
-}
-
-function buildAssessmentUploadDirectory(params: {
+function buildAssessmentUploadRelativePath(params: {
   userId: string;
   workspaceId: string;
   assessmentId: string;
   evidenceType: string;
 }) {
-  return resolveInsideStorageRoot(path.join(
+  return joinStorageRelativePath(
     "users",
     sanitizeSegment(params.userId),
     "workspaces",
@@ -84,7 +29,7 @@ function buildAssessmentUploadDirectory(params: {
     sanitizeSegment(params.assessmentId),
     "uploads",
     sanitizeSegment(params.evidenceType),
-  ));
+  );
 }
 
 export function buildSafeStoredFilename(params: {
@@ -122,34 +67,28 @@ export async function writeUploadedFile(params: {
   mimeType?: string | null;
   buffer: Buffer;
 }) {
-  const root = getStorageRoot();
-  await ensureDirectoryExists(root);
-
-  const directoryPath = buildAssessmentUploadDirectory({
+  const relativeDirectoryPath = buildAssessmentUploadRelativePath({
     userId: params.userId,
     workspaceId: params.workspaceId,
     assessmentId: params.assessmentId,
     evidenceType: params.evidenceType,
   });
 
-  await ensureDirectoryExists(directoryPath);
-
   const storedFilename = buildSafeStoredFilename({
     evidenceType: params.evidenceType,
     originalFilename: params.originalFilename,
     extension: params.extension,
   });
-  const absolutePath = resolveInsideStorageRoot(path.join(toRelativePath(directoryPath), storedFilename));
-
-  await writeFile(absolutePath, params.buffer);
+  const relativePath = joinStorageRelativePath(relativeDirectoryPath, storedFilename);
+  const persisted = await writeStorageObject(relativePath, params.buffer, params.mimeType);
 
   return {
     storedFilename,
-    absolutePath,
-    relativePath: toRelativePath(absolutePath),
+    absolutePath: persisted.absolutePath,
+    relativePath: persisted.relativePath,
     fileHash: await calculateSha256(params.buffer),
-    sizeBytes: params.buffer.byteLength,
-    mimeType: params.mimeType?.trim() || null,
+    sizeBytes: persisted.sizeBytes,
+    mimeType: persisted.mimeType,
   };
 }
 
@@ -158,13 +97,11 @@ export function resolveEvidenceAbsolutePath(relativePath: string) {
 }
 
 export async function readEvidenceFile(relativePath: string) {
-  const absolutePath = resolveEvidenceAbsolutePath(relativePath);
-  return readFile(absolutePath);
+  return readStorageObject(relativePath);
 }
 
 export async function deletePhysicalFileIfExists(relativePath: string) {
-  const absolutePath = resolveEvidenceAbsolutePath(relativePath);
-  await rm(absolutePath, {
-    force: true,
-  });
+  await deleteStorageObject(relativePath);
 }
+
+export { assertAbsolutePathInsideStorageRoot, getStorageRoot, toStorageRelativePath } from "./storagePaths";

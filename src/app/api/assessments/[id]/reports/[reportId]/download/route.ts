@@ -77,7 +77,7 @@ export async function GET(
 
     const downloadName = sanitizeDownloadName(report.originalFilename || "shiftreadiness-report.pdf");
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
