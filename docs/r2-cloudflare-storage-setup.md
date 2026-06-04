@@ -7,6 +7,7 @@
 - Buckets created: yes
 - Bucket privacy: private by default
 - Runtime integration: implemented in code, not yet turned on by default
+- Preview smoke: completed successfully
 
 ## Account Details
 
@@ -33,7 +34,7 @@
 
 ## Next Step
 
-- Add an R2-backed storage adapter and decide how to route preview/prod uploads and report files.
+- Continue with authenticated upload/download smoke or Vercel preview env config.
 - Keep the filesystem implementation as a safe fallback until the adapter is in place and smoke-tested.
 
 ## Safety Notes
