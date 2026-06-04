@@ -8,6 +8,7 @@
 - Bucket privacy: private by default
 - Runtime integration: implemented in code, not yet turned on by default
 - Preview smoke: completed successfully
+- Authenticated upload/download smoke: service-level preview smoke completed successfully
 
 ## Account Details
 
@@ -34,7 +35,7 @@
 
 ## Next Step
 
-- Continue with authenticated upload/download smoke or Vercel preview env config.
+- Continue with authenticated browser upload/download smoke or Vercel preview env config.
 - Keep the filesystem implementation as a safe fallback until the adapter is in place and smoke-tested.
 
 ## Safety Notes
