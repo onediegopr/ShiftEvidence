@@ -9,6 +9,7 @@
 - Runtime integration: implemented in code, not yet turned on by default
 - Preview smoke: completed successfully
 - Authenticated upload/download smoke: service-level preview smoke completed successfully
+- Vercel Preview authenticated upload/download smoke: partial, blocked before R2 by upload rate-limit configuration
 
 ## Account Details
 
@@ -35,7 +36,7 @@
 
 ## Next Step
 
-- Continue with authenticated browser upload/download smoke or Vercel preview env config.
+- Configure Preview upload rate limiting safely, then rerun the Vercel Preview authenticated upload/download smoke.
 - Keep the filesystem implementation as a safe fallback until the adapter is in place and smoke-tested.
 
 ## Safety Notes
