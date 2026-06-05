@@ -120,6 +120,30 @@ No Vercel env was changed, no live checkout was enabled, no payment was attempte
 
 Next required hito: load the aligned live Price IDs only under explicit approval, perform a controlled redeploy if needed, and smoke only to Stripe hosted checkout without completing payment.
 
+## STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1 Result
+
+Date: 2026-06-05.
+
+With explicit owner approval, Vercel Production for `shiftevidence` was temporarily configured with the aligned live Price IDs and the double live checkout gate, then redeployed from CLI for a controlled hosted-checkout-only smoke.
+
+Result:
+
+| Plan | Hosted checkout | Amount visible | Cadence |
+| --- | --- | ---: | --- |
+| Starter Readiness | OK | USD 490.00 | one-time |
+| Professional Assessment | OK | USD 1,500.00 | one-time |
+| MSP Partner | OK | USD 399.00 | monthly recurring |
+
+No card data was entered, no payment was completed, no webhook was intentionally triggered, no grant or entitlement was created, and no DNS/Hostinger/custom domain change was made.
+
+After the smoke, Production was restored to safe-off:
+
+- `STRIPE_CHECKOUT_ENABLED=false`.
+- `STRIPE_LIVE_PAYMENTS_APPROVED=false`.
+- `STRIPE_CHECKOUT_MODE=test`.
+
+The final production start routes returned `303` with `checkout_disabled` for Starter, Professional, and MSP. See `docs/stripe-live-hosted-checkout-smoke-1.md`.
+
 ## STRIPE-TESTMODE-PRICE-SMOKE Result
 
 Date: 2026-06-05.

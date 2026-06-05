@@ -366,3 +366,31 @@ Then:
 
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.
+
+## 18. Follow-up: STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1
+
+Fecha: 2026-06-05
+
+El hito de hosted checkout live fue ejecutado con aprobacion explicita del owner y quedo completo.
+
+Resultado:
+
+- Vercel Production `shiftevidence` fue configurado temporalmente con los Price IDs live alineados y gates live.
+- Redeploy productivo controlado: `dpl_AnX2qEidHNGToMszj6dtCPUii3s1`.
+- Starter redirigio a Stripe hosted checkout live y mostro USD 490.00.
+- Professional redirigio a Stripe hosted checkout live y mostro USD 1,500.00.
+- MSP redirigio a Stripe hosted checkout live y mostro USD 399.00 mensual.
+- No se ingreso tarjeta.
+- No se completo pago.
+- No se disparo webhook intencional.
+- No se creo grant ni entitlement.
+- Safe-off fue restaurado inmediatamente y redeployado: `dpl_6qMf4WZ3nC7s6GpwWQgbbreUyfQG`.
+- Start routes finales vuelven a `checkout_disabled`.
+
+Documento de cierre:
+
+- `docs/stripe-live-hosted-checkout-smoke-1.md`.
+
+Nuevo proximo hito recomendado:
+
+- `STRIPE-LIVE-PAYMENT-FINAL-GATE-1`.

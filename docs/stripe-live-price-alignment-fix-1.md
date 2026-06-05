@@ -210,3 +210,19 @@ Status:
 - `STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1`.
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.
+
+## 15. Follow-up: hosted checkout smoke
+
+Fecha: 2026-06-05
+
+Los Price IDs alineados de este hito fueron usados en `STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1` con Vercel Production bajo aprobacion explicita del owner.
+
+Resultado:
+
+| Plan | Price ID | Hosted checkout | Amount visible | Cadence |
+| --- | --- | --- | ---: | --- |
+| Starter Readiness | `price_...dJwz` | OK | USD 490.00 | one-time |
+| Professional Assessment | `price_...krvY` | OK | USD 1,500.00 | one-time |
+| MSP Partner | `price_...7iAr` | OK | USD 399.00 | monthly |
+
+No payment was completed. Safe-off was restored after the smoke.
