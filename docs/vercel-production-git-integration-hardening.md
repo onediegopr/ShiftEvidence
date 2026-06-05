@@ -250,13 +250,26 @@ No hacer production deploy automatico desde `main`.
 
 | Riesgo | Estado | Mitigacion |
 | --- | --- | --- |
-| El commit que agrega `vercel.json` podria disparar un ultimo auto-deploy antes de que Vercel lea la regla | Pendiente de validar post-push | Revisar ambos proyectos y remover si aparece. |
+| El commit que agrega `vercel.json` podria disparar un ultimo auto-deploy antes de que Vercel lea la regla | Validado: no se disparo deployment nuevo | Mantener `git.deploymentEnabled.main=false`. |
 | Dashboard production branch sigue posiblemente en `main` | No cambiado | Hito futuro si se quiere branch `production`. |
 | `shiftevidence` ya sirve dominios reales | Vigente | No tocar env/deploy sin ventana. |
 | Git settings finos no visibles por CLI | Vigente | Validar en Dashboard o API auth explicita. |
 | Ignored Build Step no configurado | Aceptado | `git.deploymentEnabled` es control principal. |
 
-## 13. Porcentajes finales
+## 13. Validacion post-push
+
+Despues del commit `bffd413 docs: harden Vercel production Git integration`, se revisaron deployments en ambos proyectos.
+
+Resultado:
+
+- `shiftevidence`: no aparecio ningun deployment nuevo posterior al push.
+- `infrashift-r2-recovery`: no aparecio ningun deployment nuevo posterior al push.
+- No hubo deployment Production accidental para remover.
+- Working tree quedo limpio y sincronizado con `origin/main`.
+
+Veredicto: hardening confirmado para push a `main`.
+
+## 14. Porcentajes finales
 
 | Area | Estado final |
 | --- | ---: |
@@ -270,11 +283,11 @@ No hacer production deploy automatico desde `main`.
 | PDF/report quality | 98% |
 | Avance general tecnico | 97% |
 
-## 14. Proximo hito recomendado
+## 15. Proximo hito recomendado
 
 Recomendado:
 
 1. `PRODUCTION-ENV-PREP-2`
 2. `NEON-PRODUCTION-DB-PREP-1`
 
-Antes de cargar Production env, validar que el push de este hito no haya creado deployments productivos. Si no los crea, el hardening queda confirmado. Si los crea, removerlos y documentar el resultado como evidencia de que se necesita ajuste en dashboard.
+Antes de cargar Production env, mantener este control activo y usar `preview` para staging/recovery.
