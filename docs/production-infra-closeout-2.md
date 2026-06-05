@@ -380,3 +380,48 @@ Documento de cierre:
 Proximo hito recomendado:
 
 - `R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1`.
+
+## 18. Follow-up: R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1
+
+Fecha: 2026-06-05
+
+El hito `R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1` cerro la verificacion de descarga autenticada production con intervencion manual segura del owner.
+
+Resultado:
+
+- Assessment sintetico: `cmq16c8ds000dl104d3ht1qqu`.
+- Archivo sintetico: `synthetic-production-r2-download-hash.txt`.
+- File ID no sensible: `cmq18pa860005jv04g4hpml1w`.
+- Upload por UI: OK.
+- Download autenticado: OK, Vercel logs `200`.
+- Owner confirmo contenido descargado esperado.
+- Archivo subido: `97` bytes.
+- SHA256 archivo subido: `19d3af9d56fcbedaa660f49fc001bffbd3d5c135f69e5d8811e6e4aab8fc4406`.
+- Access without app auth: `307` to sign-in.
+- Delete por UI: OK.
+- Active download links after delete: `0`.
+- Logs error: none.
+- Logs 500: none.
+
+Seguridad:
+
+- No se extrajeron credenciales del navegador.
+- No se documentaron enlaces sensibles.
+- No datos reales.
+- No DNS.
+- No Stripe live.
+- No DB destructive.
+
+Estado actualizado:
+
+| Area | Estado actualizado |
+| --- | ---: |
+| R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1 | 100% |
+| R2 authenticated production upload smoke | 100% |
+| Production/cutover readiness | 98% |
+| Storage/R2 readiness | 100% |
+| General technical | 99% |
+
+Documento de cierre:
+
+- `docs/r2-production-download-hash-verification-1.md`.

@@ -211,18 +211,18 @@ Confirmado:
 
 Estado:
 
-- Parcial alto.
+- Complete after follow-up.
 
 Motivo:
 
 - Upload autenticado y cleanup pasaron por UI production.
 - Download protegido fue observado y registrado como `200` con sesion.
-- La verificacion byte-for-byte del download quedo limitada por el navegador embebido, que no soporta capturar descargas.
+- El follow-up `R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1` confirmo descarga manual del owner, contenido esperado, hash del archivo subido y cleanup final.
 
 ## 12. Proximo hito recomendado
 
-`R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1`
+`STRIPE-LIVE-READINESS-1`
 
 Objetivo recomendado:
 
-- Repetir solo la parte de download usando una herramienta que soporte descargas autenticadas, sin exponer cookies ni sesiones, o con intervencion manual controlada del owner.
+- Preparar Stripe live readiness sin activar pagos live todavia.
