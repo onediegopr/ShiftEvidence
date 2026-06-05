@@ -196,6 +196,20 @@ BETTER_AUTH_URL=https://shiftevidence.com
 - No automatic fulfillment is active.
 - Webhook handling can persist billing events when configured, but it does not grant assessment access.
 
+## STRIPE-LIVE-PRICE-ALIGNMENT-FIX-1
+
+Date: 2026-06-05.
+
+The live Price IDs captured in `STRIPE-2B` are now marked stale/no aligned for the current Stripe live account. The current live products and masked Price IDs were identified visually in Stripe Dashboard:
+
+| Plan | Current Price ID | Amount | Cadence |
+| --- | --- | ---: | --- |
+| Starter Readiness | `price_...dJwz` | USD 490 | one-time |
+| Professional Assessment | `price_...krvY` | USD 1,500 | one-time |
+| MSP Partner | `price_...7iAr` | USD 399/month | monthly recurring |
+
+No runtime env was changed in this hito. Production remains safe-off.
+
 ## STRIPE-LIVE-2 Runtime Gate Attempt
 
 Date: 2026-06-02.

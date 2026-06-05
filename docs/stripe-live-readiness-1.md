@@ -333,14 +333,36 @@ Status:
 
 - Blocked safely by Price ID/account alignment.
 
-## 16. Next hito
+## 16. Follow-up: STRIPE-LIVE-PRICE-ALIGNMENT-FIX-1
+
+Fecha: 2026-06-05
+
+El bloqueo de Price ID/account alignment fue corregido a nivel de discovery visual en Stripe Dashboard.
+
+Resultado:
+
+- Cuenta live auditada: `Shiftevidence`.
+- Account path visible: `acct_102Xur2ehRcYyaOr`.
+- Starter Readiness current Price ID: `price_...dJwz`.
+- Professional Assessment current Price ID: `price_...krvY`.
+- MSP Partner current Price ID: `price_...7iAr`.
+- Montos/currency/cadencia: OK.
+- Los Price IDs historicos de `STRIPE-2B` quedan stale/no alineados.
+- Vercel env: unchanged.
+- Checkout live: not enabled.
+- Production safe-off: preserved.
+
+Documento de cierre:
+
+- `docs/stripe-live-price-alignment-fix-1.md`.
+
+## 17. Next hito
 
 Recommended:
 
-- `STRIPE-LIVE-PRICE-ALIGNMENT-FIX-1`.
+- `STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1`.
 
 Then:
 
-- `STRIPE-LIVE-HOSTED-CHECKOUT-SMOKE-1`.
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.

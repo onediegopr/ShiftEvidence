@@ -104,6 +104,22 @@ After the owner configured live runtime variables outside source control, produc
 
 No payment was completed, no card data was entered, no grant or entitlement was created, no Wise action was performed, and no secret was stored. The likely next check is runtime Price ID and `STRIPE_SECRET_KEY` account alignment. See `docs/billing-stripe-live-runtime-gate.md`.
 
+## STRIPE-LIVE-PRICE-ALIGNMENT-FIX-1 Result
+
+Date: 2026-06-05.
+
+Stripe Dashboard live account `Shiftevidence` was audited read-only. The Price IDs captured in `STRIPE-2B` are now considered stale/no aligned because they were not found in the current live account. Current aligned live Price IDs were identified visually from the active product tariff rows:
+
+| Plan | Product | Price ID | Amount | Cadence | Status |
+| --- | --- | --- | ---: | --- | --- |
+| Starter Readiness | `prod_...hYNS` | `price_...dJwz` | USD 490 | one-time | active/default |
+| Professional Assessment | `prod_...cuGY` | `price_...krvY` | USD 1,500 | one-time | active/default |
+| MSP Partner | `prod_...Uzqw` | `price_...7iAr` | USD 399/month | monthly recurring | active/default |
+
+No Vercel env was changed, no live checkout was enabled, no payment was attempted, no webhook event was sent, and no redeploy was performed. Production start routes remain safe-off with `checkout_disabled`.
+
+Next required hito: load the aligned live Price IDs only under explicit approval, perform a controlled redeploy if needed, and smoke only to Stripe hosted checkout without completing payment.
+
 ## STRIPE-TESTMODE-PRICE-SMOKE Result
 
 Date: 2026-06-05.
