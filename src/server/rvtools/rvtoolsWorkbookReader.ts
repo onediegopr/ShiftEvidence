@@ -3,6 +3,60 @@ import path from "path";
 import type { SheetDetectionResult, WorkbookSheet } from "./rvtoolsParserTypes";
 import { inferRoleFromDetection, normalizeHeader } from "./rvtoolsColumnMapper";
 
+export const RVTOOLS_WORKBOOK_LIMITS = {
+  maxSheets: 40,
+  maxRowsPerSheet: 20000,
+  maxHeaderLength: 160,
+  maxCellTextLength: 5000,
+} as const;
+
+const DANGEROUS_HEADER_NAMES = new Set(["__proto__", "constructor", "prototype"]);
+
+function safeWorkbookError(message: string) {
+  return new Error(message);
+}
+
+export function sanitizeWorkbookHeader(header: string, index: number) {
+  const sanitized = Array.from(header)
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      return code < 32 || code === 127 ? " " : char;
+    })
+    .join("")
+    .trim()
+    .slice(0, RVTOOLS_WORKBOOK_LIMITS.maxHeaderLength);
+  const normalized = sanitized.toLowerCase();
+
+  if (!sanitized || DANGEROUS_HEADER_NAMES.has(normalized)) {
+    return `ignored_column_${index + 1}`;
+  }
+
+  return sanitized;
+}
+
+function sanitizeWorkbookValue(value: unknown) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  if (value.length <= RVTOOLS_WORKBOOK_LIMITS.maxCellTextLength) {
+    return value;
+  }
+
+  return value.slice(0, RVTOOLS_WORKBOOK_LIMITS.maxCellTextLength);
+}
+
+function sanitizeWorkbookRow(row: Record<string, unknown>) {
+  const safeRow: Record<string, unknown> = Object.create(null);
+
+  for (const [header, value] of Object.entries(row)) {
+    const safeHeader = sanitizeWorkbookHeader(header, Object.keys(safeRow).length);
+    safeRow[safeHeader] = sanitizeWorkbookValue(value);
+  }
+
+  return safeRow;
+}
+
 function detectRoleFromSheet(sheetName: string, headers: string[], rowCount: number) {
   const normalizedSheetName = normalizeHeader(sheetName);
   const normalizedHeaders = headers.map(normalizeHeader);
@@ -87,11 +141,19 @@ function detectRoleFromSheet(sheetName: string, headers: string[], rowCount: num
 }
 
 function sheetToRows(sheet: XLSX.WorkSheet) {
-  return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
     defval: null,
     raw: false,
     blankrows: false,
   });
+
+  if (rows.length > RVTOOLS_WORKBOOK_LIMITS.maxRowsPerSheet) {
+    throw safeWorkbookError(
+      `Workbook sheet exceeds the supported row limit of ${RVTOOLS_WORKBOOK_LIMITS.maxRowsPerSheet}.`,
+    );
+  }
+
+  return rows.map(sanitizeWorkbookRow);
 }
 
 export function readRvtoolsWorkbookFromBuffer(params: {
@@ -110,6 +172,12 @@ export function readRvtoolsWorkbookFromBuffer(params: {
         type: "buffer",
         cellDates: true,
       });
+
+  if (workbook.SheetNames.length > RVTOOLS_WORKBOOK_LIMITS.maxSheets) {
+    throw safeWorkbookError(
+      `Workbook exceeds the supported sheet limit of ${RVTOOLS_WORKBOOK_LIMITS.maxSheets}.`,
+    );
+  }
 
   const sheets = workbook.SheetNames.map((sheetName) => {
     const worksheet = workbook.Sheets[sheetName];

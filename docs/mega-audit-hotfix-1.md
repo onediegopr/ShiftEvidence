@@ -126,7 +126,7 @@ No tracking or Ads changes.
 
 ## 7. Remaining Risks
 
-- Workbook parser dependency risk remains open for `DEPENDENCY-XLSX-RISK-1`.
+- Workbook parser dependency risk received initial guardrails in `DEPENDENCY-XLSX-RISK-1`; replacement/isolation remains deferred.
 - Tracking/Ads readiness remains out of scope.
 - Stripe live payment final gate remains pending.
 - Real pilot remains pending prospect/dataset/consent.
@@ -149,7 +149,6 @@ Ads/tracking untouched: yes.
 
 ## 9. Next Hito
 
-- `DEPENDENCY-XLSX-RISK-1`.
 - `GOOGLE-ADS-TRACKING-SETUP-1`.
 - `PRIVATE-OUTREACH-1`.
 - `PILOT-EXECUTION-1`.

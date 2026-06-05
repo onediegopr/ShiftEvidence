@@ -53,12 +53,10 @@ Current posture:
 
 Recommended order:
 
-1. `MEGA-AUDIT-HOTFIX-1`.
-2. `PRIVATE-OUTREACH-1`.
-3. `PILOT-EXECUTION-1`.
-4. `DEPENDENCY-XLSX-RISK-1`.
-5. `GOOGLE-ADS-TRACKING-SETUP-1`.
-6. `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only with exact owner approval.
+1. `PRIVATE-OUTREACH-1`.
+2. `PILOT-EXECUTION-1`.
+3. `GOOGLE-ADS-TRACKING-SETUP-1`.
+4. `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only with exact owner approval.
 
 ## 6. Historical Docs Policy
 
@@ -76,7 +74,7 @@ Current source of truth hierarchy:
 
 ## 7. Known Risks
 
-- Workbook parsing dependency risk remains open; see `docs/dependency-xlsx-risk.md`.
+- Workbook parsing dependency risk has initial guardrails but remains a controlled-pilot-only risk; see `docs/dependency-xlsx-risk.md` and `docs/dependency-xlsx-risk-1.md`.
 - Tracking/Ads remains out of scope until a dedicated tracking/privacy hito.
 - Stripe live payment final gate remains pending.
 - Real pilot remains pending prospect/dataset/consent.

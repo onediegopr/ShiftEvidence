@@ -28,16 +28,32 @@ It should be treated as a controlled evidence-processing component, not a public
 - Production is not approved for anonymous mass uploads.
 - Real customer uploads require scope, consent, and data handling expectations.
 - Maximum upload size is configurable.
+- Upload validation checks extension and MIME type before storage.
+- Upload parsing is attached to assessment ownership checks, not anonymous public routes.
 - The app does not execute workbook macros.
 - Parser-level validation and sanitization exist across evidence modules.
 - Product messaging now reinforces evidence-based readiness, not automatic migration.
 
-## 5. Additional Recommended Mitigations
+## 5. Dependency XLSX Risk 1 Mitigations
 
-Recommended for `DEPENDENCY-XLSX-RISK-1`:
+Applied in `DEPENDENCY-XLSX-RISK-1`:
 
-- Reconfirm strict file size limits at every upload entry.
-- Reconfirm file type and extension checks.
+- RVTools workbook reader now rejects workbooks above the configured sheet cap.
+- RVTools workbook reader now rejects sheets above the configured row cap.
+- Dangerous user-controlled headers are sanitized:
+  - `__proto__`;
+  - `constructor`;
+  - `prototype`.
+- Large string cell values are truncated before downstream mapping.
+- Parser guardrails are covered by synthetic unit tests.
+- Upload validation is covered by synthetic unit tests for unsupported extension, suspicious MIME/extension pair, and max size enforcement.
+
+No parser replacement, dependency upgrade, sandbox, worker queue, or schema change was implemented in this hito.
+
+## 6. Additional Recommended Mitigations
+
+Recommended after `DEPENDENCY-XLSX-RISK-1`:
+
 - Reject obviously suspicious or malformed workbook inputs early.
 - Consider parsing in an isolated worker/process if customer volume increases.
 - Evaluate a maintained parser alternative or constrained workbook extraction strategy.
@@ -45,7 +61,11 @@ Recommended for `DEPENDENCY-XLSX-RISK-1`:
 - Keep customer consent and retention workflow mandatory.
 - Keep broad public upload disabled until controls are stronger.
 
-## 6. Current Decision
+## 7. Current Decision
+
+Keep `xlsx` with guardrails for private outreach and controlled pilot only.
+
+Do not use this parser posture for public anonymous bulk upload.
 
 No dependency replacement in this hito.
 
@@ -53,6 +73,8 @@ No dependency upgrade in this hito.
 
 No parser rewrite in this hito.
 
-## 7. Next Hito
+## 8. Next Hito
 
-- `DEPENDENCY-XLSX-RISK-1`.
+- `PRIVATE-OUTREACH-1`.
+- `PILOT-EXECUTION-1`.
+- `DEPENDENCY-MAINTENANCE-1`.
