@@ -78,7 +78,7 @@ Current source of truth hierarchy:
 - Tracking/Ads remains out of scope until a dedicated tracking/privacy hito.
 - Stripe live payment final gate remains pending.
 - Real pilot remains pending prospect/dataset/consent.
-- Private outreach motion is prepared; execution remains manual one-to-one and should not store personal contact data in repo.
+- Private outreach motion and safe execution record are prepared; sending remains manual one-to-one by the owner and should not store personal contact data in repo.
 - Docs history remains broad; operators should start from this canonical file.
 
 ## 8. Current Safe-Off Billing Rule
