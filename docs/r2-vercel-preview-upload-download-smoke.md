@@ -88,6 +88,13 @@ The authenticated Vercel Preview upload/download smoke is complete against R2 pr
 
 `VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG` implemented an explicit Preview-only memory fallback controlled by `RATE_LIMIT_PREVIEW_FALLBACK=memory`, redeployed Preview, and completed this smoke.
 
+`UPSTASH-PREVIEW-RATE-LIMIT-1` replaced the active Preview fallback with real Upstash Redis for branch `preview` and reran the authenticated upload/download smoke successfully:
+
+- file: `synthetic-upload-upstash.txt`
+- bytes: `73`
+- SHA256: `eac4fed4d735d6490413eee30025d483d368258a07d6513e4ecadaa557677c47`
+- upload/download/hash/delete/post-delete: OK
+
 ## Recommended Next Hito
 
 `AUTHENTICATED-ADMIN-PREVIEW-SMOKE`

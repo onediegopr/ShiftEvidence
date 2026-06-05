@@ -71,6 +71,18 @@ Implemented explicit Preview-only memory fallback:
 
 Production behavior remains fail-closed when Upstash is missing.
 
+## Upstash Follow-Up
+
+`UPSTASH-PREVIEW-RATE-LIMIT-1` replaced the temporary Preview memory fallback with real Upstash Redis for branch `preview`.
+
+Current Preview status:
+
+- `UPSTASH_REDIS_REST_URL`: loaded
+- `UPSTASH_REDIS_REST_TOKEN`: loaded
+- `RATE_LIMIT_PREVIEW_FALLBACK`: removed
+
+The memory fallback remains in code as a controlled emergency option, but it is no longer the active Preview path.
+
 ## Vercel Env Change
 
 Added to Vercel Preview only:
@@ -110,4 +122,5 @@ After Preview redeploy and stable Preview alias reassignment:
 
 ## Pending
 
-- Replace Preview memory fallback with Preview/Staging Upstash when available.
+- Keep Upstash Preview/Staging as the primary Preview rate-limit path.
+- Continue with authenticated admin preview smoke.
