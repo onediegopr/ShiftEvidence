@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -9,12 +10,15 @@ const samplePagePath = path.join(repoRoot, "src/components/sample-report/SampleR
 const samplePdfPath = path.join(repoRoot, "public/sample-reports/proxmox-migration-readiness-sample-report.pdf");
 const versionedSamplePdfPath = path.join(repoRoot, "public/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf");
 
-describe("premium public sample report", () => {
-  it("keeps the public sample generator aligned with premium report sections", () => {
+describe("public and premium sample reports", () => {
+  it("keeps the sample generator aligned with differentiated public and premium sections", () => {
     const source = fs.readFileSync(generatorPath, "utf8");
 
     for (const requiredText of [
+      "Public Synthetic Sample Report",
       "Full Premium Synthetic Sample Report",
+      "PUBLIC SAMPLE MODULES",
+      "Premium-only depth",
       "Storage Destination Readiness",
       "Licensing & Cost Exposure",
       "Business Continuity Risk",
@@ -43,8 +47,12 @@ describe("premium public sample report", () => {
   it("keeps the generated public PDF artifacts present", () => {
     const stats = fs.statSync(samplePdfPath);
     const versionedStats = fs.statSync(versionedSamplePdfPath);
+    const sampleHash = crypto.createHash("sha256").update(fs.readFileSync(samplePdfPath)).digest("hex");
+    const premiumHash = crypto.createHash("sha256").update(fs.readFileSync(versionedSamplePdfPath)).digest("hex");
 
     expect(stats.size).toBeGreaterThan(100_000);
-    expect(versionedStats.size).toBe(stats.size);
+    expect(versionedStats.size).toBeGreaterThan(100_000);
+    expect(versionedStats.size).not.toBe(stats.size);
+    expect(premiumHash).not.toBe(sampleHash);
   });
 });

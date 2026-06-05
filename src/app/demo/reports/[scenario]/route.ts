@@ -263,12 +263,12 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(COLORS.paper);
     doc.rect(0, 0, doc.page.width, 152).fill(COLORS.panelStrong);
     doc.rect(0, 152, doc.page.width, 6).fill(COLORS.cyan);
-    drawBrandIcon(doc, 48, 40, 32);
-    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, {
-      characterSpacing: 1.4,
+    drawBrandIcon(doc, 54, 38, 38);
+    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(14).text("SHIFT EVIDENCE", 100, 47, {
+      characterSpacing: 1.6,
     });
-    doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(9).text("SHIFT EVIDENCE DEMO WORKSPACE", 54, 54, {
-      characterSpacing: 1.5,
+    doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(9).text("DEMO WORKSPACE", 54, 118, {
+      characterSpacing: 1.6,
     });
     doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(32).text("Synthetic Demo Report", 54, 88, {
       width: 470,

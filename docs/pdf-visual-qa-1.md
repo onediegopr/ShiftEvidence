@@ -226,3 +226,15 @@ Objetivo sugerido:
 - Revalidar page count, visual QA y claims safety.
 
 Si se acepta que ambos sample PDFs sean identicos por ahora, el siguiente hito puede ser `PRODUCTION-ENV-PREP-1`.
+
+## 14. Hotfix follow-up
+
+`PDF-VISUAL-HOTFIX-1` fue ejecutado el 2026-06-05.
+
+Resultado:
+
+- Public sample PDF y Premium sample PDF v2 ya estan diferenciados.
+- Public sample PDF paso a una variante publica/comercial de 13 paginas.
+- Premium sample PDF v2 conserva la version profunda de 23 paginas.
+- Los hashes y tamanos ya son distintos.
+- Demo PDF logo/lockup fue ajustado y la portada quedo mas clara.
