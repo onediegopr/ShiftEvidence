@@ -427,3 +427,26 @@ Fecha: 2026-06-05
 - No evidence upload was executed for a real customer.
 - No real feedback was captured yet.
 - Next pilot action remains `PILOT-EXECUTION-1`.
+
+## 20. Follow-up: Private Outreach 1
+
+Fecha: 2026-06-05
+
+`PRIVATE-OUTREACH-1` prepared the private outreach motion that can feed this pilot path:
+
+- ICP types defined without real contact data.
+- One-to-one outreach messages prepared.
+- Call script prepared.
+- Consent gate prepared.
+- No messages were sent by the agent.
+- No prospect data was stored in repo.
+- No evidence was accepted.
+- No pilot execution occurred.
+
+Pilot execution remains gated on:
+
+- named prospect;
+- explicit dataset scope;
+- consent;
+- retention/cleanup expectations;
+- confirmation that evidence contains no passwords, secrets or private keys.

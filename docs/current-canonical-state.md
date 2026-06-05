@@ -53,8 +53,8 @@ Current posture:
 
 Recommended order:
 
-1. `PRIVATE-OUTREACH-1`.
-2. `PILOT-EXECUTION-1`.
+1. `OUTREACH-FOLLOWUP-1` after private replies arrive.
+2. `PILOT-EXECUTION-1` when prospect/dataset/consent exists.
 3. `GOOGLE-ADS-TRACKING-SETUP-1`.
 4. `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only with exact owner approval.
 
@@ -78,6 +78,7 @@ Current source of truth hierarchy:
 - Tracking/Ads remains out of scope until a dedicated tracking/privacy hito.
 - Stripe live payment final gate remains pending.
 - Real pilot remains pending prospect/dataset/consent.
+- Private outreach motion is prepared; execution remains manual one-to-one and should not store personal contact data in repo.
 - Docs history remains broad; operators should start from this canonical file.
 
 ## 8. Current Safe-Off Billing Rule
