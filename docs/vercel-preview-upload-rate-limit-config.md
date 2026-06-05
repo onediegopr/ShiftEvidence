@@ -81,25 +81,22 @@ Value is non-secret and documented by category only. No Production env was chang
 
 ## Smoke Result
 
-Status: pending redeploy and retry.
+Status: completed.
 
-The previous partial smoke established:
+After Preview redeploy and stable Preview alias reassignment:
 
 - Auth sign-up: OK
 - Synthetic assessment: OK
 - Upload prerequisites: OK
 - Upload gate: unlocked
-- Upload action: reached
-- Upload: blocked by rate limiter before this change
-
-After Preview redeploy, rerun the authenticated upload/download smoke to validate:
-
-- upload OK
-- R2 preview object created
-- authenticated download OK
-- SHA256 match OK
-- delete OK
-- post-delete cleanup OK
+- Upload: OK
+- R2 preview storage path exercised through the app storage adapter: OK
+- Authenticated download: OK
+- Bytes: `87`
+- SHA256: `3996776600b1a22c741fc0d5ffbd203308363a692a42f7b3eb67bddb6d30d4fe`
+- Hash match: OK
+- Delete: OK
+- Post-delete download: `404`
 
 ## Safety
 
@@ -113,6 +110,4 @@ After Preview redeploy, rerun the authenticated upload/download smoke to validat
 
 ## Pending
 
-- Redeploy Preview with the fallback code.
-- Rerun authenticated Vercel Preview upload/download smoke.
 - Replace Preview memory fallback with Preview/Staging Upstash when available.

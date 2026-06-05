@@ -9,7 +9,7 @@
 - Runtime integration: implemented in code, not yet turned on by default
 - Preview smoke: completed successfully
 - Authenticated upload/download smoke: service-level preview smoke completed successfully
-- Vercel Preview authenticated upload/download smoke: partial, Preview rate-limit fallback configured and awaiting redeploy/retry
+- Vercel Preview authenticated upload/download smoke: completed successfully
 
 ## Account Details
 
@@ -36,7 +36,7 @@
 
 ## Next Step
 
-- Configure Preview upload rate limiting safely, then rerun the Vercel Preview authenticated upload/download smoke.
+- Continue with authenticated admin preview smoke or replace Preview memory fallback with Preview/Staging Upstash when available.
 - Keep the filesystem implementation as a safe fallback until the adapter is in place and smoke-tested.
 
 ## Safety Notes

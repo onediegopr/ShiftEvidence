@@ -24,7 +24,7 @@ Validate a real authenticated Vercel Preview upload/download path using Cloudfla
 - File name: `synthetic-upload.txt`
 - File content: synthetic smoke text only, no customer data
 - Bytes: `87`
-- SHA256: `7fc5a940e0bedcf847d1f4427abf7cddecb8c21e83eeb5d0076d9ce05bcff0e7`
+- SHA256: `3996776600b1a22c741fc0d5ffbd203308363a692a42f7b3eb67bddb6d30d4fe`
 
 ## Attempted Flow
 
@@ -41,25 +41,23 @@ Validate a real authenticated Vercel Preview upload/download path using Cloudfla
 
 ## Result
 
-Status: `PARTIAL`
+Status: `COMPLETED`
 
-The authenticated Preview flow reached the real evidence upload Server Action, but the upload was blocked before storage by the upload rate limiter:
+The authenticated Preview flow reached the real evidence upload Server Action and completed after the Preview-only rate-limit fallback was configured:
 
-- Redirect result: `/dashboard/assessments/<synthetic-id>?error=Too%20many%20requests.%20Please%20try%20again%20later.&tab=evidence`
 - Code path: `uploadEvidenceAction`
 - Rate limiters checked before storage write:
   - `uploadEvidenceUser`
   - `uploadEvidenceIp`
-
-The observed blocker is consistent with Preview running in production mode without the Upstash rate-limit environment variables required by `src/server/security/rateLimit.ts`. In that condition, missing Upstash configuration makes upload rate limiting fail closed before `writeUploadedFile` can call R2.
+- Upload redirect result: `/dashboard/assessments/<synthetic-id>?saved=1&tab=evidence`
 
 ## R2 Storage Result
 
-- write: not reached
-- read/download: not reached
-- content verification: not reached
-- delete: not reached
-- post-delete cleanup: not reached
+- write: OK
+- read/download: OK
+- content verification: OK
+- delete: OK
+- post-delete cleanup: OK, download returned `404`
 - bucket prod touched: no
 
 ## Logs And Deployment Review
@@ -68,7 +66,7 @@ The observed blocker is consistent with Preview running in production mode witho
 - Deployment target confirmed as Preview (`target: null`)
 - Build logs reviewed: build completed successfully
 - Runtime smoke result surfaced as the safe application redirect above
-- No R2 `AccessDenied` or bucket-selection error was proven, because the request was blocked before R2 storage execution
+- No R2 `AccessDenied` or bucket-selection error observed
 
 ## Safety
 
@@ -84,17 +82,15 @@ The observed blocker is consistent with Preview running in production mode witho
 
 ## Conclusion
 
-The authenticated Vercel Preview upload/download smoke is not complete yet. The next blocker is Preview rate-limit configuration, not R2 bucket access.
+The authenticated Vercel Preview upload/download smoke is complete against R2 preview storage.
 
 ## Follow-Up
 
-`VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG` implemented an explicit Preview-only memory fallback controlled by `RATE_LIMIT_PREVIEW_FALLBACK=memory`.
-
-The smoke should be retried after the Preview deployment includes that code and environment variable.
+`VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG` implemented an explicit Preview-only memory fallback controlled by `RATE_LIMIT_PREVIEW_FALLBACK=memory`, redeployed Preview, and completed this smoke.
 
 ## Recommended Next Hito
 
-`VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG`
+`AUTHENTICATED-ADMIN-PREVIEW-SMOKE`
 
 After Preview upload rate limiting is configured safely, rerun `R2-AUTHENTICATED-UPLOAD-DOWNLOAD-SMOKE-VERCEL-PREVIEW` and verify:
 
