@@ -46,10 +46,17 @@ const RATE_LIMITS: Record<RateLimitName, RateLimitConfig> = {
   publicSupportEmail: { limit: 5, window: "1 h", prefix: "rl:public-support-email" },
 };
 
+type MemoryWindow = {
+  count: number;
+  reset: number;
+};
+
 let redis: Redis | null | undefined;
 const limiters = new Map<RateLimitName, Ratelimit>();
+const memoryWindows = new Map<string, MemoryWindow>();
 let missingUpstashWarningEmitted = false;
 let rateLimitFailureWarningEmitted = false;
+let previewMemoryFallbackWarningEmitted = false;
 
 export class RateLimitExceededError extends Error {
   result: RateLimitResult;
@@ -125,6 +132,22 @@ function getLimiter(name: RateLimitName) {
   return limiter;
 }
 
+function parseWindowMs(window: RateLimitConfig["window"]) {
+  const [rawAmount, unit] = window.split(" ") as [string, "s" | "m" | "h" | "d"];
+  const amount = Number(rawAmount);
+
+  switch (unit) {
+    case "s":
+      return amount * 1000;
+    case "m":
+      return amount * 60 * 1000;
+    case "h":
+      return amount * 60 * 60 * 1000;
+    case "d":
+      return amount * 24 * 60 * 60 * 1000;
+  }
+}
+
 function buildHashedKey(parts: Array<string | number | null | undefined>) {
   const normalized = parts
     .map((part) => String(part ?? "unknown").trim().toLowerCase())
@@ -134,12 +157,61 @@ function buildHashedKey(parts: Array<string | number | null | undefined>) {
   return hashRateLimitKey(normalized || "unknown");
 }
 
+function shouldUsePreviewMemoryFallback() {
+  return (
+    process.env.VERCEL_ENV === "preview" &&
+    process.env.RATE_LIMIT_PREVIEW_FALLBACK?.trim().toLowerCase() === "memory"
+  );
+}
+
+function checkMemoryRateLimit(params: {
+  limiter: RateLimitName;
+  keyParts: Array<string | number | null | undefined>;
+}): RateLimitResult {
+  const config = RATE_LIMITS[params.limiter];
+  const now = Date.now();
+  const windowMs = parseWindowMs(config.window);
+  const key = `${config.prefix}:${buildHashedKey(params.keyParts)}`;
+  const existing = memoryWindows.get(key);
+  const window =
+    existing && existing.reset > now
+      ? existing
+      : {
+          count: 0,
+          reset: now + windowMs,
+        };
+
+  window.count += 1;
+  memoryWindows.set(key, window);
+
+  const allowed = window.count <= config.limit;
+  return {
+    allowed,
+    mode: "active",
+    limiter: params.limiter,
+    limit: config.limit,
+    remaining: Math.max(0, config.limit - window.count),
+    reset: window.reset,
+    retryAfterSeconds: allowed ? undefined : Math.max(1, Math.ceil((window.reset - now) / 1000)),
+  };
+}
+
 export async function checkRateLimit(params: {
   limiter: RateLimitName;
   keyParts: Array<string | number | null | undefined>;
 }): Promise<RateLimitResult> {
   const limiter = getLimiter(params.limiter);
   if (!limiter) {
+    if (shouldUsePreviewMemoryFallback()) {
+      if (!previewMemoryFallbackWarningEmitted) {
+        previewMemoryFallbackWarningEmitted = true;
+        logger.warn("rate_limit_preview_memory_fallback", {
+          reason: "missing_upstash_env",
+        });
+      }
+      return checkMemoryRateLimit(params);
+    }
+
     const isProduction = process.env.NODE_ENV === "production";
     return {
       allowed: !isProduction,

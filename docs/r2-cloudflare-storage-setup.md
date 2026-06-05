@@ -9,7 +9,7 @@
 - Runtime integration: implemented in code, not yet turned on by default
 - Preview smoke: completed successfully
 - Authenticated upload/download smoke: service-level preview smoke completed successfully
-- Vercel Preview authenticated upload/download smoke: partial, blocked before R2 by upload rate-limit configuration
+- Vercel Preview authenticated upload/download smoke: partial, Preview rate-limit fallback configured and awaiting redeploy/retry
 
 ## Account Details
 

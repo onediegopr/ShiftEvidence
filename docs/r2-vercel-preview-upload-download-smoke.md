@@ -86,6 +86,12 @@ The observed blocker is consistent with Preview running in production mode witho
 
 The authenticated Vercel Preview upload/download smoke is not complete yet. The next blocker is Preview rate-limit configuration, not R2 bucket access.
 
+## Follow-Up
+
+`VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG` implemented an explicit Preview-only memory fallback controlled by `RATE_LIMIT_PREVIEW_FALLBACK=memory`.
+
+The smoke should be retried after the Preview deployment includes that code and environment variable.
+
 ## Recommended Next Hito
 
 `VERCEL-PREVIEW-UPLOAD-RATE-LIMIT-CONFIG`
