@@ -297,3 +297,13 @@ Luego:
 - `STRIPE-LIVE-READINESS-1`.
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.
+
+## 15. Follow-up
+
+El hito posterior `PRODUCTION-INFRA-CLOSEOUT-2` corrigio el token R2 prod, ejecuto smoke R2 prod exitoso y cargo R2 env en Vercel Production.
+
+Pendientes que permanecen:
+
+- Upstash prod dedicado.
+- `ADMIN_EMAILS` production.
+- Auth/Admin production smoke.
