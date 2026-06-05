@@ -331,3 +331,52 @@ Seguridad:
 Documento de cierre:
 
 - `docs/production-ops-ready-3.md`.
+
+## 17. Follow-up: R2-AUTHENTICATED-PRODUCTION-UPLOAD-SMOKE
+
+Fecha: 2026-06-05
+
+El hito `R2-AUTHENTICATED-PRODUCTION-UPLOAD-SMOKE` avanzo sobre production con UI autenticada.
+
+Resultado:
+
+- Assessment sintetico usado: `cmq16c8ds000dl104d3ht1qqu`.
+- Archivo sintetico: `synthetic-production-r2-upload.txt`.
+- No customer data.
+- Upload gate: ready.
+- Upload por UI: OK.
+- Evidence history: OK.
+- Download protegido: link visible y GET autenticado `200` en logs.
+- Download sin sesion: redirige a sign-in.
+- Delete por UI: OK.
+- Registro eliminado queda visible por auditabilidad.
+- Link descargable removido tras delete.
+- Logs error: none.
+- Logs 500: none.
+
+Limitacion:
+
+- El navegador embebido no soporta capturar bytes de descargas, por lo que la verificacion hash del download queda diferida a un hito especifico.
+- No se extrajeron credenciales del navegador.
+
+Estado actualizado:
+
+| Area | Estado actualizado |
+| --- | ---: |
+| R2-AUTHENTICATED-PRODUCTION-UPLOAD-SMOKE | 92% |
+| Production/cutover readiness | 97% |
+| Vercel readiness | 98% |
+| DB readiness | 98% |
+| Storage/R2 readiness | 99% |
+| Upstash/rate limit readiness | 100% |
+| Billing readiness | 96% |
+| Admin ops | 98% |
+| General technical | 98% |
+
+Documento de cierre:
+
+- `docs/r2-authenticated-production-upload-smoke.md`.
+
+Proximo hito recomendado:
+
+- `R2-PRODUCTION-DOWNLOAD-HASH-VERIFICATION-1`.
