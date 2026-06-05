@@ -415,3 +415,15 @@ Other possible next steps:
 - `PILOT-FEEDBACK-HOTFIX-1` after feedback.
 - `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only if/when a real payment test is explicitly approved.
 - `PUBLIC-LAUNCH-CONTROLLED` only after pilot learning.
+
+## 19. Follow-up: Market Activation 3-4-5
+
+Fecha: 2026-06-05
+
+`MARKET-ACTIVATION-3-4-5` revisited pilot execution and kept the same safety decision:
+
+- Pilot execution remains blocked pending prospect/dataset/consent.
+- No real customer data was used.
+- No evidence upload was executed for a real customer.
+- No real feedback was captured yet.
+- Next pilot action remains `PILOT-EXECUTION-1`.

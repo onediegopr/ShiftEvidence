@@ -520,3 +520,15 @@ Then:
 
 - `GOOGLE-ADS-LAUNCH-CONTROLLED-1`.
 - `PILOT-EXECUTION-1`.
+
+## 19. Follow-up: Market Activation 3-4-5
+
+Fecha: 2026-06-05
+
+`MARKET-ACTIVATION-3-4-5` confirmed the Ads gate remains closed:
+
+- Google Ads launch not approved.
+- No paid campaigns launched.
+- No ad spend used.
+- Tracking readiness remains the primary blocker.
+- Next Ads action remains `GOOGLE-ADS-TRACKING-SETUP-1`.

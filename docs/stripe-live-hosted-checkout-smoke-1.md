@@ -237,3 +237,17 @@ Then:
 
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.
+
+## 13. Follow-up: Market Activation 3-4-5
+
+Fecha: 2026-06-05
+
+`MARKET-ACTIVATION-3-4-5` preserved the Stripe final gate:
+
+- Hosted checkout smoke remains the latest completed live Stripe validation.
+- Exact approval for a real controlled payment was not received.
+- No live payment was executed.
+- No card was entered.
+- No webhook live event was intentionally generated.
+- No grants or entitlements were created.
+- Billing remains safe-off.

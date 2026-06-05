@@ -440,3 +440,15 @@ Optional:
 
 - `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only if/when the owner wants a real payment test.
 - `GOOGLE-ADS-LAUNCH-PREP-1`.
+
+## 21. Follow-up: Market Activation 3-4-5
+
+Fecha: 2026-06-05
+
+`MARKET-ACTIVATION-3-4-5` did not change the production cutover decision:
+
+- Production remains ready for controlled availability.
+- Public launch masivo was not approved.
+- Paid Ads were not approved.
+- Live payment collection was not approved.
+- Recommended commercial path remains soft availability plus private outreach.
