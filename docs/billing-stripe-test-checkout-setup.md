@@ -38,6 +38,25 @@ For test-mode checkout readiness:
 
 The build does not require these variables. If any required server-side value is missing, the route remains available but checkout is not started.
 
+## Preview Test-Mode Smoke
+
+Date: 2026-06-05.
+
+Status: completed in Vercel Preview.
+
+- Stripe Dashboard test mode was confirmed.
+- Starter, Professional, and MSP products/prices were verified active in test mode.
+- Vercel Preview branch `preview` was configured with test-mode checkout values outside source control.
+- Preview was redeployed and the stable Preview alias was pointed to the updated Preview deployment.
+- `/billing/checkout/starter`, `/billing/checkout/professional`, and `/billing/checkout/msp` returned 200 in test-ready state.
+- `/billing/checkout/starter/start`, `/billing/checkout/professional/start`, and `/billing/checkout/msp/start` redirected to Stripe hosted checkout test pages.
+- No payment was completed.
+- No webhook was configured or triggered.
+- No order paid state, grant, unlock, or entitlement was created.
+- No Production env was touched.
+
+Detailed smoke record: `docs/stripe-testmode-price-smoke-preview.md`.
+
 ## Live Gate
 
 Live checkout requires both:

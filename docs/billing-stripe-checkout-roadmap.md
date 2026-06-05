@@ -10,9 +10,9 @@ Webhook infrastructure exists behind signature verification. It can persist supp
 
 ## Near-Term Test-Mode Work
 
-- Create test Price IDs in Stripe for Starter, Professional, and MSP.
-- Configure test-mode runtime placeholders outside source control.
-- Smoke public checkout routes without completing real payments.
+- Test Price IDs in Stripe for Starter, Professional, and MSP are verified in Preview.
+- Test-mode runtime values are configured in Vercel Preview outside source control.
+- Public checkout routes and hosted Stripe Checkout test redirects are smoke-tested without completing payments.
 - Confirm webhook event persistence in a test-only flow if explicitly approved.
 - Keep fulfillment manual during all tests.
 
@@ -103,3 +103,17 @@ Date: 2026-06-02.
 After the owner configured live runtime variables outside source control, production public routes loaded with 200 responses for checkout, pricing, and bank transfer pages. Checkout start POST requests for Starter, Professional, and MSP did not reach Stripe hosted checkout; each route redirected safely back to the app with `error=stripe_price_invalid`.
 
 No payment was completed, no card data was entered, no grant or entitlement was created, no Wise action was performed, and no secret was stored. The likely next check is runtime Price ID and `STRIPE_SECRET_KEY` account alignment. See `docs/billing-stripe-live-runtime-gate.md`.
+
+## STRIPE-TESTMODE-PRICE-SMOKE Result
+
+Date: 2026-06-05.
+
+Stripe Dashboard test mode was confirmed and the three checkout-eligible products/prices were verified:
+
+- Starter Readiness: USD 490 one-time.
+- Professional Assessment: USD 1,500 one-time.
+- MSP Partner: USD 399/month.
+
+Vercel Preview branch `preview` was configured with test-mode checkout values outside source control, redeployed as Preview, and the stable Preview alias was pointed to the new Preview deployment. The three checkout pages returned 200 in test-ready state and the three start routes returned 303 redirects to Stripe hosted checkout test pages.
+
+No payment was completed, no card details were entered, no webhook was configured or triggered, no paid state was created, no grant or entitlement was created, no Wise action was performed, no Production env was touched, and no secret was stored in git. See `docs/stripe-testmode-price-smoke-preview.md`.
