@@ -287,3 +287,47 @@ Luego:
 - `STRIPE-LIVE-READINESS-1`.
 - `DNS-HOSTINGER-CUTOVER-PREP-1`.
 - `PRODUCTION-CUTOVER-CONTROLLED`.
+
+## 16. Follow-up: PRODUCTION-OPS-READY-3
+
+Fecha: 2026-06-05
+
+El bloqueo de Upstash prod fue resuelto en el hito `PRODUCTION-OPS-READY-3`.
+
+Resultado:
+
+- Owner aprobo opcion A.
+- Owner completo manualmente billing/payment method en Upstash.
+- Se creo Redis production dedicado: `shift-evidence-production-rate-limit`.
+- Region: AWS `us-east-1`.
+- Plan: Pay as You Go.
+- Prod Pack: not activated.
+- No se reutilizo `shift-evidence-preview-rate-limit`.
+- Smoke Upstash production: OK.
+- `UPSTASH_REDIS_REST_URL`: loaded/updated in Vercel Production.
+- `UPSTASH_REDIS_REST_TOKEN`: loaded in Vercel Production.
+- `ADMIN_EMAILS`: present in Vercel Production.
+
+Smoke Upstash production:
+
+| Check | Resultado |
+| --- | --- |
+| set/write | OK |
+| get/read | OK |
+| content verification | OK |
+| delete | OK |
+| post-delete not found | OK |
+
+Seguridad:
+
+- No se imprimieron secretos en docs.
+- No se guardaron secretos en git.
+- No se ejecuto `vercel env pull`.
+- No DNS.
+- No deploy intencional.
+- No Stripe live.
+- No DB/migrations.
+
+Documento de cierre:
+
+- `docs/production-ops-ready-3.md`.
