@@ -1022,7 +1022,7 @@ export async function getAdminConsoleData(params?: {
         title: "Sistema general",
         status: failedSignals > 0 ? "Atención" : "Operativo",
         description: failedSignals > 0 ? "Hay señales fallidas que requieren revisión." : "Sin señales críticas persistentes disponibles.",
-        recommendation: failedSignals > 0 ? "Revisar errores de evidencia/PDF y logs Hostinger." : "Mantener monitoreo operativo.",
+        recommendation: failedSignals > 0 ? "Revisar errores de evidencia/PDF y logs del runtime productivo." : "Mantener monitoreo operativo.",
       },
       {
         title: "Base de datos",
@@ -1089,9 +1089,9 @@ export async function getAdminConsoleData(params?: {
         recommendation: "Agregar credenciales y Price IDs en un hito futuro antes de activar checkout real.",
       },
       {
-        title: "Producción Hostinger",
+        title: "Producción runtime",
         status: "Atención",
-        description: "Estado real depende de smoke/logs Hostinger, no de este panel local.",
+        description: "Estado real depende de smoke/logs del runtime productivo, no de este panel local.",
         recommendation: "Revisar hPanel/logs antes de full public launch.",
       },
     ],

@@ -61,10 +61,13 @@ describe("billing checkout architecture", () => {
     ]);
   });
 
-  it("routes checkout plans to safe internal placeholders", () => {
-    expect(getBillingPlanByCheckoutSlug("starter")?.primaryAction.href).toBe("/billing/checkout/starter");
-    expect(getBillingPlanByCheckoutSlug("professional")?.primaryAction.href).toBe("/billing/checkout/professional");
-    expect(getBillingPlanByCheckoutSlug("msp")?.primaryAction.href).toBe("/billing/checkout/msp");
+  it("keeps checkout routes available but prioritizes invoice CTAs while production is safe-off", () => {
+    expect(getBillingPlanByCheckoutSlug("starter")?.primaryAction.href).toBe("/billing/bank-transfer/starter");
+    expect(getBillingPlanByCheckoutSlug("starter")?.secondaryAction.href).toBe("/billing/checkout/starter");
+    expect(getBillingPlanByCheckoutSlug("professional")?.primaryAction.href).toBe("/billing/bank-transfer/professional");
+    expect(getBillingPlanByCheckoutSlug("professional")?.secondaryAction.href).toBe("/billing/checkout/professional");
+    expect(getBillingPlanByCheckoutSlug("msp")?.primaryAction.href).toBe("/billing/bank-transfer/msp");
+    expect(getBillingPlanByCheckoutSlug("msp")?.secondaryAction.href).toBe("/billing/checkout/msp");
   });
 
   it("does not require Stripe env vars for checkout route state", () => {

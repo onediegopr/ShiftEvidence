@@ -672,7 +672,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<Settings size={18} />}
             label="Configuración Operativa"
             title="Configuración runtime y aplicación de límites"
-            description="Overrides operativos seguros desde DB. No editan Hostinger, no muestran secretos y requieren confirmación."
+            description="Overrides operativos seguros desde DB. No editan el runtime productivo, no muestran secretos y requieren confirmación."
           />
           <section className="assessment-summary-grid">
             <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Primario: ${formatStatusLabel(ai.proveedor)}`} />
@@ -685,12 +685,12 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <div className="assessment-preview-grid">
             <article className="glass-card report-history-card">
               <h3>Acciones rápidas IA</h3>
-              <p className="assessment-inline-note">Cada acción usa `SystemSetting`, queda auditada y no toca variables Hostinger.</p>
+              <p className="assessment-inline-note">Cada acción usa `SystemSetting`, queda auditada y no toca variables del deployment platform.</p>
               <div className="assessment-preview-grid">
                 {[
                   ["disabled", "Apagar IA", "La IA queda desactivada por runtime setting."],
                   ["mock", "Volver a simulación", "Usa proveedor simulado para QA/control operativo."],
-                  ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* de Hostinger/runtime."],
+                  ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* del runtime productivo."],
                   ["gemini", "Forzar Gemini", "Usa Google AI Studio Gemini como proveedor primario si la credencial existe en el entorno."],
                 ].map(([mode, label, help]) => (
                   <form key={mode} className="unlock-admin-form" action={setAiRuntimeModeFormAction}>
@@ -1120,7 +1120,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 <span>Full public launch: No declarado</span>
               </div>
               <p className="assessment-inline-note">{data.advisorMethodology.runtime.productionSafeSummary}</p>
-              <p className="assessment-inline-note">Esta consola no cambia env vars, Hostinger ni deploys.</p>
+              <p className="assessment-inline-note">Esta consola no cambia env vars, runtime productivo ni deploys.</p>
             </article>
 
             <article className="glass-card report-history-card">
@@ -1286,9 +1286,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             </article>
             <article className="glass-card report-history-card">
               <h3>Acciones operativas IA</h3>
-              <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita variables Hostinger.</p>
+              <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita variables del runtime productivo.</p>
               <div className="report-history-meta">
-                <span>Apagar IA: configurar AI_ADVISORY_ENABLED=false en Hostinger.</span>
+                <span>Apagar IA: configurar AI_ADVISORY_ENABLED=false en el entorno productivo aprobado.</span>
                 <span>Volver a simulación: configurar AI_ADVISORY_PROVIDER=mock.</span>
                 <span>Reactivar Gemini: validar proveedor, credencial configurada y prueba de humo antes de exponerlo.</span>
               </div>

@@ -56,17 +56,17 @@ export interface AddOn {
 }
 
 export const paymentOptionsCopy = {
-  cardCheckout: "Card checkout is routed through Stripe when the plan is configured and approved for checkout.",
-  bankTransfer: "Bank transfer invoices are available for business customers.",
-  general: "Card checkout uses Stripe when configured. Bank transfer uses a manual invoice request reviewed before fulfillment.",
+  cardCheckout: "Card checkout is available only through a controlled rollout after approval.",
+  bankTransfer: "Bank transfer invoices are the primary onboarding path for business customers.",
+  general: "Manual invoice requests are reviewed before fulfillment. Card checkout remains controlled until explicitly approved.",
   pricingNote:
-    "Card checkout is available for configured fast-start plans. Bank transfer is handled through reviewed manual invoice requests for Professional, Blueprint and MSP agreements.",
+    "Manual invoice and controlled onboarding are the default paths while production checkout remains safe-off. Card checkout links can be enabled only after approval.",
   faq:
-    "Card checkout supports configured fast starts through Stripe. Bank transfer is a reviewed manual invoice request, not an automatic transfer or instant fulfillment path.",
+    "Card checkout is a controlled Stripe path, not open self-service. Bank transfer is a reviewed manual invoice request, not an automatic transfer or instant fulfillment path.",
   blueprint:
     "Blueprint engagements are scoped before payment. Request a manual invoice after confirming project scope.",
   msp:
-    "MSP partner plans can be billed monthly by configured Stripe checkout or handled through reviewed business invoice depending on agreement size.",
+    "MSP partner plans are handled through reviewed business invoice by default. Card checkout can be approved later for controlled rollout.",
   notActive:
     "If checkout is unavailable or account matching is required, requests are routed for manual follow-up, review and invoice handling.",
 } as const;
@@ -98,7 +98,7 @@ export const marketingPlans: Plan[] = [
     futureProvider: "stripe",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
-    paymentNote: "Card checkout uses Stripe when configured for this plan. Bank transfer invoice requests are reviewed before fulfillment.",
+    paymentNote: "Invoice requests are reviewed before fulfillment. Card checkout is available only after controlled approval.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools upload / guided evidence review",
@@ -129,7 +129,7 @@ export const marketingPlans: Plan[] = [
     futureProvider: "stripe",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
-    paymentNote: "Card checkout uses Stripe when configured for this plan. Manual invoice requests are reviewed before access or fulfillment.",
+    paymentNote: "Manual invoice requests are reviewed before access or fulfillment. Card checkout is available only after controlled approval.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",

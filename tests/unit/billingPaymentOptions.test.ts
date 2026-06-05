@@ -15,9 +15,9 @@ describe("billing payment options foundation", () => {
     ]);
   });
 
-  it("uses Stripe as the primary configurable card checkout provider", () => {
+  it("keeps Stripe as the controlled configurable card checkout provider", () => {
     expect(marketingPlans.every((plan) => plan.futureProvider === "stripe")).toBe(true);
-    expect(paymentOptionsCopy.cardCheckout).toContain("Stripe");
+    expect(paymentOptionsCopy.cardCheckout).toContain("controlled rollout");
     expect(paymentOptionsCopy.notActive).toContain("manual follow-up");
   });
 
@@ -27,7 +27,7 @@ describe("billing payment options foundation", () => {
 
   it("shows bank transfer invoices without exposing Wise as a public payment label", () => {
     expect(getPaymentOptionLabel("bank_transfer_invoice")).toBe("Bank transfer invoice");
-    expect(paymentOptionsCopy.bankTransfer).toBe("Bank transfer invoices are available for business customers.");
+    expect(paymentOptionsCopy.bankTransfer).toBe("Bank transfer invoices are the primary onboarding path for business customers.");
     expect(JSON.stringify(marketingPlans).toLowerCase()).not.toContain("wise");
   });
 });

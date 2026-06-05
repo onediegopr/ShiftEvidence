@@ -480,3 +480,17 @@ Luego:
 - `PRIVATE-OUTREACH-1`.
 - `PILOT-EXECUTION-1`.
 - `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` solo con aprobacion exacta.
+
+## 26. Follow-up: Mega Audit Hotfix 1
+
+Fecha: 2026-06-05
+
+`MEGA-AUDIT-HOTFIX-1` addressed the first safe subset of findings:
+
+- `sign-up` UX/copy hardened.
+- Admin runtime copy no longer presents Hostinger as current runtime truth.
+- Pricing/billing CTAs now prioritize invoice/controlled onboarding while checkout remains safe-off.
+- Canonical current-state docs created.
+- Workbook parser and dependency maintenance risks documented.
+
+No Ads/tracking, live payments, DNS, DB, env vars or deploys were changed.

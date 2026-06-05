@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, BadgePercent, CircleAlert, CreditCard, FileText,
 import { notFound } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
 import Footer from "../../../../components/Footer";
-import { getBillingPaymentOptionLabel } from "../../../../config/billing";
+import { getBillingBankTransferPath, getBillingPaymentOptionLabel } from "../../../../config/billing";
 import { getBillingCheckoutRouteState } from "../../../../server/billing/billingConfiguration";
 
 export const metadata: Metadata = {
@@ -108,6 +108,7 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
   const checkoutModeLabel = "stripe" in state && state.stripe?.mode === "live" ? "live mode" : "test mode";
   const checkoutError = errorMessage(query?.error);
   const checkoutStatus = statusMessage(query?.status);
+  const invoicePath = plan.checkoutSlug ? getBillingBankTransferPath(plan.checkoutSlug) : plan.primaryAction.href;
 
   return (
     <>
@@ -197,9 +198,9 @@ export default async function BillingCheckoutPage({ params, searchParams }: Bill
                     </button>
                   </form>
                 ) : (
-                  <Link href={plan.secondaryAction.href} className="btn btn-primary btn-glow">
+                  <Link href={invoicePath} className="btn btn-primary btn-glow">
                     <FileText size={16} />
-                    {plan.secondaryAction.label}
+                    Request invoice
                   </Link>
                 )}
                 <Link href="/support?category=billing_question" className="btn btn-secondary">

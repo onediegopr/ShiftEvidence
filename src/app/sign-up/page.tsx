@@ -62,7 +62,7 @@ export default function SignUpPage() {
   const [reportInfoMessage, setReportInfoMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Scanner wizard states
+  // Controlled preview states
   const [currentStep, setCurrentStep] = useState<Step>("setup");
   const [evidenceSource, setEvidenceSource] = useState<EvidenceSource>("none");
   const [fileName, setFileName] = useState<string>("");
@@ -130,7 +130,7 @@ export default function SignUpPage() {
     }
   };
 
-  // Mock console log stream
+  // Synthetic preview log stream for onboarding orientation only.
   const startDiagnosticCheck = (source: EvidenceSource, uploadedName?: string) => {
     setCurrentStep("scanning");
     setLogs([]);
@@ -151,8 +151,8 @@ export default function SignUpPage() {
           { text: "[INFO] Scanning active backup software integrations...", type: "info" },
           { text: "[INFO] Veeam Backup & Replication hooks detected. Pre-mapping to Proxmox Backup Server.", type: "success" },
           { text: "[INFO] Checking for High Availability (HA) cluster corosync readiness...", type: "info" },
-          { text: "[SUCCESS] Inventory data validation completed. 0 execution-blocking errors.", type: "success" },
-          { text: "[SUCCESS] Readiness scorecard and cost delta report compiled.", type: "success" }
+          { text: "[INFO] Inventory data validation completed for this synthetic preview.", type: "success" },
+          { text: "[SUCCESS] Readiness preview and evidence gap checklist compiled.", type: "success" }
         ]
       : [
           { text: "[INFO] Initializing Shift Evidence Audit Engine v2.1.0...", type: "info" },
@@ -172,8 +172,8 @@ export default function SignUpPage() {
           backupSystem === "veeam"
             ? { text: "[INFO] Veeam detected: Pre-mapping to Proxmox Backup Server (PBS) change-block tracking...", type: "success" }
             : { text: "[INFO] Custom backup script hooks flagged for custom migration staging.", type: "warn" },
-          { text: "[SUCCESS] Manual configuration validation complete. 0 execution-blocking errors.", type: "success" },
-          { text: "[SUCCESS] Readiness compatibility score calculated.", type: "success" }
+          { text: "[INFO] Manual configuration preview complete for this controlled example.", type: "success" },
+          { text: "[SUCCESS] Readiness preview calculated with assumptions clearly separated.", type: "success" }
         ];
 
     let currentLogIndex = 0;
@@ -209,7 +209,7 @@ export default function SignUpPage() {
   };
 
   const handleFileDropMock = () => {
-    const mockFile = "rvtools_production_cluster.xlsx";
+    const mockFile = "synthetic-readiness-inventory.xlsx";
     setFileName(mockFile);
     setEvidenceSource("file");
     startDiagnosticCheck("file", mockFile);
@@ -247,13 +247,13 @@ export default function SignUpPage() {
             {/* Left: Registration Form */}
             <div className="glass-card" style={{ padding: "3rem 2.5rem" }}>
               <div className="badge badge-cyan" style={{ marginBottom: "1rem" }}>
-                Step 1: Create Account
+                Step 1: Create workspace
               </div>
-              <h2 className="mb-2" style={{ color: "white" }}>
-                Start Your Free Readiness Check
-              </h2>
+              <h1 className="mb-2" style={{ color: "white", fontSize: "clamp(2rem, 4vw, 3.4rem)", lineHeight: 1.05 }}>
+                Create your Shift Evidence workspace
+              </h1>
               <p className="text-muted mb-6" style={{ fontSize: "0.95rem" }}>
-                Set up a secure portal account to upload your cluster details and generate your migration assessment scorecard.
+                Start a controlled VMware-to-Proxmox readiness assessment. Upload evidence only after scope, consent and data handling expectations are clear.
               </p>
 
               <form onSubmit={handleSignUpSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -410,7 +410,7 @@ export default function SignUpPage() {
                   disabled={isSubmitting}
                   style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
                 >
-                  {isSubmitting ? "Creating account…" : "Create Account & Start Audit"}
+                  {isSubmitting ? "Creating account..." : "Create account and start assessment"}
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -427,9 +427,17 @@ export default function SignUpPage() {
               >
                 <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                   <ShieldCheck size={14} className="text-cyan" />
-                  100% Agentless & Secure
+                  No agents required
                 </span>
                 <span>•</span>
+                <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                  <ShieldCheck size={14} className="text-cyan" />
+                  No production access required
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                  <ShieldCheck size={14} className="text-cyan" />
+                  Evidence-based readiness
+                </span>
                 <Link href="/sign-in" className="text-cyan" style={{ textDecoration: "underline" }}>Already have an account?</Link>
               </div>
             </div>
@@ -883,13 +891,13 @@ export default function SignUpPage() {
                       </div>
                       <div className="score-text-content">
                         <div className="badge" style={{ margin: 0, width: "fit-content" }}>
-                          Assessed & Ready
+                          Synthetic readiness preview
                         </div>
                         <h4 style={{ color: "white", marginTop: "0.5rem" }}>
-                          Cluster Preliminary Compatibility
+                          Preliminary evidence readiness
                         </h4>
                         <p style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
-                          Based on mapped parameters, your environment holds a {getScore()}% compatibility factor for direct hypervisor migration conversion.
+                          Based on mapped parameters, this preview estimates a {getScore()}% readiness signal for planning. It does not execute migration or guarantee outcome.
                         </p>
                       </div>
                     </div>
@@ -902,9 +910,9 @@ export default function SignUpPage() {
                         <div className="recommendation-card ready">
                           <Check className="recommendation-icon text-emerald" size={18} />
                           <div>
-                            <div className="recommendation-title">Migration Blockers: None Identified</div>
+                            <div className="recommendation-title">No critical blockers detected in preview</div>
                             <div className="recommendation-desc">
-                              No incompatible virtual CPU flags, nested hypervisors, or unsupported SCSI controllers were detected.
+                              No critical compatibility flags were detected in this synthetic example. Real findings depend on approved evidence.
                             </div>
                           </div>
                         </div>
@@ -912,9 +920,9 @@ export default function SignUpPage() {
                         <div className="recommendation-card ready">
                           <Check className="recommendation-icon text-emerald" size={18} />
                           <div>
-                            <div className="recommendation-title">Cost Delta: Estimated -70% Savings</div>
+                            <div className="recommendation-title">Cost delta: planning estimate</div>
                             <div className="recommendation-desc">
-                              Transitioning to Proxmox subscription models will eliminate broadcom-style vCPU licensing surcharges.
+                              Cost exposure is modeled as an estimate and should be validated against current contracts and scope.
                             </div>
                           </div>
                         </div>

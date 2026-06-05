@@ -452,3 +452,15 @@ Fecha: 2026-06-05
 - Paid Ads were not approved.
 - Live payment collection was not approved.
 - Recommended commercial path remains soft availability plus private outreach.
+
+## 22. Follow-up: Mega Audit Hotfix 1
+
+Fecha: 2026-06-05
+
+`MEGA-AUDIT-HOTFIX-1` did not change the production cutover decision:
+
+- Production remains controlled-ready.
+- Billing remains safe-off.
+- Pricing copy now prioritizes invoice/controlled onboarding until checkout is explicitly approved.
+- Current operational truth is summarized in `docs/current-canonical-state.md`.
+- No deploy was performed in that hito.

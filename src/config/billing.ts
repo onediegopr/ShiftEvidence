@@ -115,19 +115,19 @@ export const billingPlans: BillingPlanConfig[] = [
     currency: "USD",
     cadence: "one_time",
     paymentOptions: ["card_checkout", "bank_transfer_invoice"],
-    recommendedPayment: "card_checkout",
+    recommendedPayment: "bank_transfer_invoice",
     checkoutEligible: true,
     invoiceEligible: true,
     stripePriceEnvName: "STRIPE_STARTER_PRICE_ID",
     primaryAction: {
-      label: "Pay by card",
-      href: getBillingCheckoutPath("starter"),
-      kind: "checkout_placeholder",
-    },
-    secondaryAction: {
       label: "Request invoice",
       href: getBillingBankTransferPath("starter"),
       kind: "invoice_request",
+    },
+    secondaryAction: {
+      label: "Request checkout link",
+      href: getBillingCheckoutPath("starter"),
+      kind: "checkout_placeholder",
     },
   },
   {
@@ -139,19 +139,19 @@ export const billingPlans: BillingPlanConfig[] = [
     currency: "USD",
     cadence: "one_time",
     paymentOptions: ["card_checkout", "bank_transfer_invoice"],
-    recommendedPayment: "card_checkout",
+    recommendedPayment: "bank_transfer_invoice",
     checkoutEligible: true,
     invoiceEligible: true,
     stripePriceEnvName: "STRIPE_PROFESSIONAL_PRICE_ID",
     primaryAction: {
-      label: "Pay by card",
-      href: getBillingCheckoutPath("professional"),
-      kind: "checkout_placeholder",
-    },
-    secondaryAction: {
       label: "Request invoice",
       href: getBillingBankTransferPath("professional"),
       kind: "invoice_request",
+    },
+    secondaryAction: {
+      label: "Request checkout link",
+      href: getBillingCheckoutPath("professional"),
+      kind: "checkout_placeholder",
     },
   },
   {
@@ -189,19 +189,19 @@ export const billingPlans: BillingPlanConfig[] = [
     currency: "USD",
     cadence: "monthly",
     paymentOptions: ["card_checkout", "bank_transfer_invoice"],
-    recommendedPayment: "card_checkout",
+    recommendedPayment: "bank_transfer_invoice",
     checkoutEligible: true,
     invoiceEligible: true,
     stripePriceEnvName: "STRIPE_MSP_PRICE_ID",
     primaryAction: {
-      label: "Subscribe",
-      href: getBillingCheckoutPath("msp"),
-      kind: "checkout_placeholder",
-    },
-    secondaryAction: {
-      label: "Request invoice",
+      label: "Request partner invoice",
       href: getBillingBankTransferPath("msp"),
       kind: "invoice_request",
+    },
+    secondaryAction: {
+      label: "Request checkout link",
+      href: getBillingCheckoutPath("msp"),
+      kind: "checkout_placeholder",
     },
   },
 ];
@@ -217,7 +217,7 @@ export function getBillingPlanByCheckoutSlug(slug: string) {
 export function getBillingPaymentOptionLabel(option: BillingPaymentOption) {
   switch (option) {
     case "card_checkout":
-      return "Card checkout";
+      return "Controlled card checkout";
     case "bank_transfer_invoice":
       return "Bank transfer invoice";
   }
