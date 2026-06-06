@@ -39,8 +39,8 @@ describe("public and premium sample reports", () => {
   it("aligns the sample page CTA with the premium PDF", () => {
     const source = fs.readFileSync(samplePagePath, "utf8");
 
-    expect(source).toContain("Premium Sample Readiness Report");
-    expect(source).toContain("Download full sample PDF");
+    expect(source).toContain("Full premium synthetic sample");
+    expect(source).toContain("Download premium sample PDF");
     expect(source).toContain("/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf");
   });
 

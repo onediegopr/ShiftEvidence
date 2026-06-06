@@ -42,10 +42,10 @@ describe("read-only synthetic Demo Workspace", () => {
     const replayComponent = readProjectFile("src/components/demo/MigrationReadinessReplay.tsx");
 
     expect(replayPage).toContain("MigrationReadinessReplay");
-    expect(replayComponent).toContain("Migration Readiness Replay");
-    expect(replayComponent).toContain("Start Simulation");
+    expect(replayComponent).toContain("Run Guided Replay");
+    expect(replayComponent).toContain("Live readiness replay");
     expect(replayComponent).toContain('href="/demo/workspace"');
-    expect(replayComponent).toContain("Explore Full Demo Workspace");
+    expect(replayComponent).toContain("Open Demo Workspace");
   });
 
   it("publishes the deep Demo Workspace route with a quick replay cross-link", () => {
@@ -53,7 +53,7 @@ describe("read-only synthetic Demo Workspace", () => {
     const workspaceComponent = readProjectFile("src/components/demo/DemoWorkspacePage.tsx");
 
     expect(workspacePage).toContain("DemoWorkspacePage");
-    expect(workspaceComponent).toContain("Want the quick version first?");
+    expect(workspaceComponent).toContain("Start with the guided 90-second replay");
     expect(workspaceComponent).toContain('href="/demo/replay"');
     expect(workspaceComponent).toContain("Watch Quick Simulation");
   });
@@ -131,13 +131,13 @@ describe("read-only synthetic Demo Workspace", () => {
   it("keeps the public sample report connected to Professional and Blueprint value", () => {
     const sampleReport = readProjectFile("src/components/sample-report/SampleReportPage.tsx");
 
-    expect(sampleReport).toContain("Public sample");
+    expect(sampleReport).toContain("Full premium synthetic sample");
     expect(sampleReport).toContain("Professional Assessment");
     expect(sampleReport).toContain("Migration Blueprint");
     expect(sampleReport).toContain("Watch Quick Simulation");
     expect(sampleReport).toContain("Explore a Sample Assessment");
     expect(sampleReport).toContain("View pricing");
-    expect(sampleReport).toContain("Download full sample PDF");
+    expect(sampleReport).toContain("Download premium sample PDF");
   });
 
   it("keeps demo PDF reports premium, synthetic, and section-complete", () => {
