@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented and locally validated for MARKETING-PDF-1. Full repository typecheck/build are blocked by pre-existing methodology work outside this hito.
+Implemented and locally validated for MARKETING-PDF-1. The first full-repo validation attempt was temporarily blocked by methodology work in progress; the final rerun passed after the methodology state was resolved into the current local commit history.
 
 ## Generated Assets
 
@@ -45,9 +45,12 @@ The copy explicitly states that Shift Evidence is a pre-flight assessment and pl
 - `npx vitest run tests/unit/marketingPdfAssets.test.ts`: passed.
 - `git diff --check`: passed.
 - `npm run lint`: passed.
-- `npm run typecheck`: failed on existing methodology changes in `src/server/methodology/registry.ts` and `src/server/methodology/service.ts`.
-- `npm run test:run`: failed on existing methodology tests: `methodologyKbFoundation.test.ts` and `methodologyExtractionExpansion.test.ts`.
-- `npm run build`: failed during TypeScript check on existing methodology change: missing `MethodologyRule` in `src/server/methodology/service.ts`.
+- Initial `npm run typecheck`: temporarily failed on methodology work in progress in `src/server/methodology/registry.ts` and `src/server/methodology/service.ts`.
+- Initial `npm run test:run`: temporarily failed on methodology tests: `methodologyKbFoundation.test.ts` and `methodologyExtractionExpansion.test.ts`.
+- Initial `npm run build`: temporarily failed during TypeScript check on methodology work in progress.
+- Final `npm run typecheck`: passed.
+- Final `npm run test:run`: passed, 127 test files / 646 tests.
+- Final `npm run build`: passed.
 - Local route smoke on `http://127.0.0.1:3000`: passed for all three marketing PDFs and linked public pages.
 
 ## Production Safety
