@@ -22,7 +22,7 @@ Los productos existian y fueron verificados en Stripe Dashboard test mode:
 | --- | --- | --- | ---: | --- | --- |
 | Starter Readiness | Starter Readiness | active | USD 490 | one-time | `price_...3zr3` |
 | Professional Assessment | Professional Assessment | active | USD 1,500 | one-time | `price_...bwhh` |
-| MSP Partner | MSP Partner | active | USD 399 | monthly recurring | `price_...7Lup` |
+| MSP Partner | MSP Partner | active | USD 799 | monthly recurring | `price_...7Lup` |
 
 No se creo precio checkout para Migration Blueprint; sigue siendo manual/invoice only.
 
@@ -89,7 +89,7 @@ Se abrio cada hosted checkout en Stripe y se detuvo antes de cualquier pago:
 | --- | --- | ---: | --- |
 | Starter Readiness | reached | USD 490 | one-time |
 | Professional Assessment | reached | USD 1,500 | one-time |
-| MSP Partner | reached | USD 399 | monthly |
+| MSP Partner | reached | USD 799 | monthly |
 
 Confirmado:
 
@@ -174,3 +174,4 @@ Porcentajes finales:
 Alternativa:
 
 `PRODUCTION-CUTOVER-READINESS-1`
+

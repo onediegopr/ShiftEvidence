@@ -115,7 +115,7 @@ No protected route or feature was removed, renamed or hidden.
   - Starter Readiness: USD 490
   - Professional Assessment: USD 1,500
   - Migration Blueprint: From USD 3,500
-  - MSP Partner: From USD 399/month
+  - MSP Partner: From USD 799/month
 - Clarified that Wise is manual invoice/bank transfer reference, not automatic
   Wise transfer or balance action.
 - Added a quick simulation CTA near the read-only sample assessment CTA.
@@ -247,3 +247,4 @@ Recommended next hito:
 Alternative if operations is more urgent:
 
 `ADMIN-OPS-ES-1 - Admin interno en español, warnings, states and billing admin usability`
+

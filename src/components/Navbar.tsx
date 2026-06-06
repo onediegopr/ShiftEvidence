@@ -40,23 +40,28 @@ export default function Navbar() {
         <nav>
           <ul className="nav-links">
             <li>
-              <Link href="/#savings" className="nav-link">
-                Savings Calculator
+              <Link href="/" className="nav-link">
+                Product
               </Link>
             </li>
             <li>
-              <Link href="/#features" className="nav-link">
-                Core Features
+              <Link href="/demo" className="nav-link">
+                Demo
               </Link>
             </li>
             <li>
-              <Link href="/#comparison" className="nav-link">
-                VMware vs Proxmox
+              <Link href="/sample-report" className="nav-link">
+                Sample report
               </Link>
             </li>
             <li>
-              <Link href="/#process" className="nav-link">
-                Migration Pipeline
+              <Link href="/pricing" className="nav-link">
+                Pricing
+              </Link>
+            </li>
+            <li>
+              <Link href="/partners" className="nav-link">
+                Partners
               </Link>
             </li>
           </ul>
@@ -65,7 +70,7 @@ export default function Navbar() {
         <div className="navbar-actions">
           <Link href="/sign-up" className="nav-start-check">
             <Sparkles size={15} />
-            Start Free Check
+            Start assessment
           </Link>
           <Link href="/sign-in" className="nav-client-login">
             <LogIn size={15} />

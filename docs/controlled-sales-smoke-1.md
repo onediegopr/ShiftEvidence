@@ -117,7 +117,7 @@ Pricing page loads and includes:
 - Starter: USD 490.
 - Professional: USD 1,500.
 - Migration Blueprint: from USD 3,500.
-- MSP Partner: from USD 399/month.
+- MSP Partner: from USD 799/month.
 - Checkout/manual invoice separation remains visible through dedicated checkout and bank-transfer routes.
 - No active Lemon checkout surface detected.
 
@@ -264,3 +264,4 @@ Confirmed preserved:
 ## Recommendation
 
 If this local controlled sales smoke is accepted, next recommended hito is `ADMIN-OPS-ES-1` to polish internal/admin operations. If the priority is commercial runtime, run a separate authenticated/browser smoke for admin billing visibility and Stripe test-mode configuration without touching live payments.
+

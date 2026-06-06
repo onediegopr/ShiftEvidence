@@ -62,7 +62,7 @@ Los paquetes se muestran como orientativos para beta:
 - Starter Readiness: USD 490.
 - Professional Assessment: USD 1,500.
 - Migration Blueprint: desde USD 3,500.
-- MSP Partner: desde USD 399/month.
+- MSP Partner: desde USD 799/month.
 
 La pagina aclara que durante beta los pagos son manuales, sin public checkout y sin automatic billing activo.
 
@@ -137,3 +137,4 @@ El hito posterior `SALES-PAGE-1.1` reviso visualmente la pagina en desktop/mobil
 - SALES-PAGE-1.1: visual QA post-deploy y polish de conversion si hace falta.
 - BETA-INVITE-1: reactivar cuando el owner quiera continuar invitaciones reales.
 - Full public launch: sigue NO hasta decision explicita owner/comercial.
+

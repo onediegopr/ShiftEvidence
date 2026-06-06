@@ -79,7 +79,7 @@ Smoke was run locally on `http://127.0.0.1:3000`.
   - Starter `USD 490`
   - Professional `USD 1,500`
   - Migration Blueprint `USD 3,500`
-  - MSP Partner `from USD 399/month`
+  - MSP Partner `from USD 799/month`
 - Stripe/Wise split remains clear.
 - No live launch claim was introduced.
 - No full public launch claim was introduced.
@@ -149,3 +149,4 @@ No real values were surfaced for:
 - `main` is sane as the post-merge baseline.
 - No deploy was performed.
 - Next step: plan the preview/deploy path separately, or wait for browser/session and Stripe test credentials if you want to close the remaining QA items first.
+

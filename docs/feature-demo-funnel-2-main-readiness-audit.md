@@ -163,7 +163,7 @@ Local server was started on `http://127.0.0.1:3000` and verified.
   - Starter Readiness: `USD 490`
   - Professional Assessment: `USD 1,500`
   - Migration Blueprint: `USD 3,500`
-  - MSP Partner: `From USD 399/month`
+  - MSP Partner: `From USD 799/month`
 - Stripe and manual bank-transfer split is still clear
 - Sample-assessment bridge remains present through demo/pricing CTAs
 - No live-launch claim was introduced
@@ -255,3 +255,4 @@ Condiciones antes del merge:
 - Authenticated admin billing QA
 - Stripe test-mode Price ID validation
 - Visual PDF QA
+

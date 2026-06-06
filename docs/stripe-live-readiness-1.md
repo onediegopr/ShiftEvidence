@@ -141,7 +141,7 @@ Products visible in live catalog:
 | --- | --- | --- |
 | Starter Readiness | USD 490.00 | visible active product |
 | Professional Assessment | USD 1,500.00 | visible active product |
-| MSP Partner | USD 399.00 / month | visible active product |
+| MSP Partner | USD 799.00 / month | visible active product |
 
 Important note:
 
@@ -379,7 +379,7 @@ Resultado:
 - Redeploy productivo controlado: `dpl_AnX2qEidHNGToMszj6dtCPUii3s1`.
 - Starter redirigio a Stripe hosted checkout live y mostro USD 490.00.
 - Professional redirigio a Stripe hosted checkout live y mostro USD 1,500.00.
-- MSP redirigio a Stripe hosted checkout live y mostro USD 399.00 mensual.
+- MSP redirigio a Stripe hosted checkout live y mostro USD 799.00 mensual.
 - No se ingreso tarjeta.
 - No se completo pago.
 - No se disparo webhook intencional.
@@ -394,3 +394,4 @@ Documento de cierre:
 Nuevo proximo hito recomendado:
 
 - `STRIPE-LIVE-PAYMENT-FINAL-GATE-1`.
+

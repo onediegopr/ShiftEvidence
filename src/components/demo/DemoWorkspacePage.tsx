@@ -469,7 +469,7 @@ export default function DemoWorkspacePage() {
                   ))}
                 </div>
               </div>
-              <div className="shiftreadiness-actions">
+              <div className="shiftreadiness-actions demo-workspace-unlock-actions">
                 <Link href="/sign-up" className="btn btn-primary btn-glow">
                   Start a Paid Assessment
                   <ArrowRight size={16} />

@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../lib/brandAssets";
 
@@ -10,8 +11,10 @@ export default function Footer() {
   const copy = {
     brand:
       "Enterprise-grade VMware to Proxmox readiness assessments. Evidence review, custom analysis, and data-loss risk guidance before migration.",
-    platform: "Platform",
-    resources: "Resources",
+    product: "Product",
+    demos: "Demos",
+    commercial: "Commercial",
+    trust: "Trust & Account",
     checklist: "Get Free Migration Checklist",
     stay: "Stay updated on license saving calculators and pre-migration scripts.",
     copyright: "All rights reserved.",
@@ -30,8 +33,8 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <a
-              href="#"
+            <Link
+              href="/"
               className="logo-container"
               style={{ marginBottom: "0.5rem" }}
             >
@@ -42,45 +45,84 @@ export default function Footer() {
                 height={28}
               />
               <span>{BRAND_WORDMARK}</span>
-            </a>
+            </Link>
             <p style={{ fontSize: "0.85rem" }}>{copy.brand}</p>
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-links-title">{copy.platform}</h4>
+            <h4 className="footer-links-title">{copy.product}</h4>
             <ul className="footer-links-list">
               <li>
-                <a href="#savings">Savings Calculator</a>
+                <Link href="/#problem-pain">How it works</Link>
               </li>
               <li>
-                <a href="#features">Core Features</a>
+                <Link href="/#sample-output">Sample output</Link>
               </li>
               <li>
-                <a href="/pricing">Pricing</a>
+                <Link href="/#licensing-calculator">Calculator</Link>
               </li>
               <li>
-                <a href="/security">Security</a>
+                <Link href="/#comparison">Comparison</Link>
+              </li>
+              <li>
+                <Link href="/#faq">FAQ</Link>
               </li>
             </ul>
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-links-title">{copy.resources}</h4>
+            <h4 className="footer-links-title">{copy.demos}</h4>
             <ul className="footer-links-list">
               <li>
-                <a href="/about">About</a>
+                <Link href="/demo">Demo hub</Link>
               </li>
               <li>
-                <a href="/support">Support</a>
+                <Link href="/demo/replay">Replay demo</Link>
               </li>
               <li>
-                <a href="/sign-in">Client login</a>
+                <Link href="/demo/workspace">Demo workspace</Link>
               </li>
               <li>
-                <a href="/partners">Partners</a>
+                <Link href="/sample-report">Sample report</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="footer-links-col">
+            <h4 className="footer-links-title">{copy.commercial}</h4>
+            <ul className="footer-links-list">
+              <li>
+                <Link href="/pricing">Pricing</Link>
               </li>
               <li>
-                <a href="/contact">Contact</a>
+                <Link href="/partners">Partners / MSP</Link>
+              </li>
+              <li>
+                <Link href="/technical-review">Technical review</Link>
+              </li>
+              <li>
+                <Link href="/support?category=billing_question">Billing support</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="footer-links-col">
+            <h4 className="footer-links-title">{copy.trust}</h4>
+            <ul className="footer-links-list">
+              <li>
+                <Link href="/security">Security</Link>
+              </li>
+              <li>
+                <Link href="/about">About</Link>
+              </li>
+              <li>
+                <Link href="/support">Support</Link>
+              </li>
+              <li>
+                <Link href="/contact">Contact</Link>
+              </li>
+              <li>
+                <Link href="/sign-in">Client login</Link>
               </li>
             </ul>
           </div>

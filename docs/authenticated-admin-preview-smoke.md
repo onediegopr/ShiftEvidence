@@ -130,7 +130,7 @@ Precios publicos esperados validados en `/pricing`:
 - Starter: USD 490.
 - Professional: USD 1,500.
 - Migration Blueprint: USD 3,500.
-- MSP Partner: from USD 399/month.
+- MSP Partner: from USD 799/month.
 
 ## Unlock Requests
 
@@ -274,3 +274,4 @@ Validado:
 ## Proximo Hito Recomendado
 
 `STRIPE-TESTMODE-PRICE-SMOKE`
+

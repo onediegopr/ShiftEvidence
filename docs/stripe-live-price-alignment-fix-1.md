@@ -74,7 +74,7 @@ Productos actuales correctos:
 | --- | --- | ---: | --- | --- |
 | Starter Readiness | `prod_...hYNS` | USD 490 | one-time | active |
 | Professional Assessment | `prod_...cuGY` | USD 1,500 | one-time | active |
-| MSP Partner | `prod_...Uzqw` | USD 399/month | monthly recurring | active |
+| MSP Partner | `prod_...Uzqw` | USD 799/month | monthly recurring | active |
 
 Duplicados observados:
 
@@ -90,7 +90,7 @@ Confirmacion visual desde la fila `Tarifas` de cada producto actual:
 | --- | --- | --- | ---: | --- | --- | --- | --- |
 | Starter Readiness | `prod_...hYNS` | `price_...dJwz` | 49000 cents | USD | one-time | active/default | aligned |
 | Professional Assessment | `prod_...cuGY` | `price_...krvY` | 150000 cents | USD | one-time | active/default | aligned |
-| MSP Partner | `prod_...Uzqw` | `price_...7iAr` | 39900 cents | USD | monthly recurring | active/default | aligned |
+| MSP Partner | `prod_...Uzqw` | `price_...7iAr` | 79900 cents | USD | monthly recurring | active/default | aligned |
 
 Verification method:
 
@@ -223,6 +223,7 @@ Resultado:
 | --- | --- | --- | ---: | --- |
 | Starter Readiness | `price_...dJwz` | OK | USD 490.00 | one-time |
 | Professional Assessment | `price_...krvY` | OK | USD 1,500.00 | one-time |
-| MSP Partner | `price_...7iAr` | OK | USD 399.00 | monthly |
+| MSP Partner | `price_...7iAr` | OK | USD 799.00 | monthly |
 
 No payment was completed. Safe-off was restored after the smoke.
+

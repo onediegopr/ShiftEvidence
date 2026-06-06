@@ -85,7 +85,7 @@ The owner chose to proceed with production Stripe products/prices instead of tes
 | --- | --- | --- | --- | ---: | --- | --- |
 | Starter Readiness | `prod_UclYxjpqT92sGY` | `price_1TdW1r2ehRcYyaOreX1g3zr3` | live | USD 490 | one-time | active |
 | Professional Assessment | `prod_UclcUgR7N174OV` | `price_1TdW4x2ehRcYyaOrxvclbwhh` | live | USD 1,500 | one-time | active |
-| MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 399/month | monthly recurring | active |
+| MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 799/month | monthly recurring | active |
 
 Important boundary:
 
@@ -114,7 +114,7 @@ Stripe Dashboard live account `Shiftevidence` was audited read-only. The Price I
 | --- | --- | --- | ---: | --- | --- |
 | Starter Readiness | `prod_...hYNS` | `price_...dJwz` | USD 490 | one-time | active/default |
 | Professional Assessment | `prod_...cuGY` | `price_...krvY` | USD 1,500 | one-time | active/default |
-| MSP Partner | `prod_...Uzqw` | `price_...7iAr` | USD 399/month | monthly recurring | active/default |
+| MSP Partner | `prod_...Uzqw` | `price_...7iAr` | USD 799/month | monthly recurring | active/default |
 
 No Vercel env was changed, no live checkout was enabled, no payment was attempted, no webhook event was sent, and no redeploy was performed. Production start routes remain safe-off with `checkout_disabled`.
 
@@ -132,7 +132,7 @@ Result:
 | --- | --- | ---: | --- |
 | Starter Readiness | OK | USD 490.00 | one-time |
 | Professional Assessment | OK | USD 1,500.00 | one-time |
-| MSP Partner | OK | USD 399.00 | monthly recurring |
+| MSP Partner | OK | USD 799.00 | monthly recurring |
 
 No card data was entered, no payment was completed, no webhook was intentionally triggered, no grant or entitlement was created, and no DNS/Hostinger/custom domain change was made.
 
@@ -152,8 +152,9 @@ Stripe Dashboard test mode was confirmed and the three checkout-eligible product
 
 - Starter Readiness: USD 490 one-time.
 - Professional Assessment: USD 1,500 one-time.
-- MSP Partner: USD 399/month.
+- MSP Partner: USD 799/month.
 
 Vercel Preview branch `preview` was configured with test-mode checkout values outside source control, redeployed as Preview, and the stable Preview alias was pointed to the new Preview deployment. The three checkout pages returned 200 in test-ready state and the three start routes returned 303 redirects to Stripe hosted checkout test pages.
 
 No payment was completed, no card details were entered, no webhook was configured or triggered, no paid state was created, no grant or entitlement was created, no Wise action was performed, no Production env was touched, and no secret was stored in git. See `docs/stripe-testmode-price-smoke-preview.md`.
+

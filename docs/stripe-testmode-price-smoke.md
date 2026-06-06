@@ -60,7 +60,7 @@ Interpretacion:
 | --- | ---: | --- | --- |
 | Starter Readiness | USD 490 | eligible | `STRIPE_STARTER_PRICE_ID` |
 | Professional Assessment | USD 1,500 | eligible | `STRIPE_PROFESSIONAL_PRICE_ID` |
-| MSP Partner | From USD 399/month | eligible | `STRIPE_MSP_PRICE_ID` |
+| MSP Partner | From USD 799/month | eligible | `STRIPE_MSP_PRICE_ID` |
 | Migration Blueprint | From USD 3,500 | invoice/manual | no Price ID |
 
 No se cambiaron precios, plan IDs, Price IDs ni valores de pricing.
@@ -261,3 +261,4 @@ La aplicacion degrada de forma segura cuando Stripe test-mode no esta configurad
 
 - `STRIPE-TESTMODE-PRICE-SMOKE-PUSH` para pushear esta documentacion.
 - Luego, si se cargan credenciales test seguras, reintentar Price ID lookup test-mode sin crear pagos.
+

@@ -70,7 +70,7 @@ If either gate is missing, live checkout stays blocked. A test key, unknown key 
 
 - Starter Readiness: one-time payment, `STRIPE_STARTER_PRICE_ID`, USD 490.
 - Professional Assessment: one-time payment, `STRIPE_PROFESSIONAL_PRICE_ID`, USD 1,500.
-- MSP Partner: subscription, `STRIPE_MSP_PRICE_ID`, from USD 399/month.
+- MSP Partner: subscription, `STRIPE_MSP_PRICE_ID`, from USD 799/month.
 
 The server derives amount and mode from billing config, not from the client.
 
@@ -99,7 +99,7 @@ Required test-mode products and prices remain:
 | --- | --- | ---: | --- | --- |
 | Starter Readiness | Starter Readiness | USD 490 | one-time | `STRIPE_STARTER_PRICE_ID` |
 | Professional Assessment | Professional Assessment | USD 1,500 | one-time | `STRIPE_PROFESSIONAL_PRICE_ID` |
-| MSP Partner | MSP Partner | USD 399/month | monthly | `STRIPE_MSP_PRICE_ID` |
+| MSP Partner | MSP Partner | USD 799/month | monthly | `STRIPE_MSP_PRICE_ID` |
 
 Local fallback smoke:
 
@@ -142,7 +142,7 @@ Pending test-mode products and prices:
 | --- | --- | --- | --- | --- | ---: | --- |
 | Starter Readiness | Starter Readiness | pending | pending | test | USD 490 | one-time |
 | Professional Assessment | Professional Assessment | pending | pending | test | USD 1,500 | one-time |
-| MSP Partner | MSP Partner | pending | pending | test | USD 399/month | monthly |
+| MSP Partner | MSP Partner | pending | pending | test | USD 799/month | monthly |
 
 Runtime env values pending after Price ID capture:
 
@@ -171,7 +171,7 @@ Live products and prices:
 | --- | --- | --- | --- | --- | ---: | --- | --- |
 | Starter Readiness | Starter Readiness | `prod_UclYxjpqT92sGY` | `price_1TdW1r2ehRcYyaOreX1g3zr3` | live | USD 490 | one-time | active |
 | Professional Assessment | Professional Assessment | `prod_UclcUgR7N174OV` | `price_1TdW4x2ehRcYyaOrxvclbwhh` | live | USD 1,500 | one-time | active |
-| MSP Partner | MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 399/month | monthly recurring | active |
+| MSP Partner | MSP Partner | `prod_Uclds2EatL0OHr` | `price_1TdW6Q2ehRcYyaOruJVd7Lup` | live | USD 799/month | monthly recurring | active |
 
 Runtime env values for the next hito:
 
@@ -206,7 +206,7 @@ The live Price IDs captured in `STRIPE-2B` are now marked stale/no aligned for t
 | --- | --- | ---: | --- |
 | Starter Readiness | `price_...dJwz` | USD 490 | one-time |
 | Professional Assessment | `price_...krvY` | USD 1,500 | one-time |
-| MSP Partner | `price_...7iAr` | USD 399/month | monthly recurring |
+| MSP Partner | `price_...7iAr` | USD 799/month | monthly recurring |
 
 No runtime env was changed in this hito. Production remains safe-off.
 
@@ -217,3 +217,4 @@ Date: 2026-06-02.
 The owner configured live runtime variables outside source control and a controlled production smoke was attempted without payment. Public checkout and pricing routes returned 200, but checkout start POST requests for Starter, Professional, and MSP returned safe 303 redirects back to the app with `error=stripe_price_invalid`.
 
 No Stripe hosted checkout page was reached, no payment was completed, no secret was stored, no grant or entitlement was created, and no Wise action was performed. Recheck exact runtime Price IDs and confirm the live secret key belongs to the same Stripe account as the documented live products/prices before retrying.
+

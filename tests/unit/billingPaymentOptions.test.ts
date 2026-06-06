@@ -11,7 +11,7 @@ describe("billing payment options foundation", () => {
       ["starter_readiness", "USD 490"],
       ["professional_assessment", "USD 1,500"],
       ["migration_blueprint", "From USD 3,500"],
-      ["msp_partner", "From USD 399/month"],
+      ["msp_partner", "From USD 799/month"],
     ]);
   });
 
@@ -31,3 +31,4 @@ describe("billing payment options foundation", () => {
     expect(JSON.stringify(marketingPlans).toLowerCase()).not.toContain("wise");
   });
 });
+

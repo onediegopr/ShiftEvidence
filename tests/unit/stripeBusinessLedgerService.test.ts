@@ -311,7 +311,7 @@ describe("Stripe business ledger service", () => {
             object: "invoice",
             subscription: "sub_test_1",
             customer: "cus_test_1",
-            amount_due: 39900,
+            amount_due: 79900,
             currency: "usd",
             created: 1780300000,
             metadata: {
@@ -379,3 +379,4 @@ describe("Stripe business ledger service", () => {
     expect(db.billingPayment.create).toHaveBeenCalled();
   });
 });
+

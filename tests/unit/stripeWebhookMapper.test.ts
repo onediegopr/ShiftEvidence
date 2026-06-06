@@ -159,7 +159,7 @@ describe("Stripe webhook mapper", () => {
           status: "open",
           subscription: "sub_test_1",
           customer: "cus_test_1",
-          amount_due: 39900,
+          amount_due: 79900,
           currency: "usd",
           metadata: {
             plan_id: "msp_partner",
@@ -176,3 +176,4 @@ describe("Stripe webhook mapper", () => {
     expect(failedInvoice.warnings).toContain("payment_skipped_missing_provider_payment_id");
   });
 });
+

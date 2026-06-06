@@ -187,7 +187,7 @@ Observado:
 - Stripe test mode confirmado.
 - Starter test checkout: USD 490 one-time, hosted checkout reached.
 - Professional test checkout: USD 1,500 one-time, hosted checkout reached.
-- MSP test checkout: USD 399/month, hosted checkout reached.
+- MSP test checkout: USD 799/month, hosted checkout reached.
 - No pago completado.
 - No webhook.
 - No paid state.
@@ -429,3 +429,4 @@ Alternatives:
 
 - `STRIPE-WEBHOOK-TESTMODE-SMOKE`
 - `PDF-VISUAL-QA-1`
+

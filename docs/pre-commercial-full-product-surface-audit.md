@@ -259,7 +259,7 @@ Expected prices confirmed:
 - Starter Readiness: `USD 490`
 - Professional Assessment: `USD 1,500`
 - Migration Blueprint: `From USD 3,500`
-- MSP Partner: `From USD 399/month`
+- MSP Partner: `From USD 799/month`
 
 Billing path:
 
@@ -877,3 +877,4 @@ preserving:
 - Stripe/Wise billing separation;
 - admin manual operations;
 - evidence-based conservative claims.
+

@@ -82,7 +82,7 @@ Price IDs usados:
 | --- | --- | ---: | --- |
 | Starter Readiness | `price_...dJwz` | USD 490 | one-time |
 | Professional Assessment | `price_...krvY` | USD 1,500 | one-time |
-| MSP Partner | `price_...7iAr` | USD 399 | monthly recurring |
+| MSP Partner | `price_...7iAr` | USD 799 | monthly recurring |
 
 ## 5. Redeploy live-readiness
 
@@ -119,7 +119,7 @@ Smoke visual en Stripe hosted checkout:
 | --- | --- | --- | ---: | --- | --- |
 | Starter | `checkout.stripe.com` | Starter Readiness | USD 490.00 | one-time | OK |
 | Professional | `checkout.stripe.com` | Professional Assessment | USD 1,500.00 | one-time | OK |
-| MSP | `checkout.stripe.com` | MSP Partner | USD 399.00 | monthly | OK |
+| MSP | `checkout.stripe.com` | MSP Partner | USD 799.00 | monthly | OK |
 
 Confirmaciones:
 
@@ -251,3 +251,4 @@ Fecha: 2026-06-05
 - No webhook live event was intentionally generated.
 - No grants or entitlements were created.
 - Billing remains safe-off.
+

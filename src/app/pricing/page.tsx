@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
-import { ArrowRight, Check, Minus, Brain } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Brain,
+  Building2,
+  Check,
+  Eye,
+  Lock,
+  Minus,
+  Radar,
+  Receipt,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import {
@@ -15,6 +28,34 @@ export const metadata: Metadata = {
   description: "Transparent, modular pre-migration assessment plans for infrastructure teams, MSPs, and partners planning VMware exits.",
 };
 
+const purchaseSignals = [
+  {
+    title: "Evidence before execution",
+    body: "Start with RVTools and senior context before scope or architecture is locked.",
+    icon: Radar,
+    tone: "cyan",
+  },
+  {
+    title: "Controlled onboarding",
+    body: "Invoice and card checkout stay gated until account, access and fulfillment are confirmed.",
+    icon: Lock,
+    tone: "amber",
+  },
+  {
+    title: "Human-grade advisory depth",
+    body: "Professional and Blueprint plans move beyond parsing into planning and review.",
+    icon: Brain,
+    tone: "violet",
+  },
+] as const;
+
+const purchaseStats = [
+  ["3", "Core buying paths"],
+  ["1", "Partner program"],
+  ["1", "Technical review add-on"],
+  ["0", "Production agents required"],
+] as const;
+
 export default function PricingPage() {
   const corePlans = marketingPlans.filter((plan) => plan.id !== "msp_partner");
   const partnerPlan = marketingPlans.find((plan) => plan.id === "msp_partner") ?? marketingPlans[marketingPlans.length - 1];
@@ -22,256 +63,196 @@ export default function PricingPage() {
   return (
     <>
       <Navbar />
-      <main style={{ minHeight: "100vh", background: "var(--bg-dark)" }}>
-        {/* Header */}
-        <section className="section" style={{ paddingTop: "8rem", paddingBottom: "3rem" }}>
-          <div className="container">
-            <div className="section-header" style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
-              <span className="badge badge-cyan">Pricing Models</span>
-              <h1 style={{ fontSize: "2.75rem", lineHeight: "1.2", margin: "1rem 0" }}>
-                Choose the right evidence-backed migration decision pack.
-              </h1>
-              <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", lineHeight: "1.6" }}>
-                Start with RVTools, add evidence when you need higher confidence, and choose a package that matches how much risk, reporting and planning depth your VMware to Proxmox decision needs.
+      <main className="pricing-page-shell">
+        <section className="section pricing-page-hero">
+          <div className="bg-mesh" />
+          <div className="container pricing-hero-grid">
+            <div className="pricing-hero-copy">
+              <div className="pricing-brand-route" aria-label="VMware to Proxmox route">
+                <span className="pricing-brand pricing-brand-vmware">VMware</span>
+                <span className="pricing-route-arrow" aria-hidden="true">
+                  <ArrowRight size={16} />
+                </span>
+                <span className="pricing-brand pricing-brand-proxmox">Proxmox</span>
+              </div>
+              <div className="badge badge-cyan">Pricing Models</div>
+              <h1>Choose the right migration decision pack.</h1>
+              <p className="pricing-hero-subtitle">
+                Pricing is structured around how much advisory depth, technical scrutiny and planning your VMware exit
+                actually needs.
               </p>
-              <p className="assessment-inline-note" style={{ marginTop: "1rem" }}>
+              <p className="pricing-hero-body">
+                Start with a readiness checkpoint, move into a professional decision pack when stakeholder confidence is
+                needed, or choose a blueprint when wave planning and technical review are already on the table.
+              </p>
+
+              <div className="pricing-signal-strip">
+                {purchaseSignals.map(({ title, body, icon: Icon, tone }) => (
+                  <article key={title} className="glass-card pricing-signal-card" data-tone={tone}>
+                    <Icon size={18} />
+                    <div>
+                      <strong>{title}</strong>
+                      <span>{body}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="pricing-hero-actions">
+                <Link href="#pricing-plans" className="btn btn-primary btn-glow">
+                  Compare plans
+                  <ArrowRight size={18} />
+                </Link>
+                <Link href="/sample-report" className="pricing-hero-action-card" data-tone="cyan">
+                  <strong>View Sample Report</strong>
+                  <span>See the premium deliverable before you purchase.</span>
+                  <Eye size={16} />
+                </Link>
+                <Link href="/demo/workspace" className="pricing-hero-action-card" data-tone="violet">
+                  <strong>Explore Sample Assessment</strong>
+                  <span>Inspect the synthetic workspace behind the report.</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <Link href="/technical-review?source=pricing" className="pricing-hero-action-card" data-tone="amber">
+                  <strong>Book Technical Review</strong>
+                  <span>Talk through findings, scope and next-step assumptions.</span>
+                  <ShieldCheck size={16} />
+                </Link>
+              </div>
+
+              <p className="assessment-inline-note">
                 {paymentOptionsCopy.cardCheckout} {paymentOptionsCopy.bankTransfer}
               </p>
-              <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
-                Manual invoice requests are reviewed before fulfillment. Bank transfer is not an automatic transfer, balance action or instant fulfillment path.
+              <p className="assessment-inline-note">
+                Manual invoice requests are reviewed before fulfillment. Bank transfer is not an automatic transfer,
+                balance action or instant fulfillment path.
               </p>
             </div>
+
+            <aside className="glass-card pricing-hero-panel" aria-label="Pricing overview">
+              <div className="demo-terminal-header">
+                <span className="sr-mockup-dot red" />
+                <span className="sr-mockup-dot yellow" />
+                <span className="sr-mockup-dot green" />
+                <strong>Purchase overview</strong>
+              </div>
+              <div className="pricing-hero-panel-body">
+                <div className="pricing-hero-panel-title">
+                  <span className="pricing-hero-panel-kicker">Decision path</span>
+                  <h2>Three levels of buying confidence.</h2>
+                  <p>Start with proof. Escalate only when the evidence justifies more planning depth.</p>
+                </div>
+
+                <div className="pricing-hero-panel-stats">
+                  {purchaseStats.map(([value, label]) => (
+                    <div key={label} className="pricing-hero-stat">
+                      <strong>{value}</strong>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pricing-hero-ladder">
+                  <div className="pricing-hero-ladder-step" data-tone="cyan">
+                    <span>01</span>
+                    <div>
+                      <strong>Starter Readiness</strong>
+                      <small>Fast checkpoint before budget or scope moves.</small>
+                    </div>
+                  </div>
+                  <div className="pricing-hero-ladder-step" data-tone="amber">
+                    <span>02</span>
+                    <div>
+                      <strong>Professional Assessment</strong>
+                      <small>VM-by-VM decision pack with higher advisory depth.</small>
+                    </div>
+                  </div>
+                  <div className="pricing-hero-ladder-step" data-tone="violet">
+                    <span>03</span>
+                    <div>
+                      <strong>Migration Blueprint</strong>
+                      <small>Wave planning, rollback expectations and review session.</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pricing-hero-panel-note">
+                  <Receipt size={18} />
+                  <p>
+                    Checkout availability and access matching are resolved securely at runtime, so the commercial path
+                    stays controlled while production onboarding remains safe.
+                  </p>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
-        {/* 2-Column Spacious Grid for Core Plans */}
-        <section className="section" style={{ padding: "0 0 4rem 0" }}>
+        <section id="pricing-plans" className="section shiftreadiness-section">
           <div className="container">
-            <div 
-              style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", 
-                gap: "2.5rem",
-                maxWidth: "1100px",
-                margin: "0 auto"
-              }}
-            >
+            <div className="shiftreadiness-section-heading pricing-section-heading">
+              <div className="badge badge-cyan">Core Plans</div>
+              <h2>Buy only the level of analysis, reporting and planning your environment actually needs.</h2>
+              <p>
+                Every plan keeps the same evidence-first methodology. What changes is the depth of advisory reasoning,
+                report detail and migration planning structure layered on top.
+              </p>
+            </div>
+
+            <div className="pricing-plan-grid">
               {corePlans.map((plan) => (
-                <article 
-                  key={plan.name} 
-                  className={`glass-card sr-plan-card sr-plan-${plan.accent}`}
-                  style={{ 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    justifyContent: "space-between",
-                    padding: "2.5rem",
-                    minHeight: "580px",
-                    border: plan.accent === "pro" ? "1px solid rgba(139, 92, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.08)"
-                  }}
-                >
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
+                <article key={plan.name} className={`glass-card pricing-plan-card pricing-plan-${plan.accent}`}>
+                  <div className="pricing-plan-top">
+                    <div className="pricing-plan-head">
                       <div>
-                        <h3 style={{ fontSize: "1.5rem", color: "white", margin: 0 }}>{plan.name}</h3>
-                        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "0.5rem", lineHeight: "1.4" }}>
-                          {plan.bestFor}
-                        </p>
+                        <span className="pricing-plan-kicker">
+                          {plan.accent === "core" ? "Entry point" : plan.accent === "pro" ? "Most complete assessment" : "Planning engagement"}
+                        </span>
+                        <h3>{plan.name}</h3>
+                        <p>{plan.bestFor}</p>
                       </div>
-                      <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", whiteSpace: "nowrap" }}>
-                        {plan.price}
+                      <div className="pricing-plan-price-block">
+                        <strong>{plan.price}</strong>
+                        <span>{getBillingCadenceLabel(plan.billingCadence)}</span>
                       </div>
                     </div>
 
                     {plan.accent === "pro" && (
-                      <div className="badge badge-premium" style={{ width: "100%", justifyContent: "center", marginBottom: "1.5rem" }}>
+                      <div className="badge badge-premium pricing-plan-badge">
                         <Brain size={12} className="shield-blink" />
-                        <span>Storage Target & AI Advisor Integrated</span>
+                        <span>Storage target and advisor depth included</span>
                       </div>
                     )}
 
-                    <div className="assessment-status-row" style={{ marginBottom: "1.25rem" }}>
+                    <div className="pricing-plan-meta">
                       <span className="assessment-chip assessment-chip-neutral">{getBillingCadenceLabel(plan.billingCadence)}</span>
-                      <span className="assessment-chip assessment-chip-good">Recommended: {getPaymentOptionLabel(plan.recommendedPayment)}</span>
+                      <span className="assessment-chip assessment-chip-good">
+                        Recommended: {getPaymentOptionLabel(plan.recommendedPayment)}
+                      </span>
                     </div>
-                    <p className="assessment-inline-note" style={{ marginBottom: "1rem" }}>
-                      {plan.paymentNote}
-                    </p>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "1.5rem" }}>
-                      <div>
-                        <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", color: "var(--text-cyan)", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>Includes</h4>
-                        <ul className="sr-list sr-list-includes" style={{ display: "grid", gap: "0.6rem" }}>
-                          {plan.includes.map((item) => (
-                            <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.9rem", color: "#e2e8f0" }}>
-                              <Check size={14} style={{ color: "var(--text-cyan)", flexShrink: 0, marginTop: "0.15rem" }} />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div style={{ borderTop: "1px dashed rgba(255, 255, 255, 0.05)", paddingTop: "1.2rem" }}>
-                        <h4 style={{ fontSize: "0.85rem", textTransform: "uppercase", color: "#ef4444", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>Does Not Include</h4>
-                        <ul className="sr-list sr-list-excludes" style={{ display: "grid", gap: "0.6rem" }}>
-                          {plan.excludes.map((item) => (
-                            <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                              <Minus size={14} style={{ color: "#ef4444", flexShrink: 0, marginTop: "0.15rem" }} />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                    <p className="pricing-plan-note">{plan.paymentNote}</p>
                   </div>
 
-                  <div style={{ marginTop: "2rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "1.5rem" }}>
-                    {plan.upsell && (
-                      <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "1rem", lineHeight: "1.4" }}>
-                        {plan.upsell}
-                      </p>
-                    )}
-                    <a 
-                      href={plan.cta.href} 
-                      className="btn btn-primary btn-glow" 
-                      style={{ width: "100%", justifyContent: "center" }}
-                    >
-                      {plan.cta.label}
-                      <ArrowRight size={16} />
-                    </a>
-                    <a
-                      href={plan.secondaryCta.href}
-                      className="btn btn-secondary"
-                      style={{ width: "100%", justifyContent: "center", marginTop: "0.75rem" }}
-                    >
-                      {plan.secondaryCta.label}
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Full Width MSP / Partner Section */}
-        <section className="section" style={{ padding: "0 0 4rem 0" }}>
-          <div className="container">
-            <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-              <article 
-                className="glass-card sr-plan-partner" 
-                style={{ 
-                  padding: "3rem", 
-                  border: "1px solid rgba(6, 182, 212, 0.3)",
-                  background: "linear-gradient(135deg, rgba(6, 182, 212, 0.04), rgba(139, 92, 246, 0.04))"
-                }}
-              >
-                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "2rem" }}>
-                  <div style={{ maxWidth: "650px" }}>
-                    <div className="badge badge-cyan" style={{ marginBottom: "0.5rem" }}>Service Providers</div>
-                    <h2 style={{ fontSize: "1.75rem", color: "white", margin: 0 }}>
-                      {partnerPlan.name}
-                    </h2>
-                    <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", fontSize: "1rem", lineHeight: "1.5" }}>
-                      {partnerPlan.bestFor}
-                    </p>
-                    <p className="assessment-inline-note" style={{ marginTop: "0.75rem" }}>
-                      {partnerPlan.paymentNote}
-                    </p>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginTop: "1.5rem" }}>
-                      <div>
-                        <h4 style={{ color: "var(--text-cyan)", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>Includes</h4>
-                        <ul style={{ display: "grid", gap: "0.5rem" }}>
-                          {partnerPlan.includes.slice(0, 4).map((item) => (
-                            <li key={item} style={{ display: "flex", gap: "0.4rem", fontSize: "0.85rem" }}>
-                              <Check size={12} className="text-cyan" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 style={{ color: "#ef4444", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>Excludes</h4>
-                        <ul style={{ display: "grid", gap: "0.5rem" }}>
-                          {partnerPlan.excludes.slice(0, 2).map((item) => (
-                            <li key={item} style={{ display: "flex", gap: "0.4rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                              <Minus size={12} />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: "center", minWidth: "220px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <div style={{ fontSize: "2rem", fontWeight: "bold", color: "white" }}>
-                      {partnerPlan.price}
-                    </div>
-                    <a href={partnerPlan.cta.href} className="btn btn-primary btn-glow" style={{ justifyContent: "center" }}>
-                      {partnerPlan.cta.label}
-                      <ArrowRight size={16} />
-                    </a>
-                    <a href={partnerPlan.secondaryCta.href} className="btn btn-secondary" style={{ justifyContent: "center" }}>
-                      {partnerPlan.secondaryCta.label}
-                    </a>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-            <p className="assessment-inline-note" style={{ maxWidth: "1000px", margin: "2rem auto 0", textAlign: "center" }}>
-              {paymentOptionsCopy.pricingNote} Checkout availability and access matching are resolved securely at runtime.
-            </p>
-
-            <article className="glass-card sample-report-inline-cta" style={{ maxWidth: "1000px", margin: "2rem auto 0" }}>
-              <div>
-                <div className="badge badge-cyan">Not ready to purchase yet?</div>
-                <h2>Explore a read-only sample assessment.</h2>
-                <p>
-                  Open Demo Workspace to see what each paid plan unlocks: synthetic evidence, risk scoring, Storage
-                  Destination Readiness, migration waves and demo reports. Start with the quick simulation if you want the 90-second version first.
-                </p>
-              </div>
-              <a href="/demo/replay" className="btn btn-secondary">
-                Watch 90-second simulation
-                <ArrowRight size={16} />
-              </a>
-              <a href="/demo/workspace" className="btn btn-primary btn-glow">
-                Explore a Sample Assessment
-                <ArrowRight size={16} />
-              </a>
-            </article>
-          </div>
-        </section>
-
-        {/* Add-Ons Section */}
-        <section className="section" style={{ padding: "0 0 6rem 0", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
-          <div className="container">
-            <div className="text-center mb-8" style={{ marginTop: "4rem" }}>
-              <div className="badge">Modular Add-Ons</div>
-              <h2 className="mb-4">Enhance your report with specialized review</h2>
-              <p className="mx-auto" style={{ maxWidth: "600px", color: "var(--text-muted)" }}>
-                Add storage destination validation or review findings directly with a principal systems architect.
-              </p>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "2.5rem", maxWidth: "1000px", margin: "0 auto" }}>
-              {marketingAddOns.map((addon) => (
-                <article key={addon.name} className="glass-card" style={{ padding: "2.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", marginBottom: "1.5rem" }}>
-                      <div>
-                        <h3 style={{ fontSize: "1.25rem", color: "white", margin: 0 }}>{addon.name}</h3>
-                        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.5rem" }}>{addon.bestFor}</p>
-                      </div>
-                      <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "white" }}>{addon.price}</div>
+                  <div className="pricing-plan-columns">
+                    <div className="pricing-plan-column">
+                      <h4>Includes</h4>
+                      <ul className="pricing-plan-list">
+                        {plan.includes.map((item) => (
+                          <li key={item}>
+                            <Check size={14} />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
-                    <div style={{ display: "grid", gap: "1rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "1.2rem" }}>
-                      <ul style={{ display: "grid", gap: "0.5rem" }}>
-                        {addon.includes.slice(0, 4).map((item) => (
-                          <li key={item} style={{ display: "flex", gap: "0.4rem", fontSize: "0.85rem", color: "#e2e8f0" }}>
-                            <Check size={14} className="text-cyan" />
+                    <div className="pricing-plan-column pricing-plan-column-muted">
+                      <h4>Does not include</h4>
+                      <ul className="pricing-plan-list pricing-plan-list-muted">
+                        {plan.excludes.map((item) => (
+                          <li key={item}>
+                            <Minus size={14} />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -279,13 +260,200 @@ export default function PricingPage() {
                     </div>
                   </div>
 
-                  <div style={{ marginTop: "1.5rem" }}>
-                    <a href={addon.cta.href} className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
+                  <div className="pricing-plan-bottom">
+                    {plan.upsell && <p className="pricing-plan-upsell">{plan.upsell}</p>}
+                    <div className="pricing-plan-actions">
+                      <a href={plan.cta.href} className="btn btn-primary btn-glow">
+                        {plan.cta.label}
+                        <ArrowRight size={16} />
+                      </a>
+                      <a href={plan.secondaryCta.href} className="btn btn-secondary">
+                        {plan.secondaryCta.label}
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section shiftreadiness-section shiftreadiness-section-alt">
+          <div className="container">
+            <div className="glass-card pricing-partner-shell">
+              <div className="pricing-partner-copy">
+                <div className="badge badge-cyan">Service Providers</div>
+                <h2>{partnerPlan.name}</h2>
+                <p>{partnerPlan.bestFor}</p>
+                <p className="pricing-partner-note">{partnerPlan.paymentNote}</p>
+
+                <div className="pricing-partner-grid">
+                  <div className="pricing-partner-column">
+                    <h4>Included for partners</h4>
+                    <ul className="pricing-plan-list">
+                      {partnerPlan.includes.map((item) => (
+                        <li key={item}>
+                          <Check size={14} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="pricing-partner-column pricing-plan-column-muted">
+                    <h4>Not part of the program</h4>
+                    <ul className="pricing-plan-list pricing-plan-list-muted">
+                      {partnerPlan.excludes.map((item) => (
+                        <li key={item}>
+                          <Minus size={14} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pricing-partner-cta">
+                <div className="pricing-partner-price">
+                  <span>Partner route</span>
+                  <strong>{partnerPlan.price}</strong>
+                  <small>Reviewed business invoice path by default</small>
+                </div>
+                <div className="pricing-partner-actions">
+                  <a href={partnerPlan.cta.href} className="btn btn-primary btn-glow">
+                    {partnerPlan.cta.label}
+                    <ArrowRight size={16} />
+                  </a>
+                  <a href={partnerPlan.secondaryCta.href} className="btn btn-secondary">
+                    {partnerPlan.secondaryCta.label}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <p className="assessment-inline-note pricing-runtime-note">
+              {paymentOptionsCopy.pricingNote} Checkout availability and access matching are resolved securely at runtime.
+            </p>
+
+            <article className="glass-card pricing-sample-bridge">
+              <div>
+                <div className="badge badge-cyan">Not ready to purchase yet?</div>
+                <h2>Validate the value path with synthetic proof first.</h2>
+                <p>
+                  Open the Demo Workspace to see what each paid plan unlocks: synthetic evidence, risk scoring, Storage
+                  Destination Readiness, migration waves and demo reports. Start with the quick replay if you want the
+                  90-second version first.
+                </p>
+              </div>
+              <div className="pricing-sample-actions">
+                <a href="/demo/replay" className="pricing-inline-card" data-tone="violet">
+                  <strong>Watch 90-second simulation</strong>
+                  <span>See the guided flow from RVTools intake to the decision pack.</span>
+                  <ArrowRight size={16} />
+                </a>
+                <a href="/demo/workspace" className="pricing-inline-card" data-tone="cyan">
+                  <strong>Explore a Sample Assessment</strong>
+                  <span>Inspect the synthetic workspace, scores and report layers.</span>
+                  <ArrowRight size={16} />
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="section shiftreadiness-section pricing-addon-section">
+          <div className="container">
+            <div className="shiftreadiness-section-heading pricing-section-heading">
+              <div className="badge badge-cyan">Modular Add-Ons</div>
+              <h2>Enhance the report with specialized review instead of overbuying the base package.</h2>
+              <p>
+                Add-ons are meant to deepen interpretation and stakeholder alignment, not replace the core evidence and
+                report methodology.
+              </p>
+            </div>
+
+            <div className="pricing-addon-grid">
+              {marketingAddOns.map((addon) => (
+                <article key={addon.name} className="glass-card pricing-addon-card">
+                  <div className="pricing-addon-head">
+                    <div>
+                      <span className="pricing-plan-kicker">Optional advisory layer</span>
+                      <h3>{addon.name}</h3>
+                      <p>{addon.bestFor}</p>
+                    </div>
+                    <div className="pricing-addon-price">
+                      <strong>{addon.price}</strong>
+                    </div>
+                  </div>
+
+                  <div className="pricing-addon-body">
+                    <div className="pricing-plan-column">
+                      <h4>Includes</h4>
+                      <ul className="pricing-plan-list">
+                        {addon.includes.map((item) => (
+                          <li key={item}>
+                            <Check size={14} />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pricing-plan-column pricing-plan-column-muted">
+                      <h4>Not included</h4>
+                      <ul className="pricing-plan-list pricing-plan-list-muted">
+                        {addon.excludes.map((item) => (
+                          <li key={item}>
+                            <Minus size={14} />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {addon.upsell && <p className="pricing-plan-upsell">{addon.upsell}</p>}
+
+                  <div className="pricing-addon-actions">
+                    <a href={addon.cta.href} className="btn btn-secondary">
                       {addon.cta.label}
                     </a>
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section shiftreadiness-section demo-final-cta">
+          <div className="container">
+            <div className="glass-card sr-final-card pricing-final-card">
+              <div>
+                <div className="badge badge-cyan">Need a buying shortcut?</div>
+                <h2>Use the sample report and technical review to choose your plan with less guesswork.</h2>
+                <p>
+                  If the difference between Starter, Professional and Blueprint still feels unclear, review the sample
+                  report, then book a technical review and we can map the right commercial path to your environment.
+                </p>
+              </div>
+              <div className="sr-final-actions">
+                <Link href="/sample-report" className="btn btn-primary btn-glow">
+                  View sample report
+                  <Eye size={17} />
+                </Link>
+                <Link href="/technical-review?source=pricing" className="btn btn-secondary">
+                  Book technical review
+                  <ShieldCheck size={17} />
+                </Link>
+                <Link href="/sign-up" className="btn btn-secondary">
+                  Start free assessment
+                  <Sparkles size={17} />
+                </Link>
+                <Link href="/" className="btn btn-secondary">
+                  Back to home
+                  <Building2 size={17} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>

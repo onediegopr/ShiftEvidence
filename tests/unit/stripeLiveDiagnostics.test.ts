@@ -58,7 +58,7 @@ function mockSaneStripeFetch(overrides: Record<string, unknown> = {}) {
     }
     if (url.includes("starter")) return overrides.starter ?? stripePrice(49000);
     if (url.includes("professional")) return overrides.professional ?? stripePrice(150000);
-    if (url.includes("msp")) return overrides.msp ?? stripePrice(39900, { interval: "month" });
+    if (url.includes("msp")) return overrides.msp ?? stripePrice(79900, { interval: "month" });
     return { ok: false, status: 404, json: async () => ({}) };
   });
   globalThis.fetch = fetchSpy as unknown as typeof fetch;
@@ -153,7 +153,7 @@ describe("Stripe live diagnostics", () => {
   it("reports MSP non-recurring price as a blocker", async () => {
     setBaseLiveEnv();
     mockSaneStripeFetch({
-      msp: stripePrice(39900),
+      msp: stripePrice(79900),
     });
 
     const diagnostics = await getStripeLiveDiagnostics();
@@ -166,3 +166,4 @@ describe("Stripe live diagnostics", () => {
     expect(maskStripeId("price_safe_starter_123456789")).toBe("price_sa...6789");
   });
 });
+
