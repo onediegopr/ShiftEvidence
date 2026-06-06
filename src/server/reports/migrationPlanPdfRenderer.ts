@@ -2,6 +2,15 @@ import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
 import { buildReportExecutiveCommandCenter } from "./reportExecutiveCommandCenter";
+import { buildBlueprintSectionPackForPlan } from "./reportBlueprintSections";
+import {
+  renderBlueprintClientActionPlan,
+  renderBlueprintDecisionSummary,
+  renderBlueprintRollbackDecisionTree,
+  renderBlueprintRunbookTimeline,
+  renderBlueprintTargetBlueprint,
+  renderBlueprintValidationMatrix,
+} from "./reportBlueprintVisuals";
 import { buildReportNarrativeModelFromMigrationPlan } from "./reportNarrativeModel";
 import type { MigrationRecommendationPlan, MigrationPlanGate } from "./migrationPlanTypes";
 import { PRINT_REPORT_THEME } from "./reportTheme";
@@ -175,7 +184,7 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
   doc.fillColor(THEME.muted).font("Helvetica").fontSize(10).text(`Plan level: ${safeText(plan.planLevel)} | Confidence: ${safeText(plan.confidence)} | AI narrative: ${plan.aiNarrative.providerStatus}`, MARGIN + 16, 252, {
     width: contentWidth(doc) - 32,
   });
-  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8.5).text("Evidence-based output. Missing backup, target, storage or dependency evidence limits recommendation depth. Deterministic gates override narrative.", MARGIN + 16, 272, {
+  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8.5).text("This is a planning and execution-qualification package. Execution readiness depends on closing validation gates.", MARGIN + 16, 272, {
     width: contentWidth(doc) - 32,
   });
   doc.y = 330;
@@ -189,6 +198,14 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
     `Best next action: ${commandCenter.bestNextAction}`,
     `Evidence status: ${commandCenter.evidenceStatusSummary || "Coverage remains limited."}`,
   ]);
+
+  const blueprintPack = buildBlueprintSectionPackForPlan(plan);
+  renderBlueprintDecisionSummary(doc, blueprintPack.summary);
+  renderBlueprintTargetBlueprint(doc, blueprintPack.target);
+  renderBlueprintValidationMatrix(doc, blueprintPack.validationMatrix);
+  renderBlueprintRunbookTimeline(doc, blueprintPack.runbookTimeline);
+  renderBlueprintRollbackDecisionTree(doc, blueprintPack.rollbackDecisionTree);
+  renderBlueprintClientActionPlan(doc, blueprintPack.clientActionPlan);
 
   heading(doc, "Evidence Coverage");
   bulletList(doc, Object.entries(plan.evidenceSummary.evidenceCoverage).map(([key, present]) => `${key}: ${present ? "present" : "missing"}`));

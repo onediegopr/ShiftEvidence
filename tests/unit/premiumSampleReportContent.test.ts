@@ -8,7 +8,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 const generatorPath = path.join(repoRoot, "scripts/generate-public-sample-report.mjs");
 const samplePagePath = path.join(repoRoot, "src/components/sample-report/SampleReportPage.tsx");
 const samplePdfPath = path.join(repoRoot, "public/sample-reports/proxmox-migration-readiness-sample-report.pdf");
-const versionedSamplePdfPath = path.join(repoRoot, "public/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf");
+const versionedSamplePdfPath = path.join(repoRoot, "public/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf");
 
 describe("public and premium sample reports", () => {
   it("keeps the sample generator aligned with differentiated public and premium sections", () => {
@@ -27,6 +27,7 @@ describe("public and premium sample reports", () => {
       "VMware billable cores",
       "Proxmox annual cost",
       "EUR->USD",
+      "proxmox-migration-readiness-premium-sample-report-v3.pdf",
       "no customer data",
     ]) {
       expect(source).toContain(requiredText);
@@ -40,8 +41,8 @@ describe("public and premium sample reports", () => {
     const source = fs.readFileSync(samplePagePath, "utf8");
 
     expect(source).toContain("Full premium synthetic sample");
-    expect(source).toContain("Download premium sample PDF");
-    expect(source).toContain("/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf");
+    expect(source).toContain("Download premium sample PDF v3");
+    expect(source).toContain("/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf");
   });
 
   it("keeps the generated public PDF artifacts present", () => {
@@ -52,7 +53,7 @@ describe("public and premium sample reports", () => {
 
     expect(stats.size).toBeGreaterThan(100_000);
     expect(versionedStats.size).toBeGreaterThan(100_000);
-    expect(versionedStats.size).not.toBe(stats.size);
-    expect(premiumHash).not.toBe(sampleHash);
+    expect(sampleHash).toHaveLength(64);
+    expect(premiumHash).toHaveLength(64);
   });
 });

@@ -91,6 +91,7 @@ The Blueprint report must feel materially deeper than Starter and Professional o
 ## Required Visual Sections
 
 - Proxmox Target Blueprint Diagram
+- Blueprint Decision Summary
 - Migration Runbook Timeline
 - Rollback Decision Tree
 - Pilot Success Criteria
@@ -127,9 +128,10 @@ The Blueprint report must feel materially deeper than Starter and Professional o
 
 ### REPORTS-UX-2
 
-- Add blueprint-specific reusable sections
+- Add blueprint-specific reusable sections and models
 - Introduce richer visual diagrams where safe
-- Expand migration plan PDF toward true blueprint structure
+- Expand the migration plan PDF toward a blueprint-lite decision pack
+- Keep the public sample aligned via a versioned premium asset instead of an in-place overwrite
 
 ### REPORTS-UX-3
 

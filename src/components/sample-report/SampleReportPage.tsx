@@ -246,13 +246,13 @@ export default function SampleReportPage() {
               </div>
               <div className="sample-report-action-grid">
                 <a
-                  href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf"
+                  href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf"
                   className="btn btn-primary btn-glow sample-report-primary-cta"
                   target="_blank"
                   rel="noreferrer"
                 >
                   <ArrowDownToLine size={18} />
-                  Download premium sample PDF
+                  Download premium sample PDF v3
                 </a>
                 <Link href="/demo/workspace" className="sample-report-action-card" data-tone="cyan">
                   <strong>Explore Sample Assessment</strong>

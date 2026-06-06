@@ -2,7 +2,7 @@
 
 ## Version
 
-- Design system version: `REPORTS-UX-1`
+- Design system version: `REPORTS-UX-2`
 
 ## A. Report Types
 
@@ -21,18 +21,23 @@
 4. Evidence Coverage
 5. Readiness + Confidence Scores
 6. Migration Readiness Radar
-7. Top Risks
-8. VM Classification
-9. Storage Readiness
-10. Network Readiness
-11. Backup Readiness
-12. Proxmox Target Readiness
-13. Migration Waves
-14. Pilot Candidates
-15. Hold / No-Go Items
-16. Required Validations
-17. Recommended Next Steps
-18. Appendix / Assumptions / Methodology
+7. Blueprint Decision Summary
+8. Top Risks
+9. VM Classification
+10. Storage Readiness
+11. Network Readiness
+12. Backup Readiness
+13. Proxmox Target Readiness
+14. Validation Matrix
+15. Migration Waves
+16. Migration Runbook Timeline
+17. Pilot Candidates
+18. Hold / No-Go Items
+19. Rollback Decision Tree
+20. Client Action Plan
+21. Required Validations
+22. Recommended Next Steps
+23. Appendix / Assumptions / Methodology
 
 ## C. Visual Components
 
@@ -50,6 +55,11 @@
 - VM Archetype Card
 - Evidence Coverage Matrix
 - Proxmox Target Blueprint Diagram
+- Blueprint Decision Summary
+- Validation Matrix
+- Migration Runbook Timeline
+- Rollback Decision Tree
+- Client Action Plan
 - Before / After Block
 - Action Plan Table
 - Assumptions Box
@@ -116,4 +126,10 @@ Decorative colors must not be introduced without meaning.
 - `src/server/reports/reportChartModels.ts`
 - `src/server/reports/reportExecutiveCommandCenter.ts`
 
-These files define the reusable narrative and chart/data layer for later report upgrades.
+## Code Foundation Added In REPORTS-UX-2
+
+- `src/server/reports/reportBlueprintModels.ts`
+- `src/server/reports/reportBlueprintSections.ts`
+- `src/server/reports/reportBlueprintVisuals.ts`
+
+These files define the reusable narrative, chart/data and blueprint visual layer for later report upgrades.

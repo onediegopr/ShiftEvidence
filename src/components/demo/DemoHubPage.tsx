@@ -233,7 +233,7 @@ export default function DemoHubPage() {
             <DemoChoiceCard
               badge="Quick simulation"
               title="Migration Readiness Replay"
-              copy="Watch a fast, guided simulation showing how VMware evidence becomes a Proxmox migration readiness decision pack."
+              copy="Watch a fast, guided simulation showing how VMware evidence becomes a Proxmox migration readiness decision pack and blueprint-ready planning path."
               bullets={quickSimulationBullets}
               href="/demo/replay"
               cta="Watch Quick Simulation"

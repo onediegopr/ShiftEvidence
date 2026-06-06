@@ -238,10 +238,10 @@ export default function VMwareToProxmoxReadinessPage() {
           <article className="glass-card sample-report-inline-cta sales-mini-cta">
             <div>
               <div className="badge badge-cyan">See the deliverable</div>
-              <h2>View the premium public sample report.</h2>
+              <h2>View the premium public sample report v3.</h2>
               <p>
                 The sample report shows the premium executive and technical output: scores, storage readiness,
-                licensing exposure, risk findings, advisor examples, migration waves and next steps.
+                licensing exposure, risk findings, advisor examples, migration waves, blueprint decision language and next steps.
               </p>
             </div>
             <div className="sales-inline-actions">
@@ -250,12 +250,12 @@ export default function VMwareToProxmoxReadinessPage() {
                 <ArrowRight size={18} />
               </Link>
               <a
-                href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf"
+                href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf"
                 className="btn btn-secondary"
                 target="_blank"
                 rel="noreferrer"
               >
-                Download full sample PDF
+                Download full sample PDF v3
               </a>
             </div>
           </article>

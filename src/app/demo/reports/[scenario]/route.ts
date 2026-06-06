@@ -297,6 +297,12 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
       scenario.evidenceMissing.map((item) => [item, "Missing", "Collect before production wave approval."]),
       [180, 80, 246],
     );
+    callout(
+      doc,
+      "Decision-pack rule",
+      "Missing evidence remains a finding. It reduces confidence, changes sequencing and can block production waves even when the raw inventory looks promising.",
+      "warning",
+    );
 
     addPage(doc, "Top Risks", "Risk cards connect each finding to impact and follow-up action.");
     writeSection(doc, "Top risk findings", scenario.topRisks, "danger");
@@ -319,7 +325,13 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
       "info",
     );
 
-    addPage(doc, "Migration Recommendation Plan", "Wave planning is technical sequencing, not a final cutover order.");
+    addPage(doc, "Migration Decision Pack", "Migration Recommendation Plan logic stays evidence-bound and wave planning is not a final cutover order.");
+    callout(
+      doc,
+      "Blueprint planning posture",
+      "Treat this section as a planning and execution-qualification layer. Pilot scope, rollback logic and owner validation still govern whether broader waves should proceed.",
+      "info",
+    );
     simpleTable(
       doc,
       "Recommended waves",
@@ -330,6 +342,16 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
         wave.label.toLowerCase().includes("hold") ? "Resolve missing evidence before release." : "Pilot, rollback and owner validation required.",
       ]),
       [116, 270, 120],
+    );
+    writeSection(
+      doc,
+      "What this planning layer is doing",
+      [
+        "Separating pilot-ready workloads from systems that still require hold, rollback or owner validation.",
+        "Keeping the Migration Recommendation Plan tied to evidence gates rather than generic sequencing.",
+        "Showing where storage, backup and dependency evidence still limit production-wave confidence.",
+      ],
+      "warning",
     );
 
     addPage(doc, "Senior AI Advisor Notes", "Synthetic advisor examples; no live Gemini/OpenAI call was made.");

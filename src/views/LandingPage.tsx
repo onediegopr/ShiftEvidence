@@ -459,7 +459,7 @@ const landingFaqsGrouped = {
     },
     {
       q: "What do I receive?",
-      a: "You receive a complete decision pack containing a readiness score, evidence confidence rating, VM risk classification matrix, storage target suitability findings, missing evidence checklists, migration wave recommendations, and optional advisor-guided next steps.",
+      a: "You receive a complete decision pack containing a readiness score, evidence confidence rating, VM risk classification matrix, blueprint decision summary, storage target suitability findings, missing evidence checklists, migration wave recommendations, and optional advisor-guided next steps.",
     },
     {
       q: "Who is it for?",

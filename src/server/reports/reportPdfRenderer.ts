@@ -2,6 +2,10 @@ import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
 import { buildReportExecutiveCommandCenter } from "./reportExecutiveCommandCenter";
+import {
+  buildBlueprintDecisionSummaryBulletsForNarrative,
+  buildBlueprintDecisionSummaryForNarrative,
+} from "./reportBlueprintSections";
 import { buildReportNarrativeModelFromPreview } from "./reportNarrativeModel";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
@@ -1875,6 +1879,17 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       "Prepare a pilot wave before any production migration.",
       "Request a Migration Blueprint only after target architecture and dependency evidence are available.",
     ]);
+
+    const blueprintSummary = buildBlueprintDecisionSummaryForNarrative(narrativeModel);
+    h2(doc, "Blueprint Decision Summary", "This is a planning and execution-qualification package.");
+    keyValueTable(doc, [
+      ["Planning posture", blueprintSummary.recommendation],
+      ["Execution readiness", blueprintSummary.subtitle],
+      ["Validation gate message", blueprintSummary.decisionNote],
+      ["Main blocker", blueprintSummary.blocker],
+      ["Best next action", blueprintSummary.nextAction],
+    ]);
+    bulletList(doc, buildBlueprintDecisionSummaryBulletsForNarrative(narrativeModel), 5);
     callout(
       doc,
       input.reportTypeLabel === "PDF Preview"

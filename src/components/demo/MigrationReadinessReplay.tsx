@@ -647,9 +647,9 @@ export default function MigrationReadinessReplay() {
             <div className="glass-card demo-sample-download-card">
               <div>
                 <div className="badge">Premium Output Sample</div>
-                <h3 className="demo-sample-download-title">See the full sample deliverable</h3>
+                <h3 className="demo-sample-download-title">See the full sample deliverable v3</h3>
                 <p className="demo-sample-download-copy">
-                  Download a premium synthetic PDF with storage readiness, licensing exposure, continuity risk, Advisor Q&A, memory decisions and migration waves.
+                  Download the latest premium synthetic PDF with storage readiness, licensing exposure, continuity risk, Advisor Q&A, memory decisions and migration waves.
                 </p>
                 <div className="demo-sample-highlight-list">
                   {sampleReportHighlights.map((highlight) => (
@@ -664,7 +664,7 @@ export default function MigrationReadinessReplay() {
                   <span>Full synthetic PDF report</span>
                 </div>
                 <a 
-                  href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf" 
+                  href="/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf"
                   className="btn btn-primary btn-sm btn-glow" 
                   target="_blank" 
                   rel="noreferrer"

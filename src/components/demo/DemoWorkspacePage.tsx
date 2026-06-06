@@ -99,7 +99,7 @@ const workspaceIntroCards = [
     Icon: BarChart3,
     eyebrow: "What you can explore",
     title: "The full decision pack flow",
-    copy: "Open synthetic scenarios to inspect readiness, confidence, risk matrices, storage concerns and migration waves.",
+    copy: "Open synthetic scenarios to inspect readiness, confidence, risk matrices, blueprint decision cues, storage concerns and migration waves.",
     bullets: [
       "Readiness and confidence scores",
       "VM risk matrix and evidence gaps",

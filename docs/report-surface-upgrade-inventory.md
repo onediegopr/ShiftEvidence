@@ -1,0 +1,40 @@
+# Report Surface Upgrade Inventory
+
+## Scope
+
+This inventory tracks the visible or downloadable report-related surfaces that participate in the `REPORTS-UX-2` sweep. The goal is to keep the public sample, demo funnel and authenticated PDF surfaces aligned without changing route contracts, storage contracts, entitlements or the PDF engine.
+
+## Inventory
+
+| Surface / asset | Type | Visibility | Renderer / source | Current state | Risk | REPORTS-UX-2 action | REPORTS-UX-3 action |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `/sample-report` | Public sample landing page | Public | `src/app/sample-report/page.tsx` -> `src/components/sample-report/SampleReportPage.tsx` | Premium sample CTA aligned to the new versioned asset | Medium | Point the CTA to the versioned premium sample PDF and keep the language conclusion-based | Keep the page in sync with the latest premium sample asset version |
+| `src/components/sample-report/SampleReportPage.tsx` | Public sample UX | Public | React component + CSS | Copy and CTA bridge updated for the new versioned PDF | Medium | Update the CTA, preview wording and deliverable labels to mirror the upgraded sample | Sweep section ordering and preview cards after the final blueprint pack settles |
+| `public/sample-reports/proxmox-migration-readiness-sample-report.pdf` | Public compatibility PDF | Public | `scripts/generate-public-sample-report.mjs` | Preserved compatibility URL with regenerated public-facing sample content | High | Keep the compatibility URL live while regenerating it intentionally from the same safe synthetic script | Retain as the compatibility fallback while the premium CTA stays on the versioned asset |
+| `public/sample-reports/proxmox-migration-readiness-premium-sample-report-v2.pdf` | Premium sample PDF v2 | Public | `scripts/generate-public-sample-report.mjs` | Preserved historical premium asset | Medium | Keep v2 available while the public funnel points to v3 | Retire only after v3 is fully validated and all important links have been swept |
+| `public/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf` | Premium sample PDF v3 | Public | Copied from the current premium sample baseline and versioned in place | New versioned successor | Medium | Point public CTAs to v3 and validate the PDF surface | Promote v4 only if the premium sample meaningfully changes again |
+| `scripts/generate-public-sample-report.mjs` | Sample PDF generator | Internal / build-time | Standalone `PDFKit` script | Generates the compatibility public sample plus the versioned premium v3 asset | Medium | Keep the generator aligned with the versioned premium asset and the preserved compatibility URL | Add a dedicated v4 path only when the premium sample meaning changes again |
+| `src/app/demo/reports/[scenario]/route.ts` | Synthetic demo PDF source route | Public | `src/app/demo/reports/[scenario]/route.ts` | Route contract preserved with richer decision-pack language | Medium | Keep returning `application/pdf` while aligning the narrative with the command-center and blueprint posture | Consider extracting any shared premium-demo copy helpers if more scenarios are added |
+| `/demo/reports/[scenario]` | Synthetic PDF route | Public | `src/app/demo/reports/[scenario]/route.ts` | Still using the current route contract | Medium | Keep the route intact while aligning message copy and sample asset naming | Consider a shared helper for any future report-surface vocabulary changes |
+| `src/components/demo/MigrationReadinessReplay.tsx` | Public replay funnel | Public | React component | Updated sample PDF link to v3 | Low | Keep the replay CTA aligned with the premium sample version | Review replay copy again if the sample content meaningfully changes |
+| `src/components/demo/DemoWorkspacePage.tsx` | Public read-only workspace | Public | React component | Current copy remains consistent with the decision-pack funnel | Low | Keep the workspace descriptive language in sync with the upgraded report spine | Add blueprint-specific callouts only if the demo scenarios evolve |
+| `src/components/demo/DemoHubPage.tsx` | Public demo hub | Public | React component | Current CTA taxonomy still matches the funnel | Low | Keep the demo hub aligned with the new report families and versioned sample asset | Revisit if a new demo branch is added |
+| `src/views/LandingPage.tsx` | Marketing landing page | Public | React page | Report language remains broadly consistent | Low | Sweep any report-family wording that falls behind the upgraded blueprint language | Re-audit if the home page gains a direct premium sample CTA |
+| `/vmware-to-proxmox-readiness` | Public offer page | Public | `src/app/vmware-to-proxmox-readiness/page.tsx` | CTA links updated to the versioned premium sample | Medium | Keep the offer page copy tied to the new sample asset and conservative claims | Update again only when the packaging changes materially |
+| `/pricing` | Public pricing page | Public | `src/app/pricing/page.tsx` + `src/lib/pricingPlans.ts` | Commercial copy already aligned with the blueprint value promise | Medium | Keep pricing wording aligned to the versioned report surfaces | Reconcile any future bundle changes here before publishing |
+| `src/app/api/assessments/[id]/reports/generate/route.ts` | Authenticated report generation | Authenticated | `reportGenerationService` | Stable | High | No route contract changes; keep the renderer upgrades behind the same pipeline | Add more section richness only through shared renderer helpers |
+| `src/app/api/assessments/[id]/reports/[reportId]/download/route.ts` | Authenticated download | Authenticated | `reportStorageService` | Stable | High | Preserve the download contract and storage semantics | Only touch if a later storage policy change is explicitly approved |
+| `src/app/dashboard/assessments/[id]/report/page.tsx` | Authenticated report preview | Authenticated | `reportPreviewService` + `reportPdfRenderer` | Shared preview flow remains intact | Medium | Keep the main PDF narrative and section order compatible with existing preview behavior | Expand the preview only after the blueprint visuals prove stable |
+| `src/server/reports/reportPreviewService.ts` | Preview data adapter | Internal | Assessment-to-preview adapter | Stable | Medium | Keep the adapter on top of existing data models | Refactor only if a future blueprint v3 needs more structured preview data |
+| `src/server/reports/reportGenerationService.ts` | Report orchestration | Internal | PDF generation coordinator | Stable | High | Do not change the storage/contract boundary | Leave orchestration intact while section helpers evolve |
+| `src/server/reports/reportPdfRenderer.ts` | Main readiness PDF renderer | Internal / authenticated | Shared `PDFKit` renderer | Executive Command Center plus blueprint summary now in place | High | Add limited blueprint summary and action-plan preview only | Move toward richer blueprint visuals after the current layout proves stable |
+| `src/server/reports/migrationPlanService.ts` | Migration plan builder | Internal | Plan assembly service | Stable | Medium | Keep the plan semantics conservative and evidence-driven | Expand the plan only through shared model builders |
+| `src/server/reports/migrationPlanPdfRenderer.ts` | Standalone migration plan PDF renderer | Internal / authenticated | Shared `PDFKit` renderer | Blueprint visual sections added | High | Add the visual decision pack sections while keeping claims conservative | Use this spine for richer blueprint-only sections later |
+| `src/server/reports/reportStorageService.ts` | Report file storage | Internal | Storage abstraction | Stable | High | Preserve the storage/download contract | Only revisit if a future asset versioning strategy demands it |
+
+## Notes
+
+- Readiness and confidence must remain separate signals.
+- Missing evidence should stay visible as a decision-quality signal.
+- Versioned public sample assets should be added rather than replacing existing ones blindly.
+- `REPORTS-UX-3` should focus on deeper blueprint-only packaging, not on changing the storage or route contracts.

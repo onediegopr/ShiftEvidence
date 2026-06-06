@@ -1,4 +1,4 @@
-export const REPORT_DESIGN_SYSTEM_VERSION = "REPORTS-UX-1";
+export const REPORT_DESIGN_SYSTEM_VERSION = "REPORTS-UX-2";
 
 export const REPORT_TYPES = [
   "starter_readiness_report",
@@ -18,15 +18,20 @@ export const REPORT_PAGE_ARCHITECTURE = [
   "Evidence Coverage",
   "Readiness and Confidence Scores",
   "Migration Readiness Radar",
+  "Blueprint Decision Summary",
   "Top Risks",
   "VM Classification",
   "Storage Readiness",
   "Network Readiness",
   "Backup Readiness",
   "Proxmox Target Readiness",
+  "Validation Matrix",
   "Migration Waves",
+  "Migration Runbook Timeline",
   "Pilot Candidates",
   "Hold / No-Go Items",
+  "Rollback Decision Tree",
+  "Client Action Plan",
   "Required Validations",
   "Recommended Next Steps",
   "Appendix / Assumptions / Methodology",
@@ -47,6 +52,10 @@ export const REPORT_VISUAL_COMPONENTS = [
   "VM Archetype Card",
   "Evidence Coverage Matrix",
   "Proxmox Target Blueprint Diagram",
+  "Validation Matrix",
+  "Migration Runbook Timeline",
+  "Rollback Decision Tree",
+  "Client Action Plan",
   "Before/After Block",
   "Action Plan Table",
   "Assumptions Box",
