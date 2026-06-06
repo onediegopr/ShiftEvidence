@@ -1,7 +1,5 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { NextResponse } from "next/server";
-import fs from "node:fs";
-import path from "node:path";
 import { getDemoScenarioBySlug } from "../../../../server/demo/demoDatasets";
 
 export const runtime = "nodejs";
@@ -50,85 +48,10 @@ function toneColors(tone: "good" | "warning" | "danger" | "info") {
   return { fill: COLORS.cyanSoft, stroke: COLORS.cyan, text: COLORS.cyan };
 }
 
-const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
-
-function getShiftEvidenceBrandIcon() {
-  try {
-    if (fs.existsSync(BRAND_ICON_LIGHT_PATH)) {
-      return fs.readFileSync(BRAND_ICON_LIGHT_PATH);
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
-}
-
-function drawBrandIcon(doc: PDFKit.PDFDocument, x: number, y: number, size = 24) {
-  const icon = getShiftEvidenceBrandIcon();
-  if (icon) {
-    try {
-      doc.image(icon, x, y, {
-        fit: [size, size],
-        align: "center",
-        valign: "center",
-      });
-      return;
-    } catch {
-      // Fall through to the vector fallback if the PNG cannot be embedded.
-    }
-  }
-
-  const scale = size / 32;
-  const unit = 10 * scale;
-  const gap = 2 * scale;
-  const radius = 2.8 * scale;
-  const left = x + 1 * scale;
-  const top = y + 1 * scale;
-
-  doc.roundedRect(left, top, unit, unit, radius).fill("#17223b");
-  doc.roundedRect(left + unit + gap, top, unit, unit, radius).fill("#22d3ee");
-  doc.roundedRect(left, top + unit + gap, unit, unit, radius).fill("#5b21b6");
-
-  const arrowX = left + unit + gap * 0.55;
-  const arrowY = top + unit + gap + unit * 0.35;
-  const arrowEndX = left + unit * 2 + gap * 1.45;
-  const arrowEndY = top + unit + gap + unit * 0.02;
-  const strokeWidth = Math.max(1.35, 3.2 * scale);
-
-  doc
-    .moveTo(arrowX, arrowY)
-    .bezierCurveTo(
-      left + unit * 1.55,
-      top + unit * 2.2,
-      left + unit * 1.95,
-      top + unit * 1.82,
-      arrowEndX,
-      arrowEndY,
-    )
-    .lineTo(arrowEndX, top + unit * 2.02 + gap)
-    .lineWidth(strokeWidth)
-    .lineCap("round")
-    .lineJoin("round")
-    .strokeColor("#8b5cf6")
-    .stroke();
-
-  doc
-    .moveTo(arrowEndX, arrowEndY)
-    .lineTo(arrowEndX - 4.15 * scale, arrowEndY)
-    .moveTo(arrowEndX, arrowEndY)
-    .lineTo(arrowEndX, arrowEndY + 4.15 * scale)
-    .lineWidth(strokeWidth)
-    .lineCap("round")
-    .strokeColor("#8b5cf6")
-    .stroke();
-}
-
 function addHeader(doc: PDFKit.PDFDocument, title: string) {
   doc.rect(0, 0, doc.page.width, 58).fill(COLORS.panelStrong);
   doc.strokeColor(COLORS.line).lineWidth(0.7).moveTo(0, 58).lineTo(doc.page.width, 58).stroke();
-  drawBrandIcon(doc, 54, 13, 24);
-  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 86, 20, {
+  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 54, 20, {
     characterSpacing: 1.2,
   });
   doc.fillColor(COLORS.muted).font("Helvetica").fontSize(8).text(safeText(title).toUpperCase(), 286, 21, {
@@ -291,8 +214,7 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(COLORS.paper);
     doc.rect(0, 0, doc.page.width, 152).fill(COLORS.panelStrong);
     doc.rect(0, 152, doc.page.width, 6).fill(COLORS.cyan);
-    drawBrandIcon(doc, 54, 38, 38);
-    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(14).text("SHIFT EVIDENCE", 100, 47, {
+    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(14).text("SHIFT EVIDENCE", 54, 47, {
       characterSpacing: 1.6,
     });
     doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(9).text("DEMO WORKSPACE", 54, 118, {

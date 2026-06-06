@@ -1,7 +1,5 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
-import fs from "node:fs";
-import path from "node:path";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
 import { PRINT_REPORT_THEME, PRINT_TONE_COLORS, type ReportTone } from "./reportTheme";
@@ -42,85 +40,9 @@ const THEME = {
 };
 
 const TONE_COLORS = PRINT_TONE_COLORS;
-const BRAND_ICON_LIGHT_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-light-transparent.png");
-const BRAND_ICON_DARK_PATH = path.join(process.cwd(), "public", "brand", "shift-evidence-icon-dark-transparent.png");
-
-function getShiftEvidenceBrandIcon(dark = false) {
-  const preferredPath = dark ? BRAND_ICON_DARK_PATH : BRAND_ICON_LIGHT_PATH;
-  try {
-    if (fs.existsSync(preferredPath)) {
-      return fs.readFileSync(preferredPath);
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
-}
-
-function drawShiftEvidenceMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
-  const scale = size / 32;
-  const unit = 10 * scale;
-  const gap = 2 * scale;
-  const radius = 2.8 * scale;
-  const left = x + 1 * scale;
-  const top = y + 1 * scale;
-
-  doc.roundedRect(left, top, unit, unit, radius).fill("#17223b");
-  doc.roundedRect(left + unit + gap, top, unit, unit, radius).fill("#22d3ee");
-  doc.roundedRect(left, top + unit + gap, unit, unit, radius).fill("#5b21b6");
-
-  const arrowX = left + unit + gap * 0.55;
-  const arrowY = top + unit + gap + unit * 0.35;
-  const arrowEndX = left + unit * 2 + gap * 1.45;
-  const arrowEndY = top + unit + gap + unit * 0.02;
-  const strokeWidth = Math.max(1.35, 3.2 * scale);
-
-  doc
-    .moveTo(arrowX, arrowY)
-    .bezierCurveTo(
-      left + unit * 1.55,
-      top + unit * 2.2,
-      left + unit * 1.95,
-      top + unit * 1.82,
-      arrowEndX,
-      arrowEndY,
-    )
-    .lineTo(arrowEndX, top + unit * 2.02 + gap)
-    .lineWidth(strokeWidth)
-    .lineCap("round")
-    .lineJoin("round")
-    .strokeColor("#8b5cf6")
-    .stroke();
-
-  doc
-    .moveTo(arrowEndX, arrowEndY)
-    .lineTo(arrowEndX - 4.15 * scale, arrowEndY)
-    .moveTo(arrowEndX, arrowEndY)
-    .lineTo(arrowEndX, arrowEndY + 4.15 * scale)
-    .lineWidth(strokeWidth)
-    .lineCap("round")
-    .strokeColor("#8b5cf6")
-    .stroke();
-}
-
 function drawShiftEvidenceWordmark(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
-  const brandIcon = getShiftEvidenceBrandIcon(dark);
-  if (brandIcon) {
-    try {
-      doc.image(brandIcon, x, y - 2, {
-        fit: [28, 28],
-        align: "center",
-        valign: "center",
-      });
-    } catch {
-      drawShiftEvidenceMark(doc, x, y, 24);
-    }
-  } else {
-    drawShiftEvidenceMark(doc, x, y, 24);
-  }
-  doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x + 32, y + 1);
-  doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x + 32, y + 15);
+  doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x, y + 1);
+  doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x, y + 15);
 }
 
 function drawLogoPanel(params: {
