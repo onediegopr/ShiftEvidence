@@ -21,6 +21,7 @@ This step extends the methodology console with a safe write path for internal no
 - The migration is additive and named `methodology_admin_notes_review`.
 - It introduces new enums for note priority, note status, review item type, and review status.
 - It does not modify existing methodology seed tables.
+- It does not alter billing, payments, entitlements, assessments, evidence, users, sessions, Advisor runtime, scoring runtime, or PDF/report runtime.
 
 ## Console behavior
 
@@ -30,6 +31,9 @@ This step extends the methodology console with a safe write path for internal no
   - review item status updates
   - a persisted changelog view
 - The original seed sections stay visible for comparison.
+- The persistence path remains admin-only and auditable.
+- The seed remains read-only.
+- No approved note is applied automatically to runtime behavior.
 
 ## Next step
 

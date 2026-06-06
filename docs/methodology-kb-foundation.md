@@ -1,6 +1,6 @@
 # Methodology KB Foundation
 
-This document describes the read-only foundation added for `METHODOLOGY-1`.
+This document describes the read-only foundation added for `METHODOLOGY-1` and clarifies how the later audited persistence from `METHODOLOGY-2B` sits on top of that base.
 
 ## What was added
 
@@ -14,20 +14,37 @@ This document describes the read-only foundation added for `METHODOLOGY-1`.
 
 ## What was intentionally not done
 
-- No Prisma schema migration.
-- No DB writes.
+- In `METHODOLOGY-1`, no Prisma schema migration was added.
+- In `METHODOLOGY-1`, no DB writes were introduced.
 - No production cutover.
 - No changes to payments, Wise, DNS, Vercel deployment flow, or live customer data.
 - No changes to the current Advisor runtime behavior.
-- No automatic impact on scoring, Advisor, or PDF rendering from the persistence layer.
+- The later `METHODOLOGY-2B` persistence layer still has no automatic impact on scoring, Advisor, or PDF rendering.
 
 ## Design choices
 
 - The seed is static and deterministic so the admin console can render safely in any runtime.
 - The first version is read-only by design.
 - The rule model is ready for future persistence, embeddings, and review workflows, but those belong to `METHODOLOGY-2`.
-- The note/review/changelog persistence layer belongs to `METHODOLOGY-2B` and stays opt-in through admin actions.
+- The note/review/changelog persistence layer belongs to `METHODOLOGY-2B`, is additive, admin-only, and stays opt-in through explicit admin actions.
 - The full extraction path is documented in `docs/methodology-bible-extraction-plan.md`.
+
+## Clarification after METHODOLOGY-2B
+
+- `METHODOLOGY-1` remained fully read-only.
+- `METHODOLOGY-2B` added an audited additive persistence layer only for:
+  - internal admin notes
+  - review items
+  - methodology changelog entries
+- The methodology seed itself remains static and read-only.
+- The persistence layer does not automatically modify:
+  - scoring runtime
+  - Advisor runtime
+  - PDF/report runtime
+- The persistence layer is admin-only.
+- No external embeddings were introduced.
+- No RAG activation was introduced by this persistence step.
+- No real customer data is stored by this methodology persistence layer.
 
 ## How to extend it
 
@@ -44,4 +61,4 @@ This document describes the read-only foundation added for `METHODOLOGY-1`.
 - `npm run test:run`
 - `npm run build`
 
-If the app needs additional persistence beyond METHODOLOGY-2B, the next safe step is an audited schema migration plus a write workflow with approval and version history.
+If the app needs additional methodology persistence beyond `METHODOLOGY-2B`, the next safe step is to keep the same audited pattern with approval, version history, and explicit separation from scoring, Advisor, and PDF runtime wiring.

@@ -36,6 +36,7 @@ This baseline keeps METHODOLOGY work isolated from unrelated demo and sample-rep
 - Knowledge chunks: present and searchable locally
 - Admin console: editable note/review workflow is now available behind admin auth, with the seed sections still read-only
 - Persisted internal notes, review items, and changelog entries live in the additive `METHODOLOGY-2B` path
+- Persistence remains isolated from scoring runtime, Advisor runtime, and PDF/report runtime
 
 ## How to reproduce Methodology tests in isolation
 
@@ -51,7 +52,6 @@ npx vitest run tests/unit/demoWorkspace.test.ts tests/unit/premiumSampleReportCo
 
 ## What should be corrected later
 
-- Decide when to apply the additive `methodology_admin_notes_review` migration in local/dev.
 - Expand the new note/review workflow into broader admin review flows if needed.
 - Expand the Bible extraction plan into real content slices once the next methodology phase starts.
 - Re-run build after closing any active Next.js dev servers that hold `.next` locks on Windows.

@@ -22,6 +22,8 @@ The new admin route is `src/app/dashboard/admin/methodology/page.tsx`.
 - The page intentionally avoids any dependency on production runtime state.
 - The additive persistence step is documented in `docs/methodology-2b-audited-persistence.md`.
 - The incremental Bible extraction checklist lives in `docs/methodology-bible-extraction-plan.md`.
+- The persistence layer does not automatically alter scoring, Advisor behavior, or PDF/report generation.
+- No external embeddings or automatic RAG activation are introduced by this console.
 
 ## Navigation
 
@@ -30,11 +32,11 @@ The new admin route is `src/app/dashboard/admin/methodology/page.tsx`.
 
 ## Next step
 
-`METHODOLOGY-2` can add:
+`METHODOLOGY-3` can add:
 
 - version diffing
 - embeddings and indexed retrieval
 - approval states for rule changes
-- a write-safe admin workflow for internal notes once Prisma persistence is approved
+- a controlled bridge from approved notes toward Advisor/PDF consumers once explicitly approved
 
-That work should stay separate from the current read-only foundation until it can be reviewed safely.
+That work should stay separate from the current read-only seed and current admin-only persistence until it can be reviewed safely.
