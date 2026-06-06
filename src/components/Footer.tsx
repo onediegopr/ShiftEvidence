@@ -36,7 +36,7 @@ export default function Footer() {
               style={{ marginBottom: "0.5rem" }}
             >
               <Image
-                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                src={BRAND_PUBLIC_ASSETS.webLogo}
                 alt={`${BRAND_WORDMARK} Logo`}
                 width={28}
                 height={28}
@@ -74,7 +74,7 @@ export default function Footer() {
                 <a href="/support">Support</a>
               </li>
               <li>
-                <a href="/client-login">Client login</a>
+                <a href="/sign-in">Client login</a>
               </li>
               <li>
                 <a href="/partners">Partners</a>

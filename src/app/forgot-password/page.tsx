@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
           <div className="auth-logo-center">
             <Link href="/" className="logo-container" style={{ fontSize: "1.4rem" }}>
               <Image
-                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                src={BRAND_PUBLIC_ASSETS.webLogo}
                 alt={`${BRAND_WORDMARK} Logo`}
                 width={35}
                 height={35}

@@ -10,7 +10,7 @@ const outputPath = path.join(outputDir, "proxmox-migration-readiness-sample-repo
 const versionedOutputPath = path.join(outputDir, "proxmox-migration-readiness-premium-sample-report-v2.pdf");
 const brandAssetsConfigPath = path.join(repoRoot, "src", "config", "brand-assets.json");
 const brandAssets = JSON.parse(fs.readFileSync(brandAssetsConfigPath, "utf8"));
-const primaryBrandLogoPath = path.join(repoRoot, "public", brandAssets.public.primaryLogo.replace(/^\//, ""));
+const primaryBrandLogoPath = path.join(repoRoot, "public", brandAssets.public.pdfLogo.replace(/^\//, ""));
 const primaryBrandLogo = fs.existsSync(primaryBrandLogoPath) ? fs.readFileSync(primaryBrandLogoPath) : null;
 const brandWordmark = brandAssets.wordmark;
 

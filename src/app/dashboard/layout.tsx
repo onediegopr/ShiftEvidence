@@ -30,7 +30,7 @@ export default async function DashboardLayout({
           <div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
             <Link href="/dashboard" className="logo-container" style={{ fontSize: "1.2rem" }}>
               <Image
-                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                src={BRAND_PUBLIC_ASSETS.webLogo}
                 alt={`${BRAND_WORDMARK} Logo`}
                 width={30}
                 height={30}

@@ -34,7 +34,7 @@ describe("PDF/report branding assets", () => {
       expect(
         source,
         `${file} should resolve the PDF logo from the centralized brand asset config`,
-      ).toMatch(/brand-asset|brandAssetService|primaryLogo/);
+      ).toMatch(/brand-asset|brandAssetService|pdfLogo/);
       expect(source, `${file} must not reference incoming temporary assets`).not.toMatch(/_incoming|ChatGPT Image|Logo Favicon/i);
       expect(source, `${file} must not use favicon as PDF logo`).not.toMatch(/favicon/i);
     }

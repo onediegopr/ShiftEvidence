@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="container navbar-container">
         <Link href="/" className="logo-container">
           <Image
-            src={BRAND_PUBLIC_ASSETS.primaryLogo}
+            src={BRAND_PUBLIC_ASSETS.webLogo}
             alt={`${BRAND_WORDMARK} Logo`}
             width={40}
             height={40}
@@ -67,7 +67,7 @@ export default function Navbar() {
             <Sparkles size={15} />
             Start Free Check
           </Link>
-          <Link href="/client-login" className="nav-client-login">
+          <Link href="/sign-in" className="nav-client-login">
             <LogIn size={15} />
             Client login
           </Link>

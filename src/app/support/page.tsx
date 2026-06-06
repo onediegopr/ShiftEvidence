@@ -165,7 +165,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </p>
               </div>
               <div className="assessment-inline-actions">
-                <Link href="/client-login" className="btn btn-secondary">
+                <Link href="/sign-in" className="btn btn-secondary">
                   Client login
                 </Link>
                 <Link href="/dashboard" className="dashboard-card-link">

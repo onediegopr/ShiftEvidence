@@ -3,7 +3,7 @@ import path from "node:path";
 import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../../lib/brandAssets";
 
 export { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK };
-export const PRIMARY_BRAND_LOGO_PUBLIC_PATH = BRAND_PUBLIC_ASSETS.primaryLogo;
+export const PDF_BRAND_LOGO_PUBLIC_PATH = BRAND_PUBLIC_ASSETS.pdfLogo;
 
 export function resolveBrandAssetAbsolutePath(publicPath: string) {
   return path.join(process.cwd(), "public", publicPath.replace(/^\//, ""));
@@ -24,5 +24,5 @@ export function readBrandAssetBuffer(publicPath: string) {
 }
 
 export function readPrimaryBrandLogoBuffer() {
-  return readBrandAssetBuffer(PRIMARY_BRAND_LOGO_PUBLIC_PATH);
+  return readBrandAssetBuffer(PDF_BRAND_LOGO_PUBLIC_PATH);
 }

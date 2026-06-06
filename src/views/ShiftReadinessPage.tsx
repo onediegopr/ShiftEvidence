@@ -59,7 +59,7 @@ export default function ShiftReadinessPage() {
         <div className="container navbar-container">
           <Link href="/" className="logo-container">
             <Image
-              src={BRAND_PUBLIC_ASSETS.primaryLogo}
+              src={BRAND_PUBLIC_ASSETS.webLogo}
               alt={`${BRAND_WORDMARK} Logo`}
               width={40}
               height={40}
