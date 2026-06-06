@@ -40,14 +40,60 @@ function drawBrandHeader(doc: PDFKit.PDFDocument) {
         valign: "center",
       });
     } catch {
-      doc.circle(MARGIN + 12, MARGIN + 10, 10).lineWidth(2).strokeColor(THEME.blue).stroke();
+      drawBrandMark(doc, MARGIN, MARGIN - 3, 28);
     }
   } else {
-    doc.circle(MARGIN + 12, MARGIN + 10, 10).lineWidth(2).strokeColor(THEME.blue).stroke();
+    drawBrandMark(doc, MARGIN, MARGIN - 3, 28);
   }
 
   doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(10).text("SHIFT EVIDENCE", MARGIN + 36, MARGIN + 1);
   doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text("Migration planning report", MARGIN + 36, MARGIN + 15);
+}
+
+function drawBrandMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
+  const scale = size / 32;
+  const unit = 10 * scale;
+  const gap = 2 * scale;
+  const radius = 2.8 * scale;
+  const left = x + 1 * scale;
+  const top = y + 1 * scale;
+
+  doc.roundedRect(left, top, unit, unit, radius).fill("#17223b");
+  doc.roundedRect(left + unit + gap, top, unit, unit, radius).fill("#22d3ee");
+  doc.roundedRect(left, top + unit + gap, unit, unit, radius).fill("#5b21b6");
+
+  const arrowX = left + unit + gap * 0.55;
+  const arrowY = top + unit + gap + unit * 0.35;
+  const arrowEndX = left + unit * 2 + gap * 1.45;
+  const arrowEndY = top + unit + gap + unit * 0.02;
+  const strokeWidth = Math.max(1.35, 3.2 * scale);
+
+  doc
+    .moveTo(arrowX, arrowY)
+    .bezierCurveTo(
+      left + unit * 1.55,
+      top + unit * 2.2,
+      left + unit * 1.95,
+      top + unit * 1.82,
+      arrowEndX,
+      arrowEndY,
+    )
+    .lineTo(arrowEndX, top + unit * 2.02 + gap)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .lineJoin("round")
+    .strokeColor("#8b5cf6")
+    .stroke();
+
+  doc
+    .moveTo(arrowEndX, arrowEndY)
+    .lineTo(arrowEndX - 4.15 * scale, arrowEndY)
+    .moveTo(arrowEndX, arrowEndY)
+    .lineTo(arrowEndX, arrowEndY + 4.15 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
+    .strokeColor("#8b5cf6")
+    .stroke();
 }
 
 function safeText(value: string | number | null | undefined) {

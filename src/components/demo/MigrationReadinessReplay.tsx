@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Play, ShieldCheck, Download, AlertTriangle } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, CheckCircle2, Play, ShieldCheck, Download, AlertTriangle, Database, Network, Server, Layers3, FileText } from "lucide-react";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import ReplayControls from "./ReplayControls";
@@ -14,6 +15,8 @@ import {
   type ReplayStepId,
   whatYouGet,
 } from "./replayData";
+import vmwareLogo from "../../../images/vmware.svg";
+import proxmoxLogo from "../../../images/proxmox.svg";
 
 const featureDescriptions: Record<string, string> = {
   "Executive Decision Report": "A high-level business summary presenting the financial impact, readiness posture, and total ROI timeline to secure executive buy-in.",
@@ -33,6 +36,64 @@ const evidenceExpansionModules = [
   ["Storage / SAN", "Capacity pressure, datastore mapping and target-storage constraints."],
   ["Dependencies", "Application relationships that influence wave sequencing."],
   ["Migration Plan PDF", "Gates, blockers, remediation and go/no-go guidance."],
+];
+
+const heroReplayModules = [
+  { label: "Risk discovery", value: "03 blockers", tone: "cyan" },
+  { label: "Wave planning", value: "6 mapped phases", tone: "violet" },
+  { label: "Evidence confidence", value: "High visibility", tone: "amber" },
+];
+
+const heroReplayJourney = [
+  "RVTools export intake",
+  "TAM scoring and mismatch review",
+  "Decision-ready VMware to Proxmox pack",
+];
+
+const deliverableSignals = [
+  { label: "Executive layer", title: "Boardroom-ready summary" },
+  { label: "Planning layer", title: "Risk-qualified migration waves" },
+  { label: "Validation layer", title: "Evidence gaps surfaced before execution" },
+];
+
+const evidenceModuleMeta = {
+  "RVTools baseline": { Icon: Database, tone: "cyan", kicker: "Source layer" },
+  "Backup evidence": { Icon: ShieldCheck, tone: "emerald", kicker: "Continuity layer" },
+  "Proxmox target": { Icon: Server, tone: "amber", kicker: "Target layer" },
+  "Storage / SAN": { Icon: Layers3, tone: "violet", kicker: "Storage layer" },
+  "Dependencies": { Icon: Network, tone: "cyan", kicker: "Dependency layer" },
+  "Migration Plan PDF": { Icon: FileText, tone: "amber", kicker: "Decision layer" },
+} as const;
+
+const integrityCommitments = [
+  {
+    title: "No production writes",
+    body: "We analyze exported metadata offline. No write permissions, no credentials, no production agents.",
+  },
+  {
+    title: "No automated migration theater",
+    body: "We do not move VMs or orchestrate conversions. Execution belongs to validated tools and experienced engineers.",
+  },
+  {
+    title: "No fake zero-downtime promise",
+    body: "Downtime minimization requires a pilot, storage sync planning and rollback drills. We do not market fantasy outcomes.",
+  },
+  {
+    title: "No guesswork when evidence is missing",
+    body: "If backup logs, disk metrics or topology signals are absent, we flag the gap and reduce confidence instead of inventing answers.",
+  },
+];
+
+const actionCenterSignals = [
+  "Licensing exposure",
+  "Storage readiness",
+  "Wave blockers",
+];
+
+const sampleReportHighlights = [
+  "Storage readiness and target fit",
+  "Licensing exposure and cost pressure",
+  "Advisor Q&A and migration waves",
 ];
 
 const AUTO_ADVANCE_MS = 4200;
@@ -148,38 +209,59 @@ export default function MigrationReadinessReplay() {
         <div className="bg-mesh" />
         <div className="container demo-hero-grid">
           <div className="demo-hero-copy">
-            <div className="badge badge-cyan">Cognitive TAM Methodology</div>
-            <p className="assessment-inline-note">Migration Readiness Replay</p>
+            <div className="demo-route-line" aria-hidden="true">
+              <span className="demo-route-pill demo-route-pill-vmware">
+                <Image src={vmwareLogo} alt="" width={16} height={16} />
+                VMware
+              </span>
+              <span className="demo-route-arrow">
+                <ArrowRight size={14} />
+              </span>
+              <span className="demo-route-pill demo-route-pill-proxmox">
+                <Image src={proxmoxLogo} alt="" width={16} height={16} />
+                Proxmox
+              </span>
+            </div>
+            <div className="demo-hero-kicker-row">
+              <div className="badge badge-cyan">Simulated replay</div>
+              <p className="assessment-inline-note">Cognitive TAM methodology</p>
+            </div>
             <h1 className="demo-hero-title">
-              Stop Guessing. Map Your <span className="demo-vmware-word">VMware</span> Exit with Precision.
+              Replay the readiness path before you touch production.
             </h1>
             <p className="demo-hero-subtitle">
-              Transition from <span className="demo-vmware-inline">VMware</span> to <span className="demo-proxmox-inline">Proxmox</span> with a productized risk-discovery engine.
+              ShiftReadiness turns raw <span className="demo-vmware-inline">VMware</span> evidence into a risk-qualified <span className="demo-proxmox-inline">Proxmox</span> migration decision pack.
             </p>
             <p className="demo-hero-body">
-              ShiftReadiness applies our cognitive Target Architecture Mapping (TAM) methodology. We analyze your VMware export data to expose hidden configuration anomalies, flag hypervisor mismatches, and build a phased, risk-adjusted migration plan before you touch production.
+              This replay shows the exact flow: RVTools intake, TAM analysis, hidden anomaly detection, storage and network mapping, then phased go/no-go guidance before any production move starts.
             </p>
-            <div className="demo-badge-row" aria-label="Demo safety notes">
+            <div className="demo-badge-row demo-hero-signal-strip" aria-label="Demo safety notes">
               {demoBadges.map((badge) => (
                 <span key={badge}>{badge}</span>
               ))}
             </div>
-            <div className="shiftreadiness-actions">
-              <a href="#replay" className="btn btn-primary btn-glow" onClick={() => setIsPlaying(true)} data-event="demo_started">
-                Start Simulation
+            <div className="demo-hero-action-deck">
+              <a href="#replay" className="btn btn-primary btn-glow demo-hero-primary-action" onClick={() => setIsPlaying(true)} data-event="demo_started">
+                <span>
+                  <strong>Run Guided Replay</strong>
+                  <small>Follow the TAM flow from RVTools intake to the final decision pack</small>
+                </span>
                 <Play size={18} />
               </a>
-              <a href="#final-report" className="btn btn-secondary" onClick={skipToReport} data-event="demo_skipped_to_report">
-                Skip to final report
-              </a>
-              <Link href="/demo/workspace" className="btn btn-secondary" data-event="demo_workspace_clicked">
-                Explore Full Demo Workspace
-                <ArrowRight size={18} />
-              </Link>
-              <Link href="/sign-up?plan=free" className="btn btn-secondary" data-event="demo_cta_clicked">
-                Start Free Assessment
-                <ArrowRight size={18} />
-              </Link>
+              <div className="demo-hero-secondary-links">
+                <a href="#final-report" className="demo-hero-link-card" onClick={skipToReport} data-event="demo_skipped_to_report">
+                  <span>Open Final Report</span>
+                  <ArrowRight size={16} />
+                </a>
+                <Link href="/demo/workspace" className="demo-hero-link-card" data-event="demo_workspace_clicked">
+                  <span>Open Demo Workspace</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <Link href="/sign-up?plan=free" className="demo-hero-link-card demo-hero-link-card-accent" data-event="demo_cta_clicked">
+                  <span>Start Free Assessment</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -187,26 +269,37 @@ export default function MigrationReadinessReplay() {
             <div className="demo-terminal-aurora" aria-hidden="true" />
             <div className="demo-terminal-scanline" aria-hidden="true" />
             <div className="demo-terminal-header">
-              <div className="demo-window-dots" aria-hidden="true">
-                <span className={`sr-mockup-dot ${isPlaying ? "green animate-pulse" : "yellow"}`} />
-                <span className="sr-mockup-dot green" />
-                <span className="sr-mockup-dot red" />
-              </div>
+              <span className="demo-terminal-tag">Synthetic dataset</span>
               <strong className="demo-terminal-title">
-                <span className="demo-terminal-title-kicker">Telemetry engine</span>
-                <span>{isPlaying ? "Active migration telemetry" : "Idle, ready to ingest"}</span>
+                <span className="demo-terminal-title-kicker">Replay command center</span>
+                <span>{isPlaying ? "Live readiness replay" : "Ready to simulate the journey"}</span>
               </strong>
               <span className="demo-terminal-live-chip">
-                <span className="demo-terminal-live-dot" />
                 {isPlaying ? "Live stream" : "Standby"}
               </span>
+            </div>
+            <div className="demo-hero-panel-summary">
+              {heroReplayModules.map((item) => (
+                <div key={item.label} className={`demo-hero-summary-card demo-hero-summary-card-${item.tone}`}>
+                  <small>{item.label}</small>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+            <div className="demo-hero-panel-journey" aria-label="Replay path">
+              {heroReplayJourney.map((item, index) => (
+                <div key={item} className="demo-hero-journey-step">
+                  <span>{index + 1}</span>
+                  <strong>{item}</strong>
+                </div>
+              ))}
             </div>
             <div className="demo-terminal-body">
               <div className="demo-terminal-status-row">
                 <span>
-                  Status: <strong>{isPlaying ? "STREAMING ENGINE" : "STANDBY"}</strong>
+                  Status: <strong>{isPlaying ? "REPLAYING FLOW" : "READY TO REPLAY"}</strong>
                 </span>
-                <span className="demo-orbit-light" aria-hidden="true" />
+                <span className="demo-terminal-status-tag">Metadata only</span>
               </div>
               <div className="demo-terminal-spectrum" aria-hidden="true">
                 {Array.from({ length: 18 }).map((_, index) => (
@@ -223,7 +316,7 @@ export default function MigrationReadinessReplay() {
                 <span><strong>{Math.round(progress)}%</strong> mapped</span>
               </div>
               <span className="demo-terminal-methodology">
-                Methodology: target architecture mapping, agentless, metadata-only
+                Methodology: target architecture mapping, agentless, metadata-only, decision-pack output
               </span>
             </div>
           </div>
@@ -405,15 +498,38 @@ export default function MigrationReadinessReplay() {
             <div className="badge badge-cyan">What you get</div>
             <h2>Professional outputs before you commit to a migration path.</h2>
           </div>
+            <div className="demo-deliverables-hero">
+              <div className="demo-deliverables-intro">
+                <span>Decision pack</span>
+                <p>
+                  ShiftReadiness turns a raw VMware export into planning assets your technical team, delivery lead and executive sponsor can all use without rewriting the story three times.
+                </p>
+              </div>
+              <div className="demo-deliverables-signals" aria-label="Deliverable signals">
+              {deliverableSignals.map((signal, index) => (
+                <article key={signal.title} className="demo-deliverables-signal-card">
+                  <span className="demo-deliverables-signal-index">0{index + 1}</span>
+                  <small>{signal.label}</small>
+                  <strong>{signal.title}</strong>
+                </article>
+              ))}
+              </div>
+            </div>
           <div className="demo-feature-card-grid">
-            {whatYouGet.map((item) => {
+            {whatYouGet.map((item, index) => {
               const Icon = item.icon;
               return (
                 <article key={item.title} className="demo-premium-feature-card">
-                  <div className="demo-feature-icon-wrapper">
-                    <Icon size={22} />
+                  <div className="demo-feature-card-topline">
+                    <span className="demo-feature-card-index">0{index + 1}</span>
+                    <span className="demo-feature-card-label">Professional output</span>
                   </div>
-                  <h3>{item.title}</h3>
+                  <div className="demo-feature-card-title-row">
+                    <div className="demo-feature-icon-wrapper">
+                      <Icon size={22} />
+                    </div>
+                    <h3>{item.title}</h3>
+                  </div>
                   <p>{featureDescriptions[item.title] || "Detailed assessment output report."}</p>
                 </article>
               );
@@ -424,25 +540,41 @@ export default function MigrationReadinessReplay() {
 
       <section className="section shiftreadiness-section shiftreadiness-section-alt">
         <div className="container">
-          <div className="shiftreadiness-section-heading">
-            <div className="badge badge-cyan">Evidence Expansion Library</div>
-            <h2>Use synthetic scenarios to see how extra evidence changes confidence.</h2>
-            <p>
-              The replay now maps to a public synthetic dataset library covering clean pilots, missing backup evidence,
-              constrained targets, dependency-heavy environments and advanced-ready scenarios. These examples support
-              demos and QA without using customer data.
-            </p>
-          </div>
-          <div className="demo-feature-card-grid">
-            {evidenceExpansionModules.map(([title, body]) => (
-              <article key={title} className="demo-premium-feature-card">
-                <div className="demo-feature-icon-wrapper">
-                  <CheckCircle2 size={21} />
-                </div>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
+          <div className="demo-library-shell">
+            <div className="shiftreadiness-section-heading demo-library-heading">
+              <div className="badge badge-cyan">Evidence Expansion Library</div>
+              <h2>Use synthetic scenarios to see how extra evidence changes confidence.</h2>
+              <p>
+                The replay now maps to a public synthetic dataset library covering clean pilots, missing backup evidence,
+                constrained targets, dependency-heavy environments and advanced-ready scenarios. These examples support
+                demos and QA without using customer data.
+              </p>
+              <div className="demo-library-scenario-strip" aria-label="Scenario library">
+                <span>Clean pilots</span>
+                <span>Missing backup evidence</span>
+                <span>Constrained targets</span>
+                <span>Dependency-heavy environments</span>
+                <span>Advanced-ready scenarios</span>
+              </div>
+            </div>
+            <div className="demo-feature-card-grid demo-library-grid">
+              {evidenceExpansionModules.map(([title, body]) => {
+                const meta = evidenceModuleMeta[title as keyof typeof evidenceModuleMeta];
+                const Icon = meta?.Icon ?? CheckCircle2;
+                return (
+                  <article key={title} className={`demo-premium-feature-card demo-library-card demo-library-card-${meta?.tone ?? "cyan"}`}>
+                    <div className="demo-feature-card-topline">
+                      <span className="demo-feature-card-label">{meta?.kicker ?? "Scenario layer"}</span>
+                    </div>
+                    <div className="demo-feature-icon-wrapper">
+                      <Icon size={21} />
+                    </div>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -453,27 +585,20 @@ export default function MigrationReadinessReplay() {
             <div className="demo-integrity-header">
               <div className="badge">No-Nonsense Integrity Commitment</div>
               <h2>Clear boundaries. No migration theater.</h2>
-              <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginTop: '0.5rem' }}>
+              <p className="demo-integrity-copy">
                 We focus strictly on the pre-flight planning and risk validation phase. ShiftReadiness is designed around clear operational guardrails:
               </p>
             </div>
             <div className="demo-integrity-grid">
-              <div className="demo-integrity-item">
-                <CheckCircle2 size={16} />
-                <span><strong>No Production Writes:</strong> We analyze exported metadata offline. We never request write permissions, credentials, or agent installs on production systems.</span>
-              </div>
-              <div className="demo-integrity-item">
-                <CheckCircle2 size={16} />
-                <span><strong>No Automated Migration:</strong> We do not move VMs or orchestrate conversion scripts. Execution belongs to specialized automation tools or experienced engineers.</span>
-              </div>
-              <div className="demo-integrity-item">
-                <CheckCircle2 size={16} />
-                <span><strong>Zero Downtime Excluded:</strong> We do not promise zero downtime. True downtime minimization requires a dedicated pilot, storage synchronization, and rollback drills.</span>
-              </div>
-              <div className="demo-integrity-item">
-                <CheckCircle2 size={16} />
-                <span><strong>No Guesswork or Inference:</strong> If evidence (like backup logs or disk performance metrics) is not uploaded, we list it as missing, lowering your confidence score rather than guessing.</span>
-              </div>
+              {integrityCommitments.map((item) => (
+                <div key={item.title} className="demo-integrity-item">
+                  <CheckCircle2 size={16} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <span>{item.body}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -488,25 +613,30 @@ export default function MigrationReadinessReplay() {
           </div>
           
           <div className="demo-conversion-hub">
-            <div className="glass-card demo-conversion-main-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="glass-card demo-conversion-main-card">
               <div>
                 <div className="badge badge-cyan">Ready for your environment?</div>
-                <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'white', margin: '0.5rem 0' }}>Upload Your VMware Evidence</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                <h3 className="demo-conversion-title">Upload Your VMware Evidence</h3>
+                <p className="demo-conversion-copy">
                   Get a structured pre-flight check for your VMware cluster. Start with your RVTools inventory export to discover licensing exposure, sizing issues, and migration readiness scores in minutes.
                 </p>
+                <div className="demo-conversion-signal-strip" aria-label="Assessment focus">
+                  {actionCenterSignals.map((signal) => (
+                    <span key={signal}>{signal}</span>
+                  ))}
+                </div>
               </div>
               <div className="demo-conversion-actions-row">
-                <Link href="/sign-up?plan=free" className="btn btn-primary btn-glow" style={{ width: '100%', justifyContent: 'center' }} data-event="demo_cta_clicked">
+                <Link href="/sign-up?plan=free" className="btn btn-primary btn-glow demo-conversion-primary-btn" data-event="demo_cta_clicked">
                   Start Free Assessment
                   <ArrowRight size={18} />
                 </Link>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <Link href="/support?category=general_question&subject=Technical%20Review%20Call" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                <div className="demo-conversion-secondary-row">
+                  <Link href="/technical-review?source=demo_replay" className="btn btn-secondary demo-conversion-secondary-btn" data-event="demo_cta_clicked">
                     Book Technical Review
                     <ShieldCheck size={18} />
                   </Link>
-                  <Link href="/pricing" className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }} data-event="demo_cta_clicked">
+                  <Link href="/pricing" className="btn btn-secondary demo-conversion-secondary-btn" data-event="demo_cta_clicked">
                     View Pricing Plans
                     <ArrowRight size={18} />
                   </Link>
@@ -514,13 +644,18 @@ export default function MigrationReadinessReplay() {
               </div>
             </div>
 
-            <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="glass-card demo-sample-download-card">
               <div>
                 <div className="badge">Premium Output Sample</div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 600, color: 'white', margin: '0.5rem 0' }}>See the full sample deliverable</h3>
-                <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+                <h3 className="demo-sample-download-title">See the full sample deliverable</h3>
+                <p className="demo-sample-download-copy">
                   Download a premium synthetic PDF with storage readiness, licensing exposure, continuity risk, Advisor Q&A, memory decisions and migration waves.
                 </p>
+                <div className="demo-sample-highlight-list">
+                  {sampleReportHighlights.map((highlight) => (
+                    <span key={highlight}>{highlight}</span>
+                  ))}
+                </div>
               </div>
               
               <div className="demo-download-row">

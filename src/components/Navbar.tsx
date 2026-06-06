@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { LogIn, Sparkles } from "lucide-react";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -61,11 +62,13 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar-actions">
-          <Link href="/client-login" className="nav-link">
-            Client login
-          </Link>
-          <Link href="/sign-up" className="btn btn-secondary btn-sm shiftreadiness-nav-cta">
+          <Link href="/sign-up" className="nav-start-check">
+            <Sparkles size={15} />
             Start Free Check
+          </Link>
+          <Link href="/client-login" className="nav-client-login">
+            <LogIn size={15} />
+            Client login
           </Link>
         </div>
       </div>

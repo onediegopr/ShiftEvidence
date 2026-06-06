@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useRef, type CSSProperties, type FormEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { authClient } from "../../lib/auth-client";
 import { createOnboardingAssessmentAction } from "./actions";
+import vmwareLogo from "../../../images/vmware.svg";
+import proxmoxLogo from "../../../images/proxmox.svg";
 import {
   ShieldCheck,
   Terminal,
@@ -35,6 +38,45 @@ const readEmailParam = () => {
 
   return new URLSearchParams(window.location.search).get("email") ?? "";
 };
+
+const signupJourneySteps = [
+  "Create workspace",
+  "Add evidence",
+  "Review readiness",
+];
+
+const signupTrustSignals = [
+  "No agents required",
+  "No production access",
+  "Evidence-based readiness",
+];
+
+const signupPreviewMetrics = [
+  { label: "Readiness score", value: "92%", detail: "Synthetic preview benchmark", accent: "cyan" },
+  { label: "Evidence confidence", value: "High", detail: "Missing signals surfaced early", accent: "indigo" },
+  { label: "Wave blockers", value: "3", detail: "Storage, dVS and backup review", accent: "amber" },
+];
+
+const signupValueCards = [
+  {
+    title: "Cluster sizing and capacity map",
+    copy: "Analyze workload counts, CPU, memory and storage distribution before building migration waves.",
+    accent: "cyan",
+    Icon: Layers,
+  },
+  {
+    title: "Storage and network compatibility",
+    copy: "Surface vSAN to Ceph complexity, dVS mapping rules and destination readiness assumptions.",
+    accent: "indigo",
+    Icon: Network,
+  },
+  {
+    title: "Broadcom cost delta modeling",
+    copy: "Estimate licensing pressure and compare the VMware exit path against Proxmox scenarios.",
+    accent: "emerald",
+    Icon: ShieldCheck,
+  },
+];
 
 export default function SignUpPage() {
   // Signup states
@@ -216,19 +258,20 @@ export default function SignUpPage() {
   };
 
   const scoreStyle: CSSProperties = { "--score": getScore() } as CSSProperties;
+  const useModernSignupExperience = signupPreviewMetrics.length > 0;
 
   return (
     <main className="shiftreadiness-page" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar />
 
       <div
-        className="container"
+        className="container signup-stage"
         style={{
           flexGrow: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "6rem 1rem 4rem 1rem",
+          padding: "6rem 0.5rem 4rem 0.5rem",
         }}
       >
         {!isRegistered ? (
@@ -237,13 +280,333 @@ export default function SignUpPage() {
             className="signup-split-layout"
             style={{
               display: "grid",
-              gridTemplateColumns: "1.1fr 0.9fr",
-              gap: "2.5rem",
+              gridTemplateColumns: "1.02fr 0.98fr",
+              gap: "3.2rem",
               width: "100%",
-              maxWidth: "1100px",
+              maxWidth: "1320px",
               margin: "0 auto",
             }}
           >
+            {useModernSignupExperience ? (
+              <>
+                <div className="glass-card signup-form-panel" style={{ padding: "3rem 2.5rem" }}>
+                  <div className="signup-route-line" aria-hidden="true">
+                    <span className="signup-route-pill signup-route-pill-vmware">
+                      <Image src={vmwareLogo} alt="" width={16} height={16} />
+                      VMware
+                    </span>
+                    <span className="signup-route-arrow">
+                      <ArrowRight size={14} />
+                    </span>
+                    <span className="signup-route-pill signup-route-pill-proxmox">
+                      <Image src={proxmoxLogo} alt="" width={16} height={16} />
+                      Proxmox
+                    </span>
+                  </div>
+
+                  <div className="badge badge-cyan" style={{ marginBottom: "1rem" }}>
+                    Step 1: Create workspace
+                  </div>
+                  <h1 className="mb-2 signup-form-title" style={{ color: "white", fontSize: "clamp(2rem, 4vw, 3.4rem)", lineHeight: 1.05 }}>
+                    Create your Shift Evidence workspace
+                  </h1>
+                  <p className="text-muted mb-6 signup-form-copy" style={{ fontSize: "0.95rem" }}>
+                    Start a controlled VMware-to-Proxmox readiness assessment. Upload evidence only after scope, consent and data handling expectations are clear.
+                  </p>
+
+                  <div className="signup-journey-strip" aria-hidden="true">
+                    {signupJourneySteps.map((step, index) => (
+                      <span key={step}>
+                        <strong>{index + 1}</strong>
+                        {step}
+                      </span>
+                    ))}
+                  </div>
+
+                  <form onSubmit={handleSignUpSubmit} className="signup-form-stack" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                    <div className="signup-form-section">
+                      <div className="signup-section-head">
+                        <span>Workspace details</span>
+                        <p>Set the account owner and the first assessment scope before evidence upload begins.</p>
+                      </div>
+
+                      <div className="form-group-custom" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label htmlFor="fullname" style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
+                          Full Name
+                        </label>
+                        <div className="signup-input-shell" style={{ position: "relative" }}>
+                          <User
+                            size={18}
+                            className="signup-input-icon"
+                            style={{
+                              position: "absolute",
+                              left: "1rem",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              color: "var(--text-muted)",
+                            }}
+                          />
+                          <input
+                            id="fullname"
+                            type="text"
+                            placeholder="e.g. Jane Doe"
+                            required
+                            maxLength={288}
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="form-input"
+                            style={{ paddingLeft: "2.75rem", width: "100%" }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group-custom" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label htmlFor="email" style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
+                          Work Email
+                        </label>
+                        <div className="signup-input-shell" style={{ position: "relative" }}>
+                          <Mail
+                            size={18}
+                            className="signup-input-icon"
+                            style={{
+                              position: "absolute",
+                              left: "1rem",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              color: "var(--text-muted)",
+                            }}
+                          />
+                          <input
+                            id="email"
+                            type="email"
+                            placeholder="name@company.com"
+                            required
+                            maxLength={320}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="form-input"
+                            style={{ paddingLeft: "2.75rem", width: "100%" }}
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        className="signup-form-grid"
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "1rem",
+                        }}
+                      >
+                        <div className="form-group-custom" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                          <label htmlFor="company" style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
+                            Company Name
+                          </label>
+                          <div className="signup-input-shell" style={{ position: "relative" }}>
+                            <Building
+                              size={18}
+                              className="signup-input-icon"
+                              style={{
+                                position: "absolute",
+                                left: "1rem",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                color: "var(--text-muted)",
+                              }}
+                            />
+                            <input
+                              id="company"
+                              type="text"
+                              placeholder="Enterprise Inc."
+                              required
+                              maxLength={216}
+                              value={company}
+                              onChange={(e) => setCompany(e.target.value)}
+                              className="form-input"
+                              style={{ paddingLeft: "2.75rem", width: "100%" }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group-custom" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                          <label htmlFor="cluster-size" style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
+                            Cluster Size
+                          </label>
+                          <select
+                            id="cluster-size"
+                            value={clusterSize}
+                            onChange={(e) => setClusterSize(e.target.value)}
+                            className="form-input signup-select-input"
+                            style={{ width: "100%", height: "45px", background: "rgba(10, 15, 30, 0.8)", border: "1px solid var(--border-color)", color: "white" }}
+                          >
+                            <option value="< 50 VMs">Under 50 VMs</option>
+                            <option value="50-200 VMs">50 - 200 VMs</option>
+                            <option value="200-1000 VMs">200 - 1,000 VMs</option>
+                            <option value="1000+ VMs">1,000+ VMs</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="signup-form-section">
+                      <div className="signup-section-head">
+                        <span>Secure access</span>
+                        <p>Create the first login for your private assessment workspace.</p>
+                      </div>
+
+                      <div className="form-group-custom" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label htmlFor="password" style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
+                          Password
+                        </label>
+                        <div className="signup-input-shell" style={{ position: "relative" }}>
+                          <Lock
+                            size={18}
+                            className="signup-input-icon"
+                            style={{
+                              position: "absolute",
+                              left: "1rem",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              color: "var(--text-muted)",
+                            }}
+                          />
+                          <input
+                            id="password"
+                            type="password"
+                            placeholder="Create a secure password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="form-input"
+                            style={{ paddingLeft: "2.75rem", width: "100%" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {error ? (
+                      <p className="auth-error" role="alert" style={{ color: "var(--accent-red)", fontSize: "0.85rem", margin: 0 }}>
+                        {error}
+                      </p>
+                    ) : null}
+
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-glow signup-submit-btn"
+                      disabled={isSubmitting}
+                      style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                    >
+                      {isSubmitting ? "Creating account..." : "Create account and start assessment"}
+                      <ArrowRight size={18} />
+                    </button>
+                  </form>
+
+                  <div className="signup-trust-strip">
+                    {signupTrustSignals.map((item) => (
+                      <span key={item} className="signup-trust-pill">
+                        <ShieldCheck size={14} className="text-cyan" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="signup-secondary-row">
+                    <span>Already have an account?</span>
+                    <Link href="/sign-in" className="signup-link-inline">Go to sign in</Link>
+                  </div>
+                </div>
+
+                <div className="signup-info-panel">
+                  <div className="glass-card signup-preview-panel">
+                    <div className="signup-preview-header">
+                      <span>Assessment preview</span>
+                      <strong>What your workspace unlocks</strong>
+                    </div>
+
+                    <div className="signup-preview-route" aria-hidden="true">
+                      <span className="signup-preview-route-pill signup-preview-route-pill-vmware">
+                        <Image src={vmwareLogo} alt="" width={16} height={16} />
+                        VMware estate
+                      </span>
+                      <span className="signup-preview-route-arrow">
+                        <ArrowRight size={14} />
+                      </span>
+                      <span className="signup-preview-route-pill signup-preview-route-pill-proxmox">
+                        <Image src={proxmoxLogo} alt="" width={16} height={16} />
+                        Proxmox target
+                      </span>
+                    </div>
+
+                    <div className="signup-preview-metrics">
+                      {signupPreviewMetrics.map((metric) => (
+                        <div key={metric.label} className={`signup-preview-metric signup-preview-metric-${metric.accent}`}>
+                          <strong>{metric.value}</strong>
+                          <span>{metric.label}</span>
+                          <small>{metric.detail}</small>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="signup-preview-log">
+                      <div className="signup-preview-log-head">
+                        <Terminal size={16} />
+                        <span>Assessment signal</span>
+                      </div>
+                      <div className="signup-preview-line">
+                        <span>[OK]</span>
+                        RVTools-ready intake and guided context capture
+                      </div>
+                      <div className="signup-preview-line">
+                        <span>[MAP]</span>
+                        Storage destination and network translation review
+                      </div>
+                      <div className="signup-preview-line">
+                        <span>[PACK]</span>
+                        Decision-ready PDF, wave notes and advisor context
+                      </div>
+                    </div>
+
+                    <div className="signup-preview-footer">
+                      <span>Agentless</span>
+                      <span>Senior context</span>
+                      <span>Audit-ready output</span>
+                    </div>
+                  </div>
+
+                  <div className="glass-card signup-benefits-panel">
+                    <div className="signup-benefits-head">
+                      <h4>What you get in the first workspace</h4>
+                      <p>Your free assessment is designed to prove readiness value before deeper migration planning starts.</p>
+                    </div>
+
+                    <div className="signup-benefit-list">
+                      {signupValueCards.map(({ title, copy, accent, Icon }) => (
+                        <div key={title} className={`signup-benefit-item signup-benefit-item-${accent}`}>
+                          <div className="signup-benefit-icon">
+                            <Icon size={18} />
+                          </div>
+                          <div>
+                            <h5>{title}</h5>
+                            <p>{copy}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="glass-card signup-proof-panel">
+                    <div className="signup-proof-quote">
+                      "The Shift Evidence validator gave our platform team the exact evidence we needed to justify our migration path to management. No guesses, just data."
+                    </div>
+                    <div className="signup-proof-meta">
+                      <strong>Lead Infrastructure Architect</strong>
+                      <span>Global Finance SaaS</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
             {/* Left: Registration Form */}
             <div className="glass-card" style={{ padding: "3rem 2.5rem" }}>
               <div className="badge badge-cyan" style={{ marginBottom: "1rem" }}>
@@ -548,6 +911,8 @@ export default function SignUpPage() {
                 </div>
               </div>
             </div>
+              </>
+            )}
           </div>
         ) : (
           /* INTEGRATED READINESS SCANNER INLINE */

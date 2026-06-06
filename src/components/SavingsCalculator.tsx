@@ -178,23 +178,14 @@ export default function SavingsCalculator() {
   };
 
   return (
-    <section
-      id="savings"
-      className="section"
-      style={{ background: "rgba(6, 9, 19, 0.2)" }}
-    >
-      <div className="container">
-        {/* ========== SECTION HEADER ========== */}
-        <div className="text-center mb-6">
-          <div className="badge badge-cyan">Return on Investment</div>
-          <h2 className="mb-4">Calculate your Licensing Impact</h2>
-          <p className="mx-auto" style={{ maxWidth: "650px" }}>
-            Compare modeled VMware and Proxmox subscription costs based on your
-            environment size. All estimates in USD.
-          </p>
-        </div>
+    <>
+      <div className="calc-context-strip" aria-hidden="true">
+        <span>Modeled from host footprint</span>
+        <span>3-year subscription delta</span>
+        <span>USD-based estimate</span>
+      </div>
 
-        {/* ========== COMPARISON HEADER ========== */}
+      {/* ========== COMPARISON HEADER ========== */}
         <div className="cmp-header">
           <div className="cmp-header-badge vmware">
             <Image src={vmwareLogo} alt="VMware Logo" width={24} height={24} className="cmp-logo-icon" />
@@ -211,8 +202,8 @@ export default function SavingsCalculator() {
           </div>
         </div>
 
-        {/* ========== MAIN GRID ========== */}
-        <div className="glass-card calc-container">
+      {/* ========== MAIN GRID ========== */}
+      <div className="glass-card calc-container">
           {/* ========== LEFT PANEL: CURRENT VMWARE ENVIRONMENT ========== */}
           <div className="calc-inputs">
             {/* ---- VMware License Tier ---- */}
@@ -570,9 +561,8 @@ export default function SavingsCalculator() {
               </div>
             )}
           </div>
-        </div>
       </div>
-    </section>
+    </>
   );
 }
 

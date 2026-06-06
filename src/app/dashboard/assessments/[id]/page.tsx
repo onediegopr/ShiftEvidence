@@ -106,7 +106,7 @@ import { INPUT_LIMITS } from "../../../../server/validation/inputLimits";
 import { buildAssessmentLicensingAnalysisSummary } from "../../../../server/assessments/licensingCostExposureService";
 import { buildAssessmentClientContextSummary } from "../../../../server/assessments/clientContextService";
 import { buildAssessmentStorageDestinationReadinessSummary } from "../../../../server/assessments/storageDestinationReadinessService";
-import { SUPPORT_CATEGORY_OPTIONS } from "../../../../server/support/supportRequestService";
+import { SUPPORT_CATEGORY_OPTIONS } from "../../../../server/support/supportConfig";
 
 type AssessmentDetailPageProps = {
   params: Promise<{

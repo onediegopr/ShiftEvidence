@@ -73,7 +73,7 @@ export function buildSafeReportFilename(params: {
   const randomSuffix = randomBytes(4).toString("hex");
   const extension = params.extension ?? ".pdf";
 
-  return `shiftreadiness_${reportSegment}_${titleSegment}_${timestamp}_${randomSuffix}${extension}`;
+  return `shift_evidence_${reportSegment}_${titleSegment}_${timestamp}_${randomSuffix}${extension}`;
 }
 
 export async function calculateReportSha256(buffer: Buffer) {

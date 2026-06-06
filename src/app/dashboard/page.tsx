@@ -8,7 +8,7 @@ import { ensureDefaultWorkspace } from "../../server/workspace/workspaceService"
 import { listAssessmentsForCurrentWorkspace } from "../../server/assessments/assessmentService";
 import { isAdminEmail } from "../../server/admin/adminAuth";
 import { getLifecycleStatus } from "./assessments/page";
-import { SUPPORT_CATEGORY_OPTIONS } from "../../server/support/supportRequestService";
+import { SUPPORT_CATEGORY_OPTIONS } from "../../server/support/supportConfig";
 import { createDashboardSupportRequestAction } from "./support/actions";
 
 type DashboardPageProps = {

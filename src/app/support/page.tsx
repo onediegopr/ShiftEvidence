@@ -4,7 +4,7 @@ import { LifeBuoy, Lock, Mail, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { paymentOptionsCopy } from "../../lib/pricingPlans";
-import { SUPPORT_CATEGORY_OPTIONS, SUPPORT_CONTACTS } from "../../server/support/supportRequestService";
+import { SUPPORT_CATEGORY_OPTIONS, SUPPORT_CONTACTS } from "../../server/support/supportConfig";
 import { createPublicSupportRequestAction } from "./actions";
 
 export const metadata: Metadata = {
@@ -13,7 +13,27 @@ export const metadata: Metadata = {
 };
 
 type SupportPageProps = {
-  searchParams?: Promise<{ sent?: string; error?: string; category?: string }> | { sent?: string; error?: string; category?: string };
+  searchParams?:
+    | Promise<{
+        sent?: string;
+        error?: string;
+        category?: string;
+        subject?: string;
+        message?: string;
+        contactEmail?: string;
+        contactName?: string;
+        companyName?: string;
+      }>
+    | {
+        sent?: string;
+        error?: string;
+        category?: string;
+        subject?: string;
+        message?: string;
+        contactEmail?: string;
+        contactName?: string;
+        companyName?: string;
+      };
 };
 
 export default async function SupportPage({ searchParams }: SupportPageProps) {
@@ -23,6 +43,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
   const defaultCategory = SUPPORT_CATEGORY_OPTIONS.some((item) => item.value === query?.category)
     ? query?.category
     : "general_question";
+  const defaultSubject = typeof query?.subject === "string" ? decodeURIComponent(query.subject) : "";
+  const defaultMessage = typeof query?.message === "string" ? decodeURIComponent(query.message) : "";
+  const defaultEmail = typeof query?.contactEmail === "string" ? decodeURIComponent(query.contactEmail) : "";
+  const defaultName = typeof query?.contactName === "string" ? decodeURIComponent(query.contactName) : "";
+  const defaultCompany = typeof query?.companyName === "string" ? decodeURIComponent(query.companyName) : "";
 
   return (
     <>
@@ -73,23 +98,23 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   </label>
                   <label className="form-label">
                     Work email
-                    <input name="contactEmail" type="email" required className="form-input" placeholder="you@company.com" />
+                    <input name="contactEmail" type="email" required className="form-input" placeholder="you@company.com" defaultValue={defaultEmail} />
                   </label>
                   <label className="form-label">
                     Name
-                    <input name="contactName" className="form-input" placeholder="Your name" />
+                    <input name="contactName" className="form-input" placeholder="Your name" defaultValue={defaultName} />
                   </label>
                   <label className="form-label">
                     Company
-                    <input name="companyName" className="form-input" placeholder="Company or organization" />
+                    <input name="companyName" className="form-input" placeholder="Company or organization" defaultValue={defaultCompany} />
                   </label>
                   <label className="form-label">
                     Subject
-                    <input name="subject" required className="form-input" placeholder="Short summary" />
+                    <input name="subject" required className="form-input" placeholder="Short summary" defaultValue={defaultSubject} />
                   </label>
                   <label className="form-label" style={{ gridColumn: "1 / -1" }}>
                     Message
-                    <textarea name="message" required className="form-input assessment-textarea" placeholder="What should we review?" />
+                    <textarea name="message" required className="form-input assessment-textarea" placeholder="What should we review?" defaultValue={defaultMessage} />
                   </label>
                   <button type="submit" className="btn btn-primary btn-glow">
                     Send request

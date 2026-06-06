@@ -1,4 +1,23 @@
-import { Shield, ArrowRight, Check, FileText, Play } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  BarChart3,
+  BrainCircuit,
+  Check,
+  FileText,
+  LockKeyhole,
+  MessageCircleQuestion,
+  Play,
+  ServerCog,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  UploadCloud,
+  UsersRound,
+  WalletCards,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
 import { assetSrc } from "../lib/assetSrc";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
@@ -6,6 +25,77 @@ import proxmoxLogo from "../../images/proxmox.svg";
 interface HeroProps {
   onOpenScanner: () => void;
 }
+
+const methodologySignals: Array<{ label: string; Icon: LucideIcon }> = [
+  { label: "No agents", Icon: ServerCog },
+  { label: "No mandatory credentials", Icon: LockKeyhole },
+  { label: "No production access", Icon: ShieldCheck },
+  { label: "Starts with RVTools + senior context", Icon: UploadCloud },
+  { label: "Evidence-based scoring", Icon: BarChart3 },
+  { label: "Guided questions and AI-assisted review", Icon: MessageCircleQuestion },
+  { label: "Built for companies, MSPs and Proxmox consultants", Icon: UsersRound },
+];
+
+const seniorAdvisorCards = [
+  {
+    eyebrow: "Discovery layer",
+    index: "01",
+    title: "Senior discovery",
+    copy: "Guided questions capture business, app, backup and migration constraints that RVTools alone cannot know.",
+    Icon: MessageCircleQuestion,
+  },
+  {
+    eyebrow: "Analysis layer",
+    index: "02",
+    title: "AI-assisted analysis",
+    copy: "The platform cross-checks raw evidence, missing signals and risk patterns before producing recommendations.",
+    Icon: BrainCircuit,
+  },
+  {
+    eyebrow: "Advisor layer",
+    index: "03",
+    title: "Human-grade output",
+    copy: "The result feels closer to a senior consultant workshop than a spreadsheet conversion.",
+    Icon: Sparkles,
+  },
+];
+
+const preMigrationOutcomes: Array<{
+  label: string;
+  title: string;
+  copy: string;
+  tone: "ready" | "validation" | "hold" | "evidence";
+  Icon: LucideIcon;
+}> = [
+  {
+    label: "Ready to pilot",
+    title: "What looks ready",
+    copy: "Spot workloads that can move first with the least architectural friction.",
+    tone: "ready",
+    Icon: Check,
+  },
+  {
+    label: "Validate next",
+    title: "What needs validation",
+    copy: "Expose app, backup, network and target assumptions that still need confirmation.",
+    tone: "validation",
+    Icon: MessageCircleQuestion,
+  },
+  {
+    label: "Hold or redesign",
+    title: "What should not move yet",
+    copy: "Surface risky workloads before they become expensive migration mistakes.",
+    tone: "hold",
+    Icon: AlertTriangle,
+  },
+  {
+    label: "Evidence gaps",
+    title: "What is still missing",
+    copy: "Turn unknowns into an explicit checklist instead of hiding uncertainty inside the report.",
+    tone: "evidence",
+    Icon: FileText,
+  },
+];
 
 export default function Hero({ onOpenScanner }: HeroProps) {
   const vmwareLogoSrc = assetSrc(vmwareLogo);
@@ -42,10 +132,17 @@ export default function Hero({ onOpenScanner }: HeroProps) {
       <div className="container">
         <div className="hero-grid">
           <div>
-            <div className="badge badge-premium">
-              <Shield size={13} className="shield-blink" />
-              <span>
-                No agents. No mandatory credentials. No production access. Starts with RVTools.
+            <div className="hero-route-line" aria-label="VMware to Proxmox">
+              <span className="hero-route-brand hero-route-brand-vmware">
+                <Image src={vmwareLogo} alt="VMware" className="hero-route-logo" width={20} height={20} />
+                <span className="brand-vmware">VMware</span>
+              </span>
+              <span className="hero-route-separator" aria-hidden="true">
+                <ArrowRight size={14} />
+              </span>
+              <span className="hero-route-brand hero-route-brand-proxmox">
+                <Image src={proxmoxLogo} alt="Proxmox" className="hero-route-logo" width={20} height={20} />
+                <span className="brand-proxmox">Proxmox</span>
               </span>
             </div>
             <h1 className="hero-title">
@@ -60,6 +157,14 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               <div className="badge badge-tam" style={{ marginTop: "0.75rem", marginBottom: "0", alignSelf: "flex-start" }}>
                 <Shield size={12} />
                 <span>Former VMware TAM-led readiness methodology</span>
+              </div>
+              <div className="hero-methodology-signals" aria-label="Methodology trust signals">
+                {methodologySignals.map(({ label, Icon }) => (
+                  <span key={label}>
+                    <Icon size={13} />
+                    {label}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -2648,112 +2753,94 @@ export default function Hero({ onOpenScanner }: HeroProps) {
               </p>
             </div>
 
-            <div className="hero-actions">
-              <button onClick={onOpenScanner} className="btn btn-primary btn-glow">
-                Start readiness assessment
-                <ArrowRight size={18} />
+            <div className="hero-action-deck" aria-label="Primary Shift Evidence actions">
+              <button onClick={onOpenScanner} className="hero-action-primary">
+                <span>
+                  <strong>Start readiness assessment</strong>
+                  <small>Upload RVTools, then complete guided senior context.</small>
+                </span>
+                <ArrowRight size={19} />
               </button>
-              <a
-                href="/demo/replay"
-                className="btn btn-secondary"
-              >
-                Watch Quick Simulation
-                <Play size={18} className="text-cyan" />
-              </a>
-              <a
-                href="/demo/workspace"
-                className="btn btn-secondary"
-              >
-                Explore Demo Workspace
-                <FileText size={18} className="text-cyan" />
-              </a>
-              <a
-                href="/sample-report"
-                className="btn btn-secondary"
-              >
-                View Full Sample Report
-                <FileText size={18} className="text-cyan" />
-              </a>
-              <a
-                href="/pricing"
-                className="btn btn-secondary"
-              >
-                View Pricing
-                <FileText size={18} className="text-cyan" />
-              </a>
-              <a
-                href="/client-login"
-                className="btn btn-secondary"
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  color: "var(--text-muted)",
-                }}
-              >
-                Client login
-              </a>
+              <div className="hero-action-grid">
+                <a href="/demo/replay" className="hero-action-card hero-action-card-cyan">
+                  <Play size={18} />
+                  <span>
+                    <strong>Watch Quick Simulation</strong>
+                    <small>90-second product flow</small>
+                  </span>
+                </a>
+                <a href="/demo/workspace" className="hero-action-card hero-action-card-indigo">
+                  <Sparkles size={18} />
+                  <span>
+                    <strong>Explore Demo Workspace</strong>
+                    <small>Read-only assessment preview</small>
+                  </span>
+                </a>
+                <a href="/sample-report" className="hero-action-card hero-action-card-emerald">
+                  <FileText size={18} />
+                  <span>
+                    <strong>View Full Sample Report</strong>
+                    <small>Executive + technical output</small>
+                  </span>
+                </a>
+                <a href="/pricing" className="hero-action-card hero-action-card-amber">
+                  <WalletCards size={18} />
+                  <span>
+                    <strong>View Pricing</strong>
+                    <small>Starter, Pro, Blueprint, MSP</small>
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Transition Callout Bar */}
+        <div className="hero-senior-advisor-grid" aria-label="Senior advisory layer">
+          {seniorAdvisorCards.map(({ eyebrow, index, title, copy, Icon }) => (
+            <article key={title} className="hero-senior-advisor-card">
+              <div className="hero-senior-advisor-head">
+                <span>{eyebrow}</span>
+                <strong>{index}</strong>
+              </div>
+              <div>
+                <h2>
+                  <Icon size={16} />
+                  {title}
+                </h2>
+                <p>{copy}</p>
+              </div>
+              <div className="hero-senior-advisor-pulse" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Decision outcomes */}
         <div className="hero-bottom-callout">
           <div className="hero-callout-info">
-            <span className="hero-callout-tag">Migration Assurance</span>
+            <span className="hero-callout-tag">Pre-migration decision pack</span>
+            <h2 className="hero-callout-heading">What you get before a Proxmox migration starts.</h2>
             <p className="hero-callout-text">
-              Before you migrate, quote, or deliver a Proxmox project, get a
-              clear audit-style report that shows what{" "}
-              <span className="highlight-ready">looks ready</span>, what{" "}
-              <span className="highlight-validation">needs validation</span>,
-              and what{" "}
-              <span className="highlight-danger">should not move yet</span>.
+              Shift Evidence gives buyers, consultants and delivery teams a clearer pre-migration
+              answer: what looks ready, what needs validation, what should stay out of the first wave
+              and what evidence still has to be collected.
             </p>
           </div>
 
-          <div className="hero-callout-card">
-            <div className="hero-callout-card-title">
-              <div className="hero-callout-card-dot"></div>
-              <span className="hero-callout-card-label">
-                100% Agentless Security
-              </span>
-            </div>
-            <div className="hero-callout-list">
-              <div className="hero-callout-item">
-                <div className="callout-icon-box check-animated-1">
-                  <Check size={12} className="check-svg" />
+          <div className="hero-outcomes-grid" aria-label="Pre-migration outcomes">
+            {preMigrationOutcomes.map(({ label, title, copy, tone, Icon }) => (
+              <article key={title} className={`hero-outcome-card hero-outcome-${tone}`}>
+                <div className="hero-outcome-head">
+                  <span>{label}</span>
+                  <Icon size={16} />
                 </div>
-                <div className="item-text">
-                  <strong className="text-white">Start with RVTools</strong>
-                  <span className="text-muted-sm">
-                    Simply upload your VMware config export
-                  </span>
-                </div>
-              </div>
-              <div className="hero-callout-item">
-                <div className="callout-icon-box check-animated-2">
-                  <Check size={12} className="check-svg" />
-                </div>
-                <div className="item-text">
-                  <strong className="text-white">No Agents Required</strong>
-                  <span className="text-muted-sm">
-                    Zero performance impact on VM hosts
-                  </span>
-                </div>
-              </div>
-              <div className="hero-callout-item">
-                <div className="callout-icon-box check-animated-3">
-                  <Check size={12} className="check-svg" />
-                </div>
-                <div className="item-text">
-                  <strong className="text-white">
-                    Zero Credentials & Production Access
-                  </strong>
-                  <span className="text-muted-sm">
-                    Audit your cluster with zero data exposure risk
-                  </span>
-                </div>
-              </div>
-            </div>
+                <h3>{title}</h3>
+                <p>{copy}</p>
+              </article>
+            ))}
           </div>
         </div>
       </div>

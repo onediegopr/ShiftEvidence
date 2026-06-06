@@ -17,6 +17,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  Video,
 } from "lucide-react";
 import { getCurrentAdminUserForConsole } from "../../../server/admin/adminAuth";
 import { getAdminConsoleData } from "../../../server/admin/adminConsoleService";
@@ -97,6 +98,22 @@ function formatSupportPriority(value: string) {
     urgent: "Urgente",
   };
   return labels[value] ?? formatStatusLabel(value);
+}
+
+function isTechnicalReviewRequest(request: { subject: string }) {
+  return request.subject === "Technical Review Call";
+}
+
+function getSupportMetadataString(
+  metadata: unknown,
+  key: string,
+) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+
+  const rawValue = (metadata as Record<string, unknown>)[key];
+  return typeof rawValue === "string" && rawValue.trim() ? rawValue : null;
 }
 
 function formatStatusLabel(value: string | null | undefined) {
@@ -593,16 +610,105 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             <MetricCard icon={<CheckCircle2 size={22} />} label="Resueltas" value={data.supportRequests.summary.resolved} note="Marcadas como resueltas" />
             <MetricCard icon={<Lock size={22} />} label="Cerradas" value={data.supportRequests.summary.closed} note="Cierre administrativo" />
             <MetricCard icon={<AlertTriangle size={22} />} label="Alta prioridad" value={data.supportRequests.summary.highPriority} note="Alta o urgente sin cierre" />
+            <MetricCard icon={<ClipboardList size={22} />} label="Technical Review abierto" value={data.supportRequests.summary.technicalReviewOpen} note="Canal especial pendiente de seguimiento" />
+            <MetricCard icon={<Video size={22} />} label="Technical Review total" value={data.supportRequests.summary.technicalReviewTotal} note="Solicitudes recibidas por la ruta dedicada" />
           </section>
 
+          {data.supportRequests.recentTechnicalReviews.length > 0 ? (
+            <section className="technical-review-admin-section">
+              <div className="technical-review-admin-head">
+                <div>
+                  <div className="assessment-section-eyebrow">
+                    <Video size={18} />
+                    <span>Technical Review</span>
+                  </div>
+                  <h3>Canal prioritario para revisiones técnicas</h3>
+                  <p>
+                    Estas solicitudes llegan con prioridad alta y notificación interna a <strong>info@shiftevidence.com</strong>.
+                  </p>
+                </div>
+              </div>
+              <div className="report-history-grid">
+                {data.supportRequests.recentTechnicalReviews.map((request) => (
+                  <article key={`technical-review-${request.id}`} className="glass-card report-history-card technical-review-admin-card">
+                    <div className="report-history-header">
+                      <div>
+                        <div className="technical-review-admin-kicker">
+                          <span className="assessment-chip assessment-chip-warning">Technical Review</span>
+                          <span className="assessment-inline-note">{formatStatusLabel(request.source)}</span>
+                        </div>
+                        <h3>{request.subject}</h3>
+                        <p className="assessment-inline-note">
+                          {formatDate(request.createdAt)} · {formatStatusLabel(request.category)} · prioridad {formatSupportPriority(request.priority).toLowerCase()}
+                        </p>
+                      </div>
+                      <StatusPill status={formatSupportStatus(request.status)} />
+                    </div>
+                    <p>{request.message}</p>
+                    <div className="assessment-preview-grid">
+                      <div>
+                        <span className="assessment-preview-label">Contacto</span>
+                        <strong>{request.contactEmail ?? request.user?.email ?? "No disponible"}</strong>
+                        <p className="assessment-inline-note">{request.contactName ?? request.user?.name ?? request.companyName ?? "Sin nombre declarado"}</p>
+                      </div>
+                      <div>
+                        <span className="assessment-preview-label">Empresa / contexto</span>
+                        <strong>{request.companyName ?? request.workspace?.companyName ?? request.workspace?.name ?? "No disponible"}</strong>
+                        <p className="assessment-inline-note">
+                          {getSupportMetadataString(request.metadataJson, "intakeSource")
+                            ? `Origen: ${getSupportMetadataString(request.metadataJson, "intakeSource")}`
+                            : "Origen no informado"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="assessment-preview-label">Canal interno</span>
+                        <strong>info@shiftevidence.com</strong>
+                        <p className="assessment-inline-note">Seguimiento prioritario desde consola admin</p>
+                      </div>
+                    </div>
+                    <form action={updateSupportRequestAction} className="unlock-admin-form">
+                      <input type="hidden" name="supportRequestId" value={request.id} />
+                      <label className="form-label">
+                        Estado
+                        <select name="status" className="form-input" defaultValue={request.status}>
+                          <option value="open">Abierta</option>
+                          <option value="triage">En triage</option>
+                          <option value="waiting_on_user">Esperando usuario</option>
+                          <option value="resolved">Resuelta</option>
+                          <option value="closed">Cerrada</option>
+                        </select>
+                      </label>
+                      <label className="form-label">
+                        Prioridad
+                        <select name="priority" className="form-input" defaultValue={request.priority}>
+                          <option value="low">Baja</option>
+                          <option value="normal">Normal</option>
+                          <option value="high">Alta</option>
+                          <option value="urgent">Urgente</option>
+                        </select>
+                      </label>
+                      <label className="form-label" style={{ gridColumn: "1 / -1" }}>
+                        Notas internas
+                        <textarea name="adminNotes" className="form-input assessment-textarea" defaultValue={request.adminNotes ?? ""} />
+                      </label>
+                      <button type="submit" className="btn btn-secondary">Guardar soporte</button>
+                    </form>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           <div className="report-history-grid">
-            {data.supportRequests.recent.length === 0 ? (
+            {data.supportRequests.recent.filter((request) => !isTechnicalReviewRequest(request)).length === 0 ? (
               <article className="glass-card report-history-card">
                 <h3>No hay solicitudes de soporte.</h3>
                 <p className="assessment-inline-note">Cuando un usuario envie un pedido, aparecera en esta bandeja.</p>
               </article>
             ) : (
-              data.supportRequests.recent.map((request) => (
+              data.supportRequests.recent
+                .filter((request) => !isTechnicalReviewRequest(request))
+                .map((request) => (
                 <article key={request.id} className="glass-card report-history-card">
                   <div className="report-history-header">
                     <div>

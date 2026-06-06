@@ -1,4 +1,5 @@
 import {
+  Prisma,
   SupportRequestCategory,
   SupportRequestPriority,
   SupportRequestSource,
@@ -11,29 +12,13 @@ import { recordAdminAuditEvent } from "../admin/adminOpsService";
 import { assertRateLimit } from "../security/rateLimit";
 import { INPUT_LIMITS } from "../validation/inputLimits";
 
-export const SUPPORT_CONTACTS = {
-  info: "info@shiftevidence.com",
-  support: "support@shiftevidence.com",
-  billing: "billing@shiftevidence.com",
-  partners: "partners@shiftevidence.com",
-} as const;
-
-export const SUPPORT_CATEGORY_OPTIONS = [
-  { value: SupportRequestCategory.general_question, label: "General question" },
-  { value: SupportRequestCategory.assessment_report_question, label: "Assessment or report question" },
-  { value: SupportRequestCategory.technical_issue, label: "Technical issue" },
-  { value: SupportRequestCategory.billing_question, label: "Billing or plan question" },
-  { value: SupportRequestCategory.partner_msp_inquiry, label: "Partner / MSP inquiry" },
-  { value: SupportRequestCategory.security_privacy, label: "Security or privacy" },
-  { value: SupportRequestCategory.data_deletion_request, label: "Data deletion request" },
-] as const;
-
 const CATEGORY_VALUES = new Set(Object.values(SupportRequestCategory));
 const STATUS_VALUES = new Set(Object.values(SupportRequestStatus));
 const PRIORITY_VALUES = new Set(Object.values(SupportRequestPriority));
 
 const SECRET_LIKE_PATTERN =
   /(-----BEGIN|DATABASE_URL|OPENAI_API_KEY|GEMINI_API_KEY|RESEND_API_KEY|HOSTINGER|password\s*=|token\s*=|api[_-]?key\s*=|secret\s*=)/i;
+const TECHNICAL_REVIEW_SUBJECT = "Technical Review Call";
 
 function parseCategory(
   value: FormDataEntryValue | null,
@@ -63,6 +48,23 @@ function assertNoSecrets(value: string, fieldName: string) {
   if (SECRET_LIKE_PATTERN.test(value)) {
     throw new Error(`${fieldName} appears to include a secret, token, password, or raw credential. Please remove it before sending.`);
   }
+}
+
+function buildMetadataJson(
+  context: string | null,
+  metadata: Prisma.JsonObject | undefined,
+): Prisma.InputJsonValue | undefined {
+  const next: Prisma.JsonObject = {};
+
+  if (context) {
+    next.context = context;
+  }
+
+  if (metadata) {
+    Object.assign(next, metadata);
+  }
+
+  return Object.keys(next).length > 0 ? next : undefined;
 }
 
 function parseSupportPayload(formData: FormData, options?: { requireEmail?: boolean; categoryFallback?: SupportRequestCategory }) {
@@ -106,7 +108,15 @@ function parseSupportPayload(formData: FormData, options?: { requireEmail?: bool
   };
 }
 
-export async function createPublicSupportRequest(formData: FormData, options?: { clientIp?: string }) {
+export async function createPublicSupportRequest(
+  formData: FormData,
+  options?: {
+    clientIp?: string;
+    source?: SupportRequestSource;
+    priority?: SupportRequestPriority;
+    metadata?: Prisma.JsonObject;
+  },
+) {
   const payload = parseSupportPayload(formData, { requireEmail: true });
   const context = parseOptionalString(formData.get("context"), {
     fieldName: "Context",
@@ -127,8 +137,32 @@ export async function createPublicSupportRequest(formData: FormData, options?: {
   return prisma.supportRequest.create({
     data: {
       ...payload,
-      source: SupportRequestSource.public_support_page,
-      metadataJson: context ? { context } : undefined,
+      source: options?.source ?? SupportRequestSource.public_support_page,
+      priority: options?.priority ?? SupportRequestPriority.normal,
+      metadataJson: buildMetadataJson(context, options?.metadata),
+    },
+  });
+}
+
+export async function createTechnicalReviewSupportRequest(
+  formData: FormData,
+  options?: {
+    clientIp?: string;
+    sourceLabel?: string;
+  },
+) {
+  const sourceLabel = parseOptionalString(formData.get("source"), {
+    fieldName: "Source",
+    maxLength: INPUT_LIMITS.shortText,
+  }) ?? options?.sourceLabel ?? "direct";
+
+  return createPublicSupportRequest(formData, {
+    clientIp: options?.clientIp,
+    priority: SupportRequestPriority.high,
+    metadata: {
+      channel: "technical_review",
+      intakeSource: sourceLabel,
+      inbox: "info@shiftevidence.com",
     },
   });
 }
@@ -195,14 +229,17 @@ export function getSupportRequestFallback() {
       resolved: 0,
       closed: 0,
       highPriority: 0,
+      technicalReviewOpen: 0,
+      technicalReviewTotal: 0,
       total: 0,
     },
     recent: [],
+    recentTechnicalReviews: [],
   };
 }
 
 export async function getAdminSupportRequests() {
-  const [groups, highPriority, recent] = await Promise.all([
+  const [groups, highPriority, recent, technicalReviewTotal, technicalReviewOpen] = await Promise.all([
     prisma.supportRequest.groupBy({
       by: ["status"],
       _count: { _all: true },
@@ -222,9 +259,21 @@ export async function getAdminSupportRequests() {
         assessment: { select: { id: true, title: true, clientLabel: true } },
       },
     }),
+    prisma.supportRequest.count({
+      where: {
+        subject: TECHNICAL_REVIEW_SUBJECT,
+      },
+    }),
+    prisma.supportRequest.count({
+      where: {
+        subject: TECHNICAL_REVIEW_SUBJECT,
+        status: { in: [SupportRequestStatus.open, SupportRequestStatus.triage, SupportRequestStatus.waiting_on_user] },
+      },
+    }),
   ]);
 
   const countByStatus = new Map(groups.map((item) => [item.status, item._count._all]));
+  const recentTechnicalReviews = recent.filter((request) => request.subject === TECHNICAL_REVIEW_SUBJECT);
   const summary = {
     open: countByStatus.get(SupportRequestStatus.open) ?? 0,
     triage: countByStatus.get(SupportRequestStatus.triage) ?? 0,
@@ -232,10 +281,12 @@ export async function getAdminSupportRequests() {
     resolved: countByStatus.get(SupportRequestStatus.resolved) ?? 0,
     closed: countByStatus.get(SupportRequestStatus.closed) ?? 0,
     highPriority,
+    technicalReviewOpen,
+    technicalReviewTotal,
     total: groups.reduce((sum, item) => sum + item._count._all, 0),
   };
 
-  return { summary, recent };
+  return { summary, recent, recentTechnicalReviews };
 }
 
 export async function updateSupportRequestFromAdmin(params: {

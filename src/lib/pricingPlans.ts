@@ -218,7 +218,7 @@ export const marketingAddOns: AddOn[] = [
     name: "Technical Review Call",
     price: "Quoted with assessment scope",
     bestFor: "Teams that want a human review of the readiness findings before making a decision.",
-    cta: { label: "Book Technical Review", href: "/support?category=assessment_report_question&subject=Technical%20Review%20Call" },
+    cta: { label: "Book Technical Review", href: "/technical-review?source=pricing" },
     includes: [
       "Report walkthrough",
       "Risk discussion",

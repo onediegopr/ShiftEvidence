@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LifeBuoy, Mail, Lock, ShieldCheck, ArrowRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { SUPPORT_CONTACTS } from "../../server/support/supportRequestService";
+import { SUPPORT_CONTACTS } from "../../server/support/supportConfig";
 
 export const metadata: Metadata = {
   title: "Contact | Shift Evidence",

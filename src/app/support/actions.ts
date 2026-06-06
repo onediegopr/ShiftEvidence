@@ -2,7 +2,6 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createPublicSupportRequest } from "../../server/support/supportRequestService";
 import { safeRedirectError } from "../../server/assessments/formUtils";
 import { getClientIpFromHeaders } from "../../server/security/rateLimit";
 
@@ -11,6 +10,7 @@ export async function createPublicSupportRequestAction(formData: FormData) {
 
   try {
     const requestHeaders = await headers();
+    const { createPublicSupportRequest } = await import("../../server/support/supportRequestService");
     await createPublicSupportRequest(formData, {
       clientIp: getClientIpFromHeaders(requestHeaders),
     });

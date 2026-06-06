@@ -22,7 +22,7 @@ function buildOriginalFilename(assessmentTitle: string) {
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .replace(/_+/g, "_")
     .slice(0, 60);
-  return `ShiftReadiness_${safeTitle}_Migration_Recommendation_Plan.pdf`;
+  return `ShiftEvidence_${safeTitle}_Migration_Recommendation_Plan.pdf`;
 }
 
 function createAuditEvent(params: {

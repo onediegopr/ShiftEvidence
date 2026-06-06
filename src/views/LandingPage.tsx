@@ -6,14 +6,14 @@
 // "Licensing & Cost Exposure"
 // "Not a vendor quote"
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
 import Footer from "../components/Footer";
-import { marketingPlans, paymentOptionsCopy } from "../lib/pricingPlans";
+import { getPaymentOptionLabel, marketingPlans, paymentOptionsCopy } from "../lib/pricingPlans";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 import {
@@ -48,6 +48,308 @@ const evidenceExpansionHighlights = [
   "Backup, target, storage and dependency evidence shown as confidence drivers.",
   "Migration Recommendation Plan gates documented before production waves.",
   "Print-friendly PDFs built for stakeholder review and manual sign-off.",
+];
+
+const transitionChallenges = [
+  {
+    label: "Commercial trigger",
+    title: "Broadcom Pressure",
+    copy:
+      "Licensing changes and sudden TCO spikes force rapid exit planning, but pushing workloads to new hypervisors without architecture validation breeds downtime.",
+    accent: "warning",
+    footer: "Urgency without architecture becomes risk.",
+    Icon: ShieldAlert,
+  },
+  {
+    label: "Infrastructure blind spot",
+    title: "Hidden Storage Risk",
+    copy:
+      "RVTools lists allocation sizes, but hides physical host disk configurations, performance sensitivity, and backing datastore boundaries.",
+    accent: "storage",
+    footer: "RVTools alone does not reveal disk topology.",
+    Icon: Database,
+  },
+  {
+    label: "Transformation blocker",
+    title: "Unknown Dependencies",
+    copy:
+      "Unsupported VM configurations, complex virtual networks, nested switches, and backup schedules represent hidden breakers that block live transformations.",
+    accent: "network",
+    footer: "Networks, backups and edge cases break waves.",
+    Icon: Network,
+  },
+];
+
+const decisionEngineBlocks = [
+  {
+    label: "Compute intelligence",
+    title: "Readiness & Confidence Scoring",
+    copy:
+      "Analyze sockets, cores, memory layouts, virtual networks, and guest operating systems to calculate standardized compatibility indexes and risk flags.",
+    accent: "cyan",
+    Icon: BarChart3,
+  },
+  {
+    label: "Destination modeling",
+    title: "Storage & Destination Risk",
+    copy:
+      "Map VMware SAN, NAS, or NFS architectures directly onto target storage targets (ZFS, NFS, SAN, or Ceph) to identify throughput bottlenecks and sizing suitability.",
+    accent: "amber",
+    Icon: Database,
+  },
+  {
+    label: "Delivery planning",
+    title: "Reports, Waves & Advisor Planning",
+    copy:
+      "Structure migration waves, list missing evidence, generate technical summaries, and consult a contextual Advisor driven by approved vault assumptions.",
+    accent: "indigo",
+    Icon: Brain,
+  },
+];
+
+const architecturePillars = [
+  {
+    number: "01",
+    label: "Compute pillar",
+    title: "Compute & Licensing Readiness",
+    copy:
+      "Identify hypervisor footprint, count cores and sockets, isolate CPU architecture variations, verify OS license exposure, and group VMs into risk classes.",
+    accent: "cyan",
+    Icon: Cpu,
+    bullets: [
+      "Raw RVTools ingestion",
+      "Core/Socket license mapping",
+      "VM risk classification matrix",
+      "Overcommit sizing simulators",
+    ],
+  },
+  {
+    number: "02",
+    label: "Storage pillar",
+    title: "Storage Destination Readiness",
+    copy:
+      "Examine existing datastore usage and map workloads to local ZFS, SAN, NFS, or high-performance Ceph architectures without installing production agents.",
+    accent: "amber",
+    Icon: Database,
+    bullets: [
+      "ZFS, NFS, SAN, and Ceph modeling",
+      "Proxmox Backup Server suitability",
+      "Agentless CLI target validation",
+      "No-credentials security approach",
+    ],
+  },
+  {
+    number: "03",
+    label: "Advisor pillar",
+    title: "Senior Migration Advisor",
+    copy:
+      "Interpret raw evidence using a contextual Advisor backed by Project Memory Vault logs, keeping recommendations aligned with your business constraints.",
+    accent: "indigo",
+    Icon: Brain,
+    bullets: [
+      "Context-aware AI Advisor",
+      "Project Memory Vault governance",
+      "Risk interpretation summaries",
+      "Read-only advisory limits",
+    ],
+  },
+];
+
+const workflowSteps = [
+  {
+    step: "01",
+    phase: "Evidence intake",
+    title: "Ingest VMware Config",
+    desc: "Upload raw RVTools inventory sheets or complete our guided intake form. Fully offline, read-only process with zero agents.",
+    accent: "cyan",
+    Icon: Layers,
+  },
+  {
+    step: "02",
+    phase: "Target qualification",
+    title: "Attach Storage Target Evidence",
+    desc: "Optionally add Proxmox, Ceph, or PBS target storage configuration exports to confirm hardware and failure domain constraints.",
+    accent: "amber",
+    Icon: Database,
+  },
+  {
+    step: "03",
+    phase: "Risk scoring",
+    title: "Verify Readiness & Confidence",
+    desc: "Review calculated sizing compatibilities and check evidence coverage metrics pointing out missing network or datastore facts.",
+    accent: "indigo",
+    Icon: ShieldCheck,
+  },
+  {
+    step: "04",
+    phase: "Executive output",
+    title: "Generate Migration Decision Pack",
+    desc: "Download boardroom-ready PDF reports containing VM risk matrices, license calculations, and prioritized waves.",
+    accent: "cyan",
+    Icon: FileText,
+  },
+  {
+    step: "05",
+    phase: "Senior review",
+    title: "Consult Senior Advisor",
+    desc: "Interact with our contextual advisor to trace risks, ask specific architectural questions, and understand limitations.",
+    accent: "amber",
+    Icon: Brain,
+  },
+  {
+    step: "06",
+    phase: "Wave preparation",
+    title: "Staging Waves & Upgrades",
+    desc: "Pin approved assumptions to the Project Memory Vault and prepare technical checklists for sandbox executions.",
+    accent: "indigo",
+    Icon: Lock,
+  },
+];
+
+const capabilityMatrixRows = [
+  {
+    title: "Generic Cloud Assessment",
+    method: "Scans standard hardware allocation metrics.",
+    gap: "Fails to analyze Proxmox cluster configurations or network layers.",
+    advantage: "Deep Proxmox VE specialized mapping",
+    accent: "cyan",
+    Icon: Cpu,
+  },
+  {
+    title: "Vendor-Locked Tools",
+    method: "Optimizes to promote a specific hypervisor or license tier.",
+    gap: "Biased, incomplete recommendations that ignore alternative targets.",
+    advantage: "100% agnostic architecture target modeling",
+    accent: "amber",
+    Icon: Boxes,
+  },
+  {
+    title: "Template Human Advisory",
+    method: "Manual consultant audits using static worksheets and interviews.",
+    gap: "Extremely slow, expensive ($10k+), and variable in expert quality.",
+    advantage: "Software execution speed plus a Senior TAM-grade engine",
+    accent: "indigo",
+    Icon: Briefcase,
+  },
+  {
+    title: "Basic TCO Calculators",
+    method: "Spreadsheets calculating license comparisons only.",
+    gap: "Ignores actual VM risks, migration bottlenecks, and architectural constraints.",
+    advantage: "Financial metrics tied directly to hardware risk findings",
+    accent: "cyan",
+    Icon: DollarSign,
+  },
+  {
+    title: "Raw Technical Parsers",
+    method: "Converts configuration exports into simple HTML tables.",
+    gap: "No roadmap, no executive narrative, and no decision-ready output.",
+    advantage: "Audit-ready boardroom reporting with migration waves",
+    accent: "amber",
+    Icon: FileText,
+  },
+  {
+    title: "Generic Chatbots (LLMs)",
+    method: "Processes standard prompts without infrastructure verification.",
+    gap: "Hallucinates configurations and lacks structured metrics checking.",
+    advantage: "Guardrailed AI bound to validated infrastructure evidence",
+    accent: "indigo",
+    Icon: Brain,
+  },
+];
+
+const diagnosticDeliverables = [
+  {
+    title: "Readiness Score",
+    copy: "Standardized compatibility ranking showing how configurations match target templates.",
+    label: "Diagnostic",
+    accent: "cyan",
+    Icon: BarChart3,
+  },
+  {
+    title: "Evidence Confidence",
+    copy: "A secondary score highlighting assumptions based on incomplete or unverified configurations.",
+    label: "Confidence",
+    accent: "indigo",
+    Icon: ShieldCheck,
+  },
+  {
+    title: "VM Risk Matrix",
+    copy: "VM-by-VM breakdown separating simple migrations from complex switch or switchover dependencies.",
+    label: "Inventory",
+    accent: "amber",
+    Icon: Layers,
+  },
+  {
+    title: "Storage Target Suitability",
+    copy: "Compatibility matrix for ZFS, NFS, SAN, or Ceph backing targets including network cautions.",
+    label: "Storage",
+    accent: "cyan",
+    Icon: Database,
+  },
+  {
+    title: "Missing Evidence Checklist",
+    copy: "Direct tasks identifying where infrastructure details were omitted and need verification.",
+    label: "Validation",
+    accent: "rose",
+    Icon: ShieldAlert,
+  },
+  {
+    title: "Migration Waves",
+    copy: "Staged implementation timeline organizing workloads by size, risk, and ownership.",
+    label: "Staging",
+    accent: "amber",
+    Icon: Sliders,
+  },
+  {
+    title: "Boardroom PDF Report",
+    copy: "Polished, technical and executive summaries designed for leadership sign-off.",
+    label: "Executive",
+    accent: "indigo",
+    Icon: FileText,
+  },
+  {
+    title: "Advisor Context",
+    copy: "Contextual suggestions addressing licensing, sizing anomalies, and operational readiness.",
+    label: "AI Advisor",
+    accent: "cyan",
+    Icon: Brain,
+  },
+];
+
+const faqCategoryLabels: Record<keyof typeof landingFaqsGrouped, string> = {
+  product: "Product scope",
+  evidence: "Evidence & security",
+  storage: "Storage readiness",
+  advisor: "Senior Advisor",
+  pricing: "Pricing & billing",
+  support: "Support & workspace",
+};
+
+const pricingPreviewHighlights = [
+  "Invoice-first onboarding",
+  "Controlled Stripe rollout",
+  "Scope matched before purchase",
+];
+
+const ctaFocusPoints = [
+  {
+    label: "Cost exposure",
+    value: "License pressure mapped before budget decisions",
+    accent: "cyan",
+    Icon: DollarSign,
+  },
+  {
+    label: "Storage readiness",
+    value: "Destination fit qualified before workload waves",
+    accent: "amber",
+    Icon: Database,
+  },
+  {
+    label: "Wave blockers",
+    value: "Unsupported configs and missing evidence surfaced early",
+    accent: "indigo",
+    Icon: ShieldAlert,
+  },
 ];
 
 const industryEvaluations = [
@@ -261,7 +563,6 @@ const landingFaqsGrouped = {
 };
 
 export default function LandingPage() {
-  const [ctaEmail, setCtaEmail] = useState("");
   const [selectedEvaluationId, setSelectedEvaluationId] = useState<string | null>(null);
   const [faqCategory, setFaqCategory] = useState<keyof typeof landingFaqsGrouped>("product");
   const selectedEvaluation = industryEvaluations.find((evaluation) => evaluation.id === selectedEvaluationId);
@@ -269,11 +570,6 @@ export default function LandingPage() {
 
   const handleOpenScanner = () => {
     window.location.href = "/sign-up";
-  };
-
-  const handleCtaSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    window.location.href = `/sign-up?email=${encodeURIComponent(ctaEmail)}`;
   };
 
   useEffect(() => {
@@ -301,234 +597,170 @@ export default function LandingPage() {
     <>
       <Navbar />
 
-      <main style={{ flexGrow: 1 }}>
+      <main style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Section 1 — Hero */}
         <Hero onOpenScanner={handleOpenScanner} />
 
         {/* Section 2 — Pain / Problem */}
-        <section id="problem-pain" className="section pain-section">
+        <section id="problem-pain" className="section pain-section" style={{ order: 2 }}>
           <div className="bg-mesh"></div>
           <div className="container">
-            <div className="text-center mb-8">
-              <div className="badge badge-cyan">Transition Challenge</div>
-              <h2 className="mb-4">VMware exits fail when teams migrate inventory instead of risk.</h2>
-              <p className="mx-auto" style={{ maxWidth: "650px" }}>
-                Broadcom licensing pressure creates urgency, but migrating legacy infrastructure blindly introduces severe operational hazards.
-              </p>
+            <div className="pain-intro">
+              <div className="pain-badge-row">
+                <div className="badge badge-cyan">Transition Challenge</div>
+              </div>
+              <div className="pain-intro-grid">
+                <h2>VMware exits fail when teams migrate inventory instead of risk.</h2>
+                <div className="pain-intro-note pain-intro-danger">
+                  <span>
+                    <ShieldAlert size={14} />
+                    Root cause
+                  </span>
+                  <strong>Broadcom licensing pressure creates urgency.</strong>
+                  <p>
+                    That urgency is what pushes teams to migrate legacy infrastructure too quickly,
+                    before architecture, storage and dependency risk are properly qualified.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="pain-grid">
-              <div className="pain-card warning">
-                <div className="pain-icon-wrapper">
-                  <ShieldAlert size={22} />
-                </div>
-                <h3>Broadcom Pressure</h3>
-                <p>
-                  Licensing changes and sudden TCO spikes force rapid exit planning, but pushing workloads to new hypervisors without architecture validation breeds downtime.
-                </p>
-              </div>
-
-              <div className="pain-card">
-                <div className="pain-icon-wrapper">
-                  <Database size={22} />
-                </div>
-                <h3>Hidden Storage Risk</h3>
-                <p>
-                  RVTools lists allocation sizes, but hides physical host disk configurations, performance sensitivity, and backing datastore boundaries.
-                </p>
-              </div>
-
-              <div className="pain-card warning">
-                <div className="pain-icon-wrapper">
-                  <Network size={22} />
-                </div>
-                <h3>Unknown Dependencies</h3>
-                <p>
-                  Unsupported VM configurations, complex virtual networks, nested switches, and backup schedules represent hidden breakers that block live transformations.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 3 — What Shift Evidence does */}
-        <section className="section bg-gradient-strip" style={{ position: "relative" }}>
-          <div className="bg-grid"></div>
-          <div className="container">
-            <div className="text-center mb-8">
-              <div className="badge">Decision Engine</div>
-              <h2 className="mb-4">From exported evidence to migration decisions.</h2>
-              <p className="mx-auto" style={{ maxWidth: "700px" }}>
-                Shift Evidence replaces consulting spreadsheets and black-box scripts with a platform that evaluates raw infrastructure configuration against target compatibility models.
-              </p>
-            </div>
-
-            <div className="features-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
-              <div className="glass-card feature-card glow-primary">
-                <div className="feature-icon-wrapper">
-                  <BarChart3 size={24} />
-                </div>
-                <h3 style={{ color: "white", fontSize: "1.25rem" }}>Readiness & Confidence Scoring</h3>
-                <p style={{ fontSize: "0.9rem" }}>
-                  Analyze sockets, cores, memory layouts, virtual networks, and guest operating systems to calculate standardized compatibility indexes and risk flags.
-                </p>
-              </div>
-
-              <div className="glass-card feature-card glow-secondary">
-                <div className="feature-icon-wrapper">
-                  <Database size={24} />
-                </div>
-                <h3 style={{ color: "white", fontSize: "1.25rem" }}>Storage & Destination Risk</h3>
-                <p style={{ fontSize: "0.9rem" }}>
-                  Map VMware SAN, NAS, or NFS architectures directly onto target storage targets (ZFS, NFS, SAN, or Ceph) to identify throughput bottlenecks and sizing suitability.
-                </p>
-              </div>
-
-              <div className="glass-card feature-card glow-primary">
-                <div className="feature-icon-wrapper">
-                  <Brain size={24} />
-                </div>
-                <h3 style={{ color: "white", fontSize: "1.25rem" }}>Reports, Waves & Advisor Planning</h3>
-                <p style={{ fontSize: "0.9rem" }}>
-                  Structure migration waves, list missing evidence, generate technical summaries, and consult a contextual Advisor driven by approved vault assumptions.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 4 — Three pillars */}
-        <section className="section" style={{ position: "relative", background: "rgba(3, 7, 18, 0.4)" }}>
-          <div className="bg-mesh"></div>
-          <div className="container">
-            <div className="text-center mb-8">
-              <div className="badge badge-cyan">Architecture Pillars</div>
-              <h2 className="mb-4">Three Pillars of Pre-Migration Assessment</h2>
-              <p className="mx-auto" style={{ maxWidth: "650px" }}>
-                An institutional approach to migration qualification, structuring infrastructure audits around compute, storage, and contextual logic.
-              </p>
-            </div>
-
-            <div className="three-pillars-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
-              {/* Pillar 1 */}
-              <div className="glass-card feature-card" style={{ padding: "2.5rem" }}>
-                <span className="text-cyan font-mono" style={{ fontSize: "0.85rem", letterSpacing: "0.1em" }}>PILLAR 01</span>
-                <h3 style={{ color: "white", margin: "1rem 0" }}>Compute & Licensing Readiness</h3>
-                <p style={{ fontSize: "0.95rem" }} className="mb-4">
-                  Identify hypervisor footprint, count cores and sockets, isolate CPU architecture variations, verify OS license exposure, and group VMs into risk classes.
-                </p>
-                <ul style={{ paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                  <li>Raw RVTools ingestion</li>
-                  <li>Core/Socket license mapping</li>
-                  <li>VM risk classification matrix</li>
-                  <li>Overcommit sizing simulators</li>
-                </ul>
-              </div>
-
-              {/* Pillar 2 */}
-              <div className="glass-card feature-card" style={{ padding: "2.5rem" }}>
-                <span className="text-cyan font-mono" style={{ fontSize: "0.85rem", letterSpacing: "0.1em" }}>PILLAR 02</span>
-                <h3 style={{ color: "white", margin: "1rem 0" }}>Storage Destination Readiness</h3>
-                <p style={{ fontSize: "0.95rem" }} className="mb-4">
-                  Examine existing datastore usage and map workloads to local ZFS, SAN, NFS, or high-performance Ceph architectures without installing production agents.
-                </p>
-                <ul style={{ paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                  <li>ZFS, NFS, SAN, and Ceph modeling</li>
-                  <li>Proxmox Backup Server suitability</li>
-                  <li>Agentless CLI target validation</li>
-                  <li>No-credentials security approach</li>
-                </ul>
-              </div>
-
-              {/* Pillar 3 */}
-              <div className="glass-card feature-card" style={{ padding: "2.5rem" }}>
-                <span className="text-cyan font-mono" style={{ fontSize: "0.85rem", letterSpacing: "0.1em" }}>PILLAR 03</span>
-                <h3 style={{ color: "white", margin: "1rem 0" }}>Senior Migration Advisor</h3>
-                <p style={{ fontSize: "0.95rem" }} className="mb-4">
-                  Interpret raw evidence using a contextual Advisor backed by Project Memory Vault logs, keeping recommendations aligned with your business constraints.
-                </p>
-                <ul style={{ paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                  <li>Context-aware AI Advisor</li>
-                  <li>Project Memory Vault governance</li>
-                  <li>Risk interpretation summaries</li>
-                  <li>Read-only advisory limits</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 5 — How it works (Process Step-by-Step Workflow) */}
-        <section className="section" style={{ position: "relative" }}>
-          <div className="bg-mesh"></div>
-          <div className="container">
-            <div className="text-center mb-8">
-              <div className="badge badge-cyan">Workflow</div>
-              <h2 className="mb-4">The Pre-Migration Assessment Lifecycle</h2>
-              <p className="mx-auto" style={{ maxWidth: "600px" }}>
-                A structured process designed to transition raw cluster data into clear, audit-ready decisions.
-              </p>
-            </div>
-
-            {/* Beautiful, responsive timeline workflow layout (top to bottom) */}
-            <div 
-              style={{ 
-                display: "grid", 
-                gridTemplateColumns: "1fr",
-                gap: "2rem", 
-                maxWidth: "850px", 
-                margin: "0 auto",
-                position: "relative" 
-              }}
-            >
-              {[
-                { step: "01", title: "Ingest VMware Config", desc: "Upload raw RVTools inventory sheets or complete our guided intake form. Fully offline, read-only process with zero agents." },
-                { step: "02", title: "Attach Storage Target Evidence", desc: "Optionally add Proxmox, Ceph, or PBS target storage configuration exports to confirm hardware and failure domain constraints." },
-                { step: "03", title: "Verify Readiness & Confidence", desc: "Review calculated sizing compatibilities and check evidence coverage metrics pointing out missing network or datastore facts." },
-                { step: "04", title: "Generate Migration Decision Pack", desc: "Download boardroom-ready PDF reports containing VM risk matrices, license calculations, and prioritized waves." },
-                { step: "05", title: "Consult Senior Advisor", desc: "Interact with our contextual advisor to trace risks, ask specific architectural questions, and understand limitations." },
-                { step: "06", title: "Staging Waves & Upgrades", desc: "Pin approved assumptions to the Project Memory Vault and prepare technical checklists for sandbox executions." }
-              ].map((item, idx) => (
-                <div 
-                  key={idx} 
-                  className="glass-card feature-card"
-                  style={{ 
-                    display: "flex", 
-                    gap: "1.5rem", 
-                    padding: "2rem", 
-                    alignItems: "flex-start",
-                    borderLeft: "4px solid var(--text-cyan)"
-                  }}
-                >
-                  <div 
-                    style={{ 
-                      fontSize: "1.5rem", 
-                      fontWeight: "bold", 
-                      color: "var(--text-cyan)",
-                      background: "rgba(6, 182, 212, 0.1)",
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0
-                    }}
-                  >
-                    {item.step}
+              {transitionChallenges.map(({ label, title, copy, footer, accent, Icon }) => (
+                <div key={title} className={`pain-card pain-card-${accent}`}>
+                  <div className="pain-card-head">
+                    <span>{label}</span>
+                    <div className="pain-icon-wrapper">
+                      <Icon size={18} />
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ color: "white", fontSize: "1.25rem", margin: "0 0 0.5rem 0" }}>{item.title}</h3>
-                    <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "0.95rem", lineHeight: "1.5" }}>{item.desc}</p>
-                  </div>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                  <strong>{footer}</strong>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Section 3 — What Shift Evidence does */}
+        <section className="section bg-gradient-strip" style={{ position: "relative", order: 3 }}>
+          <div className="bg-grid"></div>
+          <div className="container">
+            <div className="engine-intro">
+              <div>
+                <div className="badge">Decision Engine</div>
+                <h2>From exported evidence to migration decisions.</h2>
+              </div>
+              <p>
+                Shift Evidence replaces consulting spreadsheets and black-box scripts with a platform
+                that evaluates raw infrastructure configuration against target compatibility models.
+              </p>
+            </div>
+
+            <div className="engine-grid">
+              {decisionEngineBlocks.map(({ label, title, copy, accent, Icon }) => (
+                <div key={title} className={`engine-card engine-card-${accent}`}>
+                  <div className="engine-card-head">
+                    <span>{label}</span>
+                    <div className="engine-icon-wrapper">
+                      <Icon size={20} />
+                    </div>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4 — Three pillars */}
+        <section className="section" style={{ position: "relative", background: "rgba(3, 7, 18, 0.4)", order: 4 }}>
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="pillars-intro">
+              <div className="badge badge-cyan">Architecture Pillars</div>
+              <h2>Three Pillars of Pre-Migration Assessment</h2>
+              <p>
+                An institutional approach to migration qualification, structuring infrastructure
+                audits around compute, storage, and contextual logic.
+              </p>
+            </div>
+
+            <div className="pillars-grid">
+              {architecturePillars.map(({ number, label, title, copy, accent, Icon, bullets }) => (
+                <div key={title} className={`pillar-card pillar-card-${accent}`}>
+                  <div className="pillar-card-head">
+                    <span>{label}</span>
+                    <strong>{number}</strong>
+                  </div>
+                  <div className="pillar-title-row">
+                    <div className="pillar-icon-wrapper">
+                      <Icon size={20} />
+                    </div>
+                    <h3>{title}</h3>
+                  </div>
+                  <p>{copy}</p>
+                  <ul>
+                    {bullets.map((bullet) => (
+                      <li key={bullet}>
+                        <Check size={14} />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5 — How it works (Process Step-by-Step Workflow) */}
+        <section className="section" style={{ position: "relative", order: 6 }}>
+          <div className="bg-mesh"></div>
+          <div className="container">
+            <div className="workflow-shell">
+              <div className="workflow-intro">
+                <div className="badge badge-cyan">Workflow</div>
+                <h2>The Pre-Migration Assessment Lifecycle</h2>
+                <p>
+                  A structured process designed to transition raw cluster data into clear, audit-ready decisions.
+                </p>
+                <div className="workflow-signal-strip" aria-hidden="true">
+                  <span>Agentless intake</span>
+                  <span>Risk-qualified scoring</span>
+                  <span>Audit-ready output</span>
+                </div>
+              </div>
+
+            <div className="workflow-rail">
+              {workflowSteps.map(({ step, phase, title, desc, accent, Icon }) => (
+                <article key={step} className={`workflow-step workflow-step-${accent}`}>
+                  <div className="workflow-step-node">
+                    <span>{step}</span>
+                  </div>
+                  <div className="workflow-step-card">
+                    <div className="workflow-step-head">
+                      <span>{phase}</span>
+                    </div>
+                    <div className="workflow-step-title-row">
+                      <div className="workflow-step-icon">
+                        <Icon size={18} />
+                      </div>
+                      <h3>{title}</h3>
+                    </div>
+                    <p>{desc}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            </div>
+          </div>
+        </section>
+
         {/* Restore Licensing TCO Savings Calculator & Savings Delta */}
-        <section id="licensing-calculator" className="section" style={{ position: "relative", background: "rgba(3, 7, 18, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="licensing-calculator" className="section" style={{ position: "relative", background: "rgba(3, 7, 18, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 11 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="text-center mb-8">
@@ -543,7 +775,7 @@ export default function LandingPage() {
         </section>
 
         {/* Restore Capability Matrix / How We Compare */}
-        <section id="comparison" className="section comparison-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="comparison" className="section comparison-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 12 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="text-center mb-8">
@@ -552,6 +784,46 @@ export default function LandingPage() {
               <p className="mx-auto" style={{ maxWidth: "650px" }}>
                 Traditional assessments fall short of providing a concrete, actionable roadmap. Shift Evidence bridges the gap between raw data parsing and senior human expertise.
               </p>
+            </div>
+
+            <div className="comparison-board-shell">
+              <div className="comparison-board-intro">
+                <span>Typical assessment approaches</span>
+                <span>Where Shift Evidence keeps going</span>
+              </div>
+
+              <div className="comparison-card-grid">
+                {capabilityMatrixRows.map(({ title, method, gap, advantage, accent, Icon }) => (
+                  <article key={title} className={`comparison-lane-card comparison-lane-card-${accent}`}>
+                    <div className="comparison-lane-head">
+                      <div className="comparison-lane-icon">
+                        <Icon size={18} />
+                      </div>
+                      <div>
+                        <h3>{title}</h3>
+                      </div>
+                    </div>
+
+                    <div className="comparison-lane-stack">
+                      <div className="comparison-lane-block comparison-lane-method">
+                        <strong>Typical focus</strong>
+                        <p>{method}</p>
+                      </div>
+                      <div className="comparison-lane-block comparison-lane-gap">
+                        <strong>Where it breaks</strong>
+                        <p>{gap}</p>
+                      </div>
+                      <div className="comparison-lane-block comparison-lane-advantage">
+                        <strong>Shift Evidence edge</strong>
+                        <p>
+                          <Check size={15} />
+                          {advantage}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
 
             <div className="glass-card comparison-table-wrapper">
@@ -642,95 +914,43 @@ export default function LandingPage() {
         </section>
 
         {/* Section 6 — What you receive */}
-        <section id="sample-output" className="section sample-output-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="sample-output" className="section sample-output-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 5 }}>
           <div className="bg-mesh"></div>
           <div className="container">
-            <div className="text-center mb-8">
+            <div className="sample-output-intro text-center mb-8">
               <div className="badge">Diagnostic Deliverables</div>
               <h2 className="mb-4">Your Migration Decision Pack: Deliverables</h2>
               <p className="mx-auto" style={{ maxWidth: "650px" }}>
                 Shift Evidence structures raw cluster exports into standardized planning components.
               </p>
+              <div className="sample-output-strip" aria-hidden="true">
+                <span>Technical scorecards</span>
+                <span>Executive sign-off assets</span>
+                <span>Advisor-backed next steps</span>
+              </div>
             </div>
 
-            <div className="sample-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><BarChart3 size={20} /></div>
-                  <h3>Readiness Score</h3>
-                  <p>Standardized compatibility ranking showing how configurations match target templates.</p>
-                </div>
-                <div className="sample-card-tag">Diagnostic</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><ShieldCheck size={20} /></div>
-                  <h3>Evidence Confidence</h3>
-                  <p>A secondary score highlighting assumptions based on incomplete or unverified configurations.</p>
-                </div>
-                <div className="sample-card-tag">Confidence</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><Layers size={20} /></div>
-                  <h3>VM Risk Matrix</h3>
-                  <p>VM-by-VM breakdown separating simple migrations from complex switch or switchover dependencies.</p>
-                </div>
-                <div className="sample-card-tag">Inventory</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><Database size={20} /></div>
-                  <h3>Storage Target Suitability</h3>
-                  <p>Compatibility matrix for ZFS, NFS, SAN, or Ceph backing targets including network cautions.</p>
-                </div>
-                <div className="sample-card-tag">Storage</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><ShieldAlert size={20} /></div>
-                  <h3>Missing Evidence Checklist</h3>
-                  <p>Direct tasks identifying where infrastructure details were omitted and need verification.</p>
-                </div>
-                <div className="sample-card-tag">Validation</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><Sliders size={20} /></div>
-                  <h3>Migration Waves</h3>
-                  <p>Staged implementation timeline organizing workloads by size, risk, and ownership.</p>
-                </div>
-                <div className="sample-card-tag">Staging</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><FileText size={20} /></div>
-                  <h3>Boardroom PDF Report</h3>
-                  <p>Polished, technical and executive summaries designed for leadership sign-off.</p>
-                </div>
-                <div className="sample-card-tag">Executive</div>
-              </div>
-
-              <div className="sample-card">
-                <div className="sample-card-header">
-                  <div className="sample-card-icon"><Brain size={20} /></div>
-                  <h3>Advisor Context</h3>
-                  <p>Contextual suggestions addressing licensing, sizing anomalies, and operational readiness.</p>
-                </div>
-                <div className="sample-card-tag">AI Advisor</div>
-              </div>
+            <div className="sample-output-grid">
+              {diagnosticDeliverables.map(({ title, copy, label, accent, Icon }) => (
+                <article key={title} className={`sample-card sample-card-${accent}`}>
+                  <div className="sample-card-topline">
+                    <span>{label}</span>
+                  </div>
+                  <div className="sample-card-header">
+                    <div className="sample-card-title-row">
+                      <div className="sample-card-icon"><Icon size={20} /></div>
+                      <h3>{title}</h3>
+                    </div>
+                    <p>{copy}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Section 7 — Storage readiness section (Dedicated) */}
-        <section className="section" style={{ position: "relative", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section className="section" style={{ position: "relative", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 7 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
@@ -765,7 +985,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="section" style={{ position: "relative", background: "rgba(10, 15, 30, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section className="section" style={{ position: "relative", background: "rgba(10, 15, 30, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 8 }}>
           <div className="bg-grid"></div>
           <div className="container">
             <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
@@ -810,7 +1030,7 @@ export default function LandingPage() {
         </section>
 
         {/* Section 8 — Senior Advisor section (Dedicated) */}
-        <section className="section" style={{ position: "relative", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section className="section" style={{ position: "relative", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 9 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
@@ -871,7 +1091,7 @@ export default function LandingPage() {
         </section>
 
         {/* Section 9 — Security / Trust model (Visually Rich, Not Empty) */}
-        <section className="section" style={{ position: "relative", background: "rgba(6, 9, 19, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section className="section" style={{ position: "relative", background: "rgba(6, 9, 19, 0.4)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 10 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="grid-2-cols" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3rem", alignItems: "center" }}>
@@ -974,52 +1194,54 @@ export default function LandingPage() {
         </section>
 
         {/* Section 12 — Pricing Preview (Spacious, elegant CTA section) */}
-        <section className="section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section className="section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 14 }}>
           <div className="container">
-            <div 
-              className="glass-card" 
-              style={{ 
-                padding: "4rem 3rem", 
-                textAlign: "center", 
-                maxWidth: "950px", 
-                margin: "0 auto",
-                background: "linear-gradient(135deg, rgba(6, 9, 19, 0.8), rgba(139, 92, 246, 0.02))",
-                border: "1px solid rgba(255, 255, 255, 0.08)"
-              }}
-            >
-              <span className="badge badge-cyan" style={{ marginBottom: "1rem" }}>Plans & Pricing</span>
-              <h2 style={{ fontSize: "2.25rem", color: "white", marginBottom: "1rem" }}>Transparent, modular pricing models.</h2>
-              <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "0 auto 2.5rem", fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Start with a focused readiness assessment. Card checkout routes use Stripe when configured, and bank transfer invoices remain available for business purchasing.
-              </p>
+            <div className="glass-card pricing-preview-shell">
+              <div className="pricing-preview-intro">
+                <span className="badge badge-cyan">Plans & Pricing</span>
+                <h2>Transparent pricing models with business-grade onboarding.</h2>
+                <p>
+                  Start with a focused readiness assessment. Card checkout routes use Stripe only when approved, while bank transfer invoices remain available for business purchasing.
+                </p>
+                <div className="pricing-preview-strip" aria-hidden="true">
+                  {pricingPreviewHighlights.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </div>
 
-              <div 
-                style={{ 
-                  display: "flex", 
-                  justifyContent: "center", 
-                  gap: "3rem", 
-                  flexWrap: "wrap",
-                  marginBottom: "3rem",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
-                  paddingBottom: "2.5rem"
-                }}
-              >
+              <div className="pricing-preview-grid">
                 {landingPricingPlans.map((plan, index) => (
-                  <div key={plan.id} style={{ display: "contents" }}>
-                    {index > 0 ? <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", height: "40px" }} /> : null}
-                    <div style={{ textAlign: "center" }}>
-                      <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase" }}>{plan.name}</span>
-                      <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "white", marginTop: "0.25rem" }}>{plan.price}</div>
+                  <article key={plan.id} className={`pricing-preview-card pricing-preview-card-${plan.accent}`}>
+                    <div className="pricing-preview-card-head">
+                      <span>{index === 1 ? "Most complete" : index === 0 ? "Best starting point" : "Scoped engagement"}</span>
+                      <strong>{plan.name}</strong>
                     </div>
-                  </div>
+                    <div className="pricing-preview-price-row">
+                      <div className="pricing-preview-price">{plan.pricePrefix ? `${plan.pricePrefix} ${plan.price}` : plan.price}</div>
+                      <div className="pricing-preview-payment">{getPaymentOptionLabel(plan.recommendedPayment)}</div>
+                    </div>
+                    <p className="pricing-preview-bestfor">{plan.bestFor}</p>
+                    <ul className="pricing-preview-includes">
+                      {plan.includes.slice(0, 3).map((item) => (
+                        <li key={item}>
+                          <Check size={14} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
                 ))}
               </div>
 
-              <p className="assessment-inline-note" style={{ margin: "-1rem auto 2rem", maxWidth: "680px" }}>
-                {paymentOptionsCopy.notActive} {paymentOptionsCopy.bankTransfer}
-              </p>
+              <div className="pricing-preview-note">
+                <div className="pricing-preview-note-title">Purchasing flow</div>
+                <p>
+                  {paymentOptionsCopy.notActive} {paymentOptionsCopy.bankTransfer}
+                </p>
+              </div>
 
-              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <div className="pricing-preview-actions">
                 <a href="/pricing" className="btn btn-primary btn-glow" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
                   View All Pricing Plans
                   <ArrowRight size={18} />
@@ -1033,7 +1255,7 @@ export default function LandingPage() {
         </section>
 
         {/* Anonymized Cases (Preserved Credibility Section) */}
-        <section id="industry-evaluations" className="section industry-evaluations-section" aria-labelledby="industry-evaluations-title" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="industry-evaluations" className="section industry-evaluations-section" aria-labelledby="industry-evaluations-title" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 13 }}>
           <div className="bg-mesh"></div>
           <div className="container">
             <div className="industry-evaluations-header text-center mb-8">
@@ -1113,7 +1335,7 @@ export default function LandingPage() {
         </section>
 
         {/* Section 11 — FAQ */}
-        <section id="faq" className="section faq-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="faq" className="section faq-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 15 }}>
           <div className="container">
             <div className="text-center mb-8">
               <div className="badge badge-cyan">FAQ</div>
@@ -1134,33 +1356,40 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Premium FAQ Category Tabs */}
-            <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0.5rem", marginBottom: "2rem" }}>
+            <div className="faq-tabs">
               {(Object.keys(landingFaqsGrouped) as Array<keyof typeof landingFaqsGrouped>).map((cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => setFaqCategory(cat)}
-                  className={`btn ${faqCategory === cat ? "btn-primary btn-glow" : "btn-secondary"}`}
-                  style={{ textTransform: "capitalize", fontSize: "0.85rem", padding: "0.5rem 1rem" }}
+                  className={`faq-tab ${faqCategory === cat ? "faq-tab-active" : ""}`}
                 >
-                  {cat === "pricing" ? "Pricing & billing" : cat === "support" ? "Support & workspace" : cat === "advisor" ? "Senior Advisor" : cat === "evidence" ? "Evidence & security" : cat === "storage" ? "Storage readiness" : cat}
+                  {faqCategoryLabels[cat]}
                 </button>
               ))}
             </div>
 
-            <div className="faq-list" style={{ maxWidth: "800px", margin: "0 auto" }}>
+            <div className="faq-list-shell">
+              <div className="faq-list-header">
+                <span className="faq-list-label">{faqCategoryLabels[faqCategory]}</span>
+                <p>Focused answers for the selected topic, keeping the technical and commercial details easy to scan.</p>
+              </div>
+
+              <div className="faq-list">
               {landingFaqsGrouped[faqCategory].map((faq, index) => (
-                <div key={index} className="faq-item" style={{ background: "rgba(255, 255, 255, 0.02)", padding: "1.5rem", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.05)", marginBottom: "1rem" }}>
-                  <div className="faq-q" style={{ fontWeight: "bold", color: "white", fontSize: "1.05rem", marginBottom: "0.5rem" }}>{faq.q}</div>
-                  <div className="faq-a" style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6" }}>{faq.a}</div>
-                </div>
+                <article key={index} className="faq-item">
+                  <div className="faq-item-index">0{index + 1}</div>
+                  <div className="faq-q">{faq.q}</div>
+                  <div className="faq-a">{faq.a}</div>
+                </article>
               ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* Section 12 — Final CTA */}
-        <section id="final-cta" className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.6)", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+        <section id="final-cta" className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.6)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 16 }}>
           <div className="bg-mesh"></div>
           <div
             className="glow-orb"
@@ -1184,8 +1413,10 @@ export default function LandingPage() {
           ></div>
 
           <div className="container">
-            <div className="glass-card cta-box text-center">
-              <div className="cta-brands" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "1.5rem" }}>
+            <div className="glass-card cta-box">
+              <div className="cta-shell">
+                <div className="cta-copy">
+              <div className="cta-brands" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "1rem", marginBottom: "1.5rem" }}>
                 <div className="cta-brand vmware" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <Image src={vmwareLogo} alt="VMware Logo" width={18} height={18} />
                   VMware
@@ -1197,30 +1428,21 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <h2 className="mb-2" style={{ color: "white" }}>
+              <h2 className="mb-2 cta-title" style={{ color: "white" }}>
                 Start Your VMware Readiness Assessment
               </h2>
-              <p className="cta-subtitle" style={{ maxWidth: "600px", margin: "0 auto 2rem" }}>
+              <p className="cta-subtitle" style={{ maxWidth: "600px", margin: "0 0 2rem" }}>
                 <span className="cta-pain" style={{ color: "var(--text-cyan)", fontWeight: "bold" }}>VMware exit decisions need evidence, not guesses.</span> Initialize an evidence-backed audit of cost exposure, migration blockers, storage destination readiness and Ceph suitability today.
               </p>
 
-              <form onSubmit={handleCtaSubmit} className="cta-form" style={{ display: "flex", gap: "0.5rem", maxWidth: "500px", margin: "0 auto 2rem" }}>
-                <input
-                  type="email"
-                  placeholder="Enter corporate email"
-                  required
-                  className="form-input"
-                  value={ctaEmail}
-                  onChange={(e) => setCtaEmail(e.target.value)}
-                  style={{ flexGrow: 1 }}
-                />
-                <button type="submit" className="btn btn-primary btn-glow cta-btn" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+              <div className="cta-actions" style={{ display: "flex", justifyContent: "flex-start", margin: "0 0 2rem" }}>
+                <a href="/sign-up" className="btn btn-primary btn-glow cta-btn" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
                   Start Free Assessment
                   <ArrowRight size={18} />
-                </button>
-              </form>
+                </a>
+              </div>
 
-              <div className="cta-trust" style={{ display: "flex", justifyContent: "center", gap: "2rem", flexWrap: "wrap" }}>
+              <div className="cta-trust" style={{ display: "flex", justifyContent: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
                 <div className="cta-trust-item" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <ShieldCheck size={18} className="text-cyan" />
                   <span>No ESXi agents required</span>
@@ -1234,36 +1456,42 @@ export default function LandingPage() {
                   <span>Zero Credentials Required</span>
                 </div>
               </div>
+                </div>
+
+                <div className="cta-visual-panel" aria-hidden="true">
+                  <div className="cta-visual-head">
+                    <span>Readiness preview</span>
+                    <strong>Decision surface</strong>
+                  </div>
+                  <div className="cta-visual-route">
+                    <span className="cta-visual-route-brand vmware">VMware estate</span>
+                    <span className="cta-visual-route-line" />
+                    <span className="cta-visual-route-brand proxmox">Proxmox target</span>
+                  </div>
+                  <div className="cta-focus-grid">
+                    {ctaFocusPoints.map(({ label, value, accent, Icon }) => (
+                      <div key={label} className={`cta-focus-card cta-focus-card-${accent}`}>
+                        <div className="cta-focus-card-head">
+                          <div className="cta-focus-icon">
+                            <Icon size={16} />
+                          </div>
+                          <span>{label}</span>
+                        </div>
+                        <p>{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="cta-visual-footer">
+                    <span>Agentless intake</span>
+                    <span>Senior context</span>
+                    <span>Audit-ready output</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Customer Return Layer */}
-        <section className="section" aria-labelledby="returning-user-title" style={{ paddingTop: "2rem", paddingBottom: "4rem", background: "rgba(3, 7, 18, 0.6)" }}>
-          <div className="container">
-            <div className="glass-card assessment-section" style={{ display: "flex", flexDirection: "column", gap: "2rem", alignItems: "center", justifyContent: "space-between", padding: "2.5rem" }}>
-              <div className="assessment-section-title" style={{ maxWidth: "600px" }}>
-                <div className="assessment-section-eyebrow" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <ShieldCheck size={18} className="text-cyan" />
-                  <span>Client access</span>
-                </div>
-                <h2 id="returning-user-title" style={{ margin: "0.5rem 0" }}>Already have an account?</h2>
-                <p style={{ color: "var(--text-muted)", margin: 0 }}>
-                  Return to your workspace to continue an assessment, review uploaded evidence,
-                  access reports, view recent support requests, or continue working with your migration advisor.
-                </p>
-              </div>
-              <div className="assessment-inline-actions" style={{ display: "flex", gap: "1rem" }}>
-                <a href="/client-login" className="btn btn-secondary">
-                  Go to client login
-                </a>
-                <a href="/dashboard" className="dashboard-card-link" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", color: "var(--text-cyan)" }}>
-                  Return to dashboard <ArrowRight size={16} />
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Interactive Dossier Modal */}

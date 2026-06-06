@@ -80,18 +80,46 @@ function drawBrandIcon(doc: PDFKit.PDFDocument, x: number, y: number, size = 24)
   }
 
   const scale = size / 32;
-  const strokeWidth = Math.max(1, 2.5 * scale);
-  doc.circle(x + 12 * scale, y + 16 * scale, 8 * scale).lineWidth(strokeWidth).strokeColor(COLORS.cyan).stroke();
+  const unit = 10 * scale;
+  const gap = 2 * scale;
+  const radius = 2.8 * scale;
+  const left = x + 1 * scale;
+  const top = y + 1 * scale;
+
+  doc.roundedRect(left, top, unit, unit, radius).fill("#17223b");
+  doc.roundedRect(left + unit + gap, top, unit, unit, radius).fill("#22d3ee");
+  doc.roundedRect(left, top + unit + gap, unit, unit, radius).fill("#5b21b6");
+
+  const arrowX = left + unit + gap * 0.55;
+  const arrowY = top + unit + gap + unit * 0.35;
+  const arrowEndX = left + unit * 2 + gap * 1.45;
+  const arrowEndY = top + unit + gap + unit * 0.02;
+  const strokeWidth = Math.max(1.35, 3.2 * scale);
+
   doc
-    .moveTo(x + 12 * scale, y + 16 * scale)
-    .lineTo(x + 24 * scale, y + 16 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 12 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 20 * scale)
+    .moveTo(arrowX, arrowY)
+    .bezierCurveTo(
+      left + unit * 1.55,
+      top + unit * 2.2,
+      left + unit * 1.95,
+      top + unit * 1.82,
+      arrowEndX,
+      arrowEndY,
+    )
+    .lineTo(arrowEndX, top + unit * 2.02 + gap)
     .lineWidth(strokeWidth)
     .lineCap("round")
     .lineJoin("round")
+    .strokeColor("#8b5cf6")
+    .stroke();
+
+  doc
+    .moveTo(arrowEndX, arrowEndY)
+    .lineTo(arrowEndX - 4.15 * scale, arrowEndY)
+    .moveTo(arrowEndX, arrowEndY)
+    .lineTo(arrowEndX, arrowEndY + 4.15 * scale)
+    .lineWidth(strokeWidth)
+    .lineCap("round")
     .strokeColor("#8b5cf6")
     .stroke();
 }

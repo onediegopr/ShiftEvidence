@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   AlertTriangle,
   ArrowRight,
@@ -7,9 +8,7 @@ import {
   CheckCircle2,
   Database,
   Download,
-  FileText,
   Lock,
-  Network,
   ShieldCheck,
   Sparkles,
   Waves,
@@ -18,6 +17,8 @@ import Footer from "../Footer";
 import Navbar from "../Navbar";
 import DemoWorkspaceBanner from "./DemoWorkspaceBanner";
 import { demoScenarios, demoWorkspaceCopy, getPrimaryDemoScenario, type DemoScenario } from "../../server/demo/demoDatasets";
+import vmwareLogo from "../../../images/vmware.svg";
+import proxmoxLogo from "../../../images/proxmox.svg";
 
 const disabledActions = [
   "Uploading your own files",
@@ -34,6 +35,84 @@ const unlocks = [
   "Live Senior Advisor within plan limits",
   "Customer-specific risk scoring",
   "Commercial support and upgrade paths",
+];
+
+const workspaceHeroSignals = [
+  "Read-only synthetic dataset",
+  "VM risk and evidence confidence",
+  "Waves, sizing and report outputs",
+];
+
+const workspaceRadarAxes = [
+  { label: "Risk mapping", score: 88, detail: "21 blocker patterns", tone: "blue", angle: -96, reach: 0.78, cardClassName: "demo-workspace-web-node-1" },
+  { label: "Storage fit", score: 67, detail: "9 datastore paths", tone: "violet", angle: -28, reach: 1.02, cardClassName: "demo-workspace-web-node-2" },
+  { label: "Target sizing", score: 82, detail: "4-wave landing plan", tone: "emerald", angle: 18, reach: 1.14, cardClassName: "demo-workspace-web-node-3" },
+  { label: "Decision pack", score: 93, detail: "Board-ready PDF", tone: "cyan", angle: 72, reach: 0.92, cardClassName: "demo-workspace-web-node-4" },
+  { label: "Advisor depth", score: 76, detail: "8 scenario overlays", tone: "violet", angle: 142, reach: 0.84, cardClassName: "demo-workspace-web-node-5" },
+  { label: "RVTools intake", score: 61, detail: "74 VMs baseline", tone: "blue", angle: 204, reach: 1.08, cardClassName: "demo-workspace-web-node-6" },
+];
+
+const workspaceRadarFootnotes = [
+  "Public synthetic dataset",
+  "Bias-weighted decision surface",
+  "Visible score-to-signal bias",
+];
+
+function polarPoint(angleDegrees: number, radius: number) {
+  const radians = (angleDegrees * Math.PI) / 180;
+  return {
+    x: 50 + Math.cos(radians) * radius,
+    y: 50 + Math.sin(radians) * radius,
+  };
+}
+
+function toSvgPoint(point: { x: number; y: number }) {
+  return `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+}
+
+const workspaceRadarRingScales = [0.28, 0.48, 0.68, 0.88];
+const workspaceRadarRingPolygons = workspaceRadarRingScales.map((scale) =>
+  workspaceRadarAxes.map((axis) => toSvgPoint(polarPoint(axis.angle, axis.reach * 37 * scale))).join(" "),
+);
+const workspaceRadarPolygon = workspaceRadarAxes
+  .map((axis) => toSvgPoint(polarPoint(axis.angle, 10 + axis.reach * 28 * (axis.score / 100))))
+  .join(" ");
+const workspaceRadarGeometry = workspaceRadarAxes.map((axis) => {
+  const tip = polarPoint(axis.angle, axis.reach * 37.5);
+  const value = polarPoint(axis.angle, 10 + axis.reach * 28 * (axis.score / 100));
+  return {
+    ...axis,
+    tip,
+    value,
+  };
+});
+
+const workspaceIntroCards = [
+  {
+    Icon: Database,
+    eyebrow: "What this demo is",
+    title: "A synthetic workspace with real product structure",
+    copy: demoWorkspaceCopy.intro,
+    bullets: ["Scored scenarios", "Synthetic transcripts", "Downloadable reports"],
+  },
+  {
+    Icon: BarChart3,
+    eyebrow: "What you can explore",
+    title: "The full decision pack flow",
+    copy: "Open synthetic scenarios to inspect readiness, confidence, risk matrices, storage concerns and migration waves.",
+    bullets: [
+      "Readiness and confidence scores",
+      "VM risk matrix and evidence gaps",
+      "Licensing and cost exposure",
+    ],
+  },
+  {
+    Icon: Lock,
+    eyebrow: "What is intentionally disabled",
+    title: "Safe public preview boundaries",
+    copy: demoWorkspaceCopy.disabled,
+    bullets: disabledActions,
+  },
 ];
 
 function scoreTone(score: number) {
@@ -213,7 +292,23 @@ export default function DemoWorkspacePage() {
           <div className="bg-mesh" />
           <div className="container demo-workspace-hero-grid">
             <div className="demo-workspace-hero-copy">
-              <div className="badge badge-cyan">Demo Workspace</div>
+              <div className="demo-workspace-route-line" aria-hidden="true">
+                <span className="demo-workspace-route-pill demo-workspace-route-pill-vmware">
+                  <Image src={vmwareLogo} alt="" width={16} height={16} />
+                  VMware
+                </span>
+                <span className="demo-workspace-route-arrow">
+                  <ArrowRight size={14} />
+                </span>
+                <span className="demo-workspace-route-pill demo-workspace-route-pill-proxmox">
+                  <Image src={proxmoxLogo} alt="" width={16} height={16} />
+                  Proxmox
+                </span>
+              </div>
+              <div className="demo-workspace-kicker-row">
+                <div className="badge badge-cyan">Demo Workspace</div>
+                <p className="assessment-inline-note">Synthetic, read-only product tour</p>
+              </div>
               <h1>{demoWorkspaceCopy.title}</h1>
               <p className="demo-hero-subtitle">{demoWorkspaceCopy.subtitle}</p>
               <p className="demo-hero-body">
@@ -221,37 +316,89 @@ export default function DemoWorkspacePage() {
                 required. No credentials. No production access. This demo is read-only and uses synthetic infrastructure
                 data.
               </p>
-              <p className="assessment-inline-note">
-                Want the quick version first? Watch the 90-second simulation before opening the full workspace.
-              </p>
-              <div className="shiftreadiness-actions">
-                <a href={`#${primary.slug}`} className="btn btn-primary btn-glow">
-                  Explore a Sample Assessment
+              <div className="demo-workspace-signal-strip" aria-label="Workspace signals">
+                {workspaceHeroSignals.map((signal) => (
+                  <span key={signal}>{signal}</span>
+                ))}
+              </div>
+              <div className="demo-workspace-action-deck">
+                <a href={`#${primary.slug}`} className="btn btn-primary btn-glow demo-workspace-primary-action">
+                  <span>
+                    <strong>Explore a Sample Assessment</strong>
+                    <small>Open the flagship synthetic scenario and inspect the full decision pack</small>
+                  </span>
                   <ArrowRight size={18} />
                 </a>
-                <Link href="/demo/replay" className="btn btn-secondary">
-                  Watch Quick Simulation
-                </Link>
-                <Link href="/pricing" className="btn btn-secondary">
-                  View Plans
-                </Link>
-                <Link href="/sign-up" className="btn btn-secondary">
-                  Start a Paid Assessment
-                </Link>
+                <div className="demo-workspace-secondary-actions">
+                  <Link href="/demo/replay" className="demo-workspace-action-card">
+                    <span>Watch Quick Simulation</span>
+                    <small>Start with the guided 90-second replay</small>
+                  </Link>
+                  <Link href="/pricing" className="demo-workspace-action-card">
+                    <span>View Plans</span>
+                    <small>See what unlocks in a paid assessment</small>
+                  </Link>
+                  <Link href="/sign-up" className="demo-workspace-action-card demo-workspace-action-card-accent">
+                    <span>Start a Paid Assessment</span>
+                    <small>Create your own private workspace</small>
+                  </Link>
+                </div>
               </div>
             </div>
 
             <aside className="glass-card demo-workspace-orbit" aria-label="Demo Workspace summary">
-              <div className="demo-workspace-orbit-core">
-                <Sparkles size={26} />
-                <strong>8</strong>
-                <span>synthetic scenarios</span>
+                <div className="demo-workspace-orbit-head">
+                  <div>
+                    <span className="demo-workspace-orbit-kicker">Assessment preview</span>
+                    <h2>Readiness signal surface</h2>
+                  </div>
+                  <div className="demo-workspace-orbit-badge">Synthetic telemetry</div>
+                </div>
+              <div className="demo-workspace-web-shell">
+                <svg className="demo-workspace-web-lines" viewBox="0 0 100 100" aria-hidden="true">
+                  {workspaceRadarRingPolygons.map((points, index) => (
+                    <polygon key={points} points={points} className={`demo-workspace-web-ring demo-workspace-web-ring-${index + 1}`} />
+                  ))}
+                  {workspaceRadarGeometry.map((axis) => (
+                    <g key={`axis-${axis.label}`}>
+                      <line x1="50" y1="50" x2={axis.tip.x.toFixed(2)} y2={axis.tip.y.toFixed(2)} className="demo-workspace-web-axis" />
+                      <circle cx={axis.tip.x.toFixed(2)} cy={axis.tip.y.toFixed(2)} r="1.65" className={`demo-workspace-web-tip demo-workspace-web-tip-${axis.tone}`} />
+                      <circle cx={axis.value.x.toFixed(2)} cy={axis.value.y.toFixed(2)} r="1.25" className={`demo-workspace-web-value demo-workspace-web-value-${axis.tone}`} />
+                    </g>
+                  ))}
+                  <polygon points={workspaceRadarPolygon} className="demo-workspace-web-surface" />
+                </svg>
+                <div className="demo-workspace-orbit-core">
+                  <Sparkles size={24} />
+                  <strong>6-axis</strong>
+                  <span>migration signal mix</span>
+                  <small>Scores weighted by evidence depth</small>
+                </div>
+                <div className="demo-workspace-web-node-grid">
+                  {workspaceRadarGeometry.map((node) => (
+                    <article key={node.label} className={`demo-workspace-web-node demo-workspace-web-node-${node.tone} ${node.cardClassName}`}>
+                      <small>{node.label}</small>
+                      <strong>{node.score}/100</strong>
+                      <span>{node.detail}</span>
+                      <div className="demo-workspace-web-node-bar" aria-hidden="true">
+                        <div className="demo-workspace-web-node-bar-fill" style={{ width: `${node.score}%` }} />
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </div>
-              <div className="demo-workspace-orbit-grid">
-                <span><BarChart3 size={16} /> scoring</span>
-                <span><Database size={16} /> storage</span>
-                <span><Network size={16} /> dependencies</span>
-                <span><FileText size={16} /> PDFs</span>
+              <div className="demo-workspace-orbit-metrics">
+                {workspaceRadarGeometry.map((metric) => (
+                  <div key={`metric-${metric.label}`} className={`demo-workspace-orbit-metric demo-workspace-orbit-metric-${metric.tone}`}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.score}</strong>
+                  </div>
+                ))}
+              </div>
+              <div className="demo-workspace-orbit-footer">
+                {workspaceRadarFootnotes.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
               </div>
             </aside>
           </div>
@@ -259,33 +406,28 @@ export default function DemoWorkspacePage() {
 
         <section className="section demo-workspace-explainer">
           <div className="container demo-workspace-info-grid">
-            <article className="glass-card">
-              <h2>What this demo is</h2>
-              <p>{demoWorkspaceCopy.intro}</p>
-            </article>
-            <article className="glass-card">
-              <h2>What you can explore</h2>
-              <ul>
-                {[
-                  "Readiness and confidence scores",
-                  "VM risk matrix and evidence gaps",
-                  "Business continuity risks",
-                  "Licensing and cost exposure",
-                  "Storage Destination Readiness",
-                  "Migration waves and Advisor transcript",
-                ].map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="glass-card">
-              <h2>What is intentionally disabled</h2>
-              <ul>
-                {disabledActions.map((item) => (
-                  <li key={item}><Lock size={14} />{item}</li>
-                ))}
-              </ul>
-            </article>
+            {workspaceIntroCards.map(({ Icon, eyebrow, title, copy, bullets }) => (
+              <article key={title} className="glass-card demo-workspace-info-card">
+                <div className="demo-workspace-info-head">
+                  <div className="demo-workspace-info-icon">
+                    <Icon size={18} />
+                  </div>
+                  <div>
+                    <span>{eyebrow}</span>
+                    <h2>{title}</h2>
+                  </div>
+                </div>
+                <p>{copy}</p>
+                <ul>
+                  {bullets.map((item) => (
+                    <li key={item}>
+                      <CheckCircle2 size={14} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </section>
 
