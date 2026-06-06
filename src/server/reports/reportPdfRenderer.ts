@@ -1,6 +1,8 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
+import { buildReportExecutiveCommandCenter } from "./reportExecutiveCommandCenter";
+import { buildReportNarrativeModelFromPreview } from "./reportNarrativeModel";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
 import { PRINT_REPORT_THEME, PRINT_TONE_COLORS, type ReportTone } from "./reportTheme";
@@ -1581,6 +1583,8 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     doc.pipe(sink);
 
     const preview = input.reportPreview;
+    const narrativeModel = buildReportNarrativeModelFromPreview(preview, { generatedAt: input.generatedAt });
+    const commandCenter = buildReportExecutiveCommandCenter(narrativeModel);
     const generatedDate = dateLabel(input.generatedAt);
     const reportKind =
       input.reportTypeLabel === "PDF Preview"
@@ -1651,7 +1655,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     );
 
     addContentPage(doc, "Section 1", "Executive Summary", reportKind);
-    h2(doc, "Decision signal", "A clear stakeholder view of migration readiness and confidence.");
+    h2(doc, "Executive Command Center", "A decision page that separates technical readiness from evidence confidence.");
     metricCard({
       doc,
       x: MARGIN,
@@ -1686,11 +1690,21 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
       tone: getSeverityTone(preview.costRiskPreview.riskLevel),
     });
     doc.y += 110;
+    keyValueTable(doc, [
+      ["Decision recommendation", commandCenter.decisionRecommendation],
+      ["Total VMs analyzed", number(commandCenter.totalVmsAnalyzed)],
+      ["Main blocker", commandCenter.mainBlocker],
+      ["Best next action", commandCenter.bestNextAction],
+      ["Evidence status summary", commandCenter.evidenceStatusSummary || "Evidence streams are still being normalized."],
+      ["Risk distribution summary", commandCenter.riskDistributionSummary],
+    ]);
     callout(
       doc,
-      "Executive decision lens: readiness describes the migration posture; confidence describes how complete the evidence is. Use both before approving waves, spend or production movement.",
+      commandCenter.summaryParagraph,
       "info",
     );
+    h2(doc, "Decision summary");
+    bulletList(doc, commandCenter.decisionSummary, 4);
     h2(doc, "What this means");
     bulletList(doc, getWhatThisMeans(input), 5);
     h2(doc, "Immediate actions");

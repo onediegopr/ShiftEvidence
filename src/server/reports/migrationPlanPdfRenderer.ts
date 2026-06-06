@@ -1,6 +1,8 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
 import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
+import { buildReportExecutiveCommandCenter } from "./reportExecutiveCommandCenter";
+import { buildReportNarrativeModelFromMigrationPlan } from "./reportNarrativeModel";
 import type { MigrationRecommendationPlan, MigrationPlanGate } from "./migrationPlanTypes";
 import { PRINT_REPORT_THEME } from "./reportTheme";
 
@@ -155,6 +157,8 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
     stream.on("error", reject);
   });
   doc.pipe(stream);
+  const narrativeModel = buildReportNarrativeModelFromMigrationPlan(plan, { generatedAt: plan.generatedAt });
+  const commandCenter = buildReportExecutiveCommandCenter(narrativeModel);
 
   drawBrandHeader(doc);
   doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(24).text("Migration Recommendation Plan", MARGIN, 96, {
@@ -175,6 +179,16 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
     width: contentWidth(doc) - 32,
   });
   doc.y = 330;
+
+  heading(doc, "Executive Command Center");
+  paragraph(doc, commandCenter.summaryParagraph);
+  bulletList(doc, [
+    `Decision recommendation: ${commandCenter.decisionRecommendation}`,
+    `Total VMs analyzed: ${commandCenter.totalVmsAnalyzed || plan.evidenceSummary.inventory.vmCount}`,
+    `Main blocker: ${commandCenter.mainBlocker}`,
+    `Best next action: ${commandCenter.bestNextAction}`,
+    `Evidence status: ${commandCenter.evidenceStatusSummary || "Coverage remains limited."}`,
+  ]);
 
   heading(doc, "Evidence Coverage");
   bulletList(doc, Object.entries(plan.evidenceSummary.evidenceCoverage).map(([key, present]) => `${key}: ${present ? "present" : "missing"}`));
