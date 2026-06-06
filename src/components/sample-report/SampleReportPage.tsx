@@ -269,6 +269,17 @@ export default function SampleReportPage() {
                   <span>Compare assessment and blueprint options before you start.</span>
                   <ArrowRight size={16} />
                 </Link>
+                <a
+                  href="/marketing/shift-evidence-product-brochure-v1.pdf"
+                  className="sample-report-action-card"
+                  data-tone="cyan"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <strong>Download Product Brochure</strong>
+                  <span>Share the product overview before a stakeholder review.</span>
+                  <ArrowDownToLine size={16} />
+                </a>
               </div>
               <p className="assessment-inline-note">
                 Professional Assessment focuses on the evidence-backed report and VM-by-VM decision pack. Migration

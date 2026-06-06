@@ -656,6 +656,16 @@ export default function MigrationReadinessReplay() {
                     <span key={highlight}>{highlight}</span>
                   ))}
                 </div>
+                <a
+                  href="/marketing/shift-evidence-product-brochure-v1.pdf"
+                  className="btn btn-secondary demo-conversion-secondary-btn"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ marginTop: "1rem" }}
+                >
+                  Download Product Brochure
+                  <Download size={16} />
+                </a>
               </div>
               
               <div className="demo-download-row">

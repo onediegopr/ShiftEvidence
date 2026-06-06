@@ -369,6 +369,17 @@ export default function PricingPage() {
                 {paymentOptionsCopy.cardCheckout} {paymentOptionsCopy.bankTransfer}
               </p>
               <p className="assessment-inline-note">
+                Need a shareable overview?{" "}
+                <a href="/marketing/shift-evidence-product-brochure-v1.pdf" target="_blank" rel="noreferrer">
+                  Download the product brochure
+                </a>{" "}
+                or{" "}
+                <a href="/marketing/migration-blueprint-overview-v1.pdf" target="_blank" rel="noreferrer">
+                  review the Blueprint overview
+                </a>
+                .
+              </p>
+              <p className="assessment-inline-note">
                 Manual invoice requests are reviewed before fulfillment. Bank transfer is not an automatic transfer,
                 balance action or instant fulfillment path.
               </p>
