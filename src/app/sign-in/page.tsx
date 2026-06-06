@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { authClient } from "../../lib/auth-client";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../../lib/brandAssets";
 import Navbar from "../../components/Navbar";
 
 export default function SignInPage() {
@@ -47,14 +48,14 @@ export default function SignInPage() {
         <div className="auth-logo-header">
           <Link href="/" className="logo-container">
             <Image
-              src="/brand/shift-evidence-icon-dark-transparent.png"
-              alt="Shift Evidence Logo"
+              src={BRAND_PUBLIC_ASSETS.primaryLogo}
+              alt={`${BRAND_WORDMARK} Logo`}
               width={35}
               height={35}
               className="nav-brand-logo"
               priority
             />
-            <span>Shift Evidence</span>
+            <span>{BRAND_WORDMARK}</span>
           </Link>
         </div>
 

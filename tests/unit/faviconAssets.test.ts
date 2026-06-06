@@ -52,9 +52,9 @@ describe("favicon and app icon assets", () => {
   it("points metadata at public favicon and app icon assets", () => {
     const layoutSource = fs.readFileSync(path.join(repoRoot, "src/app/layout.tsx"), "utf8");
 
-    expect(layoutSource).toContain("/favicon.ico");
-    expect(layoutSource).toContain("/icon.png");
-    expect(layoutSource).toContain("/apple-icon.png");
+    expect(layoutSource).toContain("BRAND_PUBLIC_ASSETS.favicon");
+    expect(layoutSource).toContain("BRAND_PUBLIC_ASSETS.appIcon");
+    expect(layoutSource).toContain("BRAND_PUBLIC_ASSETS.appleIcon");
     expect(layoutSource).not.toContain("/favicon.svg");
   });
 });

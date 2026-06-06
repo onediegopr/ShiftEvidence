@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
+import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
 import type { ReportPreviewData } from "./reportPreviewService";
 import type { ReportCoverageRow } from "./reportCoverageSection";
 import { PRINT_REPORT_THEME, PRINT_TONE_COLORS, type ReportTone } from "./reportTheme";
@@ -38,11 +39,26 @@ const THEME = {
   navy: PRINT_REPORT_THEME.panelStrong,
   navy2: PRINT_REPORT_THEME.tableHeader,
 };
+const SHIFT_EVIDENCE_LOGO = readPrimaryBrandLogoBuffer();
 
 const TONE_COLORS = PRINT_TONE_COLORS;
-function drawShiftEvidenceWordmark(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
-  doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text("Shift Evidence", x, y + 1);
-  doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", x, y + 15);
+function drawShiftEvidenceBrandLockup(doc: PDFKit.PDFDocument, x: number, y: number, dark = false) {
+  const labelX = SHIFT_EVIDENCE_LOGO ? x + 32 : x;
+
+  if (SHIFT_EVIDENCE_LOGO) {
+    try {
+      doc.image(SHIFT_EVIDENCE_LOGO, x, y - 1, {
+        fit: [24, 24],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      // If the PNG cannot be embedded, keep the wordmark visible without inventing a fallback icon.
+    }
+  }
+
+  doc.fillColor(dark ? "#ffffff" : THEME.ink).font("Helvetica-Bold").fontSize(11).text(BRAND_WORDMARK, labelX, y + 1);
+  doc.fillColor(dark ? "#cbd5e1" : THEME.muted).font("Helvetica").fontSize(8).text("Powered readiness reports", labelX, y + 15);
 }
 
 function drawLogoPanel(params: {
@@ -1577,7 +1593,7 @@ export async function renderPdfReportBuffer(input: PdfReportRenderInput) {
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(THEME.paper);
     doc.rect(0, 0, doc.page.width, 168).fill(THEME.panel);
     doc.rect(0, 168, doc.page.width, 6).fill(THEME.cyan);
-    drawShiftEvidenceWordmark(doc, MARGIN, 48);
+    drawShiftEvidenceBrandLockup(doc, MARGIN, 48);
     doc.fillColor(THEME.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFTREADINESS REPORT", MARGIN, 78, {
       characterSpacing: 2,
     });

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../../components/Navbar";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../../lib/brandAssets";
 import ResetPasswordForm from "./reset-password-form";
 
 type ResetPasswordPageProps = {
@@ -23,14 +24,14 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           <div className="auth-logo-header">
             <Link href="/" className="logo-container">
               <Image
-                src="/brand/shift-evidence-icon-dark-transparent.png"
-                alt="Shift Evidence Logo"
+                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                alt={`${BRAND_WORDMARK} Logo`}
                 width={35}
                 height={35}
                 className="nav-brand-logo"
                 priority
               />
-              <span>Shift Evidence</span>
+              <span>{BRAND_WORDMARK}</span>
             </Link>
           </div>
 

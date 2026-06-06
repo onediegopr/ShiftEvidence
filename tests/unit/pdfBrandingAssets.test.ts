@@ -31,10 +31,10 @@ describe("PDF/report branding assets", () => {
     for (const file of activePdfGenerators) {
       const source = fs.readFileSync(path.join(repoRoot, file), "utf8");
 
-      expect(source, `${file} should use a stable brand asset`).toContain("public");
-      expect(source, `${file} should use a stable Shift Evidence icon`).toContain(
-        "shift-evidence-icon-light-transparent.png",
-      );
+      expect(
+        source,
+        `${file} should resolve the PDF logo from the centralized brand asset config`,
+      ).toMatch(/brand-asset|brandAssetService|primaryLogo/);
       expect(source, `${file} must not reference incoming temporary assets`).not.toMatch(/_incoming|ChatGPT Image|Logo Favicon/i);
       expect(source, `${file} must not use favicon as PDF logo`).not.toMatch(/favicon/i);
     }

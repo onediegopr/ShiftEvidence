@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { LogIn, Sparkles } from "lucide-react";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../lib/brandAssets";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,14 +27,14 @@ export default function Navbar() {
       <div className="container navbar-container">
         <Link href="/" className="logo-container">
           <Image
-            src="/brand/shift-evidence-icon-dark-transparent.png"
-            alt="Shift Evidence Logo"
+            src={BRAND_PUBLIC_ASSETS.primaryLogo}
+            alt={`${BRAND_WORDMARK} Logo`}
             width={40}
             height={40}
             className="nav-brand-logo"
             priority
           />
-          <span>Shift Evidence</span>
+          <span>{BRAND_WORDMARK}</span>
         </Link>
 
         <nav>

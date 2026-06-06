@@ -8,8 +8,11 @@ const repoRoot = path.resolve(__dirname, "..");
 const outputDir = path.join(repoRoot, "public", "sample-reports");
 const outputPath = path.join(outputDir, "proxmox-migration-readiness-sample-report.pdf");
 const versionedOutputPath = path.join(outputDir, "proxmox-migration-readiness-premium-sample-report-v2.pdf");
-const brandIconLightPath = path.join(repoRoot, "public", "brand", "shift-evidence-icon-light-transparent.png");
-const brandIconLight = fs.existsSync(brandIconLightPath) ? fs.readFileSync(brandIconLightPath) : null;
+const brandAssetsConfigPath = path.join(repoRoot, "src", "config", "brand-assets.json");
+const brandAssets = JSON.parse(fs.readFileSync(brandAssetsConfigPath, "utf8"));
+const primaryBrandLogoPath = path.join(repoRoot, "public", brandAssets.public.primaryLogo.replace(/^\//, ""));
+const primaryBrandLogo = fs.existsSync(primaryBrandLogoPath) ? fs.readFileSync(primaryBrandLogoPath) : null;
+const brandWordmark = brandAssets.wordmark;
 
 const colors = {
   ink: "#101828",
@@ -171,39 +174,37 @@ function currency(value) {
   }).format(value);
 }
 
-function drawMark(x, y, size = 22) {
-  const scale = size / 32;
-  const strokeWidth = Math.max(1, 2.5 * scale);
-  doc.circle(x + 12 * scale, y + 16 * scale, 8 * scale).lineWidth(strokeWidth).strokeColor(colors.cyan).stroke();
-  doc
-    .moveTo(x + 12 * scale, y + 16 * scale)
-    .lineTo(x + 24 * scale, y + 16 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 12 * scale)
-    .moveTo(x + 24 * scale, y + 16 * scale)
-    .lineTo(x + 20 * scale, y + 20 * scale)
-    .lineWidth(strokeWidth)
-    .lineCap("round")
-    .lineJoin("round")
-    .strokeColor("#8b5cf6")
-    .stroke();
-}
-
 function drawBrandIcon(x, y, size = 24) {
-  if (brandIconLight) {
+  if (primaryBrandLogo) {
     try {
-      doc.image(brandIconLight, x, y, {
+      doc.image(primaryBrandLogo, x, y, {
         fit: [size, size],
         align: "center",
         valign: "center",
       });
-      return;
+      return true;
     } catch {
-      // Fall through to the vector fallback if the PNG cannot be embedded.
+      return false;
+    }
+  }
+  return false;
+}
+
+function drawPublicBrandIcon(pdfDoc, x, y, size = 24) {
+  if (primaryBrandLogo) {
+    try {
+      pdfDoc.image(primaryBrandLogo, x, y, {
+        fit: [size, size],
+        align: "center",
+        valign: "center",
+      });
+      return true;
+    } catch {
+      return false;
     }
   }
 
-  drawMark(x, y, size);
+  return false;
 }
 
 function footer() {
@@ -220,8 +221,8 @@ function footer() {
 function header(kicker) {
   doc.rect(0, 0, doc.page.width, 62).fill(colors.panelStrong);
   doc.strokeColor(colors.line).lineWidth(0.7).moveTo(0, 62).lineTo(doc.page.width, 62).stroke();
-  drawBrandIcon(44, 18, 20);
-  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 70, 23, { characterSpacing: 1.3 });
+  const hasBrandIcon = drawBrandIcon(44, 18, 20);
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text(brandWordmark.toUpperCase(), hasBrandIcon ? 70 : 44, 23, { characterSpacing: 1.3 });
   doc.fillColor(colors.muted).font("Helvetica").fontSize(8).text(safeText(kicker).toUpperCase(), 315, 24, { width: 236, align: "right" });
 }
 
@@ -338,8 +339,8 @@ function coverPage() {
   doc.rect(0, 0, doc.page.width, 120).fill(colors.panelStrong);
   doc.circle(510, 120, 190).fillOpacity(0.12).fill(colors.cyan).fillOpacity(1);
   doc.circle(80, 740, 170).fillOpacity(0.08).fill("#8b5cf6").fillOpacity(1);
-  drawBrandIcon(48, 40, 32);
-  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, { characterSpacing: 1.4 });
+  const hasBrandIcon = drawBrandIcon(48, 40, 32);
+  doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text(brandWordmark.toUpperCase(), hasBrandIcon ? 84 : 48, 49, { characterSpacing: 1.4 });
   doc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(11).text("Full Premium Synthetic Sample Report", 48, 118);
   doc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(42).text(dataset.reportTitle, 48, 152, { width: 470, lineGap: -3 });
   doc.fillColor(colors.muted).font("Helvetica").fontSize(15).text("VMware -> Proxmox migration decision pack", 48, 264);
@@ -618,14 +619,8 @@ function generatePublicSampleVariant(filePath) {
   function publicHeader(kicker) {
     publicDoc.rect(0, 0, publicDoc.page.width, 62).fill(colors.panelStrong);
     publicDoc.strokeColor(colors.line).lineWidth(0.7).moveTo(0, 62).lineTo(publicDoc.page.width, 62).stroke();
-    if (brandIconLight) {
-      try {
-        publicDoc.image(brandIconLight, 44, 18, { fit: [20, 20], align: "center", valign: "center" });
-      } catch {
-        // Keep generation resilient if the image cannot be embedded.
-      }
-    }
-    publicDoc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 70, 23, { characterSpacing: 1.3 });
+    const hasBrandIcon = drawPublicBrandIcon(publicDoc, 44, 18, 20);
+    publicDoc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(8).text(brandWordmark.toUpperCase(), hasBrandIcon ? 70 : 44, 23, { characterSpacing: 1.3 });
     publicDoc.fillColor(colors.muted).font("Helvetica").fontSize(8).text(safeText(kicker).toUpperCase(), 315, 24, { width: 236, align: "right" });
   }
 
@@ -724,10 +719,8 @@ function generatePublicSampleVariant(filePath) {
   publicDoc.rect(0, 0, publicDoc.page.width, 120).fill(colors.panelStrong);
   publicDoc.circle(510, 120, 190).fillOpacity(0.12).fill(colors.cyan).fillOpacity(1);
   publicDoc.circle(80, 740, 170).fillOpacity(0.08).fill("#8b5cf6").fillOpacity(1);
-  if (brandIconLight) {
-    publicDoc.image(brandIconLight, 48, 40, { fit: [32, 32], align: "center", valign: "center" });
-  }
-  publicDoc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text("SHIFT EVIDENCE", 84, 49, { characterSpacing: 1.4 });
+  const hasPublicBrandIcon = drawPublicBrandIcon(publicDoc, 48, 40, 32);
+  publicDoc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(12).text(brandWordmark.toUpperCase(), hasPublicBrandIcon ? 84 : 48, 49, { characterSpacing: 1.4 });
   publicDoc.fillColor(colors.cyan).font("Helvetica-Bold").fontSize(11).text("Public Synthetic Sample Report", 48, 118);
   publicDoc.fillColor(colors.ink).font("Helvetica-Bold").fontSize(42).text(dataset.reportTitle, 48, 152, { width: 470, lineGap: -3 });
   publicDoc.fillColor(colors.muted).font("Helvetica").fontSize(15).text("VMware -> Proxmox public decision preview", 48, 264);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../../lib/brandAssets";
 import Navbar from "../../components/Navbar";
 
 const NEUTRAL_MESSAGE = "If an account exists, we will send recovery instructions.";
@@ -47,14 +48,14 @@ export default function ForgotPasswordPage() {
           <div className="auth-logo-center">
             <Link href="/" className="logo-container" style={{ fontSize: "1.4rem" }}>
               <Image
-                src="/brand/shift-evidence-icon-dark-transparent.png"
-                alt="Shift Evidence Logo"
+                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                alt={`${BRAND_WORDMARK} Logo`}
                 width={35}
                 height={35}
                 className="nav-brand-logo"
                 priority
               />
-              <span>Shift Evidence</span>
+              <span>{BRAND_WORDMARK}</span>
             </Link>
           </div>
 

@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { NextResponse } from "next/server";
+import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../../../../server/brand/brandAssetService";
 import { getDemoScenarioBySlug } from "../../../../server/demo/demoDatasets";
 
 export const runtime = "nodejs";
@@ -21,6 +22,7 @@ const COLORS = {
   red: "#b91c1c",
   redSoft: "#fff0f0",
 };
+const SHIFT_EVIDENCE_LOGO = readPrimaryBrandLogoBuffer();
 
 function sanitizeDownloadName(filename: string) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "_").replace(/_+/g, "_");
@@ -51,7 +53,18 @@ function toneColors(tone: "good" | "warning" | "danger" | "info") {
 function addHeader(doc: PDFKit.PDFDocument, title: string) {
   doc.rect(0, 0, doc.page.width, 58).fill(COLORS.panelStrong);
   doc.strokeColor(COLORS.line).lineWidth(0.7).moveTo(0, 58).lineTo(doc.page.width, 58).stroke();
-  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text("SHIFT EVIDENCE", 54, 20, {
+  if (SHIFT_EVIDENCE_LOGO) {
+    try {
+      doc.image(SHIFT_EVIDENCE_LOGO, 54, 17, {
+        fit: [20, 20],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      // Keep the wordmark if the image cannot be embedded.
+    }
+  }
+  doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(8).text(BRAND_WORDMARK.toUpperCase(), 82, 20, {
     characterSpacing: 1.2,
   });
   doc.fillColor(COLORS.muted).font("Helvetica").fontSize(8).text(safeText(title).toUpperCase(), 286, 21, {
@@ -214,7 +227,18 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
     doc.rect(0, 0, doc.page.width, doc.page.height).fill(COLORS.paper);
     doc.rect(0, 0, doc.page.width, 152).fill(COLORS.panelStrong);
     doc.rect(0, 152, doc.page.width, 6).fill(COLORS.cyan);
-    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(14).text("SHIFT EVIDENCE", 54, 47, {
+    if (SHIFT_EVIDENCE_LOGO) {
+      try {
+        doc.image(SHIFT_EVIDENCE_LOGO, 54, 42, {
+          fit: [24, 24],
+          align: "center",
+          valign: "center",
+        });
+      } catch {
+        // Keep the wordmark if the image cannot be embedded.
+      }
+    }
+    doc.fillColor(COLORS.ink).font("Helvetica-Bold").fontSize(14).text(BRAND_WORDMARK.toUpperCase(), 84, 47, {
       characterSpacing: 1.6,
     });
     doc.fillColor(COLORS.cyan).font("Helvetica-Bold").fontSize(9).text("DEMO WORKSPACE", 54, 118, {

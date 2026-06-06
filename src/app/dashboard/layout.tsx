@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "../../lib/auth";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../../lib/brandAssets";
 import { isAdminEmail } from "../../server/admin/adminAuth";
 import SignOutButton from "../../components/auth/SignOutButton";
 
@@ -29,14 +30,14 @@ export default async function DashboardLayout({
           <div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
             <Link href="/dashboard" className="logo-container" style={{ fontSize: "1.2rem" }}>
               <Image
-                src="/brand/shift-evidence-icon-dark-transparent.png"
-                alt="Shift Evidence Logo"
+                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                alt={`${BRAND_WORDMARK} Logo`}
                 width={30}
                 height={30}
                 className="nav-brand-logo"
                 priority
               />
-              <span>Shift Evidence</span>
+              <span>{BRAND_WORDMARK}</span>
             </Link>
 
             <nav>

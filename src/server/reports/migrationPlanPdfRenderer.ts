@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import { PassThrough } from "stream";
+import { BRAND_WORDMARK, readPrimaryBrandLogoBuffer } from "../brand/brandAssetService";
 import type { MigrationRecommendationPlan, MigrationPlanGate } from "./migrationPlanTypes";
 import { PRINT_REPORT_THEME } from "./reportTheme";
 
@@ -14,9 +15,25 @@ const THEME = {
   amber: PRINT_REPORT_THEME.amber,
   red: PRINT_REPORT_THEME.red,
 };
+const SHIFT_EVIDENCE_LOGO = readPrimaryBrandLogoBuffer();
+
 function drawBrandHeader(doc: PDFKit.PDFDocument) {
-  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(10).text("SHIFT EVIDENCE", MARGIN, MARGIN + 1);
-  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text("Migration planning report", MARGIN, MARGIN + 15);
+  const labelX = SHIFT_EVIDENCE_LOGO ? MARGIN + 30 : MARGIN;
+
+  if (SHIFT_EVIDENCE_LOGO) {
+    try {
+      doc.image(SHIFT_EVIDENCE_LOGO, MARGIN, MARGIN - 1, {
+        fit: [22, 22],
+        align: "center",
+        valign: "center",
+      });
+    } catch {
+      // Keep the wordmark if the image cannot be embedded.
+    }
+  }
+
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(10).text(BRAND_WORDMARK.toUpperCase(), labelX, MARGIN + 1);
+  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8).text("Migration planning report", labelX, MARGIN + 15);
 }
 
 function safeText(value: string | number | null | undefined) {

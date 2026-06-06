@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../lib/brandAssets";
 
 export default function Footer() {
   const [newsletterStatus, setNewsletterStatus] = useState<string | null>(null);
@@ -35,12 +36,12 @@ export default function Footer() {
               style={{ marginBottom: "0.5rem" }}
             >
               <Image
-                src="/brand/shift-evidence-icon-dark-transparent.png"
-                alt="Shift Evidence Logo"
+                src={BRAND_PUBLIC_ASSETS.primaryLogo}
+                alt={`${BRAND_WORDMARK} Logo`}
                 width={28}
                 height={28}
               />
-              <span>Shift Evidence</span>
+              <span>{BRAND_WORDMARK}</span>
             </a>
             <p style={{ fontSize: "0.85rem" }}>{copy.brand}</p>
           </div>
