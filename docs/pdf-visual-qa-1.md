@@ -219,6 +219,14 @@ Los PDFs temporales quedaron en `.tmp/pdf-qa`, carpeta ignorada por git.
 
 Recomendado: `PDF-VISUAL-HOTFIX-1`.
 
+## 14. Follow-up
+
+After the initial QA pass, the standalone migration plan PDF received a small REPORTS-UX-3 polish:
+
+- the visible title now reads `Migration Blueprint Decision Pack`;
+- the blank trailing page artifact in the QA render path was removed;
+- route, storage, entitlement and PDF engine contracts remained unchanged.
+
 Objetivo sugerido:
 
 - Diferenciar public sample vs premium sample v2, o documentar intencionalmente que ambos apuntan al full premium synthetic sample.

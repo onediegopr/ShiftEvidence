@@ -136,6 +136,7 @@ The Blueprint report must feel materially deeper than Starter and Professional o
 ### REPORTS-UX-3
 
 - Add deeper runbook / rollback / validation packaging
+- Polish the standalone plan title and executive framing so the output reads more clearly as a blueprint decision pack
 - Consider versioned blueprint-only PDF output if needed
 
 ## Risks To Control

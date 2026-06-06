@@ -88,7 +88,7 @@ Focused visual QA for commit `e700e76 feat: upgrade premium report visuals and s
 
 - The premium sample `v3` is strong enough to ship, but still benefits from a future manual page-by-page polish pass.
 - The chart layer remains intentionally conservative; there are strong tables/cards, but the report family can still evolve toward richer chart visuals in a later hito.
-- The migration plan still uses the legacy title `Migration Recommendation Plan` in its heading. This is acceptable for now because the surrounding language clearly frames it as an evidence-bound planning pack, but it may be revisited later for stronger packaging consistency.
+- The migration plan still used the legacy title `Migration Recommendation Plan` at the time of this QA pass. REPORTS-UX-3 later polished the visible title to `Migration Blueprint Decision Pack` while keeping the underlying contracts unchanged.
 
 ## Claim safety notes
 

@@ -138,7 +138,7 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
     margin: MARGIN,
     bufferPages: true,
     info: {
-      Title: "Shift Evidence Migration Recommendation Plan",
+      Title: "Shift Evidence Migration Blueprint Decision Pack",
       Author: "Shift Evidence",
     },
   });
@@ -154,7 +154,7 @@ export async function renderMigrationPlanPdfBuffer(plan: MigrationRecommendation
   const commandCenter = buildReportExecutiveCommandCenter(narrativeModel);
 
   drawBrandHeader(doc);
-  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(24).text("Migration Recommendation Plan", MARGIN, 96, {
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(24).text("Migration Blueprint Decision Pack", MARGIN, 96, {
     width: contentWidth(doc),
   });
   doc.fillColor(THEME.muted).font("Helvetica").fontSize(12).text(safeText(plan.evidenceSummary.assessmentTitle), MARGIN, 132, {

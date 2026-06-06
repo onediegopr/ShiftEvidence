@@ -91,10 +91,37 @@ function drawCard(
 }
 
 export function renderBlueprintDecisionSummary(doc: PDFKit.PDFDocument, summary: BlueprintDecisionSummary) {
+  const recommendationX = MARGIN + 110;
+  const recommendationWidth = CONTENT_WIDTH - 124;
+  doc.font("Helvetica-Bold").fontSize(8.5);
+  const recommendationTextHeight = doc.heightOfString(summary.recommendation, {
+    width: recommendationWidth - 20,
+    align: "left",
+  });
+  const recommendationHeight = Math.max(50, recommendationTextHeight + 18);
+  doc.font("Helvetica-Bold").fontSize(9.3);
+  const blockerBodyHeight = doc.heightOfString(summary.blocker, {
+    width: CONTENT_WIDTH - 48,
+    lineGap: 1.2,
+  });
+  const blockerHeight = Math.max(48, blockerBodyHeight + 28);
+  doc.font("Helvetica").fontSize(8.9);
+  const nextActionBodyHeight = doc.heightOfString(summary.nextAction, {
+    width: CONTENT_WIDTH - 48,
+    lineGap: 1.2,
+  });
+  const nextActionHeight = Math.max(44, nextActionBodyHeight + 26);
+  const panelHeight = recommendationHeight + blockerHeight + nextActionHeight + 106;
+  ensureSpace(doc, panelHeight + 120);
   sectionHeader(doc, "Blueprint Decision Summary", summary.subtitle);
-  ensureSpace(doc, 152);
   const startY = doc.y;
-  doc.roundedRect(MARGIN, startY, CONTENT_WIDTH, 132, 12).fillAndStroke(THEME.panel, THEME.line);
+  const cardX = MARGIN + 14;
+  const cardW = CONTENT_WIDTH - 28;
+  const cardTextW = cardW - 20;
+  const recommendationY = startY + 64;
+  const blockerY = recommendationY + recommendationHeight + 14;
+  const nextActionY = blockerY + blockerHeight + 10;
+  doc.roundedRect(MARGIN, startY, CONTENT_WIDTH, panelHeight, 12).fillAndStroke(THEME.panel, THEME.line);
   doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(12.5).text(summary.headline, MARGIN + 14, startY + 14, {
     width: CONTENT_WIDTH - 28,
   });
@@ -103,14 +130,30 @@ export function renderBlueprintDecisionSummary(doc: PDFKit.PDFDocument, summary:
     lineGap: 2,
   });
   drawPill(doc, MARGIN + 14, startY + 70, "Decision", "info");
-  drawPill(doc, MARGIN + 110, startY + 70, summary.recommendation, "good");
-  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(9.5).text(`Main blocker: ${summary.blocker}`, MARGIN + 14, startY + 96, {
-    width: CONTENT_WIDTH - 28,
+  doc.roundedRect(recommendationX, recommendationY, recommendationWidth, recommendationHeight, 10).fillAndStroke("#eefdf5", THEME.green);
+  doc.fillColor(THEME.green).font("Helvetica-Bold").fontSize(8.5).text(summary.recommendation, recommendationX + 10, recommendationY + 8, {
+    width: recommendationWidth - 20,
+    lineGap: 1.2,
   });
-  doc.fillColor(THEME.muted).font("Helvetica").fontSize(8.5).text(`Best next action: ${summary.nextAction}`, MARGIN + 14, startY + 111, {
-    width: CONTENT_WIDTH - 28,
+  doc.roundedRect(cardX, blockerY, cardW, blockerHeight, 10).fillAndStroke("#fff6f3", THEME.red);
+  doc.fillColor(THEME.red).font("Helvetica-Bold").fontSize(8).text("MAIN BLOCKER", cardX + 10, blockerY + 8, {
+    width: cardTextW,
+    characterSpacing: 0.6,
   });
-  doc.y = startY + 144;
+  doc.fillColor(THEME.ink).font("Helvetica-Bold").fontSize(9.3).text(summary.blocker, cardX + 10, blockerY + 22, {
+    width: cardTextW,
+    lineGap: 1.2,
+  });
+  doc.roundedRect(cardX, nextActionY, cardW, nextActionHeight, 10).fillAndStroke("#f8fbff", THEME.blue);
+  doc.fillColor(THEME.blue).font("Helvetica-Bold").fontSize(8).text("BEST NEXT ACTION", cardX + 10, nextActionY + 8, {
+    width: cardTextW,
+    characterSpacing: 0.6,
+  });
+  doc.fillColor(THEME.ink).font("Helvetica").fontSize(8.9).text(summary.nextAction, cardX + 10, nextActionY + 22, {
+    width: cardTextW,
+    lineGap: 1.2,
+  });
+  doc.y = startY + panelHeight + 12;
 }
 
 export function renderBlueprintTargetBlueprint(doc: PDFKit.PDFDocument, target: BlueprintTargetBlueprint) {

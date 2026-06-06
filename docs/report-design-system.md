@@ -133,3 +133,9 @@ Decorative colors must not be introduced without meaning.
 - `src/server/reports/reportBlueprintVisuals.ts`
 
 These files define the reusable narrative, chart/data and blueprint visual layer for later report upgrades.
+
+## Code Foundation Added In REPORTS-UX-3
+
+- `src/server/reports/migrationPlanPdfRenderer.ts`
+
+This renderer received a small packaging polish so the standalone plan reads as a `Migration Blueprint Decision Pack` while keeping the same routes, storage contract and PDF engine.
