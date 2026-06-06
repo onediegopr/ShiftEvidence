@@ -258,7 +258,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 Download full sample PDF v3
               </a>
               <a
-                href="/marketing/shift-evidence-product-brochure-v1.pdf"
+                href="/marketing/shift-evidence-product-brochure-v2.pdf"
                 className="btn btn-secondary"
                 target="_blank"
                 rel="noreferrer"
@@ -266,7 +266,7 @@ export default function VMwareToProxmoxReadinessPage() {
                 Product brochure
               </a>
               <a
-                href="/marketing/migration-blueprint-overview-v1.pdf"
+                href="/marketing/migration-blueprint-overview-v2.pdf"
                 className="btn btn-secondary"
                 target="_blank"
                 rel="noreferrer"

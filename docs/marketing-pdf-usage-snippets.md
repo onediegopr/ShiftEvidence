@@ -1,11 +1,17 @@
 # Marketing PDF Usage Snippets
 
+## Default Recommendation
+
+Use v2 by default. The v2 PDFs are lighter, more printable and more appropriate for stakeholder sharing than v1.
+
+Keep v1 only as a preserved historical artifact.
+
 ## Product Brief
 
 URL:
 
 ```text
-/marketing/shift-evidence-product-brief-v1.pdf
+/marketing/shift-evidence-product-brief-v2.pdf
 ```
 
 Suggested CTA:
@@ -17,7 +23,7 @@ Download the one-page product brief
 Suggested supporting copy:
 
 ```text
-Share the short Shift Evidence overview with stakeholders before a VMware exit discussion.
+Share the short Shift Evidence overview with stakeholders before a VMware exit discussion. This is the best PDF for WhatsApp, quick email follow-up and owner-to-owner forwarding.
 ```
 
 ## Product Brochure
@@ -25,7 +31,7 @@ Share the short Shift Evidence overview with stakeholders before a VMware exit d
 URL:
 
 ```text
-/marketing/shift-evidence-product-brochure-v1.pdf
+/marketing/shift-evidence-product-brochure-v2.pdf
 ```
 
 Suggested CTA:
@@ -37,7 +43,7 @@ Download the product brochure
 Suggested supporting copy:
 
 ```text
-Review the full product overview before comparing assessment and blueprint options.
+Review the full product overview before comparing assessment and blueprint options. This is the best PDF after a demo or before a pricing conversation.
 ```
 
 ## Migration Blueprint Overview
@@ -45,7 +51,7 @@ Review the full product overview before comparing assessment and blueprint optio
 URL:
 
 ```text
-/marketing/migration-blueprint-overview-v1.pdf
+/marketing/migration-blueprint-overview-v2.pdf
 ```
 
 Suggested CTA:
@@ -57,7 +63,7 @@ Review the Blueprint overview
 Suggested supporting copy:
 
 ```text
-Understand how Blueprint extends readiness findings into migration waves, validation gates and rollback framing.
+Understand how Blueprint extends readiness findings into migration waves, validation gates and rollback framing. This is the best PDF to justify Blueprint pricing and planning value.
 ```
 
 ## Email Follow-Up Snippets
@@ -67,7 +73,7 @@ Understand how Blueprint extends readiness findings into migration waves, valida
 ```text
 Thanks for reviewing the Shift Evidence demo. If useful, this brochure summarizes how the readiness engine turns VMware evidence into a Proxmox migration decision pack:
 
-https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v1.pdf
+https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
 ```
 
 ### Before Pricing Discussion
@@ -75,7 +81,7 @@ https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v1.pdf
 ```text
 Before we discuss plan fit, this product brochure may help separate Starter, Professional, Blueprint and MSP Partner paths:
 
-https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v1.pdf
+https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
 ```
 
 ### Blueprint Follow-Up
@@ -83,7 +89,7 @@ https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v1.pdf
 ```text
 If the readiness conversation is moving toward migration planning, this Blueprint overview explains the additional wave, validation and rollback framing layer:
 
-https://www.shiftevidence.com/marketing/migration-blueprint-overview-v1.pdf
+https://www.shiftevidence.com/marketing/migration-blueprint-overview-v2.pdf
 ```
 
 ## Approved Guardrail Language

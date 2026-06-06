@@ -6,22 +6,40 @@ const repoRoot = process.cwd();
 
 const pdfAssets = [
   {
-    label: "product brief",
+    label: "product brief v1",
     file: "public/marketing/shift-evidence-product-brief-v1.pdf",
     minBytes: 50_000,
     pageCount: 1,
   },
   {
-    label: "product brochure",
+    label: "product brochure v1",
     file: "public/marketing/shift-evidence-product-brochure-v1.pdf",
     minBytes: 100_000,
     pageCount: 10,
   },
   {
-    label: "blueprint overview",
+    label: "blueprint overview v1",
     file: "public/marketing/migration-blueprint-overview-v1.pdf",
     minBytes: 80_000,
     pageCount: 7,
+  },
+  {
+    label: "product brief v2",
+    file: "public/marketing/shift-evidence-product-brief-v2.pdf",
+    minBytes: 50_000,
+    pageCount: 1,
+  },
+  {
+    label: "product brochure v2",
+    file: "public/marketing/shift-evidence-product-brochure-v2.pdf",
+    minBytes: 100_000,
+    pageCount: 11,
+  },
+  {
+    label: "blueprint overview v2",
+    file: "public/marketing/migration-blueprint-overview-v2.pdf",
+    minBytes: 80_000,
+    pageCount: 8,
   },
 ] as const;
 
@@ -56,8 +74,10 @@ describe("marketing PDF assets", () => {
   });
 
   it("links the brochure system from relevant public pages", () => {
-    const productBrochurePath = "/marketing/shift-evidence-product-brochure-v1.pdf";
-    const blueprintOverviewPath = "/marketing/migration-blueprint-overview-v1.pdf";
+    const productBrochurePath = "/marketing/shift-evidence-product-brochure-v2.pdf";
+    const blueprintOverviewPath = "/marketing/migration-blueprint-overview-v2.pdf";
+    const legacyProductBrochurePath = "/marketing/shift-evidence-product-brochure-v1.pdf";
+    const legacyBlueprintOverviewPath = "/marketing/migration-blueprint-overview-v1.pdf";
 
     const sources = Object.fromEntries(linkSources.map((source) => [source, read(source)]));
 
@@ -67,6 +87,12 @@ describe("marketing PDF assets", () => {
     expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).toContain(productBrochurePath);
     expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).toContain(blueprintOverviewPath);
     expect(sources["src/components/demo/MigrationReadinessReplay.tsx"]).toContain(productBrochurePath);
+
+    for (const source of linkSources) {
+      expect(sources[source]).not.toContain(legacyProductBrochurePath);
+    }
+    expect(sources["src/app/pricing/page.tsx"]).not.toContain(legacyBlueprintOverviewPath);
+    expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).not.toContain(legacyBlueprintOverviewPath);
   });
 
   it("keeps pricing labels and safety claims aligned", () => {
@@ -75,6 +101,8 @@ describe("marketing PDF assets", () => {
       read("docs/marketing-pdf-system.md"),
       read("docs/marketing-pdf-usage-snippets.md"),
       read("docs/marketing-pdf-hito-1.md"),
+      read("docs/marketing-pdf-redesign-system-v2.md"),
+      read("docs/marketing-pdf-redesign-hito-2.md"),
     ].join("\n");
     const combined = `${generator}\n${docs}`;
 

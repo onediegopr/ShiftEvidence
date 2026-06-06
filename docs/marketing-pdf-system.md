@@ -9,6 +9,9 @@ Generated assets:
 - `public/marketing/shift-evidence-product-brief-v1.pdf`
 - `public/marketing/shift-evidence-product-brochure-v1.pdf`
 - `public/marketing/migration-blueprint-overview-v1.pdf`
+- `public/marketing/shift-evidence-product-brief-v2.pdf`
+- `public/marketing/shift-evidence-product-brochure-v2.pdf`
+- `public/marketing/migration-blueprint-overview-v2.pdf`
 
 Generator:
 
@@ -25,6 +28,12 @@ The PDFs are intended for:
 - Internal reviews where the product needs to be explained without exposing customer data.
 
 ## PDF Roles
+
+## Current Default
+
+Use v2 as the default public brochure family. v1 is preserved for history and regression coverage.
+
+The v2 direction is light, print-first and editorial. It is intended for owner forwarding, office printing, demo follow-up and pricing discussions.
 
 ### Product Brief v1
 

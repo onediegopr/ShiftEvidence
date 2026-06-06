@@ -270,7 +270,7 @@ export default function SampleReportPage() {
                   <ArrowRight size={16} />
                 </Link>
                 <a
-                  href="/marketing/shift-evidence-product-brochure-v1.pdf"
+                  href="/marketing/shift-evidence-product-brochure-v2.pdf"
                   className="sample-report-action-card"
                   data-tone="cyan"
                   target="_blank"
