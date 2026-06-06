@@ -1,18 +1,8 @@
-const required = (name: string) => {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`${name} is required for the ShiftReadiness foundation.`);
-  }
-
-  return value;
-};
-
 export const env = {
-  DATABASE_URL: required("DATABASE_URL"),
-  BETTER_AUTH_SECRET: required("BETTER_AUTH_SECRET"),
-  BETTER_AUTH_URL: required("BETTER_AUTH_URL"),
-  NEXT_PUBLIC_APP_URL: required("NEXT_PUBLIC_APP_URL"),
+  DATABASE_URL: process.env.DATABASE_URL?.trim() ?? "",
+  BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET?.trim() ?? "",
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL?.trim() ?? "",
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "",
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
   PREVIEW_TRUSTED_ORIGINS: process.env.PREVIEW_TRUSTED_ORIGINS ?? "",

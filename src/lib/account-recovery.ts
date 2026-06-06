@@ -11,11 +11,13 @@ export const normalizeRecoveryEmail = (email: string) => email.trim().toLowerCas
 
 export const createPasswordResetToken = () => crypto.randomBytes(32).toString("base64url");
 
-export const hashRecoveryValue = (value: string) =>
-  crypto
-    .createHash("sha256")
-    .update(`${env.BETTER_AUTH_SECRET}:${value}`)
-    .digest("hex");
+export const hashRecoveryValue = (value: string) => {
+  if (!env.BETTER_AUTH_SECRET) {
+    throw new Error("BETTER_AUTH_SECRET is required to hash recovery values.");
+  }
+
+  return crypto.createHash("sha256").update(`${env.BETTER_AUTH_SECRET}:${value}`).digest("hex");
+};
 
 export const getPasswordResetExpiry = () =>
   new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MINUTES * 60 * 1000);
@@ -35,7 +37,8 @@ export const getUserAgentHash = (request: Request) => {
 };
 
 export const getPasswordResetUrl = (token: string) => {
-  const url = new URL("/reset-password", env.NEXT_PUBLIC_APP_URL);
+  const baseUrl = env.NEXT_PUBLIC_APP_URL || env.BETTER_AUTH_URL || "http://localhost:3000";
+  const url = new URL("/reset-password", baseUrl);
   url.searchParams.set("token", token);
   return url.toString();
 };
