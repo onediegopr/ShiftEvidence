@@ -955,6 +955,78 @@ model AuditEvent {
   @@index([createdAt])
 }
 
+model MethodologyAdminNote {
+  id          String                 @id @default(cuid())
+  versionLabel String?
+  domainKey   String?
+  topicKey    String?
+  ruleCode    String?
+  title       String
+  content     String
+  priority    MethodologyNotePriority @default(normal)
+  status      MethodologyNoteStatus    @default(open)
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  reviewItems MethodologyReviewItem[]
+
+  @@index([versionLabel])
+  @@index([domainKey])
+  @@index([topicKey])
+  @@index([ruleCode])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model MethodologyReviewItem {
+  id             String                  @id @default(cuid())
+  sourceNoteId   String?
+  versionLabel   String
+  itemType       MethodologyReviewItemType
+  itemKey        String?
+  title          String
+  description    String
+  rationale      String?
+  priority       MethodologyNotePriority  @default(normal)
+  status         MethodologyReviewStatus   @default(proposed)
+  decisionReason String?
+  decidedBy      String?
+  decidedAt      DateTime?
+  createdBy      String?
+  updatedBy      String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  sourceNote     MethodologyAdminNote?   @relation(fields: [sourceNoteId], references: [id], onDelete: SetNull)
+
+  @@index([sourceNoteId])
+  @@index([versionLabel])
+  @@index([itemType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model MethodologyChangeLog {
+  id          String   @id @default(cuid())
+  versionLabel String
+  entityType  String
+  entityId    String?
+  entityKey   String?
+  changeType  String
+  summary     String
+  rationale   String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+
+  @@index([versionLabel])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([entityKey])
+  @@index([changeType])
+  @@index([createdAt])
+}
+
 model AiUsageEvent {
   id                    String      @id @default(cuid())
   createdAt             DateTime    @default(now())
@@ -1506,6 +1578,41 @@ enum BillingInvoiceRequestStatus {
 enum BillingInvoiceRequestProvider {
   wise
   bank_transfer
+}
+
+enum MethodologyNotePriority {
+  low
+  normal
+  high
+  critical
+}
+
+enum MethodologyNoteStatus {
+  open
+  incorporated
+  dismissed
+  archived
+}
+
+enum MethodologyReviewItemType {
+  rule
+  chunk
+  topic
+  domain
+  claim_validator
+  scoring
+  advisor
+  report
+  checklist
+  other
+}
+
+enum MethodologyReviewStatus {
+  proposed
+  approved
+  rejected
+  implemented
+  archived
 }
 enum WorkspaceRole {
   owner

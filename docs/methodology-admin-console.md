@@ -5,7 +5,7 @@ The new admin route is `src/app/dashboard/admin/methodology/page.tsx`.
 ## Purpose
 
 - Show the active methodology version.
-- Expose the catalog of domains, rules, source docs, chunks, changelog entries, and internal notes.
+- Expose the catalog of domains, rules, source docs, chunks, seed changelog entries, persisted notes, review items, and internal changelog entries.
 - Preview a deterministic advisor context.
 - Demonstrate claim validation against unsafe statements such as:
   - guaranteed migration
@@ -15,24 +15,24 @@ The new admin route is `src/app/dashboard/admin/methodology/page.tsx`.
 
 ## Safety rules
 
-- The page is read-only.
-- Notes cannot be written yet.
+- The seed sections remain read-only.
+- Internal notes, review items, and the persisted changelog are editable through admin-authenticated server actions.
+- Every write is audited and recorded in the methodology changelog.
 - No real customer evidence is rendered.
 - The page intentionally avoids any dependency on production runtime state.
+- The additive persistence step is documented in `docs/methodology-2b-audited-persistence.md`.
 - The incremental Bible extraction checklist lives in `docs/methodology-bible-extraction-plan.md`.
 
 ## Navigation
 
 - The main admin dashboard now links to this console from the hero actions.
-- The methodology page also includes internal anchors for version, domains, rules, RAG preview, notes, changelog, and roadmap.
+- The methodology page also includes internal anchors for version, domains, rules, RAG preview, notes, revision, changelog, persisted changelog, and roadmap.
 
 ## Next step
 
 `METHODOLOGY-2` can add:
 
-- audited note writes
 - version diffing
-- persistence for review workflow
 - embeddings and indexed retrieval
 - approval states for rule changes
 - a write-safe admin workflow for internal notes once Prisma persistence is approved

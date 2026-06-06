@@ -123,7 +123,7 @@ describe("methodology knowledge base foundation", () => {
     );
   });
 
-  it("keeps the admin console route linked and read-only", () => {
+  it("keeps the admin console route linked and editable through audited actions", () => {
     const routeSource = readFileSync(
       new URL("../../src/app/dashboard/admin/methodology/page.tsx", import.meta.url),
       "utf8",
@@ -135,7 +135,9 @@ describe("methodology knowledge base foundation", () => {
 
     expect(routeSource).toContain("getCurrentAdminUserForConsole");
     expect(adminDashboardSource).toContain("/dashboard/admin/methodology");
-    expect(routeSource).toContain("La escritura de notas se habilitará en METHODOLOGY-2");
+    expect(routeSource).toContain("createMethodologyAdminNoteAction");
+    expect(routeSource).toContain("updateMethodologyReviewStatusAction");
+    expect(routeSource).toContain("Changelog persistido");
   });
 
   it("keeps the search and knowledge chunk APIs deterministic", () => {

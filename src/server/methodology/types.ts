@@ -29,6 +29,29 @@ export type MethodologyNotePriority = (typeof METHODOLOGY_NOTE_PRIORITIES)[numbe
 export const METHODOLOGY_NOTE_STATUSES = ["open", "incorporated", "dismissed", "archived"] as const;
 export type MethodologyNoteStatus = (typeof METHODOLOGY_NOTE_STATUSES)[number];
 
+export const METHODOLOGY_REVIEW_ITEM_TYPES = [
+  "rule",
+  "chunk",
+  "topic",
+  "domain",
+  "claim_validator",
+  "scoring",
+  "advisor",
+  "report",
+  "checklist",
+  "other",
+] as const;
+export type MethodologyReviewItemType = (typeof METHODOLOGY_REVIEW_ITEM_TYPES)[number];
+
+export const METHODOLOGY_REVIEW_STATUSES = [
+  "proposed",
+  "approved",
+  "rejected",
+  "implemented",
+  "archived",
+] as const;
+export type MethodologyReviewStatus = (typeof METHODOLOGY_REVIEW_STATUSES)[number];
+
 export const METHODOLOGY_USAGE_SURFACES = [
   "documentation",
   "advisor",
@@ -156,6 +179,119 @@ export type MethodologyAdminNote = {
   status: MethodologyNoteStatus;
   createdAt: string;
   updatedAt: string;
+};
+
+export type MethodologyAdminNoteRecord = {
+  id: string;
+  versionLabel?: string | null;
+  domainKey?: string | null;
+  topicKey?: string | null;
+  ruleCode?: string | null;
+  title: string;
+  content: string;
+  priority: MethodologyNotePriority;
+  status: MethodologyNoteStatus;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MethodologyReviewItemRecord = {
+  id: string;
+  sourceNoteId?: string | null;
+  versionLabel: string;
+  itemType: MethodologyReviewItemType;
+  itemKey?: string | null;
+  title: string;
+  description: string;
+  rationale?: string | null;
+  priority: MethodologyNotePriority;
+  status: MethodologyReviewStatus;
+  decisionReason?: string | null;
+  decidedBy?: string | null;
+  decidedAt?: string | null;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MethodologyChangeLogRecord = {
+  id: string;
+  versionLabel: string;
+  entityType: string;
+  entityId?: string | null;
+  entityKey?: string | null;
+  changeType: string;
+  summary: string;
+  rationale?: string | null;
+  createdBy?: string | null;
+  createdAt: string;
+};
+
+export type MethodologyAdminNoteFilters = {
+  versionLabel?: string;
+  domainKey?: string;
+  topicKey?: string;
+  ruleCode?: string;
+  status?: MethodologyNoteStatus[];
+  priority?: MethodologyNotePriority[];
+  search?: string;
+  limit?: number;
+};
+
+export type MethodologyAdminNoteInput = {
+  versionLabel?: string;
+  domainKey?: string | null;
+  topicKey?: string | null;
+  ruleCode?: string | null;
+  title: string;
+  content: string;
+  priority?: MethodologyNotePriority;
+  status?: MethodologyNoteStatus;
+};
+
+export type MethodologyReviewItemFilters = {
+  versionLabel?: string;
+  itemType?: MethodologyReviewItemType;
+  status?: MethodologyReviewStatus[];
+  sourceNoteId?: string;
+  limit?: number;
+};
+
+export type MethodologyReviewItemInput = {
+  versionLabel?: string;
+  itemType?: MethodologyReviewItemType;
+  itemKey?: string | null;
+  title?: string;
+  description?: string;
+  rationale?: string | null;
+  priority?: MethodologyNotePriority;
+};
+
+export type MethodologyReviewStatusUpdate = {
+  status: MethodologyReviewStatus;
+  decisionReason?: string | null;
+};
+
+export type MethodologyChangeLogFilters = {
+  versionLabel?: string;
+  entityType?: string;
+  entityKey?: string;
+  changeType?: string;
+  limit?: number;
+};
+
+export type MethodologyChangeLogInput = {
+  versionLabel: string;
+  entityType: string;
+  entityId?: string | null;
+  entityKey?: string | null;
+  changeType: string;
+  summary: string;
+  rationale?: string | null;
+  createdBy?: string | null;
 };
 
 export type MethodologyKnowledgeSearchFilters = {

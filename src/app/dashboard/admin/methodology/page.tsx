@@ -21,9 +21,27 @@ import {
   getMethodologyAdminSnapshot,
   validateMethodologyClaims,
 } from "../../../../server/methodology";
+import { getMethodologyNoteAssociationLabel, getMethodologyRuleAssociation } from "../../../../server/methodology/persistenceUtils";
+import { listMethodologyAdminNotes as listPersistedMethodologyAdminNotes } from "../../../../server/methodology/adminNotes";
+import { listMethodologyChangeLog as listPersistedMethodologyChangeLog } from "../../../../server/methodology/changelog";
+import { listMethodologyReviewItems as listPersistedMethodologyReviewItems } from "../../../../server/methodology/reviewWorkflow";
+import {
+  METHODOLOGY_NOTE_PRIORITIES,
+  METHODOLOGY_REVIEW_STATUSES,
+} from "../../../../server/methodology/types";
+import {
+  archiveMethodologyAdminNoteAction,
+  createMethodologyAdminNoteAction,
+  createReviewItemFromNoteAction,
+  updateMethodologyAdminNoteStatusAction,
+  updateMethodologyReviewStatusAction,
+} from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "No disponible";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "No disponible";
 
   return new Intl.DateTimeFormat("es-AR", {
     day: "2-digit",
@@ -31,7 +49,7 @@ function formatDate(value: Date | string | null | undefined) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function formatCount(value: number) {
@@ -46,17 +64,20 @@ function toneForStatus(value: string) {
     case "preparado":
     case "seed":
     case "incorporated":
-    case "good":
+    case "approved":
+    case "implemented":
       return "good";
     case "draft":
     case "pending":
     case "skipped":
     case "no indexado":
     case "open":
+    case "proposed":
     case "parcial":
       return "warning";
     case "archived":
     case "dismissed":
+    case "rejected":
       return "neutral";
     case "failed":
     case "critical":
@@ -82,7 +103,7 @@ function toneForSeverity(value: string) {
 function severityLabel(value: string) {
   const labels: Record<string, string> = {
     blocking: "Bloqueante",
-    critical: "Crítica",
+    critical: "Critica",
     high: "Alta",
     medium: "Media",
     low: "Baja",
@@ -97,6 +118,32 @@ function noteLabel(value: string) {
     incorporated: "Incorporada",
     dismissed: "Descartada",
     archived: "Archivada",
+  };
+  return labels[value] ?? value;
+}
+
+function priorityLabel(value: string) {
+  const labels: Record<string, string> = {
+    low: "Baja",
+    normal: "Normal",
+    high: "Alta",
+    critical: "Critica",
+  };
+  return labels[value] ?? value;
+}
+
+function reviewTypeLabel(value: string) {
+  const labels: Record<string, string> = {
+    rule: "Regla",
+    chunk: "Chunk",
+    topic: "Tema",
+    domain: "Dominio",
+    claim_validator: "Validador de claims",
+    scoring: "Scoring",
+    advisor: "Advisor",
+    report: "Reporte",
+    checklist: "Checklist",
+    other: "Otro",
   };
   return labels[value] ?? value;
 }
@@ -118,6 +165,10 @@ function statusLabel(value: string) {
     incorporated: "Incorporada",
     dismissed: "Descartada",
     parcial: "Parcial",
+    proposed: "Propuesto",
+    approved: "Aprobado",
+    rejected: "Rechazado",
+    implemented: "Implementado",
   };
   return labels[value] ?? value;
 }
@@ -172,14 +223,81 @@ function StatusPill({ status, label }: { status: string; label: string }) {
   return <span className={`assessment-chip assessment-chip-${toneForStatus(status)}`}>{label}</span>;
 }
 
+type MethodologyAdminPageSearchParams =
+  | {
+      error?: string;
+    }
+  | Promise<{
+      error?: string;
+    }>;
+
+type MethodologyAdminPageProps = {
+  searchParams?: MethodologyAdminPageSearchParams;
+};
+
+type PersistedMethodologyData = {
+  notes: Awaited<ReturnType<typeof listPersistedMethodologyAdminNotes>>;
+  reviewItems: Awaited<ReturnType<typeof listPersistedMethodologyReviewItems>>;
+  changeLog: Awaited<ReturnType<typeof listPersistedMethodologyChangeLog>>;
+  warnings: string[];
+};
+
+function decodeErrorMessage(value?: string) {
+  if (!value) return null;
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+async function resolveSearchParams(searchParams?: MethodologyAdminPageSearchParams) {
+  if (!searchParams) {
+    return {};
+  }
+
+  return typeof (searchParams as Promise<unknown>).then === "function" ? await searchParams : searchParams;
+}
+
+async function loadPersistedMethodologyData(): Promise<PersistedMethodologyData> {
+  const results = await Promise.allSettled([
+    listPersistedMethodologyAdminNotes({ limit: 24 }),
+    listPersistedMethodologyReviewItems({ limit: 24 }),
+    listPersistedMethodologyChangeLog({ limit: 24 }),
+  ]);
+
+  const warnings: string[] = [];
+  const notesResult = results[0];
+  const reviewResult = results[1];
+  const changeLogResult = results[2];
+
+  if (notesResult.status === "rejected") {
+    warnings.push("Las notas persistidas no se pudieron cargar en este entorno.");
+  }
+  if (reviewResult.status === "rejected") {
+    warnings.push("El workflow de revision persistido no se pudo cargar en este entorno.");
+  }
+  if (changeLogResult.status === "rejected") {
+    warnings.push("El changelog persistido no se pudo cargar en este entorno.");
+  }
+
+  return {
+    notes: notesResult.status === "fulfilled" ? notesResult.value : [],
+    reviewItems: reviewResult.status === "fulfilled" ? reviewResult.value : [],
+    changeLog: changeLogResult.status === "fulfilled" ? changeLogResult.value : [],
+    warnings,
+  };
+}
+
 function AccessDenied() {
   return (
     <main className="dashboard-page methodology-page">
       <section className="dashboard-hero glass-card methodology-hero">
         <div>
           <div className="badge badge-cyan">Methodology KB</div>
-          <h1>No tenés permisos para esta consola.</h1>
-          <p>La vista de metodología queda reservada al admin interno y sigue siendo read-only.</p>
+          <h1>No tenes permisos para esta consola.</h1>
+          <p>La vista de metodologia queda reservada al admin interno y sigue siendo read-only.</p>
         </div>
         <Link href="/dashboard/admin" className="btn btn-secondary">
           <ArrowLeft size={16} />
@@ -190,13 +308,19 @@ function AccessDenied() {
   );
 }
 
-export default async function MethodologyAdminPage() {
+export default async function MethodologyAdminPage({ searchParams }: MethodologyAdminPageProps) {
   const { isAdmin } = await getCurrentAdminUserForConsole();
 
   if (!isAdmin) {
     return <AccessDenied />;
   }
 
+  const [resolvedSearchParams, persistedData] = await Promise.all([
+    resolveSearchParams(searchParams),
+    loadPersistedMethodologyData(),
+  ]);
+
+  const queryError = decodeErrorMessage(resolvedSearchParams.error);
   const snapshot = getMethodologyAdminSnapshot();
   const contextPreview = buildMethodologyContextForAdvisor({
     question: "VMware backup restore, Proxmox capacity y rollback",
@@ -222,21 +346,23 @@ export default async function MethodologyAdminPage() {
     ["Reglas", "reglas"],
     ["Conocimiento / RAG", "rag"],
     ["Notas internas", "notas"],
+    ["Revision", "revision"],
     ["Changelog", "changelog"],
+    ["Changelog persistido", "changelog-persistido"],
     ["Proximas mejoras", "roadmap"],
-  ];
+  ] as const;
 
   return (
     <main className="dashboard-page methodology-page">
       <section className="dashboard-hero glass-card methodology-hero">
         <div className="methodology-hero-copy">
-          <div className="badge badge-cyan">Metodología Shift Evidence</div>
+          <div className="badge badge-cyan">Metodologia Shift Evidence</div>
           <div className="hero-route-line methodology-route-line">
             <span className="hero-route-brand hero-route-brand-vmware">
               <Database size={16} />
               KB
             </span>
-            <span className="hero-route-separator">→</span>
+            <span className="hero-route-separator">-&gt;</span>
             <span className="hero-route-brand hero-route-brand-proxmox">
               <Layers3 size={16} />
               Admin
@@ -244,13 +370,13 @@ export default async function MethodologyAdminPage() {
           </div>
           <h1>Knowledge Base versionada para Advisor, scoring y consola interna</h1>
           <p>
-            Esta consola muestra el seed v2.1, los dominios metodológicos, las reglas activas, la
-            preparación de RAG y la validación de claims sin tocar producción, pagos, Wise ni datos reales.
+            Esta consola muestra el seed v2.1, la edicion auditable de notas internas, el workflow de revision
+            y el changelog persistido sin tocar produccion, pagos, Wise ni datos reales.
           </p>
           <div className="methodology-hero-signals">
             <span>
               <ShieldCheck size={14} />
-              Read-only
+              Admin auth
             </span>
             <span>
               <BookOpen size={14} />
@@ -258,7 +384,7 @@ export default async function MethodologyAdminPage() {
             </span>
             <span>
               <Sparkles size={14} />
-              Lista para METHODOLOGY-2
+              Lista para METHODOLOGY-2B
             </span>
           </div>
         </div>
@@ -274,10 +400,22 @@ export default async function MethodologyAdminPage() {
         </div>
       </section>
 
+      {queryError ? (
+        <div className="dashboard-banner dashboard-banner-error methodology-banner" role="alert">
+          <strong>Error de accion.</strong> {queryError}
+        </div>
+      ) : null}
+
+      {persistedData.warnings.length > 0 ? (
+        <div className="dashboard-banner dashboard-banner-warning methodology-banner" role="status">
+          <strong>Persistencia parcial.</strong> {persistedData.warnings.join(" ")}
+        </div>
+      ) : null}
+
       <section className="assessment-summary-grid methodology-summary-grid">
         <MetricCard
           icon={<FileText size={22} />}
-          label="Versión activa"
+          label="Version activa"
           value={snapshot.version.versionLabel}
           note={snapshot.version.sourceDocumentName}
         />
@@ -303,7 +441,7 @@ export default async function MethodologyAdminPage() {
           icon={<CheckCircle2 size={22} />}
           label="Notas abiertas"
           value={formatCount(snapshot.openNoteCount)}
-          note="La escritura sigue deshabilitada"
+          note="La base read-only sigue visible"
         />
         <MetricCard
           icon={<Gauge size={22} />}
@@ -323,9 +461,27 @@ export default async function MethodologyAdminPage() {
           value={statusLabel(snapshot.pdfState)}
           note="Sin cambios sobre el renderer actual"
         />
+        <MetricCard
+          icon={<ShieldCheck size={22} />}
+          label="Notas persistidas"
+          value={formatCount(persistedData.notes.length)}
+          note="Tabla MethodologyAdminNote"
+        />
+        <MetricCard
+          icon={<ClipboardList size={22} />}
+          label="Items de revision"
+          value={formatCount(persistedData.reviewItems.length)}
+          note="Workflow auditable guardado"
+        />
+        <MetricCard
+          icon={<Database size={22} />}
+          label="Changelog auditable"
+          value={formatCount(persistedData.changeLog.length)}
+          note="MethodologyChangeLog"
+        />
       </section>
 
-      <nav className="tabs-container" aria-label="Navegación de metodología">
+      <nav className="tabs-container" aria-label="Navegacion de metodologia">
         {navItems.map(([label, key]) => (
           <Link key={key} href={`#${key}`} className="tab-btn">
             {label}
@@ -338,8 +494,8 @@ export default async function MethodologyAdminPage() {
           id="methodology-versiones"
           icon={<FileText size={18} />}
           label="Versiones"
-          title="Versión activa y reglas de publicación"
-          description="La KB se mantiene como seed determinístico. No hay Prisma migration ni escritura automática en esta etapa."
+          title="Version activa y reglas de publicacion"
+          description="La KB se mantiene como seed deterministico. No hay escritura automatica en esta etapa."
         />
         <div className="methodology-version-grid">
           <article className="glass-card report-history-card methodology-version-card">
@@ -361,7 +517,7 @@ export default async function MethodologyAdminPage() {
             </div>
           </article>
           <article className="glass-card report-history-card methodology-version-card">
-            <h3>Reglas de publicación segura</h3>
+            <h3>Reglas de publicacion segura</h3>
             <div className="methodology-bullet-list">
               {snapshot.featureNotes.map((note) => (
                 <div key={note} className="methodology-bullet">
@@ -379,7 +535,7 @@ export default async function MethodologyAdminPage() {
           id="methodology-dominios"
           icon={<Database size={18} />}
           label="Dominios"
-          title="Once dominios metodológicos cubren la base v2.1"
+          title="Once dominios metodologicos cubren la base v2.1"
           description="Cada dominio agrupa reglas y temas para que el Advisor y la consola hablen el mismo lenguaje."
         />
         <div className="report-history-grid methodology-domain-grid">
@@ -406,14 +562,14 @@ export default async function MethodologyAdminPage() {
           id="methodology-reglas"
           icon={<BookOpen size={18} />}
           label="Reglas"
-          title="Catálogo de reglas activas"
-          description="Se listan severidad, evidencia requerida y superficie de uso para poder reutilizar el mismo criterio en Advisor, scoring, PDF y admin."
+          title="Catalogo de reglas activas"
+          description="Se listan severidad, evidencia requerida y superficie de uso para reutilizar el mismo criterio en Advisor, scoring, PDF y admin."
         />
         <div className="assessment-table-wrap methodology-table-wrap">
           <table className="assessment-table methodology-table">
             <thead>
               <tr>
-                <th>Código</th>
+                <th>Codigo</th>
                 <th>Regla</th>
                 <th>Severidad</th>
                 <th>Dominio</th>
@@ -468,8 +624,8 @@ export default async function MethodologyAdminPage() {
           id="methodology-rag"
           icon={<Layers3 size={18} />}
           label="Conocimiento / RAG"
-          title="Preview de contexto y preparación de chunks"
-          description="La búsqueda es local y determinística. Esto deja listo el terreno para embeddings o retrieval posterior sin exponer prompts reales."
+          title="Preview de contexto y preparacion de chunks"
+          description="La busqueda es local y deterministica. Esto deja listo el terreno para embeddings o retrieval posterior sin exponer prompts reales."
         />
         <div className="assessment-preview-grid methodology-preview-grid">
           <article className="glass-card report-history-card methodology-preview-card">
@@ -496,9 +652,10 @@ export default async function MethodologyAdminPage() {
             </div>
           </article>
           <article className="glass-card report-history-card methodology-preview-card">
-            <h3>Ejemplo de validación de claims</h3>
+            <h3>Ejemplo de validacion de claims</h3>
             <p className="assessment-inline-note">
-              Afirmación de ejemplo: “La migración está garantizada sin downtime. RVTools confirma el backup restore y el target está listo para migrar.”
+              Afirmacion de ejemplo: "La migracion esta garantizada sin downtime. RVTools confirma el backup restore y
+              el target esta listo para migrar."
             </p>
             <div className="methodology-validation-summary">
               <StatusPill
@@ -584,31 +741,149 @@ export default async function MethodologyAdminPage() {
           id="methodology-notas"
           icon={<ShieldCheck size={18} />}
           label="Notas internas"
-          title="La escritura sigue deshabilitada"
-          description="METHODOLOGY-2 habilitará persistencia de notas cuando exista un workflow auditable para edición, revisión y aprobación."
+          title="Edicion auditable y workflow de revision"
+          description="La escritura queda protegida por admin auth, auditoria y changelog persistido. Nada impacta Advisor, scoring ni PDF automaticamente."
         />
-        <div className="assessment-preview-grid methodology-notes-grid">
+        <div className="methodology-persistence-grid">
           <article className="glass-card report-history-card methodology-note-panel">
-            <h3>Nota de escritura</h3>
+            <h3>Crear nota</h3>
             <p className="assessment-inline-note">
-              La escritura de notas se habilitará en METHODOLOGY-2 para evitar cambios de DB no auditados.
+              Cada nota nueva se guarda en MethodologyAdminNote y genera un audit event.
             </p>
-            <form className="unlock-admin-form methodology-note-form">
+            <form action={createMethodologyAdminNoteAction} className="methodology-note-form">
               <label className="form-label">
-                Título
-                <input className="form-input" disabled placeholder="Write path disabled" />
+                Version label
+                <input className="form-input" name="versionLabel" defaultValue={snapshot.version.versionLabel} />
+              </label>
+              <label className="form-label">
+                Titulo
+                <input className="form-input" name="title" required placeholder="Ej: Revisar regla de backup restore" />
               </label>
               <label className="form-label">
                 Contenido
-                <textarea className="form-input assessment-textarea" disabled placeholder="Read-only foundation" />
+                <textarea
+                  className="form-input assessment-textarea"
+                  name="content"
+                  required
+                  placeholder="Contexto, riesgo, decision o evidencia pendiente."
+                />
               </label>
-              <button type="button" className="btn btn-secondary" disabled>
-                Escritura deshabilitada
+              <div className="methodology-form-grid">
+                <label className="form-label">
+                  Domain key
+                  <input className="form-input" name="domainKey" placeholder="vmware" />
+                </label>
+                <label className="form-label">
+                  Topic key
+                  <input className="form-input" name="topicKey" placeholder="backup_restore" />
+                </label>
+                <label className="form-label">
+                  Rule code
+                  <input className="form-input" name="ruleCode" placeholder="SE-VMW-BKP-001" />
+                </label>
+                <label className="form-label">
+                  Prioridad
+                  <select className="form-input" name="priority" defaultValue="normal">
+                    {METHODOLOGY_NOTE_PRIORITIES.map((priority) => (
+                      <option key={priority} value={priority}>
+                        {priorityLabel(priority)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <button type="submit" className="btn btn-secondary">
+                Guardar nota
               </button>
             </form>
           </article>
+
           <article className="glass-card report-history-card methodology-note-panel">
-            <h3>Notas abiertas</h3>
+            <div className="report-history-header">
+              <div>
+                <h3>Notas persistidas</h3>
+                <p className="assessment-inline-note">Vista auditable con estados y prioridad.</p>
+              </div>
+              <span className="assessment-chip assessment-chip-neutral">{formatCount(persistedData.notes.length)}</span>
+            </div>
+            <div className="methodology-notes-list">
+              {persistedData.notes.length > 0 ? (
+                persistedData.notes.map((note) => {
+                  const association = getMethodologyNoteAssociationLabel(note);
+                  const ruleAssociation = getMethodologyRuleAssociation(note.ruleCode);
+
+                  return (
+                    <article key={note.id} className="methodology-mini-note">
+                      <div className="report-history-header">
+                        <div>
+                          <h4>{note.title}</h4>
+                          <p className="assessment-inline-note">{note.content}</p>
+                        </div>
+                        <span className={`assessment-chip assessment-chip-${toneForStatus(note.status)}`}>
+                          {noteLabel(note.status)}
+                        </span>
+                      </div>
+                      <div className="methodology-inline-tags">
+                        <span className="assessment-chip assessment-chip-neutral">{priorityLabel(note.priority)}</span>
+                        {note.versionLabel ? (
+                          <span className="assessment-chip assessment-chip-neutral">{note.versionLabel}</span>
+                        ) : null}
+                        {note.ruleCode ? (
+                          <span className="assessment-chip assessment-chip-neutral">{ruleAssociation.label}</span>
+                        ) : null}
+                      </div>
+                      <div className="report-history-meta">
+                        <span>{association}</span>
+                        <span>Created: {formatDate(note.createdAt)}</span>
+                        <span>Updated: {formatDate(note.updatedAt)}</span>
+                      </div>
+                      <div className="assessment-inline-actions methodology-note-actions">
+                        <form action={updateMethodologyAdminNoteStatusAction}>
+                          <input type="hidden" name="noteId" value={note.id} />
+                          <input type="hidden" name="status" value="incorporated" />
+                          <button type="submit" className="btn btn-secondary btn-small">
+                            Incorporar
+                          </button>
+                        </form>
+                        <form action={updateMethodologyAdminNoteStatusAction}>
+                          <input type="hidden" name="noteId" value={note.id} />
+                          <input type="hidden" name="status" value="dismissed" />
+                          <button type="submit" className="btn btn-secondary btn-small">
+                            Descartar
+                          </button>
+                        </form>
+                        <form action={archiveMethodologyAdminNoteAction}>
+                          <input type="hidden" name="noteId" value={note.id} />
+                          <button type="submit" className="btn btn-secondary btn-small">
+                            Archivar
+                          </button>
+                        </form>
+                        <form action={createReviewItemFromNoteAction}>
+                          <input type="hidden" name="noteId" value={note.id} />
+                          <button type="submit" className="btn btn-secondary btn-small">
+                            Enviar a revision
+                          </button>
+                        </form>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="dashboard-banner dashboard-banner-warning" role="status">
+                  No hay notas persistidas todavia.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className="glass-card report-history-card methodology-note-panel">
+            <div className="report-history-header">
+              <div>
+                <h3>Seed de referencia</h3>
+                <p className="assessment-inline-note">La base read-only sigue visible para comparar el estado nuevo con el seed v2.1.</p>
+              </div>
+              <span className="assessment-chip assessment-chip-neutral">{formatCount(snapshot.openNoteCount)}</span>
+            </div>
             <div className="methodology-notes-list">
               {snapshot.notes.map((note) => (
                 <article key={note.id} className="methodology-mini-note">
@@ -621,12 +896,124 @@ export default async function MethodologyAdminPage() {
                       {noteLabel(note.status)}
                     </span>
                   </div>
+                  <div className="methodology-inline-tags">
+                    <span className="assessment-chip assessment-chip-neutral">{priorityLabel(note.priority)}</span>
+                    <span className="assessment-chip assessment-chip-neutral">Version: {note.versionId}</span>
+                    {note.domainId ? <span className="assessment-chip assessment-chip-neutral">Domain: {note.domainId}</span> : null}
+                    {note.topicId ? <span className="assessment-chip assessment-chip-neutral">Topic: {note.topicId}</span> : null}
+                  </div>
                   <div className="report-history-meta">
-                    <span>Priority: {note.priority}</span>
                     <span>Created: {formatDate(note.createdAt)}</span>
                     <span>Updated: {formatDate(note.updatedAt)}</span>
                   </div>
                 </article>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="revision" className="assessment-section glass-card methodology-panel">
+        <SectionTitle
+          id="methodology-revision"
+          icon={<ClipboardList size={18} />}
+          label="Revision"
+          title="Items de revision metodologica"
+          description="Las notas enviadas a revision quedan separadas del seed, con estados aprobados, rechazados, implementados o archivados."
+        />
+        <div className="methodology-review-grid">
+          <article className="glass-card report-history-card methodology-review-panel">
+            <div className="report-history-header">
+              <div>
+                <h3>Workflow de revision</h3>
+                <p className="assessment-inline-note">Cada item guarda estado, decisionReason y timestamp de decision.</p>
+              </div>
+              <span className="assessment-chip assessment-chip-neutral">{formatCount(persistedData.reviewItems.length)}</span>
+            </div>
+            <div className="methodology-notes-list">
+              {persistedData.reviewItems.length > 0 ? (
+                persistedData.reviewItems.map((review) => {
+                  const sourceNote = persistedData.notes.find((note) => note.id === review.sourceNoteId) ?? null;
+
+                  return (
+                    <article key={review.id} className="methodology-mini-note">
+                      <div className="report-history-header">
+                        <div>
+                          <h4>{review.title}</h4>
+                          <p className="assessment-inline-note">{review.description}</p>
+                        </div>
+                        <span className={`assessment-chip assessment-chip-${toneForStatus(review.status)}`}>
+                          {statusLabel(review.status)}
+                        </span>
+                      </div>
+                      <div className="methodology-inline-tags">
+                        <span className="assessment-chip assessment-chip-neutral">{reviewTypeLabel(review.itemType)}</span>
+                        <span className="assessment-chip assessment-chip-neutral">{priorityLabel(review.priority)}</span>
+                        {review.itemKey ? <span className="assessment-chip assessment-chip-neutral">{review.itemKey}</span> : null}
+                        {sourceNote ? <span className="assessment-chip assessment-chip-neutral">{sourceNote.title}</span> : null}
+                      </div>
+                      <div className="report-history-meta">
+                        <span>Version: {review.versionLabel}</span>
+                        <span>Created: {formatDate(review.createdAt)}</span>
+                        <span>Updated: {formatDate(review.updatedAt)}</span>
+                      </div>
+                      {review.rationale ? <p className="assessment-inline-note">{review.rationale}</p> : null}
+                      {review.decisionReason ? (
+                        <p className="assessment-inline-note">Decision: {review.decisionReason}</p>
+                      ) : null}
+                      <form action={updateMethodologyReviewStatusAction} className="methodology-review-form">
+                        <input type="hidden" name="reviewId" value={review.id} />
+                        <label className="form-label">
+                          Estado
+                          <select className="form-input" name="status" defaultValue={review.status}>
+                            {METHODOLOGY_REVIEW_STATUSES.map((status) => (
+                              <option key={status} value={status}>
+                                {statusLabel(status)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="form-label">
+                          Decision reason
+                          <input
+                            className="form-input"
+                            name="decisionReason"
+                            defaultValue={review.decisionReason ?? ""}
+                            placeholder="Contexto de aprobacion, rechazo o implementacion"
+                          />
+                        </label>
+                        <button type="submit" className="btn btn-secondary">
+                          Guardar decision
+                        </button>
+                      </form>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="dashboard-banner dashboard-banner-warning" role="status">
+                  No hay items de revision persistidos todavia.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className="glass-card report-history-card methodology-review-panel">
+            <h3>Estados disponibles</h3>
+            <div className="methodology-bullet-list">
+              {METHODOLOGY_REVIEW_STATUSES.map((status) => (
+                <div key={status} className="methodology-bullet">
+                  <CheckCircle2 size={16} />
+                  <span>{statusLabel(status)}</span>
+                </div>
+              ))}
+            </div>
+            <h3 className="methodology-review-subtitle">Source note summary</h3>
+            <div className="methodology-bullet-list">
+              {persistedData.notes.slice(0, 4).map((note) => (
+                <div key={note.id} className="methodology-bullet">
+                  <CheckCircle2 size={16} />
+                  <span>{getMethodologyNoteAssociationLabel(note)}</span>
+                </div>
               ))}
             </div>
           </article>
@@ -638,8 +1025,8 @@ export default async function MethodologyAdminPage() {
           id="methodology-changelog"
           icon={<ClipboardList size={18} />}
           label="Changelog"
-          title="Historial de cambios de la versión"
-          description="Las entradas son sanitizadas y sirven para explicar la evolución de la KB sin mostrar datos sensibles."
+          title="Historial de cambios del seed"
+          description="Este bloque sigue mostrando la base read-only para comparar contra el registro auditable persistido."
         />
         <div className="methodology-changelog-list">
           {snapshot.changeLog.map((entry) => (
@@ -662,13 +1049,49 @@ export default async function MethodologyAdminPage() {
         </div>
       </section>
 
+      <section id="changelog-persistido" className="assessment-section glass-card methodology-panel">
+        <SectionTitle
+          id="methodology-changelog-persistido"
+          icon={<ClipboardList size={18} />}
+          label="Changelog persistido"
+          title="Registro auditable persistido"
+          description="Cada alta, cambio de estado o item de revision queda registrado en la tabla MethodologyChangeLog."
+        />
+        <div className="methodology-changelog-list">
+          {persistedData.changeLog.length > 0 ? (
+            persistedData.changeLog.map((entry) => (
+              <article key={entry.id} className="glass-card report-history-card methodology-changelog-card">
+                <div className="report-history-header">
+                  <div>
+                    <h3>{entry.summary}</h3>
+                    <p className="assessment-inline-note">{entry.rationale}</p>
+                  </div>
+                  <span className="assessment-chip assessment-chip-neutral">{entry.changeType}</span>
+                </div>
+                <div className="report-history-meta">
+                  <span>Entity: {entry.entityType}</span>
+                  <span>Entity ID: {entry.entityId ?? "No disponible"}</span>
+                  <span>Key: {entry.entityKey ?? "No disponible"}</span>
+                  <span>By: {entry.createdBy ?? "system"}</span>
+                  <span>When: {formatDate(entry.createdAt)}</span>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="dashboard-banner dashboard-banner-warning" role="status">
+              No hay entradas persistidas todavia.
+            </div>
+          )}
+        </div>
+      </section>
+
       <section id="roadmap" className="assessment-section glass-card methodology-panel">
         <SectionTitle
           id="methodology-roadmap"
           icon={<AlertTriangle size={18} />}
-          label="Próximas mejoras"
+          label="Proximas mejoras"
           title="Camino seguro para METHODOLOGY-2"
-          description="La idea es sumar escritura auditable, persistencia y embeddings, pero solo después de que la base read-only quede bien verificada."
+          description="La idea es sumar escritura auditable, persistencia y embeddings, pero solo despues de que la base quede bien verificada."
         />
         <div className="methodology-roadmap-grid">
           {snapshot.featureNotes.map((note) => (
@@ -678,8 +1101,8 @@ export default async function MethodologyAdminPage() {
           ))}
         </div>
         <div className="dashboard-banner dashboard-banner-warning methodology-roadmap-banner" role="alert">
-          <strong>Scope intentionally limited.</strong> Esta consola no toca producción, pagos, Wise, DNS,
-          Vercel cutover ni datos reales. El siguiente paso es persistencia segura, no cambios de arquitectura de riesgo.
+          <strong>Scope intentionally limited.</strong> Esta consola no toca produccion, pagos, Wise, DNS, Vercel
+          cutover ni datos reales. El siguiente paso es persistencia segura, no cambios de arquitectura de riesgo.
         </div>
       </section>
     </main>
