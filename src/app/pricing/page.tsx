@@ -5,9 +5,11 @@ import {
   Brain,
   Building2,
   Check,
+  CheckCircle2,
   Eye,
   Lock,
   Minus,
+  X,
   Radar,
   Receipt,
   ShieldCheck,
@@ -17,7 +19,6 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import {
   getBillingCadenceLabel,
-  getPaymentOptionLabel,
   marketingAddOns,
   marketingPlans,
   paymentOptionsCopy,
@@ -56,9 +57,253 @@ const purchaseStats = [
   ["0", "Production agents required"],
 ] as const;
 
+type ComparisonTone = "included" | "limited" | "premium" | "excluded";
+type ComparisonPlanId = "starter_readiness" | "professional_assessment" | "migration_blueprint";
+
+type ComparisonCell = {
+  label: string;
+  tone: ComparisonTone;
+};
+
+type ComparisonRow = {
+  feature: string;
+  values: Record<ComparisonPlanId, ComparisonCell>;
+};
+
+const comparisonPlanMeta: Record<
+  ComparisonPlanId,
+  {
+    tag: string;
+    summary: string;
+    question: string;
+    deliverable: string;
+    buyingMoment: string;
+  }
+> = {
+  starter_readiness: {
+    tag: "Fastest checkpoint",
+    summary: "Best when you need proof before budget, scope, or deeper migration work.",
+    question: "Should we go deeper?",
+    deliverable: "Readiness checkpoint",
+    buyingMoment: "Before scope",
+  },
+  professional_assessment: {
+    tag: "Recommended",
+    summary: "Assessment depth: prove risk, cost exposure and VM-level readiness before planning.",
+    question: "What is risky?",
+    deliverable: "Decision pack",
+    buyingMoment: "Before approval",
+  },
+  migration_blueprint: {
+    tag: "Planning-led",
+    summary: "Planning depth: convert assessment findings into waves, rollback paths and execution gates.",
+    question: "How do we move?",
+    deliverable: "Migration plan",
+    buyingMoment: "Before execution",
+  },
+};
+
+const planComparisonSections = [
+  {
+    title: "Decision difference",
+    rows: [
+      {
+        feature: "Primary question answered",
+        values: {
+          starter_readiness: { label: "Should we go deeper?", tone: "limited" },
+          professional_assessment: { label: "What is risky?", tone: "premium" },
+          migration_blueprint: { label: "How do we move?", tone: "included" },
+        },
+      },
+      {
+        feature: "Main deliverable",
+        values: {
+          starter_readiness: { label: "Readiness checkpoint", tone: "limited" },
+          professional_assessment: { label: "Decision pack", tone: "premium" },
+          migration_blueprint: { label: "Migration plan", tone: "included" },
+        },
+      },
+      {
+        feature: "Best buying moment",
+        values: {
+          starter_readiness: { label: "Before scope", tone: "limited" },
+          professional_assessment: { label: "Before approval", tone: "premium" },
+          migration_blueprint: { label: "Before execution", tone: "included" },
+        },
+      },
+    ] satisfies ComparisonRow[],
+  },
+  {
+    title: "Assessment foundation",
+    rows: [
+      {
+        feature: "Evidence-led intake and readiness checkpoint",
+        values: {
+          starter_readiness: { label: "Included", tone: "included" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "RVTools ingestion and guided evidence review",
+        values: {
+          starter_readiness: { label: "Included", tone: "included" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Client workspace for evidence and report delivery",
+        values: {
+          starter_readiness: { label: "Included", tone: "included" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Missing-data checklist before deeper scope",
+        values: {
+          starter_readiness: { label: "Included", tone: "included" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+    ] satisfies ComparisonRow[],
+  },
+  {
+    title: "Analysis depth",
+    rows: [
+      {
+        feature: "Licensing and readiness analysis depth",
+        values: {
+          starter_readiness: { label: "Initial signal", tone: "limited" },
+          professional_assessment: { label: "Full review", tone: "premium" },
+          migration_blueprint: { label: "Full review", tone: "premium" },
+        },
+      },
+      {
+        feature: "Storage Destination Readiness coverage",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Senior Migration Advisor depth",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Project Memory Vault and retained advisory context",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "VM-by-VM migration risk matrix",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+    ] satisfies ComparisonRow[],
+  },
+  {
+    title: "Deliverables and planning",
+    rows: [
+      {
+        feature: "Report sophistication",
+        values: {
+          starter_readiness: { label: "Basic assessment", tone: "limited" },
+          professional_assessment: { label: "Executive + technical", tone: "premium" },
+          migration_blueprint: { label: "Decision pack", tone: "premium" },
+        },
+      },
+      {
+        feature: "Prioritized remediation recommendations",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Included", tone: "included" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Migration wave planning",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Not included", tone: "excluded" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Pilot candidate selection",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Not included", tone: "excluded" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Rollback framework",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Not included", tone: "excluded" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Technical review session",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Not included", tone: "excluded" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Migration day checklist and remediation roadmap",
+        values: {
+          starter_readiness: { label: "Not included", tone: "excluded" },
+          professional_assessment: { label: "Not included", tone: "excluded" },
+          migration_blueprint: { label: "Included", tone: "included" },
+        },
+      },
+      {
+        feature: "Best fit",
+        values: {
+          starter_readiness: { label: "Early validation", tone: "limited" },
+          professional_assessment: { label: "Decision-ready", tone: "premium" },
+          migration_blueprint: { label: "Execution planning", tone: "included" },
+        },
+      },
+    ] satisfies ComparisonRow[],
+  },
+] as const;
+
 export default function PricingPage() {
   const corePlans = marketingPlans.filter((plan) => plan.id !== "msp_partner");
   const partnerPlan = marketingPlans.find((plan) => plan.id === "msp_partner") ?? marketingPlans[marketingPlans.length - 1];
+  const comparisonPlans = corePlans.filter(
+    (plan): plan is (typeof corePlans)[number] & { id: ComparisonPlanId } =>
+      plan.id === "starter_readiness" || plan.id === "professional_assessment" || plan.id === "migration_blueprint",
+  );
+
+  const renderComparisonCell = (value: ComparisonCell) => {
+    const Icon = value.tone === "excluded" ? X : CheckCircle2;
+
+    return (
+      <span className={`pricing-compare-value pricing-compare-value-${value.tone}`}>
+        <Icon size={15} />
+        <span>{value.label}</span>
+      </span>
+    );
+  };
 
   return (
     <>
@@ -224,19 +469,29 @@ export default function PricingPage() {
                       </div>
                     )}
 
-                    <div className="pricing-plan-meta">
-                      <span className="assessment-chip assessment-chip-neutral">{getBillingCadenceLabel(plan.billingCadence)}</span>
-                      <span className="assessment-chip assessment-chip-good">
-                        Recommended: {getPaymentOptionLabel(plan.recommendedPayment)}
-                      </span>
-                    </div>
-
                     <p className="pricing-plan-note">{plan.paymentNote}</p>
+
+                    {plan.id === "starter_readiness" || plan.id === "professional_assessment" || plan.id === "migration_blueprint" ? (
+                      <div className="pricing-plan-decision-strip">
+                        <div>
+                          <span>Answers</span>
+                          <strong>{comparisonPlanMeta[plan.id].question}</strong>
+                        </div>
+                        <div>
+                          <span>Delivers</span>
+                          <strong>{comparisonPlanMeta[plan.id].deliverable}</strong>
+                        </div>
+                        <div>
+                          <span>Use when</span>
+                          <strong>{comparisonPlanMeta[plan.id].buyingMoment}</strong>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="pricing-plan-columns">
                     <div className="pricing-plan-column">
-                      <h4>Includes</h4>
+                      <h4>Included at this level</h4>
                       <ul className="pricing-plan-list">
                         {plan.includes.map((item) => (
                           <li key={item}>
@@ -248,7 +503,7 @@ export default function PricingPage() {
                     </div>
 
                     <div className="pricing-plan-column pricing-plan-column-muted">
-                      <h4>Does not include</h4>
+                      <h4>Not included at this level</h4>
                       <ul className="pricing-plan-list pricing-plan-list-muted">
                         {plan.excludes.map((item) => (
                           <li key={item}>
@@ -274,6 +529,125 @@ export default function PricingPage() {
                   </div>
                 </article>
               ))}
+            </div>
+
+            <div className="pricing-compare-shell">
+              <div className="pricing-compare-head">
+                <div>
+                  <div className="badge badge-cyan">Plan Comparison</div>
+                  <h3>Compare the plans without reading every card.</h3>
+                  <p>
+                    A cleaner view of what changes between a readiness checkpoint, a decision-grade assessment and a
+                    planning engagement.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pricing-compare-table-wrap">
+                <table className="pricing-compare-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Capability</th>
+                      {comparisonPlans.map((plan) => (
+                        <th
+                          key={plan.id}
+                          scope="col"
+                          className={
+                            plan.id === "professional_assessment"
+                              ? "pricing-compare-col-highlight"
+                              : plan.id === "migration_blueprint"
+                                ? "pricing-compare-col-blueprint"
+                                : undefined
+                          }
+                        >
+                          <div className="pricing-compare-plan-head">
+                            <span className={`pricing-compare-plan-tag pricing-compare-plan-tag-${plan.accent}`}>
+                              {comparisonPlanMeta[plan.id].tag}
+                            </span>
+                            <strong>{plan.name}</strong>
+                            <span>{plan.price}</span>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {planComparisonSections.map((section, sectionIndex) => (
+                      <>
+                        <tr
+                          key={`${section.title}-section`}
+                          className="pricing-compare-section-row"
+                          data-section-tone={
+                            sectionIndex === 0
+                              ? "decision"
+                              : sectionIndex === 1
+                                ? "foundation"
+                                : sectionIndex === 2
+                                  ? "analysis"
+                                  : "planning"
+                          }
+                        >
+                          <th scope="rowgroup" colSpan={comparisonPlans.length + 1}>
+                            <span>{section.title}</span>
+                          </th>
+                        </tr>
+                        {section.rows.map((row) => (
+                          <tr key={`${section.title}-${row.feature}`}>
+                            <th scope="row" className="pricing-compare-feature-cell">
+                              <span>{row.feature}</span>
+                            </th>
+                            {comparisonPlans.map((plan) => (
+                              <td
+                                key={`${row.feature}-${plan.id}`}
+                                className={
+                                  plan.id === "professional_assessment"
+                                    ? "pricing-compare-col-highlight"
+                                    : plan.id === "migration_blueprint"
+                                      ? "pricing-compare-col-blueprint"
+                                      : undefined
+                                }
+                              >
+                                {renderComparisonCell(row.values[plan.id])}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th scope="row" className="pricing-compare-feature-cell pricing-compare-footer-label">
+                        Next step
+                      </th>
+                      {comparisonPlans.map((plan) => (
+                        <td
+                          key={`cta-${plan.id}`}
+                          className={
+                            plan.id === "professional_assessment"
+                              ? "pricing-compare-col-highlight"
+                              : plan.id === "migration_blueprint"
+                                ? "pricing-compare-col-blueprint"
+                                : undefined
+                          }
+                        >
+                          <div className="pricing-compare-footer-card">
+                            <small>{comparisonPlanMeta[plan.id].tag}</small>
+                            <a href={plan.cta.href} className="btn btn-secondary btn-sm pricing-compare-footer-btn">
+                              {plan.cta.label}
+                            </a>
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <p className="pricing-compare-note">
+                Blueprint is the only tier that adds migration planning structure, rollback framing and a technical
+                review session. Professional is the deepest assessment tier before planning engagement begins.
+              </p>
             </div>
           </div>
         </section>
