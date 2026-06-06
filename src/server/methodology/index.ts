@@ -20,3 +20,4 @@ export * from "./persistenceUtils";
 export * from "./changelog";
 export * from "./adminNotes";
 export * from "./reviewWorkflow";
+export * from "./methodology3Expansion";

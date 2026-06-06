@@ -93,6 +93,18 @@ function filterByArrayMembership<T extends { intendedUse?: string; embeddingStat
   return next;
 }
 
+function filterByTags<T extends { tags?: string[] }>(items: readonly T[], tags?: string[]) {
+  if (!tags?.length) return items;
+  const allowed = normalizeList(tags);
+  return items.filter((item) => (item.tags ?? []).some((tag) => allowed.has(tag)));
+}
+
+function filterByChunkRuleCodes<T extends { relatedRuleCodes?: string[] }>(items: readonly T[], ruleCodes?: string[]) {
+  if (!ruleCodes?.length) return items;
+  const allowed = normalizeList(ruleCodes);
+  return items.filter((item) => (item.relatedRuleCodes ?? []).some((ruleCode) => allowed.has(ruleCode)));
+}
+
 export function getActiveMethodologyVersion(): MethodologyVersion {
   return clone(METHODOLOGY_SEED.version);
 }
@@ -146,6 +158,8 @@ export function listMethodologyKnowledgeChunks(filters: MethodologyKnowledgeSear
     intendedUses: filters.intendedUses,
     embeddingStatuses: filters.embeddingStatuses,
   });
+  items = filterByTags(items, filters.tags);
+  items = filterByChunkRuleCodes(items, filters.ruleCodes);
 
   const ordered = [...items].sort((a, b) => a.id.localeCompare(b.id));
   const capped = typeof filters.maxResults === "number" && filters.maxResults >= 0 ? ordered.slice(0, filters.maxResults) : ordered;

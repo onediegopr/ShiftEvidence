@@ -10,6 +10,13 @@ It is intentionally source-controlled and read-only for now.
 - Avoid mixing extraction with production behavior changes.
 - Make every chunk, rule and domain traceable back to a section of the Bible.
 
+## Current METHODOLOGY-3 status
+
+- The initial expansion wave has already moved the seed from 16 active rules to 69 active rules and 33 active chunks.
+- The current active bridge prep is helper-only: Advisor and PDF helpers can build methodology context, but they stay behind explicit feature flags or manual wiring.
+- No external embeddings or vector search are used.
+- No automatic scoring change is introduced by the extraction plan itself.
+
 ## Extraction map
 
 - Part 0 - Fundamentos y gobernanza
@@ -39,6 +46,7 @@ It is intentionally source-controlled and read-only for now.
 3. Add networking and application dependency coverage.
 4. Finish readiness, execution and rollback rules.
 5. Only after the previous steps, expand the PDF/report language and advisor prompts.
+6. Keep the bridge prep helper-only until the review path is explicitly approved.
 
 ## Safety notes
 
@@ -50,3 +58,4 @@ It is intentionally source-controlled and read-only for now.
 ## Suggested future deliverable
 
 - A script or generator that reads the Bible sections and produces seed files, docs and review items from a single source.
+- A controlled bridge layer that only becomes active behind feature flags and fallback-safe guards.

@@ -299,6 +299,9 @@ export type MethodologyKnowledgeSearchFilters = {
   domainIds?: string[];
   topicIds?: string[];
   sourceDocumentIds?: string[];
+  tags?: string[];
+  ruleCodes?: string[];
+  text?: string;
   intendedUses?: MethodologyIntendedUse[];
   status?: MethodologyRecordStatus[];
   embeddingStatuses?: MethodologyEmbeddingStatus[];
@@ -317,6 +320,31 @@ export type MethodologyKnowledgeSearchResult = {
   query: string;
   total: number;
   hits: MethodologyKnowledgeSearchHit[];
+};
+
+export type MethodologyRuleSearchFilters = {
+  versionId?: string;
+  domainIds?: string[];
+  topicIds?: string[];
+  severities?: MethodologyRuleSeverity[];
+  status?: MethodologyRecordStatus[];
+  ruleCodes?: string[];
+  usageSurfaces?: MethodologyUsageSurface[];
+  text?: string;
+  maxResults?: number;
+};
+
+export type MethodologyRuleSearchHit = {
+  rule: MethodologyRule;
+  score: number;
+  matchedTerms: string[];
+  reason: string;
+};
+
+export type MethodologyRuleSearchResult = {
+  query: string;
+  total: number;
+  hits: MethodologyRuleSearchHit[];
 };
 
 export type MethodologyRuleFilters = {
@@ -339,9 +367,12 @@ export type MethodologyClaimValidationContext = {
 export type MethodologyClaimFinding = {
   code: string;
   severity: "warning" | "critical";
+  unsafeClaim: string;
   message: string;
   matchedText: string;
+  safeAlternative: string;
   relatedRuleCodes: string[];
+  relatedMethodologyConcept: string;
 };
 
 export type MethodologyClaimValidationResult = {
@@ -363,6 +394,49 @@ export type MethodologyAdvisorContextInput = {
     missingEvidence?: string[];
   };
   maxChunks?: number;
+};
+
+export type MethodologyAdvisorBridgeContextInput = {
+  question: string;
+  assessmentSummary?: string | null;
+  missingEvidence?: string[];
+  activeBlockers?: string[];
+  maxRules?: number;
+  maxChunks?: number;
+};
+
+export type MethodologyAdvisorBridgeContextResult = {
+  methodologyVersion: MethodologyVersion;
+  relevantRules: MethodologyRule[];
+  relevantChunks: MethodologyKnowledgeChunk[];
+  safetyCaveats: string[];
+  recommendedTone: "conservative" | "balanced" | "executive";
+  forbiddenClaims: string[];
+  suggestedFollowUpQuestions: string[];
+  searchQuery: string;
+  enabled: boolean;
+};
+
+export type MethodologyReportContextInput = {
+  assessmentSummary?: string | null;
+  missingEvidence?: string[];
+  activeBlockers?: string[];
+  maxRules?: number;
+  maxChunks?: number;
+};
+
+export type MethodologyReportContextResult = {
+  methodologyVersion: MethodologyVersion;
+  methodologyNotes: string[];
+  evidenceConfidenceLanguage: string;
+  missingEvidenceLanguage: string;
+  blockerLanguage: string;
+  rollbackLanguage: string;
+  safeClaims: string[];
+  ruleTraceExamples: string[];
+  relevantRules: MethodologyRule[];
+  relevantChunks: MethodologyKnowledgeChunk[];
+  searchQuery: string;
 };
 
 export type MethodologyAdvisorContextResult = {

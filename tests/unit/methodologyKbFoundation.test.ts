@@ -22,8 +22,9 @@ describe("methodology knowledge base foundation", () => {
     expect(version.versionLabel).toBe("Shift Evidence Methodology Bible v2.1");
     expect(listMethodologyDomains()).toHaveLength(11);
     expect(snapshot.domainCount).toBe(11);
-    expect(snapshot.ruleCount).toBe(16);
-    expect(snapshot.chunkCount).toBe(11);
+    expect(snapshot.topicCount).toBe(36);
+    expect(snapshot.ruleCount).toBe(69);
+    expect(snapshot.chunkCount).toBe(33);
     expect(snapshot.sourceDocumentCount).toBe(6);
     expect(snapshot.openNoteCount).toBe(3);
     expect(snapshot.ragState).toBe("indexado");

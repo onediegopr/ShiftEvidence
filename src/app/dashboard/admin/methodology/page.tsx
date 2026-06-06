@@ -17,11 +17,14 @@ import {
 } from "lucide-react";
 import { getCurrentAdminUserForConsole } from "../../../../server/admin/adminAuth";
 import {
+  buildMethodologyAdvisorContext,
   buildMethodologyContextForAdvisor,
+  buildMethodologyReportContext,
   getMethodologyAdminSnapshot,
   validateMethodologyClaims,
 } from "../../../../server/methodology";
 import { getMethodologyNoteAssociationLabel, getMethodologyRuleAssociation } from "../../../../server/methodology/persistenceUtils";
+import { listMethodologyBibleExtractionPlan } from "../../../../server/methodology/extractionPlan";
 import { listMethodologyAdminNotes as listPersistedMethodologyAdminNotes } from "../../../../server/methodology/adminNotes";
 import { listMethodologyChangeLog as listPersistedMethodologyChangeLog } from "../../../../server/methodology/changelog";
 import { listMethodologyReviewItems as listPersistedMethodologyReviewItems } from "../../../../server/methodology/reviewWorkflow";
@@ -321,7 +324,23 @@ export default async function MethodologyAdminPage({ searchParams }: Methodology
   ]);
 
   const queryError = decodeErrorMessage(resolvedSearchParams.error);
+  const extractionPlan = listMethodologyBibleExtractionPlan();
   const snapshot = getMethodologyAdminSnapshot();
+  const advisorBridgePreview = buildMethodologyAdvisorContext({
+    question: "VMware backup restore, Proxmox capacity y rollback",
+    assessmentSummary: "Escenario de foundation metodologica para consola admin.",
+    missingEvidence: ["restore test fechado", "headroom de capacidad"],
+    activeBlockers: ["ventana de cutover estrecha"],
+    maxChunks: 4,
+    maxRules: 6,
+  });
+  const reportBridgePreview = buildMethodologyReportContext({
+    assessmentSummary: "Escenario de report bridge para PDF methodology notes.",
+    missingEvidence: ["restore test fechado", "headroom de capacidad"],
+    activeBlockers: ["ventana de cutover estrecha"],
+    maxChunks: 4,
+    maxRules: 6,
+  });
   const contextPreview = buildMethodologyContextForAdvisor({
     question: "VMware backup restore, Proxmox capacity y rollback",
     assessmentContext: {
@@ -334,13 +353,31 @@ export default async function MethodologyAdminPage({ searchParams }: Methodology
   const validationExample = validateMethodologyClaims(
     "La migracion esta garantizada sin downtime. RVTools confirma el backup restore y el target esta listo para migrar.",
     {
-      activeBlockingRules: contextPreview.rules.filter((rule) => rule.severity === "blocking").slice(0, 3),
+      activeBlockingRules: advisorBridgePreview.relevantRules.filter((rule) => rule.severity === "blocking").slice(0, 3),
       missingEvidence: ["restore test fechado", "headroom de capacidad"],
       assessmentSummary: "Ejemplo de validacion para la consola admin.",
     },
   );
+  const baseRuleCount = 16;
+  const baseChunkCount = 11;
+  const newRuleCount = Math.max(snapshot.ruleCount - baseRuleCount, 0);
+  const newChunkCount = Math.max(snapshot.chunkCount - baseChunkCount, 0);
+  const extractionCoverage = extractionPlan.filter((part) =>
+    part.linkedRuleCodes.some((ruleCode) => snapshot.rules.some((rule) => rule.ruleCode === ruleCode)),
+  ).length;
+  const extractionPartRows = extractionPlan.map((part) => {
+    const coveredRules = part.linkedRuleCodes.filter((ruleCode) => snapshot.rules.some((rule) => rule.ruleCode === ruleCode));
+    return {
+      ...part,
+      coveredRules,
+      coverage: part.linkedRuleCodes.length > 0 ? Math.round((coveredRules.length / part.linkedRuleCodes.length) * 100) : 0,
+    };
+  });
+  const advisorBridgeEnabled = advisorBridgePreview.enabled;
+  const reportBridgeEnabled = process.env.METHODOLOGY_REPORT_CONTEXT_ENABLED === "true";
 
   const navItems = [
+    ["Expansion", "expansion"],
     ["Versiones", "versiones"],
     ["Dominios", "dominios"],
     ["Reglas", "reglas"],
@@ -384,7 +421,7 @@ export default async function MethodologyAdminPage({ searchParams }: Methodology
             </span>
             <span>
               <Sparkles size={14} />
-              Lista para METHODOLOGY-2B
+              Lista para METHODOLOGY-3
             </span>
           </div>
         </div>
@@ -479,6 +516,133 @@ export default async function MethodologyAdminPage({ searchParams }: Methodology
           value={formatCount(persistedData.changeLog.length)}
           note="MethodologyChangeLog"
         />
+      </section>
+
+      <section id="expansion" className="assessment-section glass-card methodology-panel">
+        <SectionTitle
+          id="methodology-expansion"
+          icon={<Sparkles size={18} />}
+          label="Expansion METHODOLOGY-3"
+          title="Full Bible Extraction Expansion y bridges controlados"
+          description="La ampliacion sube el catalogo de reglas y chunks sin cambiar scoring, Advisor ni PDF automaticamente."
+        />
+        <div className="assessment-summary-grid methodology-summary-grid">
+          <MetricCard
+            icon={<BookOpen size={22} />}
+            label="Reglas activas"
+            value={formatCount(snapshot.ruleCount)}
+            note={`Base 16 + nuevas ${formatCount(newRuleCount)}`}
+          />
+          <MetricCard
+            icon={<Layers3 size={22} />}
+            label="Chunks activos"
+            value={formatCount(snapshot.chunkCount)}
+            note={`Base 11 + nuevos ${formatCount(newChunkCount)}`}
+          />
+          <MetricCard
+            icon={<Database size={22} />}
+            label="Partes de la Biblia"
+            value={formatCount(extractionPlan.length)}
+            note={`Cobertura observada ${formatCount(extractionCoverage)} partes`}
+          />
+          <MetricCard
+            icon={<Activity size={22} />}
+            label="Advisor bridge"
+            value={advisorBridgeEnabled ? "Enabled" : "Feature flag"}
+            note={advisorBridgePreview.recommendedTone}
+          />
+          <MetricCard
+            icon={<Lock size={22} />}
+            label="PDF bridge"
+            value={reportBridgeEnabled ? "Enabled" : "Prepared"}
+            note={reportBridgePreview.blockerLanguage}
+          />
+          <MetricCard
+            icon={<ShieldCheck size={22} />}
+            label="Claim validator v3"
+            value="Ready"
+            note={validationExample.findings.length > 0 ? "Safe wording suggestions available" : "Safe by default"}
+          />
+        </div>
+        <div className="methodology-bridge-copy">
+          <article className="glass-card report-history-card methodology-version-card">
+            <div className="report-history-header">
+              <div>
+                <h3>Advisor bridge preview</h3>
+                <p className="assessment-inline-note">Prepared helper, not automatic runtime wiring.</p>
+              </div>
+              <StatusPill status={advisorBridgeEnabled ? "active" : "draft"} label={advisorBridgeEnabled ? "Enabled" : "Feature flag"} />
+            </div>
+            <div className="methodology-bullet-list">
+              {advisorBridgePreview.safetyCaveats.map((item) => (
+                <div key={item} className="methodology-bullet">
+                  <CheckCircle2 size={16} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="report-history-meta">
+              <span>Relevant rules: {formatCount(advisorBridgePreview.relevantRules.length)}</span>
+              <span>Relevant chunks: {formatCount(advisorBridgePreview.relevantChunks.length)}</span>
+              <span>Tone: {advisorBridgePreview.recommendedTone}</span>
+            </div>
+          </article>
+
+          <article className="glass-card report-history-card methodology-version-card">
+            <div className="report-history-header">
+              <div>
+                <h3>PDF bridge preview</h3>
+                <p className="assessment-inline-note">Contexto seguro para report methodology notes.</p>
+              </div>
+              <StatusPill status={reportBridgeEnabled ? "active" : "draft"} label={reportBridgeEnabled ? "Enabled" : "Prepared"} />
+            </div>
+            <div className="methodology-bullet-list">
+              {reportBridgePreview.methodologyNotes.map((item) => (
+                <div key={item} className="methodology-bullet">
+                  <CheckCircle2 size={16} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="report-history-meta">
+              <span>Safe claims: {reportBridgePreview.safeClaims.join(" · ")}</span>
+              <span>Rule trace: {reportBridgePreview.ruleTraceExamples.join(" | ")}</span>
+            </div>
+          </article>
+        </div>
+        <div className="assessment-table-wrap methodology-table-wrap">
+          <table className="assessment-table methodology-table">
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Enfoque</th>
+                <th>Dominios</th>
+                <th>Rules cubiertas</th>
+                <th>Coverage</th>
+                <th>Deliverables</th>
+              </tr>
+            </thead>
+            <tbody>
+              {extractionPartRows.map((part) => (
+                <tr key={part.part}>
+                  <td>
+                    <strong>{part.part}</strong>
+                    <p className="assessment-inline-note">{part.title}</p>
+                  </td>
+                  <td>{part.focus}</td>
+                  <td>{part.linkedDomains.join(", ")}</td>
+                  <td>{part.coveredRules.length > 0 ? part.coveredRules.join(", ") : "Pendiente"}</td>
+                  <td>{formatCount(part.coverage)}%</td>
+                  <td>{part.deliverables.join(" · ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="dashboard-banner dashboard-banner-warning methodology-roadmap-banner" role="alert">
+          <strong>Scope intentionally limited.</strong> La extraccion ampliada no cambia scoring, Advisor ni PDF
+          automaticamente sin feature flag o integracion posterior.
+        </div>
       </section>
 
       <nav className="tabs-container" aria-label="Navegacion de metodologia">

@@ -7,10 +7,11 @@ This document describes the read-only foundation added for `METHODOLOGY-1` and c
 - A new TypeScript-only knowledge base under `src/server/methodology/`.
 - A versioned seed with an active release: `Shift Evidence Methodology Bible v2.1`.
 - 11 methodology domains.
-- 16 active rules covering governance, VMware, Proxmox VE, SAN, networking, applications, target readiness, security, execution, remediation, and operational checklists.
-- Knowledge chunks for deterministic local search and future RAG wiring.
+- 69 active rules covering governance, VMware, Proxmox VE, SAN, networking, applications, target readiness, security, execution, remediation, and operational checklists.
+- 33 knowledge chunks for deterministic local search and future helper-only bridge prep.
 - An admin snapshot API that exposes counts and summaries without revealing raw customer evidence.
 - An additive audited persistence layer for internal notes, review items, and changelog entries is now available in `METHODOLOGY-2B`.
+- The `METHODOLOGY-3` expansion adds a much larger rule/chunk catalog while keeping the same read-only seed pattern.
 
 ## What was intentionally not done
 
@@ -27,6 +28,7 @@ This document describes the read-only foundation added for `METHODOLOGY-1` and c
 - The first version is read-only by design.
 - The rule model is ready for future persistence, embeddings, and review workflows, but those belong to `METHODOLOGY-2`.
 - The note/review/changelog persistence layer belongs to `METHODOLOGY-2B`, is additive, admin-only, and stays opt-in through explicit admin actions.
+- The larger active catalog introduced in `METHODOLOGY-3` remains read-only and does not automatically change scoring, Advisor, or PDF runtime behavior.
 - The full extraction path is documented in `docs/methodology-bible-extraction-plan.md`.
 
 ## Clarification after METHODOLOGY-2B
@@ -45,6 +47,7 @@ This document describes the read-only foundation added for `METHODOLOGY-1` and c
 - No external embeddings were introduced.
 - No RAG activation was introduced by this persistence step.
 - No real customer data is stored by this methodology persistence layer.
+- The `METHODOLOGY-3` bridge helpers remain helper-only unless a feature flag or explicit integration is added later.
 
 ## How to extend it
 
