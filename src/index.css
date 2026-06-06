@@ -4630,6 +4630,231 @@ p {
     color: #f7b1b4;
 }
 
+.methodology-page {
+    background:
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.1), transparent 30%),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 28%),
+        radial-gradient(circle at 50% 15%, rgba(16, 185, 129, 0.06), transparent 26%),
+        var(--bg-base);
+}
+
+.methodology-hero {
+    background:
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.1), transparent 28%),
+        radial-gradient(circle at top left, rgba(245, 158, 11, 0.08), transparent 24%),
+        rgba(13, 18, 36, 0.72);
+}
+
+.methodology-hero-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    max-width: 860px;
+}
+
+.methodology-route-line {
+    margin-bottom: 0.35rem;
+}
+
+.methodology-hero-signals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.4rem;
+}
+
+.methodology-hero-signals span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.38rem 0.78rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(3, 7, 18, 0.38)),
+        rgba(6, 9, 19, 0.35);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.methodology-hero-signals svg {
+    color: hsl(var(--secondary));
+}
+
+.methodology-summary-card strong {
+    font-size: 0.98rem;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.methodology-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.methodology-version-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1rem;
+}
+
+.methodology-version-card {
+    min-height: 100%;
+}
+
+.methodology-bullet-list {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.methodology-bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.methodology-bullet svg {
+    flex-shrink: 0;
+    margin-top: 0.18rem;
+    color: hsl(var(--secondary));
+}
+
+.methodology-domain-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.methodology-domain-card h3,
+.methodology-preview-card h3,
+.methodology-note-panel h3,
+.methodology-changelog-card h3,
+.methodology-roadmap-card h3 {
+    color: white;
+}
+
+.methodology-inline-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.methodology-table-wrap {
+    overflow-x: auto;
+}
+
+.methodology-table {
+    min-width: 1050px;
+}
+
+.methodology-preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.methodology-preview-card,
+.methodology-note-panel {
+    min-height: 100%;
+}
+
+.methodology-warning-box {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(245, 158, 11, 0.18);
+    background: rgba(245, 158, 11, 0.07);
+    color: #fde68a;
+    font-size: 0.88rem;
+}
+
+.methodology-validation-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.65rem;
+}
+
+.methodology-findings-list {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.methodology-finding-card {
+    padding: 0.85rem 0.95rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.methodology-chunk-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.methodology-chunk-card p {
+    margin: 0;
+}
+
+.methodology-notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.methodology-note-form .form-input:disabled,
+.methodology-note-form .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.methodology-notes-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.methodology-mini-note {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.9rem 0.95rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.methodology-mini-note h4 {
+    margin: 0;
+    color: white;
+    font-size: 0.98rem;
+}
+
+.methodology-changelog-list {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.methodology-roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.methodology-roadmap-card {
+    display: flex;
+    align-items: stretch;
+    min-height: 100%;
+}
+
+.methodology-roadmap-card p {
+    margin: 0;
+    color: var(--text-main);
+}
+
+.methodology-roadmap-banner {
+    margin-top: 1rem;
+}
+
 .assessment-builder {
     padding: 1.75rem;
     display: flex;
@@ -9045,7 +9270,16 @@ p {
     .report-history-grid,
     .report-findings-list,
     .report-locked-grid,
-    .report-upgrade-grid {
+    .report-upgrade-grid,
+    .methodology-version-grid,
+    .methodology-domain-grid,
+    .methodology-preview-grid,
+    .methodology-chunk-grid,
+    .methodology-notes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .methodology-roadmap-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
@@ -9188,7 +9422,13 @@ p {
     .report-branding-fields,
     .assessment-builder-grid,
     .assessment-form-grid,
-    .assessment-form-grid-wide {
+    .assessment-form-grid-wide,
+    .methodology-version-grid,
+    .methodology-domain-grid,
+    .methodology-preview-grid,
+    .methodology-chunk-grid,
+    .methodology-notes-grid,
+    .methodology-roadmap-grid {
         grid-template-columns: 1fr;
     }
     .assessment-preview-strip {
@@ -9210,6 +9450,16 @@ p {
     .dashboard-hero-actions form,
     .assessment-inline-actions .btn {
         width: 100%;
+    }
+    .methodology-hero-signals {
+        justify-content: center;
+    }
+    .methodology-hero-signals span {
+        justify-content: center;
+        text-align: center;
+    }
+    .methodology-table {
+        min-width: 920px;
     }
     .assessment-form-span-2 {
         grid-column: auto;

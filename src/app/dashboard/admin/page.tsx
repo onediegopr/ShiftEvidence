@@ -545,6 +545,10 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             <Gauge size={16} />
             Inteligencia de Precios
           </Link>
+          <Link href="/dashboard/admin/methodology" className="btn btn-secondary">
+            <FileText size={16} />
+            Metodología
+          </Link>
           <Link href="/dashboard/admin/unlock-requests" className="btn btn-secondary">
             <ClipboardList size={16} />
             Solicitudes de desbloqueo
