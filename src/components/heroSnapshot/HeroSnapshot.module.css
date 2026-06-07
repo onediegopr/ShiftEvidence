@@ -235,6 +235,19 @@
 
 .snapshotFrame,
 .captureFrame {
+  --hero-bg: #050b16;
+  --hero-panel: rgba(9, 18, 32, 0.82);
+  --hero-panel-strong: rgba(11, 26, 45, 0.9);
+  --hero-line: rgba(148, 163, 184, 0.16);
+  --hero-line-bright: rgba(103, 232, 249, 0.42);
+  --hero-text: #f8fbff;
+  --hero-muted: rgba(213, 226, 240, 0.74);
+  --hero-soft: rgba(213, 226, 240, 0.56);
+  --hero-cyan: #22d3ee;
+  --hero-blue: #60a5fa;
+  --hero-teal: #2dd4bf;
+  --hero-amber: #f59e0b;
+  --hero-green: #34d399;
   --loop: 12s;
   position: relative;
   min-height: min(720px, 66vw);
@@ -1000,6 +1013,12 @@
 
   .finalMessage {
     justify-content: center;
+  }
+
+  .compactMobileFrame .riskPanel,
+  .compactMobileFrame .waveTimeline,
+  .compactMobileFrame .reportSheet {
+    display: none;
   }
 }
 
