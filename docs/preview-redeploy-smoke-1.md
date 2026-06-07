@@ -10,7 +10,7 @@
 - `4e592f3` `docs: record preview environment smoke gate`
 
 ## Preview deploy
-- URL: `https://infrashift-r2-recovery-fi1tpog7e-shift-evidence.vercel.app`
+- URL: `https://infrashift-r2-recovery-qwf85ubml-shift-evidence.vercel.app`
 - Target: preview
 - Confirmed not production: yes
 - Preview Protection: still active on unauthenticated access
