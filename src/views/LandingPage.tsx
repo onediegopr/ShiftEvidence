@@ -1193,6 +1193,32 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="section landing-methodology-section" style={{ order: 13 }}>
+          <div className="container">
+            <div className="landing-methodology-shell">
+              <div>
+                <span className="badge badge-cyan">Senior methodology</span>
+                <h2>Built around senior infrastructure methodology.</h2>
+                <p>
+                  Shift Evidence is built around a senior infrastructure consulting approach:
+                  evidence first, operational risk first, and clear migration decisions before
+                  execution.
+                </p>
+              </div>
+              <div className="landing-methodology-panel">
+                <p>
+                  The methodology reflects hands-on experience across infrastructure assessment,
+                  virtualization, migration planning, resilience, storage, networking,
+                  modernization and critical platform operations.
+                </p>
+                <Link href="/about" className="btn btn-secondary">
+                  Learn more about Shift Evidence
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Section 12 — Pricing Preview (Spacious, elegant CTA section) */}
         <section className="section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 14 }}>
           <div className="container">

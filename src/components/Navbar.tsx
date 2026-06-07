@@ -64,6 +64,11 @@ export default function Navbar() {
                 Partners
               </Link>
             </li>
+            <li>
+              <Link href="/about" className="nav-link">
+                About
+              </Link>
+            </li>
           </ul>
         </nav>
 
