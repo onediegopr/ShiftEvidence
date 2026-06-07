@@ -1,0 +1,1191 @@
+.labPage {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(22, 78, 99, 0.32), transparent 31rem),
+    radial-gradient(circle at 92% 8%, rgba(120, 113, 108, 0.16), transparent 24rem),
+    linear-gradient(180deg, #07101c 0%, #050914 44%, #070b12 100%);
+  color: #eef5f8;
+  padding: 2rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.labPage::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.38;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+
+.labHeader,
+.heroBlock,
+.controlsPanel,
+.consoleShell,
+.labFooter {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.labHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.labHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  color: #f8fafc;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.headerBadge,
+.previewBadge,
+.replayBadge,
+.decisionPill {
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 999px;
+  background: rgba(8, 20, 34, 0.72);
+  color: #a7f3ff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.48rem 0.72rem;
+  text-transform: uppercase;
+}
+
+.heroBlock {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.heroBlock h1 {
+  max-width: 11ch;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(3.2rem, 8vw, 6.6rem);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.heroBlock p {
+  max-width: 42rem;
+  margin: 0;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.controlsPanel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.controlsPanel button,
+.finalCtas a,
+.finalCtas button {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #e5eef5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.65rem;
+  padding: 0.72rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.controlsPanel button:hover,
+.finalCtas a:hover,
+.finalCtas button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(125, 211, 252, 0.44);
+  background: rgba(15, 34, 54, 0.86);
+}
+
+.controlsPanel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.primaryControl {
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.92), rgba(8, 47, 73, 0.92)) !important;
+  border-color: rgba(103, 232, 249, 0.38) !important;
+  color: #ffffff !important;
+  box-shadow: 0 18px 46px rgba(8, 145, 178, 0.18);
+}
+
+.motionToggleActive {
+  border-color: rgba(251, 191, 36, 0.42) !important;
+  color: #fde68a !important;
+}
+
+.clock {
+  color: rgba(203, 213, 225, 0.72);
+  font-size: 0.86rem;
+  margin-left: auto;
+}
+
+.consoleShell {
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(7, 15, 28, 0.94), rgba(5, 9, 18, 0.98)),
+    radial-gradient(circle at 80% 10%, rgba(14, 116, 144, 0.16), transparent 28rem);
+  box-shadow: 0 34px 120px rgba(0, 0, 0, 0.48);
+  overflow: hidden;
+}
+
+.consoleTopBar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(2, 6, 23, 0.56);
+  padding: 0.9rem 1rem;
+}
+
+.consoleTopBar strong,
+.consoleRoute {
+  color: #f8fafc;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.consoleTopBar span {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgba(203, 213, 225, 0.62);
+  font-size: 0.76rem;
+}
+
+.consoleRoute {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.58);
+  color: rgba(226, 232, 240, 0.88);
+  padding: 0.5rem 0.8rem;
+}
+
+.replayBadge {
+  justify-self: end;
+}
+
+.consoleBody {
+  min-height: 620px;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr) 270px;
+}
+
+.leftRail,
+.rightRail {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: rgba(2, 6, 23, 0.34);
+  padding: 1.1rem;
+}
+
+.leftRail {
+  border-right: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.rightRail {
+  border-left: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.sceneNumber {
+  color: #67e8f9;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.leftRail h2,
+.rightRail h3 {
+  margin: 0.8rem 0 0.65rem;
+  color: #f8fafc;
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+
+.leftRail p,
+.railNote {
+  color: rgba(203, 213, 225, 0.72);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.statusBlock {
+  margin-top: 1.2rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.48);
+  padding: 0.9rem;
+}
+
+.statusBlock span,
+.metricCard span,
+.scoreCard span,
+.decisionCard span {
+  color: rgba(148, 163, 184, 0.86);
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.statusBlock strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.sceneProgress,
+.scoreTrack {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.78);
+  overflow: hidden;
+}
+
+.sceneProgress {
+  margin-top: 1rem;
+}
+
+.sceneProgress span,
+.scoreTrack i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0891b2, #67e8f9);
+}
+
+.sceneStage {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 1.1rem;
+}
+
+.sceneCopy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.42);
+  padding: 0.8rem 1rem;
+}
+
+.sceneCopy span {
+  color: #67e8f9;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sceneCopy p {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.sceneCanvas {
+  min-height: 0;
+  display: grid;
+  align-items: center;
+  padding: 1rem 0 0;
+}
+
+.standbyGrid,
+.intakeLayout,
+.parseLayout,
+.confidenceLayout,
+.matrixLayout,
+.reportLayout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: stretch;
+}
+
+.openingPanel,
+.fileCard,
+.reportArtifact,
+.decisionCard,
+.disclaimerCard,
+.evidenceColumn,
+.riskGroup,
+.validationsList,
+.metricCard,
+.scoreCard {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.openingPanel,
+.fileCard,
+.reportArtifact,
+.validationsList {
+  padding: 1.3rem;
+}
+
+.labEyebrow {
+  color: #67e8f9;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.openingPanel h3,
+.finalScene h3 {
+  margin: 1rem 0;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+}
+
+.openingPanel p,
+.fileCard p,
+.decisionCard p,
+.disclaimerCard p,
+.finalScene p {
+  color: rgba(226, 232, 240, 0.74);
+  line-height: 1.65;
+}
+
+.moduleGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dimModule {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+  background: rgba(8, 13, 24, 0.62);
+  padding: 1rem;
+}
+
+.dimModule span {
+  display: block;
+  width: 2rem;
+  height: 4px;
+  margin-bottom: 0.8rem;
+  border-radius: 999px;
+  background: rgba(103, 232, 249, 0.42);
+}
+
+.dimModule strong {
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 0.92rem;
+}
+
+.fileCard svg,
+.reportArtifact svg {
+  color: #67e8f9;
+}
+
+.fileCard h3 {
+  margin: 0.8rem 0 0.3rem;
+  color: #ffffff;
+  font-size: 1.35rem;
+  word-break: break-word;
+}
+
+.badgeStack,
+.summaryCards,
+.finalCtas {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.badgeStack span,
+.summaryCards article,
+.vmMoves span {
+  border: 1px solid rgba(125, 211, 252, 0.14);
+  border-radius: 16px;
+  background: rgba(8, 20, 34, 0.62);
+  color: rgba(226, 232, 240, 0.88);
+  font-weight: 800;
+  padding: 0.9rem;
+}
+
+.parseLayout {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.auditStream {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.auditStream div {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.42);
+  padding: 0.58rem 0.7rem;
+  animation: softReveal 0.55s ease both;
+}
+
+.auditStream span {
+  color: rgba(103, 232, 249, 0.72);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.auditStream code {
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.86rem;
+}
+
+.inventoryGrid,
+.railMetrics,
+.sizingGrid,
+.dualScores,
+.finalScores {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metricCard,
+.scoreCard,
+.decisionCard {
+  padding: 1rem;
+}
+
+.metricCard strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: #ffffff;
+  font-size: 1.55rem;
+  letter-spacing: -0.04em;
+}
+
+.metricCard small,
+.scoreCard small {
+  display: block;
+  margin-top: 0.4rem;
+  color: rgba(203, 213, 225, 0.64);
+}
+
+.evidenceColumns,
+.riskGroups {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.evidenceColumn {
+  padding: 1rem;
+}
+
+.evidenceColumn h3 {
+  margin: 0 0 0.8rem;
+  color: #ffffff;
+}
+
+.evidenceColumn ul,
+.riskGroup ul,
+.checkList,
+.reportArtifact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidenceColumn li,
+.riskGroup li,
+.checkList li,
+.reportArtifact li {
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  padding: 0.62rem 0;
+}
+
+.evidence-confirmed {
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.evidence-probable {
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+.evidence-missing {
+  border-color: rgba(248, 113, 113, 0.24);
+}
+
+.sceneStatement {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.labTable {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.labTable caption {
+  color: rgba(203, 213, 225, 0.7);
+  padding: 0 0 0.6rem;
+  text-align: left;
+}
+
+.labTable th,
+.labTable td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  color: rgba(226, 232, 240, 0.84);
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.labTable th {
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge,
+.stateBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 0.36rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.severity-critical,
+.state-missing {
+  border-color: rgba(248, 113, 113, 0.28);
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+}
+
+.severity-high {
+  border-color: rgba(251, 146, 60, 0.3);
+  background: rgba(124, 45, 18, 0.22);
+  color: #fed7aa;
+}
+
+.severity-medium,
+.score-medium,
+.state-partial,
+.state-conditional {
+  border-color: rgba(250, 204, 21, 0.24);
+  background: rgba(113, 63, 18, 0.16);
+  color: #fde68a;
+}
+
+.severity-info,
+.state-complete,
+.state-generated {
+  border-color: rgba(125, 211, 252, 0.24);
+  background: rgba(8, 47, 73, 0.24);
+  color: #bae6fd;
+}
+
+.state-limited,
+.score-limited {
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #cbd5e1;
+}
+
+.riskGroups {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.riskGroup {
+  padding: 1rem;
+}
+
+.riskGroup ul {
+  margin-top: 0.7rem;
+}
+
+.scoreCard strong {
+  display: block;
+  margin: 0.55rem 0;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.06em;
+}
+
+.scoreTrack {
+  margin-top: 0.35rem;
+}
+
+.decisionCard strong {
+  display: block;
+  margin-top: 0.55rem;
+  color: #ffffff;
+  font-size: 1.9rem;
+  letter-spacing: -0.04em;
+}
+
+.disclaimerCard {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.disclaimerCard svg {
+  color: #67e8f9;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.wavesLayout {
+  display: grid;
+  gap: 1rem;
+}
+
+.waveTimeline {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.waveTimeline article {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.48);
+  padding: 0.9rem;
+}
+
+.waveTimeline span {
+  color: #67e8f9;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.waveTimeline strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #ffffff;
+}
+
+.waveTimeline p {
+  color: rgba(203, 213, 225, 0.7);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.vmMoves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.validationsList h3 {
+  margin: 0 0 1rem;
+  color: #ffffff;
+}
+
+.validationsList ol {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.validationsList li {
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 14px;
+  background: rgba(113, 63, 18, 0.12);
+  color: rgba(226, 232, 240, 0.82);
+  padding: 0.75rem;
+}
+
+.validationsList li span {
+  display: inline-flex;
+  margin-right: 0.6rem;
+  color: #fde68a;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.reportArtifact h3 {
+  margin: 0.45rem 0 0.9rem;
+  color: #ffffff;
+  font-size: 2rem;
+}
+
+.reportArtifact span {
+  display: block;
+  margin-top: 0.8rem;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.reportPages {
+  display: grid;
+  gap: 0.85rem;
+  align-content: center;
+}
+
+.reportPages span {
+  display: block;
+  min-height: 8rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, rgba(226, 232, 240, 0.18) 0 34%, transparent 34% 100%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(8, 13, 24, 0.82));
+}
+
+.finalScene {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.finalScores {
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.finalScene h3 {
+  max-width: 14ch;
+}
+
+.finalScene p {
+  max-width: 48rem;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.finalCtas {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.finalScene small {
+  color: rgba(203, 213, 225, 0.68);
+}
+
+.keyValueList {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.keyValueList div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  padding-bottom: 0.55rem;
+}
+
+.keyValueList dt {
+  color: rgba(203, 213, 225, 0.66);
+  font-size: 0.82rem;
+}
+
+.keyValueList dd {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.bottomTimeline {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(2, 6, 23, 0.4);
+  padding: 0.75rem;
+}
+
+.bottomTimeline button {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+  color: rgba(203, 213, 225, 0.78);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: max-content;
+  padding: 0.52rem 0.68rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.bottomTimeline button span {
+  color: rgba(125, 211, 252, 0.8);
+}
+
+.timelineActive {
+  border-color: rgba(103, 232, 249, 0.42) !important;
+  background: rgba(8, 47, 73, 0.52) !important;
+  color: #ffffff !important;
+}
+
+.timelineComplete {
+  color: rgba(226, 232, 240, 0.9) !important;
+}
+
+.labFooter {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.labFooter div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.48);
+  color: rgba(226, 232, 240, 0.76);
+  padding: 0.9rem;
+}
+
+.labFooter svg {
+  color: #67e8f9;
+  flex-shrink: 0;
+}
+
+@keyframes softReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1080px) {
+  .consoleBody {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .rightRail {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    border-left: 0;
+  }
+
+  .railMetrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .consoleTopBar {
+    grid-template-columns: 1fr;
+  }
+
+  .replayBadge {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .labPage {
+    padding: 1rem;
+  }
+
+  .labHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 2rem;
+  }
+
+  .heroBlock h1 {
+    max-width: 9ch;
+  }
+
+  .clock {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .consoleBody {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .leftRail,
+  .rightRail {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .sceneCopy {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sceneCopy p {
+    text-align: left;
+  }
+
+  .standbyGrid,
+  .intakeLayout,
+  .parseLayout,
+  .confidenceLayout,
+  .matrixLayout,
+  .reportLayout,
+  .evidenceColumns,
+  .riskGroups,
+  .dualScores,
+  .sizingGrid,
+  .finalScores,
+  .labFooter {
+    grid-template-columns: 1fr;
+  }
+
+  .moduleGrid,
+  .inventoryGrid,
+  .railMetrics,
+  .waveTimeline {
+    grid-template-columns: 1fr;
+  }
+
+  .labTable,
+  .labTable thead,
+  .labTable tbody,
+  .labTable tr,
+  .labTable th,
+  .labTable td {
+    display: block;
+  }
+
+  .labTable thead {
+    display: none;
+  }
+
+  .labTable tr {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    padding: 0.7rem;
+  }
+
+  .labTable td {
+    border: 0;
+    padding: 0.35rem 0;
+  }
+
+  .bottomTimeline {
+    display: grid;
+    overflow-x: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auditStream div,
+  .controlsPanel button,
+  .finalCtas a,
+  .finalCtas button {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.reducedMotion *,
+.reducedMotion *::before,
+.reducedMotion *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 1ms !important;
+}
+
+.captureMode {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 0;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(14, 116, 144, 0.3), transparent 29rem),
+    radial-gradient(circle at 86% 12%, rgba(245, 158, 11, 0.1), transparent 25rem),
+    linear-gradient(180deg, #060d19 0%, #050914 48%, #070b12 100%);
+}
+
+.captureMode::before {
+  opacity: 0.3;
+  mask-image: radial-gradient(circle at center, black 0 55%, transparent 84%);
+}
+
+.captureMode .consoleShell {
+  width: min(1440px, calc(100vh * 16 / 9), 100vw);
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  max-height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  margin: 0;
+  border-radius: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.captureMode .consoleBody {
+  min-height: 0;
+  grid-template-columns: 230px minmax(0, 1fr) 270px;
+}
+
+.captureMode .leftRail,
+.captureMode .rightRail {
+  border-top: 0;
+}
+
+.captureMode .leftRail {
+  border-right: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.captureMode .rightRail {
+  grid-column: auto;
+  border-left: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.captureMode .consoleTopBar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.captureMode .replayBadge {
+  justify-self: end;
+}
+
+.captureMode .sceneStage {
+  min-height: 0;
+}
+
+.captureMode .sceneCanvas {
+  min-height: 0;
+}
+
+.captureMode .openingPanel h3,
+.captureMode .finalScene h3 {
+  font-size: clamp(2.3rem, 4.1vw, 3.7rem);
+}
+
+.captureMode .scoreCard strong {
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.captureMode .standbyGrid,
+.captureMode .intakeLayout,
+.captureMode .parseLayout,
+.captureMode .confidenceLayout,
+.captureMode .matrixLayout,
+.captureMode .reportLayout {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.captureMode .evidenceColumns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.captureMode .riskGroups,
+.captureMode .dualScores,
+.captureMode .sizingGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.captureMode .finalScores {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.captureMode .waveTimeline {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.captureMode .labTable,
+.captureMode .labTable thead,
+.captureMode .labTable tbody,
+.captureMode .labTable tr,
+.captureMode .labTable th,
+.captureMode .labTable td {
+  display: revert;
+}
+
+.captureMode .labTable thead {
+  display: table-header-group;
+}
+
+.captureMode .labTable tr {
+  display: table-row;
+  border-bottom: 0;
+  padding: 0;
+}
+
+.captureMode .labTable th,
+.captureMode .labTable td {
+  display: table-cell;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  padding: 0.75rem;
+}

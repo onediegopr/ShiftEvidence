@@ -376,7 +376,7 @@ function renderScenarioPdf(scenario: NonNullable<ReturnType<typeof getDemoScenar
       "What this demo does not claim",
       [
         "It does not migrate workloads.",
-        "It does not guarantee zero downtime, production safety or savings.",
+        "It does not guarantee uninterrupted cutover, production safety or savings.",
         "It does not replace expert validation, pilot import testing, restore proof or owner sign-off.",
         "It does not use customer data.",
       ],
