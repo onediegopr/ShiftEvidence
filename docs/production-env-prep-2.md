@@ -1,295 +1,235 @@
 # Production Env Prep 2
 
-Fecha: 2026-06-05
+Fecha: 2026-06-07
 
-## 1. Objetivo
+## 1. Alcance y proyecto canónico
 
-Preparar la primera capa de entorno Production para el proyecto canonico `shiftevidence`, sin ejecutar cutover, sin modificar DNS, sin cargar secretos y sin habilitar pagos live.
+Este hito documenta la preparación canónica de variables y runtime readiness sin deploy, sin DNS, sin pagos live y sin migraciones productivas.
 
-Este hito documenta la auditoria segura y la decision operativa para la siguiente carga controlada de variables. No se cargaron variables nuevas porque el prompt de seguridad bloquea cambios de Production env en este hito y no se entregaron valores de capa 1 para ingresar manualmente.
+### Proyecto canónico conocido
 
-## 2. Estado inicial
+- Repo GitHub: `origin/main`
+- Branch canónica: `main`
+- Estado de Git al inicio de este hito: `HEAD = origin/main`
+- Dominio canónico observado en código y docs: `shiftevidence.com` y `www.shiftevidence.com`
+- Proyecto Vercel canónico: no documentado explícitamente en el repo
+- Branch de preview/staging: no documentado explícitamente en el repo
 
-| Area | Estado inicial |
-| --- | ---: |
-| PRODUCTION-ENV-PREP-2 | 0% |
-| Production/cutover readiness | 91% |
-| Vercel readiness | 95% |
-| Storage/R2 readiness | 97% |
-| Billing readiness | 95% |
-| Stripe live readiness | 65% |
-| Admin ops | 94% |
-| PDF/report quality | 98% |
-| General technical | 97% |
+### Decisiones que siguen siendo del owner
 
-## 3. Auditoria local
+- Dominio final / redirect principal.
+- Timing de Vercel Pro si hiciera falta.
+- Neon de producción definitivo.
+- Bucket R2 productivo definitivo.
+- Gate de Stripe live.
+- Flujo Wise/manual definitivo.
+- Cutover DNS y rollback.
 
-Repositorio:
+## 2. Auditoría del shell local
 
-- Branch actual: `main`.
-- HEAD local antes del hito: `8086594978a5c5600900c643f23d1c1798038574`.
-- `origin/main`: `8086594978a5c5600900c643f23d1c1798038574`.
-- No habia commits locales sin pushear.
-- No habia untracked files visibles por `git ls-files --others --exclude-standard`.
-- No habia stashes reportados.
-- `.env.local` no esta trackeado.
-- `.env.r2-smoke.local` no esta trackeado.
+Se revisó la presencia de variables en el shell actual sin imprimir valores.
 
-Repo Vercel local:
+Resultado:
 
-- `.vercel/project.json` sigue linkeado a `infrashift-r2-recovery`.
-- No se relinkeo el repo local.
-- No se modifico `.vercel/project.json`.
+- Ninguna de las variables canónicas listas abajo está cargada en este shell.
+- Eso no invalida los tests ni el build local si el código usa defaults o stubs seguros.
+- Sí deja claro que el entorno productivo todavía requiere carga manual/owner action.
 
-## 4. Proyecto Production canonico
+## 3. Matriz canónica de variables
 
-Proyecto auditado: `shiftevidence`.
+Leyenda:
 
-Metadata no sensible observada:
+- `present`: disponible o cubierto por un default seguro para ese entorno.
+- `missing`: no cargado en el shell o no listo todavía.
+- `blocked`: debe cerrarse antes de avanzar ese entorno.
+- `manual`: se espera carga o ejecución humana.
+- `not needed`: no aplica en ese entorno o en este hito.
 
-| Campo | Valor |
-| --- | --- |
-| Team | `shift-evidence` |
-| Project | `shiftevidence` |
-| Project ID | `prj_vPebqKyHjmKQgoyvRpugXS6aulpP` |
-| Framework | Next.js |
-| Root Directory | `.` |
-| Node.js Version | 24.x |
-| Build Command | default `npm run build` / `next build` |
-| Latest observed Production deployment | `shiftevidence-gqyeza3m4-shift-evidence.vercel.app` |
-| Latest observed Production status | Ready |
+### 3.1 Core app, auth y URL
 
-Dominios/aliases observados en Production:
+| Variable | Local | Preview/Staging | Production | Required? | Safe default | Dangerous/live? | Owner action required? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `DATABASE_URL` | missing | blocked | blocked | Yes | `postgresql://unit-test:unit-test@localhost:5432/unit_test` only for tests | Yes | Yes | Prisma y runtime productivo requieren Neon real; el shell actual no la tiene cargada. |
+| `DIRECT_URL` | not needed | not needed | blocked | Conditional | none | Yes | Yes | Sólo para un flujo futuro de migraciones/rollback. |
+| `BETTER_AUTH_SECRET` | missing | blocked | blocked | Yes | none | Yes | Yes | Sin esta clave, Auth cae en fallback 503. |
+| `BETTER_AUTH_URL` | missing | blocked | blocked | Yes | `http://localhost:3000` only for local testing | Yes | Yes | Debe coincidir con el dominio canónico en prod. |
+| `NEXT_PUBLIC_APP_URL` | missing | blocked | blocked | Yes | `http://localhost:3000` only for local testing | Yes | Yes | Se usa para links absolutos, checkout y redirects. |
+| `PREVIEW_TRUSTED_ORIGINS` | not needed | manual | not needed | No | empty string | No | Conditional | No usar wildcards; sólo origins explícitos de preview. |
+| `ADMIN_EMAILS` | missing | blocked | blocked | Yes | empty string | Yes | Yes | Allowlist estricta; sin comodines. |
+| `MAX_UPLOAD_SIZE_MB` | present | present | present | No | `50` | No | No | Default seguro ya existe en código. |
 
-- `https://www.shiftevidence.com`
-- `https://shiftevidence.com`
-- `https://infra-evidence.vercel.app`
-- `https://shiftevidence-shift-evidence.vercel.app`
-- `https://shiftevidence-git-main-shift-evidence.vercel.app`
+### 3.2 Storage, R2 y rate limit
 
-Conclusion:
+| Variable | Local | Preview/Staging | Production | Required? | Safe default | Dangerous/live? | Owner action required? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `STORAGE_DRIVER` | present | manual | blocked | Yes | `local` | Yes | Yes | Cambiar a `r2` sólo cuando existan buckets y credenciales. |
+| `R2_ACCOUNT_ID` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Requerido sólo con `STORAGE_DRIVER=r2`. |
+| `R2_S3_ENDPOINT` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Requerido sólo con `STORAGE_DRIVER=r2`. |
+| `R2_BUCKET_PREVIEW` | not needed | blocked | not needed | Conditional | none | Yes | Yes | Bucket separado para preview. |
+| `R2_BUCKET_PROD` | not needed | not needed | blocked | Conditional | none | Yes | Yes | Bucket productivo separado. |
+| `R2_ACCESS_KEY_ID` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Credencial de acceso R2. |
+| `R2_SECRET_ACCESS_KEY` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Secreto R2, nunca imprimir. |
+| `UPSTASH_REDIS_REST_URL` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Sólo si rate limiting se habilita para el entorno. |
+| `UPSTASH_REDIS_REST_TOKEN` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Sólo si rate limiting se habilita para el entorno. |
 
-- `shiftevidence` sigue siendo el proyecto productivo canonico.
-- `infrashift-r2-recovery` sigue siendo recovery/Preview/staging tecnico.
-- No se tocaron dominios.
-- No se tocaron DNS.
+### 3.3 Billing, Stripe y Wise
 
-## 5. Estado de Production env antes del hito
+| Variable | Local | Preview/Staging | Production | Required? | Safe default | Dangerous/live? | Owner action required? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `STRIPE_CHECKOUT_ENABLED` | missing | blocked | blocked | Conditional | `false` | Yes | Yes | Si falta, checkout debe quedarse safe-off. |
+| `STRIPE_CHECKOUT_MODE` | missing | blocked | blocked | Conditional | `test` | Yes | Yes | No pasar a `live` sin gate explícito. |
+| `STRIPE_LIVE_PAYMENTS_APPROVED` | not needed | not needed | blocked | Conditional | `false` | Yes | Yes | Gate explícito para live; permanece apagado. |
+| `STRIPE_SECRET_KEY` | missing | blocked | blocked | Conditional | none | Yes | Yes | Debe coincidir con el modo test/live. |
+| `STRIPE_WEBHOOK_SECRET` | not needed | not needed | blocked | Conditional | none | Yes | Yes | Sólo cuando se active un entorno real de checkout/webhook. |
+| `STRIPE_STARTER_PRICE_ID` | missing | blocked | blocked | Conditional | none | Yes | Yes | Price ID test/live no deben mezclarse. |
+| `STRIPE_PROFESSIONAL_PRICE_ID` | missing | blocked | blocked | Conditional | none | Yes | Yes | Price ID test/live no deben mezclarse. |
+| `STRIPE_MSP_PRICE_ID` | missing | blocked | blocked | Conditional | none | Yes | Yes | Price ID test/live no deben mezclarse. |
+| `WISE_API_URL` | manual | manual | manual | No | none | No | Conditional | El flujo sigue manual por ahora. |
+| `WISE_API_TOKEN` | not needed | not needed | not needed | No | none | Yes | Yes | No cargar hasta que exista un hito financiero específico. |
+| `WISE_PROFILE_ID` | not needed | not needed | not needed | No | none | Yes | Yes | No cargar hasta que exista un hito financiero específico. |
 
-Auditoria segura:
+### 3.4 Email e IA
 
-| Proyecto | Environment | Resultado |
+| Variable | Local | Preview/Staging | Production | Required? | Safe default | Dangerous/live? | Owner action required? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `RESEND_API_KEY` | not needed | blocked | blocked | Conditional | none | Yes | Yes | No activar Resend sin DNS email y política de dominio. |
+| `EMAIL_FROM` | not needed | blocked | blocked | Conditional | none | Yes | Yes | Debe acompañar el setup SPF/DKIM/DMARC si se activa email real. |
+| `AI_ADVISORY_ENABLED` | present | present | present | No | `false` | No | No | El advisor puede quedar apagado sin afectar este hito. |
+| `AI_ADVISORY_PROVIDER` | present | present | present | No | `none` | No | No | Sólo se usa si el advisor se habilita explícitamente. |
+| `GEMINI_API_KEY` | not needed | not needed | not needed | No | none | Yes | Yes | No cargar hasta un hito AI explícito. |
+| `OPENAI_API_KEY` | not needed | not needed | not needed | No | none | Yes | Yes | No cargar hasta un hito AI explícito. |
+| `OPENCODE_API_KEY` | not needed | not needed | not needed | No | none | Yes | Yes | No cargar hasta un hito AI explícito. |
+
+## 4. Matriz de go / no-go
+
+| Área | Estado | Motivo breve |
 | --- | --- | --- |
-| `shiftevidence` | Production | El CLI reporto que existen Environment Variables, pero no expuso nombres ni valores en la salida segura usada. |
-| `infrashift-r2-recovery` | Production | El CLI reporto que no hay Environment Variables. |
+| Vercel project | Owner decision | El nombre canónico no está documentado explícitamente en el repo. |
+| Vercel Pro decision | Owner decision | Depende del proyecto final y de protección/limits. |
+| Domain / DNS | Blocked | Falta la decisión final de cutover y la ventana de cambios. |
+| Auth | Partial | El código está preparado, pero faltan secretos y URLs canónicas cargadas. |
+| DB | Blocked | `DATABASE_URL` productiva no está cargada en el shell y no hay cutover. |
+| Prisma migrations | Blocked | `DIRECT_URL` y ventana de `migrate deploy` siguen pendientes. |
+| R2 storage | Partial | El driver soporta `r2`, pero faltan buckets y credenciales por entorno. |
+| Upstash / rate limit | Partial | Fail-closed existe, pero la configuración productiva sigue sin cargar. |
+| Stripe test | Partial | El checkout está safe-off y requiere envs para probar rutas reales. |
+| Stripe live | Blocked | El gate live no está aprobado. |
+| Wise / manual | Ready | El flujo manual sigue siendo el respaldo operativo por ahora. |
+| Email | Partial | La ruta existe, pero Resend y el dominio de correo siguen pendientes. |
+| Admin access | Ready | El allowlist existe y la consola admin está lista. |
+| Reports / PDFs | Ready | Los PDFs canónicos existen y el smoke local pasa. |
+| Marketing PDFs | Ready | Los assets canónicos existen y están enlazados. |
+| Rollback | Partial | Existe el plan, pero falta una ventana real de cutover. |
+| Monitoring / logs | Partial | Hay base técnica, pero no observabilidad productiva cerrada. |
+| Customer-safe pilot | Partial | Puede hacerse antes de producción, pero aún es decisión del owner. |
 
-Decision de seguridad:
+## 5. Production Cutover Next Gate - Not Executed
 
-- No se ejecuto `vercel env pull`.
-- No se imprimieron valores.
-- No se descargaron secretos a disco.
-- No se intento inferir valores desde dashboard.
-- No se modifico ningun Production env.
+Este gate no se ejecutó todavía.
 
-## 6. Veredicto de carga
+### Lo que se podrá hacer en PRODUCTION-ENV-PREP-3
 
-Veredicto aplicado: documentar y no cargar variables en este hito.
+- Cargar variables productivas en el proyecto canónico.
+- Verificar dominios y redirects.
+- Ejecutar smoke post-carga sin tocar usuarios reales.
+- Cerrar el checklist de auth, storage, email y billing test.
 
-Motivos:
+### Lo que requiere aprobación explícita
 
-- El prompt incluye una regla explicita de no hacer cambios de Production env.
-- No se proveyeron valores para `BETTER_AUTH_SECRET` ni `ADMIN_EMAILS`.
-- `shiftevidence` ya sirve dominios reales, por lo que cualquier carga debe ser controlada y auditable.
-- La carga de variables puede requerir redeploy posterior, y el hito prohibe deploy intencional.
-- Stripe live, DB prod, R2 prod y Upstash prod siguen bloqueados por hitos especificos.
+- Cualquier cambio de DNS.
+- Cualquier promoción a producción de Vercel.
+- Cualquier migración productiva.
+- Cualquier activación de Stripe live.
+- Cualquier automatización de Wise.
 
-Categorias cargadas en este hito:
+### Lo que sigue bloqueado
 
-- Ninguna.
+- Cutover público.
+- `prisma migrate deploy` productivo.
+- `db push` productivo.
+- Pago live.
+- Activación de AI con costo real.
 
-## 7. Capa 1 preparada para carga posterior
+### Variables que deben cargarse manualmente
 
-Variables de App/Auth/Admin que deberian cargarse solo cuando el owner provea o ingrese valores:
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `NEXT_PUBLIC_APP_URL`
+- `ADMIN_EMAILS`
+- `STORAGE_DRIVER`
+- `R2_*` según preview/prod
+- `UPSTASH_*` si rate limiting se activa
+- `STRIPE_*` de test o live según gate
+- `RESEND_API_KEY` y `EMAIL_FROM` si se activa email real
 
-| Variable | Tipo | Valor esperado / regla | Estado |
-| --- | --- | --- | --- |
-| `BETTER_AUTH_SECRET` | Secreto | Generado unico para Production | Pendiente |
-| `BETTER_AUTH_URL` | URL no secreta | `https://shiftevidence.com` | Pendiente |
-| `NEXT_PUBLIC_APP_URL` | URL publica | `https://shiftevidence.com` | Pendiente |
-| `ADMIN_EMAILS` | Allowlist privada | Lista exacta de emails admin | Pendiente |
+### Smoke posterior requerido
 
-Notas:
+- Routes públicas.
+- Routes privadas sin sesión.
+- PDFs canónicos.
+- Auth redirects.
+- Checkout safe-off o test.
+- Storage read/write básico.
 
-- No usar wildcard.
-- No documentar emails privados si no es necesario.
-- No imprimir `BETTER_AUTH_SECRET`.
-- Si se cargan estas variables en Vercel, registrar solo nombres y estado, nunca valores.
+## 6. Qué se auditó
 
-## 8. Billing safe-off preparado para carga posterior
-
-Variables safe-off recomendadas para mantener checkout live bloqueado:
-
-| Variable | Valor seguro esperado | Estado |
-| --- | --- | --- |
-| `STRIPE_CHECKOUT_ENABLED` | `false` | Pendiente |
-| `STRIPE_CHECKOUT_MODE` | `test` | Pendiente |
-| `STRIPE_LIVE_PAYMENTS_APPROVED` | `false` | Pendiente |
-
-No se cargaron en este hito.
-
-No se tocaron:
-
-- `STRIPE_SECRET_KEY`.
-- `STRIPE_WEBHOOK_SECRET`.
-- Stripe Price IDs.
-- Webhooks.
-- Entitlements.
-- Pagos live.
-
-## 9. Categorias bloqueadas
-
-### Neon / DB
-
-Bloqueado hasta `NEON-PRODUCTION-DB-PREP-1`.
-
-No se tocaron:
-
-- `DATABASE_URL`.
-- `DIRECT_URL`.
-- Prisma migrations.
-- `prisma db push`.
-- Neon branches/databases.
-
-### Cloudflare R2 Production
-
-Bloqueado hasta `R2-PRODUCTION-STORAGE-SMOKE-1`.
-
-No se tocaron:
-
-- Bucket prod.
-- Credenciales R2 prod.
-- `R2_ACCESS_KEY_ID`.
-- `R2_SECRET_ACCESS_KEY`.
-- Writes/head/read/delete contra bucket prod.
-
-### Upstash Production
-
-Bloqueado hasta `UPSTASH-PRODUCTION-RATE-LIMIT-SMOKE-1`.
-
-No se tocaron:
-
-- `UPSTASH_REDIS_REST_URL`.
-- `UPSTASH_REDIS_REST_TOKEN`.
-- Rate limit production smoke.
-
-### Wise
-
-Bloqueado hasta hito financiero separado.
-
-No se tocaron:
-
-- Wise API.
-- Tokens.
-- Perfil financiero.
-- Automatizacion de transferencias.
-
-### AI y email production
-
-Bloqueados hasta hitos separados.
-
-No se tocaron:
-
-- AI provider production keys.
-- Email provider production keys.
-- DNS email.
-- SPF/DKIM/DMARC.
-
-## 10. Git/Vercel hardening confirmado
-
-Archivo presente:
-
-- `vercel.json`.
-
-Politica esperada:
-
-```json
-{
-  "git": {
-    "deploymentEnabled": {
-      "main": false,
-      "preview": true
-    }
-  }
-}
-```
-
-Objetivo de la politica:
-
-- `main` no debe disparar auto-deploy.
-- `preview` queda habilitada para staging/recovery.
-
-Este hito no cambio la configuracion.
-
-## 11. Riesgos residuales
-
-- `shiftevidence` tiene Production env existentes, pero la salida segura del CLI no expuso nombres; se debe confirmar matriz exacta desde dashboard o API segura antes de cualquier carga.
-- Si se agregan variables Production, podria requerirse un redeploy controlado posterior para que apliquen.
-- `shiftevidence` sirve dominios reales; cualquier cambio productivo debe tener rollback y ventana.
-- DB, R2 prod y Upstash prod no estan listos para carga hasta sus hitos dedicados.
-- Stripe live sigue en No-Go hasta aprobacion explicita.
-
-## 12. Que NO se toco
-
-No se tocaron:
-
-- DNS.
-- Hostinger.
-- Custom domains.
-- Production deploy/promote.
-- Production env values.
-- Preview env values.
-- DB.
-- Migrations.
-- `db push`.
-- R2 prod.
-- Upstash prod.
-- Stripe live.
-- Webhooks.
-- Wise.
-- Entitlements.
+- Configuración canónica de variables.
+- Separación local / preview / production.
+- Auth y trusted origins.
+- Prisma y flujo de migración.
+- R2 preview/prod.
+- Rate limiting.
+- Stripe test/live.
+- Wise/manual.
 - Email.
-- AI provider keys.
+- AI advisor.
 
-No se imprimieron secretos y no se guardaron secretos en git.
+## 7. Qué quedó documentado
 
-## 13. Estado final
+- La matriz canónica de variables.
+- La lectura de riesgo por entorno.
+- El go/no-go por área.
+- El siguiente gate de cutover sin ejecutar.
 
-| Area | Estado final |
-| --- | ---: |
-| PRODUCTION-ENV-PREP-2 | 100% |
-| Production/cutover readiness | 91% |
-| Vercel readiness | 95% |
-| Storage/R2 readiness | 97% |
-| Billing readiness | 95% |
-| Stripe live readiness | 65% |
-| Admin ops | 94% |
-| PDF/report quality | 98% |
-| General technical | 97% |
+## 8. Qué no se ejecutó
 
-El hito queda completo como preparacion documental segura, sin carga de variables.
+- No deploy.
+- No DNS.
+- No Hostinger.
+- No Vercel production promotion.
+- No `prisma migrate deploy`.
+- No `db push`.
+- No reset de DB.
+- No Stripe live.
+- No Wise real.
+- No R2 destructivo.
+- No secretos impresos.
+- No datos reales.
+- No embeddings externos.
+- No scoring automático.
+- No cambio runtime de Advisor/PDF.
 
-## 14. Proximo hito recomendado
+## 9. Validación local
 
-Recomendado:
+- `git diff --check`
+- `npx prisma validate`
+- `npx prisma generate`
+- `npm run typecheck`
+- `npm run lint`
+- `npx vitest run tests/unit/marketingPdfAssets.test.ts`
+- `npx vitest run tests/unit/methodologyKbFoundation.test.ts tests/unit/methodologyExtractionExpansion.test.ts tests/unit/methodologyPersistence.test.ts`
+- `npm run test:run`
+- `npm run build`
 
-- `NEON-PRODUCTION-DB-PREP-1`.
+Si `next dev -p 3000` deja lock en `.next`, se documenta y se cierra sólo si hace falta para el build local.
 
-Alternativa si se quiere cerrar primero la capa App/Auth/Admin:
+## 10. Recomendación final
 
-- `PRODUCTION-ENV-PREP-2A-MANUAL-ENV-ENTRY`.
+Veredicto: `bloqueado para cutover`, pero `listo para carga manual de env` y `listo para preview smoke`.
 
-Despues:
+Siguiente paso recomendado:
 
-- `R2-PRODUCTION-STORAGE-SMOKE-1`.
-- `UPSTASH-PRODUCTION-RATE-LIMIT-SMOKE-1`.
-- `STRIPE-LIVE-READINESS-1`.
+1. `PRODUCTION-ENV-PREP-3` para carga manual y smoke post-carga.
+2. `OUTREACH/PILOT-1` si se quiere validar mercado con datos customer-safe antes de producción.
+3. `METHODOLOGY-4` sólo si se quiere seguir profundizando el motor interno antes de operar.
