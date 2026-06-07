@@ -370,11 +370,11 @@ export default function PricingPage() {
               </p>
               <p className="assessment-inline-note">
                 Need a shareable overview?{" "}
-                <a href="/marketing/shift-evidence-product-brochure-v2.pdf" target="_blank" rel="noreferrer">
+                <a href="/marketing/shift-evidence-product-brochure.pdf" target="_blank" rel="noreferrer">
                   Download the product brochure
                 </a>{" "}
                 or{" "}
-                <a href="/marketing/migration-blueprint-overview-v2.pdf" target="_blank" rel="noreferrer">
+                <a href="/marketing/migration-blueprint-overview.pdf" target="_blank" rel="noreferrer">
                   review the Blueprint overview
                 </a>
                 .

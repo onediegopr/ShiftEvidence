@@ -20,13 +20,15 @@ Primary goals:
 
 ## Generated Files
 
-v1 assets remain preserved.
+The v2 redesign was initially generated with versioned filenames during QA.
 
-New v2 assets:
+Current public distribution now uses canonical filenames:
 
-- `public/marketing/shift-evidence-product-brief-v2.pdf`
-- `public/marketing/shift-evidence-product-brochure-v2.pdf`
-- `public/marketing/migration-blueprint-overview-v2.pdf`
+- `public/marketing/shift-evidence-product-brief.pdf`
+- `public/marketing/shift-evidence-product-brochure.pdf`
+- `public/marketing/migration-blueprint-overview.pdf`
+
+The earlier `v1` and `v2` public filenames were removed from active public output in MARKETING-PDF-3. Git history preserves them if comparison or rollback is needed.
 
 ## Page Counts
 
@@ -45,12 +47,12 @@ New v2 assets:
 
 ## Website Link Changes
 
-Soft CTA placements now point to v2:
+Soft CTA placements now point to the canonical PDFs:
 
-- `/sample-report`: product brochure v2.
-- `/pricing`: product brochure v2 and Blueprint overview v2.
-- `/vmware-to-proxmox-readiness`: product brochure v2 and Blueprint overview v2.
-- `/demo/replay`: product brochure v2.
+- `/sample-report`: product brochure.
+- `/pricing`: product brochure and Blueprint overview.
+- `/vmware-to-proxmox-readiness`: product brochure and Blueprint overview.
+- `/demo/replay`: product brochure.
 
 ## Visual QA Findings
 

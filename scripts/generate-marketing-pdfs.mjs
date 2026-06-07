@@ -12,12 +12,9 @@ const brandConfig = JSON.parse(fs.readFileSync(path.join(repoRoot, "src", "confi
 const logoPath = path.join(repoRoot, "public", brandConfig.public.pdfLogo.replace(/^\//, ""));
 
 const files = {
-  brief: path.join(outputDir, "shift-evidence-product-brief-v1.pdf"),
-  brochure: path.join(outputDir, "shift-evidence-product-brochure-v1.pdf"),
-  blueprint: path.join(outputDir, "migration-blueprint-overview-v1.pdf"),
-  briefV2: path.join(outputDir, "shift-evidence-product-brief-v2.pdf"),
-  brochureV2: path.join(outputDir, "shift-evidence-product-brochure-v2.pdf"),
-  blueprintV2: path.join(outputDir, "migration-blueprint-overview-v2.pdf"),
+  briefV2: path.join(outputDir, "shift-evidence-product-brief.pdf"),
+  brochureV2: path.join(outputDir, "shift-evidence-product-brochure.pdf"),
+  blueprintV2: path.join(outputDir, "migration-blueprint-overview.pdf"),
 };
 
 const palette = {
@@ -666,11 +663,11 @@ async function saveV2(ctx) {
 
 async function generateBriefV2() {
   const ctx = createV2Doc(files.briefV2, {
-    title: "Shift Evidence Product Brief v2",
+    title: "Shift Evidence Product Brief",
     subject: "Print-first one-page product brief for VMware to Proxmox readiness",
   });
   const { doc } = ctx;
-  addV2Page(ctx, "Product brief v2");
+  addV2Page(ctx, "Product brief");
   v2Kicker(doc, "Print-first brief", 54, 102, paletteV2.proxmox, paletteV2.proxmoxSoft);
   const titleHeight = v2Heading(doc, "Before migrating VMware to Proxmox, know what can break.", 54, 137, 460, 31);
   v2Body(doc, "A printable one-page overview for VMware-to-Proxmox readiness decisions.", 54, 148 + titleHeight, 448, {
@@ -705,12 +702,12 @@ async function generateBriefV2() {
 
 async function generateBrochureV2() {
   const ctx = createV2Doc(files.brochureV2, {
-    title: "Shift Evidence Product Brochure v2",
+    title: "Shift Evidence Product Brochure",
     subject: "Light, print-first product brochure for VMware to Proxmox readiness",
   });
   const { doc } = ctx;
 
-  addV2Page(ctx, "Product brochure v2");
+  addV2Page(ctx, "Product brochure");
   v2Kicker(doc, "VMware to Proxmox", 54, 108, paletteV2.proxmox, paletteV2.proxmoxSoft);
   const coverHeight = v2Heading(doc, "Before migration, separate inventory from risk.", 54, 146, 455, 35);
   v2Body(doc, "Shift Evidence is a technical-commercial readiness assessment for teams planning a VMware exit. It converts exported evidence and guided context into a clear decision pack before production is touched.", 54, 160 + coverHeight, 424, {
@@ -845,12 +842,12 @@ async function generateBrochureV2() {
 
 async function generateBlueprintOverviewV2() {
   const ctx = createV2Doc(files.blueprintV2, {
-    title: "Migration Blueprint Overview v2",
+    title: "Migration Blueprint Overview",
     subject: "Print-first overview of the Migration Blueprint planning layer",
   });
   const { doc } = ctx;
 
-  addV2Page(ctx, "Blueprint overview v2");
+  addV2Page(ctx, "Blueprint overview");
   v2Kicker(doc, "Migration Blueprint", 54, 108, paletteV2.proxmox, paletteV2.proxmoxSoft);
   const coverHeight = v2Heading(doc, "Turn readiness findings into a migration planning spine.", 54, 145, 452, 33);
   v2Body(doc, "Blueprint extends the Professional Assessment into waves, validation gates, rollback expectations, remediation priorities and technical review language.", 54, 160 + coverHeight, 424, {
@@ -937,9 +934,6 @@ async function generateBlueprintOverviewV2() {
   await saveV2(ctx);
 }
 
-await generateBrief();
-await generateBrochure();
-await generateBlueprintOverview();
 await generateBriefV2();
 await generateBrochureV2();
 await generateBlueprintOverviewV2();

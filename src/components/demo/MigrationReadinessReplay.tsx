@@ -657,7 +657,7 @@ export default function MigrationReadinessReplay() {
                   ))}
                 </div>
                 <a
-                  href="/marketing/shift-evidence-product-brochure-v2.pdf"
+                  href="/marketing/shift-evidence-product-brochure.pdf"
                   className="btn btn-secondary demo-conversion-secondary-btn"
                   target="_blank"
                   rel="noreferrer"

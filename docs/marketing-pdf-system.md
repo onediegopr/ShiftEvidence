@@ -2,21 +2,30 @@
 
 ## Scope
 
-MARKETING-PDF-1 adds a reproducible brochure system for public, non-customer-facing marketing collateral.
+The marketing PDF system generates public, non-customer-facing collateral for Shift Evidence.
 
-Generated assets:
+Current canonical public assets:
 
-- `public/marketing/shift-evidence-product-brief-v1.pdf`
-- `public/marketing/shift-evidence-product-brochure-v1.pdf`
-- `public/marketing/migration-blueprint-overview-v1.pdf`
-- `public/marketing/shift-evidence-product-brief-v2.pdf`
-- `public/marketing/shift-evidence-product-brochure-v2.pdf`
-- `public/marketing/migration-blueprint-overview-v2.pdf`
+- `public/marketing/shift-evidence-product-brief.pdf`
+- `public/marketing/shift-evidence-product-brochure.pdf`
+- `public/marketing/migration-blueprint-overview.pdf`
+
+Public URLs:
+
+- `/marketing/shift-evidence-product-brief.pdf`
+- `/marketing/shift-evidence-product-brochure.pdf`
+- `/marketing/migration-blueprint-overview.pdf`
 
 Generator:
 
 - `scripts/generate-marketing-pdfs.mjs`
 - Package script: `npm run marketing-pdfs:generate`
+
+## Canonical Asset Policy
+
+The public marketing PDFs use clean filenames without version suffixes. The approved light, print-first editorial redesign is the current public output.
+
+Historical versioned files are preserved through Git history, not as active public assets in `public/marketing`.
 
 ## Audience
 
@@ -29,13 +38,7 @@ The PDFs are intended for:
 
 ## PDF Roles
 
-## Current Default
-
-Use v2 as the default public brochure family. v1 is preserved for history and regression coverage.
-
-The v2 direction is light, print-first and editorial. It is intended for owner forwarding, office printing, demo follow-up and pricing discussions.
-
-### Product Brief v1
+### Product Brief
 
 One-page product overview for fast stakeholder sharing.
 
@@ -46,7 +49,7 @@ Use when someone asks:
 - What packages exist?
 - What are the boundaries?
 
-### Product Brochure v1
+### Product Brochure
 
 Full product narrative covering:
 
@@ -60,7 +63,7 @@ Full product narrative covering:
 - Security, trust and fit.
 - Next steps.
 
-### Migration Blueprint Overview v1
+### Migration Blueprint Overview
 
 Focused explanation for the planning tier.
 

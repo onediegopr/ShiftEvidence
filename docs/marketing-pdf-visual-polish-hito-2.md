@@ -6,9 +6,11 @@ Polish visual del sistema de PDFs de marketing v2 sin cambiar la estrategia come
 
 ## PDFs revisados
 
-- `public/marketing/shift-evidence-product-brief-v2.pdf`
-- `public/marketing/shift-evidence-product-brochure-v2.pdf`
-- `public/marketing/migration-blueprint-overview-v2.pdf`
+- `public/marketing/shift-evidence-product-brief.pdf`
+- `public/marketing/shift-evidence-product-brochure.pdf`
+- `public/marketing/migration-blueprint-overview.pdf`
+
+The polish was originally verified against `v2` filenames before canonicalization. MARKETING-PDF-3 removed the version suffixes from active public output.
 
 ## Resultados del polish
 

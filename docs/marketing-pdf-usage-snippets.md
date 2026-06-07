@@ -2,16 +2,16 @@
 
 ## Default Recommendation
 
-Use v2 by default. The v2 PDFs are lighter, more printable and more appropriate for stakeholder sharing than v1.
+Use the canonical PDFs by default. They point to the approved light, print-first editorial brochure family.
 
-Keep v1 only as a preserved historical artifact.
+Historical versioned assets are not public primary URLs.
 
 ## Product Brief
 
 URL:
 
 ```text
-/marketing/shift-evidence-product-brief-v2.pdf
+/marketing/shift-evidence-product-brief.pdf
 ```
 
 Suggested CTA:
@@ -31,7 +31,7 @@ Share the short Shift Evidence overview with stakeholders before a VMware exit d
 URL:
 
 ```text
-/marketing/shift-evidence-product-brochure-v2.pdf
+/marketing/shift-evidence-product-brochure.pdf
 ```
 
 Suggested CTA:
@@ -51,7 +51,7 @@ Review the full product overview before comparing assessment and blueprint optio
 URL:
 
 ```text
-/marketing/migration-blueprint-overview-v2.pdf
+/marketing/migration-blueprint-overview.pdf
 ```
 
 Suggested CTA:
@@ -73,7 +73,7 @@ Understand how Blueprint extends readiness findings into migration waves, valida
 ```text
 Thanks for reviewing the Shift Evidence demo. If useful, this brochure summarizes how the readiness engine turns VMware evidence into a Proxmox migration decision pack:
 
-https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
+https://www.shiftevidence.com/marketing/shift-evidence-product-brochure.pdf
 ```
 
 ### Before Pricing Discussion
@@ -81,7 +81,7 @@ https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
 ```text
 Before we discuss plan fit, this product brochure may help separate Starter, Professional, Blueprint and MSP Partner paths:
 
-https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
+https://www.shiftevidence.com/marketing/shift-evidence-product-brochure.pdf
 ```
 
 ### Blueprint Follow-Up
@@ -89,7 +89,7 @@ https://www.shiftevidence.com/marketing/shift-evidence-product-brochure-v2.pdf
 ```text
 If the readiness conversation is moving toward migration planning, this Blueprint overview explains the additional wave, validation and rollback framing layer:
 
-https://www.shiftevidence.com/marketing/migration-blueprint-overview-v2.pdf
+https://www.shiftevidence.com/marketing/migration-blueprint-overview.pdf
 ```
 
 ## Approved Guardrail Language

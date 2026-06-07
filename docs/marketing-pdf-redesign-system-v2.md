@@ -4,6 +4,14 @@
 
 MARKETING-PDF-2 replaces the original dark brochure direction with a print-first, light editorial system.
 
+MARKETING-PDF-3 promotes this approved direction to canonical public filenames:
+
+- `/marketing/shift-evidence-product-brief.pdf`
+- `/marketing/shift-evidence-product-brochure.pdf`
+- `/marketing/migration-blueprint-overview.pdf`
+
+The earlier versioned public filenames were QA artifacts and are no longer the primary public marketing URLs.
+
 The v2 family should feel:
 
 - Calm and premium.

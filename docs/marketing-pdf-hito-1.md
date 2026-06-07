@@ -10,6 +10,8 @@ Implemented and locally validated for MARKETING-PDF-1. The first full-repo valid
 - `public/marketing/shift-evidence-product-brochure-v1.pdf`
 - `public/marketing/migration-blueprint-overview-v1.pdf`
 
+Note: these were the original MARKETING-PDF-1 filenames. MARKETING-PDF-3 removed versioned marketing brochure filenames from active public output and replaced them with canonical filenames under `public/marketing`. Git history preserves the original files if comparison or rollback is needed.
+
 ## Generator
 
 - `scripts/generate-marketing-pdfs.mjs`

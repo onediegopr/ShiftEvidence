@@ -6,38 +6,20 @@ const repoRoot = process.cwd();
 
 const pdfAssets = [
   {
-    label: "product brief v1",
-    file: "public/marketing/shift-evidence-product-brief-v1.pdf",
+    label: "product brief",
+    file: "public/marketing/shift-evidence-product-brief.pdf",
     minBytes: 50_000,
     pageCount: 1,
   },
   {
-    label: "product brochure v1",
-    file: "public/marketing/shift-evidence-product-brochure-v1.pdf",
-    minBytes: 100_000,
-    pageCount: 10,
-  },
-  {
-    label: "blueprint overview v1",
-    file: "public/marketing/migration-blueprint-overview-v1.pdf",
-    minBytes: 80_000,
-    pageCount: 7,
-  },
-  {
-    label: "product brief v2",
-    file: "public/marketing/shift-evidence-product-brief-v2.pdf",
-    minBytes: 50_000,
-    pageCount: 1,
-  },
-  {
-    label: "product brochure v2",
-    file: "public/marketing/shift-evidence-product-brochure-v2.pdf",
+    label: "product brochure",
+    file: "public/marketing/shift-evidence-product-brochure.pdf",
     minBytes: 100_000,
     pageCount: 11,
   },
   {
-    label: "blueprint overview v2",
-    file: "public/marketing/migration-blueprint-overview-v2.pdf",
+    label: "blueprint overview",
+    file: "public/marketing/migration-blueprint-overview.pdf",
     minBytes: 80_000,
     pageCount: 8,
   },
@@ -74,10 +56,10 @@ describe("marketing PDF assets", () => {
   });
 
   it("links the brochure system from relevant public pages", () => {
-    const productBrochurePath = "/marketing/shift-evidence-product-brochure-v2.pdf";
-    const blueprintOverviewPath = "/marketing/migration-blueprint-overview-v2.pdf";
-    const legacyProductBrochurePath = "/marketing/shift-evidence-product-brochure-v1.pdf";
-    const legacyBlueprintOverviewPath = "/marketing/migration-blueprint-overview-v1.pdf";
+    const productBrochurePath = "/marketing/shift-evidence-product-brochure.pdf";
+    const blueprintOverviewPath = "/marketing/migration-blueprint-overview.pdf";
+    const versionedMarketingPdfPattern =
+      /\/marketing\/(?:shift-evidence-product-brief|shift-evidence-product-brochure|migration-blueprint-overview)-v[12]\.pdf/;
 
     const sources = Object.fromEntries(linkSources.map((source) => [source, read(source)]));
 
@@ -89,10 +71,8 @@ describe("marketing PDF assets", () => {
     expect(sources["src/components/demo/MigrationReadinessReplay.tsx"]).toContain(productBrochurePath);
 
     for (const source of linkSources) {
-      expect(sources[source]).not.toContain(legacyProductBrochurePath);
+      expect(sources[source]).not.toMatch(versionedMarketingPdfPattern);
     }
-    expect(sources["src/app/pricing/page.tsx"]).not.toContain(legacyBlueprintOverviewPath);
-    expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).not.toContain(legacyBlueprintOverviewPath);
   });
 
   it("keeps pricing labels and safety claims aligned", () => {
@@ -100,7 +80,7 @@ describe("marketing PDF assets", () => {
     const docs = [
       read("docs/marketing-pdf-system.md"),
       read("docs/marketing-pdf-usage-snippets.md"),
-      read("docs/marketing-pdf-hito-1.md"),
+      read("docs/marketing-pdf-canonical-assets.md"),
       read("docs/marketing-pdf-redesign-system-v2.md"),
       read("docs/marketing-pdf-redesign-hito-2.md"),
     ].join("\n");
@@ -119,5 +99,6 @@ describe("marketing PDF assets", () => {
     expect(lower).not.toMatch(/\bautomatically\s+migrates?\b/);
     expect(lower).not.toMatch(/\bcomplete dependency discovery\b(?! (claim|without))/);
     expect(lower).not.toMatch(/\bverified backup posture\b(?! without)/);
+    expect(lower).not.toContain("starts at from usd");
   });
 });
