@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Fragment } from "react";
 import {
   ArrowRight,
   Brain,
@@ -584,7 +585,7 @@ export default function PricingPage() {
                   </thead>
                   <tbody>
                     {planComparisonSections.map((section, sectionIndex) => (
-                      <>
+                      <Fragment key={section.title}>
                         <tr
                           key={`${section.title}-section`}
                           className="pricing-compare-section-row"
@@ -623,7 +624,7 @@ export default function PricingPage() {
                             ))}
                           </tr>
                         ))}
-                      </>
+                      </Fragment>
                     ))}
                   </tbody>
                   <tfoot>
