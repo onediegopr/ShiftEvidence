@@ -419,7 +419,7 @@ async function generateBlueprintOverview() {
     "Storage target choices, rollback assumptions or backup evidence need explicit planning language.",
     "An MSP or consulting team needs a client-ready migration workshop artifact.",
   ], 62, 266, 480, palette.amber);
-  card(doc, 92, 442, 420, 112, "Pricing", "Migration Blueprint starts at From USD 3,500 and is scoped before payment so the plan matches the real engagement depth.", palette.proxmox, "Commercial");
+  card(doc, 92, 442, 420, 112, "Pricing", "Blueprint engagements start from USD 3,500. Scope is confirmed before payment so the plan matches the real engagement depth.", palette.proxmox, "Commercial");
 
   addPage(doc, "What Blueprint does not promise", "05 / Boundaries");
   sectionTitle(doc, 42, 112, "Integrity", "Clear boundaries protect the buyer and the delivery team.", "Blueprint is a planning artifact, not an implementation guarantee. It supports better decisions before migration execution.", palette.violet);
@@ -601,11 +601,11 @@ function v2Bullets(doc, items, x, y, width, color = paletteV2.cyan, gap = 28) {
 }
 
 function v2PackageTable(doc, x, y, w, compact = false) {
-  const rowH = compact ? 52 : 60;
+  const rowH = compact ? 50 : 60;
   const colW = w / 2 - 8;
   v2Packages.forEach(([name, price, note, color, fill], index) => {
     const px = x + (index % 2) * (colW + 16);
-    const py = y + Math.floor(index / 2) * (rowH + 14);
+    const py = y + Math.floor(index / 2) * (rowH + 12);
     doc.roundedRect(px, py, colW, rowH, 12).fillAndStroke(fill, paletteV2.line);
     doc.rect(px, py, 4, rowH).fill(color);
     doc.font("Helvetica-Bold").fontSize(7).fillColor(color).text(name.toUpperCase(), px + 14, py + 11, {
@@ -651,10 +651,12 @@ function v2ScoreDiagram(doc, x, y) {
   });
 }
 
-function v2BoundaryStrip(doc, x, y, w) {
-  doc.roundedRect(x, y, w, 104, 14).fillAndStroke(paletteV2.amberSoft, "#E4C27B");
+function v2BoundaryStrip(doc, x, y, w, options = {}) {
+  const height = options.height ?? 104;
+  const gap = options.gap ?? 18;
+  doc.roundedRect(x, y, w, height, 14).fillAndStroke(paletteV2.amberSoft, "#E4C27B");
   doc.font("Helvetica-Bold").fontSize(11).fillColor(paletteV2.amber).text("Operational boundaries", x + 18, y + 16);
-  v2Bullets(doc, v2Boundaries, x + 18, y + 40, w - 36, paletteV2.amber, 18);
+  v2Bullets(doc, v2Boundaries, x + 18, y + 40, w - 36, paletteV2.amber, gap);
 }
 
 async function saveV2(ctx) {
@@ -676,26 +678,26 @@ async function generateBriefV2() {
     color: paletteV2.text,
   });
   v2Rule(doc, 54, 260, 500, paletteV2.line);
-  v2Card(doc, 54, 284, 156, 120, "What it is", "A pre-migration assessment system for VMware exits, built around evidence, risk qualification and decision-ready output.", {
+  v2Card(doc, 54, 284, 156, 118, "What it is", "A pre-migration assessment system for VMware exits, built around evidence, risk qualification and decision-ready output.", {
     color: paletteV2.cyan,
     fill: paletteV2.white,
     label: "Positioning",
   });
-  v2Card(doc, 228, 284, 156, 120, "Who it helps", "Infrastructure leaders, MSPs and consultants that need clarity before proposals, pilots or migration waves.", {
+  v2Card(doc, 228, 284, 156, 118, "Who it helps", "Infrastructure leaders, MSPs and consultants who need clarity before proposals, pilots or migration waves.", {
     color: paletteV2.violet,
     fill: paletteV2.white,
     label: "Audience",
   });
-  v2Card(doc, 402, 284, 156, 120, "What you get", "Readiness Score, Evidence Confidence, VM risk matrix, storage suitability, missing evidence and wave guidance.", {
+  v2Card(doc, 402, 284, 156, 118, "What you get", "Readiness Score, Evidence Confidence, VM risk matrix, storage suitability, missing evidence and wave guidance.", {
     color: paletteV2.green,
     fill: paletteV2.white,
     label: "Outputs",
   });
   doc.font("Helvetica-Bold").fontSize(12).fillColor(paletteV2.ink).text("Package ladder", 54, 434);
   v2PackageTable(doc, 54, 456, 500, true);
-  v2BoundaryStrip(doc, 54, 610, 500);
-  doc.font("Helvetica-Bold").fontSize(10.5).fillColor(paletteV2.proxmox).text("Next step", 54, 735);
-  doc.font("Helvetica").fontSize(9.2).fillColor(paletteV2.text).text("Review the sample report or start with exported RVTools evidence. shiftevidence.com/sample-report", 120, 735, {
+  v2BoundaryStrip(doc, 54, 596, 500, { height: 96, gap: 16 });
+  doc.font("Helvetica-Bold").fontSize(10.5).fillColor(paletteV2.proxmox).text("Next step", 54, 724);
+  doc.font("Helvetica").fontSize(9.2).fillColor(paletteV2.text).text("Review the sample report or start with exported RVTools evidence. shiftevidence.com/sample-report", 120, 724, {
     width: 410,
   });
   await saveV2(ctx);
@@ -855,7 +857,7 @@ async function generateBlueprintOverviewV2() {
     size: 11.2,
   });
   v2PackageTable(doc, 54, 428, 500, true);
-  v2Card(doc, 54, 606, 500, 92, "Blueprint starts at From USD 3,500", "It is scoped before payment so the planning artifact matches the migration complexity, evidence quality and workshop depth.", {
+  v2Card(doc, 54, 606, 500, 92, "Blueprint engagements start from USD 3,500.", "Scope is confirmed before payment so the planning artifact matches migration complexity, evidence quality and workshop depth.", {
     color: paletteV2.proxmox,
     fill: paletteV2.proxmoxSoft,
     label: "Commercial framing",
@@ -926,7 +928,7 @@ async function generateBlueprintOverviewV2() {
   v2SectionIntro(doc, "Next step", "Use Blueprint when the assessment says planning depth is justified.", "Start with a Professional Assessment or request a scope discussion when migration pressure and technical complexity are already clear.", paletteV2.proxmox);
   v2Card(doc, 54, 304, 232, 104, "Review sample report", "shiftevidence.com/sample-report", { color: paletteV2.cyan, fill: paletteV2.cyanSoft, label: "Proof" });
   v2Card(doc, 320, 304, 232, 104, "Discuss Blueprint", "shiftevidence.com/technical-review", { color: paletteV2.proxmox, fill: paletteV2.proxmoxSoft, label: "Scope" });
-  v2Card(doc, 54, 462, 498, 104, "Commercial note", "Migration Blueprint starts at From USD 3,500 and is scoped before payment. The plan does not claim zero downtime or automated execution.", {
+  v2Card(doc, 54, 462, 498, 104, "Commercial note", "Blueprint engagements start from USD 3,500. Scope is confirmed before payment. The plan does not claim zero downtime or automated execution.", {
     color: paletteV2.green,
     fill: paletteV2.white,
     label: "Pricing truth",
