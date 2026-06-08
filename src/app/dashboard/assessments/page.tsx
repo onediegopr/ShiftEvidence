@@ -7,6 +7,7 @@ import { ensureDefaultWorkspace } from "../../../server/workspace/workspaceServi
 import { listAssessmentsForCurrentWorkspace } from "../../../server/assessments/assessmentService";
 import { getEvidenceUploadStatus } from "../../../server/evidence/evidenceFileService";
 import type { AssessmentListItem } from "../../../server/assessments/assessmentService";
+import { formatCompactDate } from "../../../lib/compactDate";
 
 type AssessmentsPageProps = {
   searchParams: Promise<{
@@ -27,11 +28,7 @@ function formatMoney(value: number | null | undefined) {
 }
 
 function formatDate(value: Date | string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date(value));
+  return formatCompactDate(value);
 }
 
 export function getLifecycleStatus(assessment: AssessmentListItem) {

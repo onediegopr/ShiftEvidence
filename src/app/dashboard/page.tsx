@@ -10,6 +10,7 @@ import { isAdminEmail } from "../../server/admin/adminAuth";
 import { getLifecycleStatus } from "./assessments/page";
 import { SUPPORT_CATEGORY_OPTIONS } from "../../server/support/supportConfig";
 import { createDashboardSupportRequestAction } from "./support/actions";
+import { formatCompactDate } from "../../lib/compactDate";
 
 type DashboardPageProps = {
   searchParams?: Promise<{ support?: string; supportError?: string }> | { support?: string; supportError?: string };
@@ -81,7 +82,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <section className="dashboard-hero glass-card">
         <div>
           <div className="badge badge-cyan">Workspace center</div>
-          <h1>Welcome back, {name}.</h1>
+          <h1>{name}</h1>
           <p className="text-muted">Manage your infrastructure assessments, upload evidence and review readiness reports.</p>
         </div>
         <Link href="/dashboard/assessments/new" className="btn btn-primary btn-glow">
@@ -91,20 +92,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       {isAdmin && (
-        <section className="dashboard-banner dashboard-banner-success" role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <ClipboardList size={20} style={{ color: "#38bdf8" }} />
-            <div>
-              <strong style={{ color: "white" }}>Internal console active</strong>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                You have administrative access to the internal operations center and manual requests.
-              </p>
-            </div>
-          </div>
-          <Link href="/dashboard/admin" className="btn btn-secondary btn-sm" style={{ border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "6px" }}>
-            Open internal console
+        <div className="dashboard-inline-admin-link">
+          <Link href="/dashboard/admin" className="dashboard-inline-admin-link-pill">
+            <ClipboardList size={16} />
+            Admin console
           </Link>
-        </section>
+        </div>
       )}
 
       {/* Workspace Statistics Grid */}
@@ -214,7 +207,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           {req.priority}
                         </span>
                       </td>
-                      <td className="text-muted">{new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(req.createdAt))}</td>
+                      <td className="text-muted">{formatCompactDate(req.createdAt)}</td>
                       <td>
                         {req.assessment ? (
                           <Link href={`/dashboard/assessments/${req.assessment.id}`} className="dashboard-card-link" style={{ fontSize: "0.8rem", margin: 0 }}>
@@ -262,7 +255,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     <div>
                       <h3 style={{ margin: 0, color: "white", fontSize: "1.05rem", fontWeight: 600 }}>{assessment.title}</h3>
                       <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                        {assessment.clientLabel ? assessment.clientLabel : "No client label"} &bull; Last updated {new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(assessment.updatedAt))}
+                        {assessment.clientLabel ? assessment.clientLabel : "No client label"} &bull; Last updated {formatCompactDate(assessment.updatedAt)}
                       </p>
                     </div>
                   </div>

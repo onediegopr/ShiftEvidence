@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Activity, AlertTriangle, CheckCircle2, Database, FileText, Gauge, Settings, ShieldCheck } from "lucide-react";
 import { getCurrentAdminUserForConsole } from "../../../../server/admin/adminAuth";
+import { formatAdminDate } from "../../../../lib/adminDate";
 import {
   getPricingIntelligenceSummary,
   listPendingPricingSnapshots,
@@ -27,15 +28,7 @@ type PricingAdminPageProps = {
 };
 
 function formatDate(value: Date | string | null | undefined) {
-  if (!value) return "No disponible";
-
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
+  return formatAdminDate(value);
 }
 
 function formatUsd(value: unknown) {
@@ -293,7 +286,7 @@ function PendingSnapshots({
 }
 
 export default async function PricingAdminPage({ searchParams }: PricingAdminPageProps) {
-  const { session, isAdmin } = await getCurrentAdminUserForConsole();
+  const { isAdmin } = await getCurrentAdminUserForConsole();
 
   if (!isAdmin) {
     return <AccessDenied />;
@@ -327,7 +320,6 @@ export default async function PricingAdminPage({ searchParams }: PricingAdminPag
             Base administrativa para snapshots VMware/Broadcom vs Proxmox. Todo precio se normaliza en USD y requiere
             aprobacion manual antes de ser usable en futuros calculos.
           </p>
-          <p className="assessment-inline-note">Sesion admin: {session.user.email}</p>
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard/admin" className="btn btn-secondary">

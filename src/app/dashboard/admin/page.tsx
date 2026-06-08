@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   Activity,
@@ -22,6 +22,7 @@ import {
 import { getCurrentAdminUserForConsole } from "../../../server/admin/adminAuth";
 import { getAdminConsoleData } from "../../../server/admin/adminConsoleService";
 import { logger } from "../../../server/logging/logger";
+import { formatAdminDate } from "../../../lib/adminDate";
 import {
   createUserEntitlementAction,
   revokeUserEntitlementAction,
@@ -33,17 +34,7 @@ import {
 } from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
-  if (!value) return "No disponible";
-  const date = new Date(value);
-  if (date.getTime() === 0 || Number.isNaN(date.getTime())) return "No disponible";
-
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return formatAdminDate(value);
 }
 
 function formatDuration(value: number | null | undefined) {
@@ -136,7 +127,7 @@ function formatStatusLabel(value: string | null | undefined) {
     internal_qa: "QA interno",
     lost: "Perdido",
     manual: "Manual",
-    mock: "Simulación",
+    mock: "SimulaciÃ³n",
     msp_partner: "MSP Partner",
     needs_follow_up: "Requiere seguimiento",
     new_lead: "Nuevo lead",
@@ -157,14 +148,14 @@ function formatStatusLabel(value: string | null | undefined) {
     not_started: "No iniciado",
     draft: "Borrador",
     submitted: "Enviado",
-    ready_for_analysis: "Listo para análisis",
-    analysis_pending: "Análisis pendiente",
+    ready_for_analysis: "Listo para anÃ¡lisis",
+    analysis_pending: "AnÃ¡lisis pendiente",
     analyzed: "Analizado",
     skipped: "Omitido",
     stale: "Desactualizado",
     failed: "Fallido",
     // Storage Modes
-    agnostic: "Agnóstico",
+    agnostic: "AgnÃ³stico",
     zfs_local: "ZFS Local",
     nfs_san: "NFS/SAN",
     ceph_candidate: "Candidato Ceph",
@@ -236,7 +227,7 @@ function statusTone(status: string) {
     case "Activa":
     case "Info":
       return "good";
-    case "Atención":
+    case "AtenciÃ³n":
     case "Pendiente":
     case "Desconocido":
       return "warning";
@@ -246,7 +237,7 @@ function statusTone(status: string) {
       return "danger";
     case "Critico":
       return "danger";
-    case "Crítico":
+    case "CrÃ­tico":
       return "danger";
     default:
       return "neutral";
@@ -281,7 +272,6 @@ function SectionTitle({
     </div>
   );
 }
-
 function MetricCard({
   icon,
   label,
@@ -375,8 +365,8 @@ function AccessDenied() {
       <section className="dashboard-hero glass-card">
         <div>
           <div className="badge badge-cyan">Consola interna</div>
-          <h1>No tenés permisos para acceder a esta consola.</h1>
-          <p>Tu sesión está activa, pero tu usuario no está autorizado como administrador.</p>
+          <h1>No tenÃ©s permisos para acceder a esta consola.</h1>
+          <p>Tu sesiÃ³n estÃ¡ activa, pero tu usuario no estÃ¡ autorizado como administrador.</p>
         </div>
         <Link href="/dashboard" className="btn btn-secondary">
           Volver al panel
@@ -388,25 +378,21 @@ function AccessDenied() {
           icon={<Lock size={18} />}
           label="Acceso protegido"
           title="Permisos insuficientes"
-          description="El acceso inicial se controla con ADMIN_EMAILS. Si necesitás acceso, pedile al operador que agregue tu email en la configuración segura."
+          description="El acceso inicial se controla con ADMIN_EMAILS. Si necesitÃ¡s acceso, pedile al operador que agregue tu email en la configuraciÃ³n segura."
         />
       </section>
     </main>
   );
 }
 
-function AdminConsoleUnavailable({ adminEmail }: { adminEmail: string }) {
+function AdminConsoleUnavailable() {
   return (
     <main className="dashboard-page">
       <section className="dashboard-hero glass-card">
         <div>
-          <div className="badge badge-cyan">Panel de Administración</div>
-          <h1>La consola admin está en modo degradado.</h1>
-          <p>
-            No pudimos cargar los datos operativos en este runtime. La sesión admin sigue activa, pero
-            evitamos romper la página mientras se corrige el runtime o se regenera el cliente Prisma.
-          </p>
-          <p className="assessment-inline-note">Sesión admin: {adminEmail}</p>
+          <div className="badge badge-cyan">Panel de AdministraciÃ³n</div>
+          <h1>La consola admin estÃ¡ en modo degradado.</h1>
+          <p>No pudimos cargar los datos operativos en este runtime. Evitamos romper la pÃ¡gina mientras se corrige el runtime o se regenera el cliente Prisma.</p>
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard" className="btn btn-secondary">
@@ -425,7 +411,7 @@ function AdminConsoleUnavailable({ adminEmail }: { adminEmail: string }) {
           icon={<AlertTriangle size={18} />}
           label="Fallback seguro"
           title="Datos admin temporalmente no disponibles"
-          description="El panel captura el error de carga y muestra este fallback para evitar un error 500/Server Components en producción."
+          description="El panel captura el error de carga y muestra este fallback para evitar un error 500/Server Components en producciÃ³n."
         />
         <div className="dashboard-banner dashboard-banner-warning" role="status">
           La consola admin no pudo cargar una o mas secciones operativas. El resto del producto sigue disponible. Revisa los logs sanitizados para identificar la seccion afectada.
@@ -460,7 +446,7 @@ type AdminConsolePageProps = {
 };
 
 export default async function AdminConsolePage({ searchParams }: AdminConsolePageProps) {
-  const { session, isAdmin } = await getCurrentAdminUserForConsole();
+  const { isAdmin } = await getCurrentAdminUserForConsole();
 
   if (!isAdmin) {
     return <AccessDenied />;
@@ -492,7 +478,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
   });
 
   if (!data) {
-    return <AdminConsoleUnavailable adminEmail={session.user.email} />;
+    return <AdminConsoleUnavailable />;
   }
 
   const ai = data.aiStatus;
@@ -505,10 +491,10 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     entitlement: "Acceso manual de usuario guardado.",
     revoked: "Acceso revocado correctamente.",
     opportunity: "Oportunidad comercial actualizada.",
-    runtime: "Configuración operativa en runtime actualizada.",
+    runtime: "ConfiguraciÃ³n operativa en runtime actualizada.",
     support: "Solicitud de soporte actualizada.",
   };
-  const savedMessage = saved ? (savedMessages[saved] ?? "Acción administrativa guardada.") : null;
+  const savedMessage = saved ? (savedMessages[saved] ?? "AcciÃ³n administrativa guardada.") : null;
 
   const navItems = [
     ["Resumen", "resumen"],
@@ -520,25 +506,21 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     ["Storage/Ceph", "storage-ceph"],
     ["IA y Consumo", "ia-consumo"],
     ["Advisor Metodologia", "advisor-metodologia"],
-    ["Configuración Operativa", "configuracion-operativa"],
+    ["ConfiguraciÃ³n Operativa", "configuracion-operativa"],
     ["Accesos y Planes", "accesos-planes"],
     ["Oportunidades", "oportunidades"],
     ["Soporte", "soporte"],
-    ["Configuración", "configuracion"],
-    ["Auditoría", "auditoria"],
+    ["ConfiguraciÃ³n", "configuracion"],
+    ["AuditorÃ­a", "auditoria"],
   ];
 
   return (
     <main className="dashboard-page">
       <section className="dashboard-hero glass-card">
         <div>
-          <div className="badge badge-cyan">Panel de Administración</div>
+          <div className="badge badge-cyan">Panel de AdministraciÃ³n</div>
           <h1>Centro Operativo interno</h1>
-          <p>
-            Consola privada para operar ShiftReadiness, revisar salud del sistema, IA, usuarios,
-            evaluaciones y señales administrativas sin exponer secretos.
-          </p>
-          <p className="assessment-inline-note">Sesión admin: {session.user.email}</p>
+          <p>Consola privada para revisar salud del sistema, IA, usuarios, evaluaciones y señales administrativas.</p>
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard/admin/pricing" className="btn btn-secondary">
@@ -547,7 +529,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           </Link>
           <Link href="/dashboard/admin/methodology" className="btn btn-secondary">
             <FileText size={16} />
-            Metodología
+            MetodologÃ­a
           </Link>
           <Link href="/dashboard/admin/unlock-requests" className="btn btn-secondary">
             <ClipboardList size={16} />
@@ -559,15 +541,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           </Link>
         </div>
       </section>
-
-      <div className="dashboard-banner dashboard-banner-warning" role="alert">
-        <strong>Consola interna segura.</strong> Las acciones manuales pueden modificar accesos, usuarios,
-        oportunidades o configuracion operativa. Revisar contexto antes de confirmar. No guardar secretos,
-        passwords, API keys ni datos de tarjeta en notas internas. Los errores de proveedores deben mantenerse
-        sanitizados antes de compartirlos con clientes.
-      </div>
-
-      <nav className="tabs-container" aria-label="Navegación de administración">
+      <nav className="tabs-container" aria-label="NavegaciÃ³n de administraciÃ³n">
         {navItems.map(([label, key]) => (
           <Link key={key} href={`?tab=${key}`} className={`tab-btn ${activeTab === key ? "active" : ""}`}>
             {label}
@@ -583,14 +557,14 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
         <section id="resumen" className="assessment-summary-grid">
           <MetricCard icon={<Users size={22} />} label="Usuarios totales" value={data.summary.totalUsers} note="Cuentas registradas" />
           <MetricCard icon={<Database size={22} />} label="Evaluaciones totales" value={data.summary.totalAssessments} note="No archivadas" />
-          <MetricCard icon={<Activity size={22} />} label="Últimos 7 días" value={data.summary.assessmentsLast7Days} note="Evaluaciones creadas" />
+          <MetricCard icon={<Activity size={22} />} label="Ãšltimos 7 dÃ­as" value={data.summary.assessmentsLast7Days} note="Evaluaciones creadas" />
           <MetricCard icon={<FileText size={22} />} label="PDF generados" value={data.summary.totalReports} note="Reportes no borrados" />
           <MetricCard icon={<Bot size={22} />} label="IA Advisory" value={ai.iaActiva ? "Activa" : "No activa"} note={`Primario: ${formatStatusLabel(ai.proveedor)}; fallback: ${ai.proveedorFallback ? formatStatusLabel(ai.proveedorFallback) : "No configurado"}`} />
-          <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="Señal operativa agregada" />
+          <MetricCard icon={<Gauge size={22} />} label="Estado general" value={data.summary.generalStatus} note="SeÃ±al operativa agregada" />
           <MetricCard icon={<ShieldCheck size={22} />} label="Beta limitada" value={data.summary.betaStatus} note="Lanzamiento controlado" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Full public launch" value={data.summary.fullPublicLaunch} note="No declarado" />
           <MetricCard icon={<Bot size={22} />} label="Advisor metodologia" value={data.advisorMethodology.runtime.enabled ? "Activa" : "No activa"} note={`${data.advisorMethodology.kbHealth.activeBlocks} bloques activos; ${data.advisorMethodology.usageStats.includedCount} inclusiones 30d`} />
-          <MetricCard icon={<HardDrive size={22} />} label="Storage Activo" value={data.storageCeph?.activeStorageAssessments ?? 0} note="Con módulo storage" />
+          <MetricCard icon={<HardDrive size={22} />} label="Storage Activo" value={data.storageCeph?.activeStorageAssessments ?? 0} note="Con mÃ³dulo storage" />
           <MetricCard icon={<Server size={22} />} label="Ceph Solicitado" value={data.storageCeph?.cephRequested ?? 0} note="Preferencia Ceph o candidate" />
           <MetricCard icon={<AlertTriangle size={22} />} label="Fallos IA Storage" value={(data.storageCeph?.aiAnalysisStatus?.failed ?? 0) + (data.storageCeph?.aiAnalysisStatus?.budget_blocked ?? 0) + (data.storageCeph?.aiAnalysisStatus?.plan_restricted ?? 0)} note="Fallados, bloqueados o restringidos" />
           <MetricCard icon={<LifeBuoy size={22} />} label="Soporte abierto" value={(data.supportRequests?.summary.open ?? 0) + (data.supportRequests?.summary.triage ?? 0)} note="Solicitudes abiertas o en triage" />
@@ -626,9 +600,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <Video size={18} />
                     <span>Technical Review</span>
                   </div>
-                  <h3>Canal prioritario para revisiones técnicas</h3>
+                  <h3>Canal prioritario para revisiones tÃ©cnicas</h3>
                   <p>
-                    Estas solicitudes llegan con prioridad alta y notificación interna a <strong>info@shiftevidence.com</strong>.
+                    Estas solicitudes llegan con prioridad alta y notificaciÃ³n interna a <strong>info@shiftevidence.com</strong>.
                   </p>
                 </div>
               </div>
@@ -643,7 +617,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                         </div>
                         <h3>{request.subject}</h3>
                         <p className="assessment-inline-note">
-                          {formatDate(request.createdAt)} · {formatStatusLabel(request.category)} · prioridad {formatSupportPriority(request.priority).toLowerCase()}
+                          {formatDate(request.createdAt)} Â· {formatStatusLabel(request.category)} Â· prioridad {formatSupportPriority(request.priority).toLowerCase()}
                         </p>
                       </div>
                       <StatusPill status={formatSupportStatus(request.status)} />
@@ -718,7 +692,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <div>
                       <h3>{request.subject}</h3>
                       <p className="assessment-inline-note">
-                        {formatDate(request.createdAt)} · {formatStatusLabel(request.category)} · {formatStatusLabel(request.source)}
+                        {formatDate(request.createdAt)} Â· {formatStatusLabel(request.category)} Â· {formatStatusLabel(request.source)}
                       </p>
                     </div>
                     <StatusPill status={formatSupportStatus(request.status)} />
@@ -780,27 +754,27 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <SectionTitle
             id="configuracion-operativa"
             icon={<Settings size={18} />}
-            label="Configuración Operativa"
-            title="Configuración runtime y aplicación de límites"
-            description="Overrides operativos seguros desde DB. No editan el runtime productivo, no muestran secretos y requieren confirmación."
+            label="ConfiguraciÃ³n Operativa"
+            title="ConfiguraciÃ³n runtime y aplicaciÃ³n de lÃ­mites"
+            description="Overrides operativos seguros desde DB. No editan el runtime productivo, no muestran secretos y requieren confirmaciÃ³n."
           />
           <section className="assessment-summary-grid">
             <MetricCard icon={<Bot size={22} />} label="Modo IA runtime" value={data.runtimeSettings.aiRuntimeMode} note={`Primario: ${formatStatusLabel(ai.proveedor)}`} />
-            <MetricCard icon={<ShieldCheck size={22} />} label="Aplicación de límites IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
-            <MetricCard icon={<FileText size={22} />} label="Generación PDF" value={data.runtimeSettings.reportsPdfGenerationEnabled ? "Activa" : "Bloqueada"} note="Control operativo global" />
+            <MetricCard icon={<ShieldCheck size={22} />} label="AplicaciÃ³n de lÃ­mites IA" value={data.runtimeSettings.aiEnforceBudget ? "Activo" : "Inactivo"} note={data.runtimeSettings.aiBlockOnBudgetExceeded ? "Bloquea al superar presupuesto" : "Solo informativo"} />
+            <MetricCard icon={<FileText size={22} />} label="GeneraciÃ³n PDF" value={data.runtimeSettings.reportsPdfGenerationEnabled ? "Activa" : "Bloqueada"} note="Control operativo global" />
             <MetricCard icon={<FileText size={22} />} label="Descargas" value={data.runtimeSettings.reportsDownloadEnabled ? "Activas" : "Bloqueadas"} note="Control operativo global" />
             <MetricCard icon={<Database size={22} />} label="Nuevas evaluaciones" value={data.runtimeSettings.assessmentsCreationEnabled ? "Activas" : "Bloqueadas"} note="Aplica antes de crear evaluaciones" />
             <MetricCard icon={<AlertTriangle size={22} />} label="Mantenimiento" value={data.runtimeSettings.maintenanceMode ? "Activo" : "Inactivo"} note="Informativo en ADMIN-4" />
           </section>
           <div className="assessment-preview-grid">
             <article className="glass-card report-history-card">
-              <h3>Acciones rápidas IA</h3>
-              <p className="assessment-inline-note">Cada acción usa `SystemSetting`, queda auditada y no toca variables del deployment platform.</p>
+              <h3>Acciones rÃ¡pidas IA</h3>
+              <p className="assessment-inline-note">Cada acciÃ³n usa `SystemSetting`, queda auditada y no toca variables del deployment platform.</p>
               <div className="assessment-preview-grid">
                 {[
                   ["disabled", "Apagar IA", "La IA queda desactivada por runtime setting."],
-                  ["mock", "Volver a simulación", "Usa proveedor simulado para QA/control operativo."],
-                  ["env", "Usar configuración env", "Vuelve a AI_ADVISORY_* del runtime productivo."],
+                  ["mock", "Volver a simulaciÃ³n", "Usa proveedor simulado para QA/control operativo."],
+                  ["env", "Usar configuraciÃ³n env", "Vuelve a AI_ADVISORY_* del runtime productivo."],
                   ["gemini", "Forzar Gemini", "Usa Google AI Studio Gemini como proveedor primario si la credencial existe en el entorno."],
                 ].map(([mode, label, help]) => (
                   <form key={mode} className="unlock-admin-form" action={setAiRuntimeModeFormAction}>
@@ -815,31 +789,31 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               </div>
             </article>
             <article className="glass-card report-history-card">
-              <h3>Configuración completa</h3>
+              <h3>ConfiguraciÃ³n completa</h3>
               <form className="unlock-admin-form" action={updateOperationalRuntimeSettingsAction}>
                 <label className="form-label">
                   Modo IA runtime
                   <select name="aiRuntimeMode" className="form-input" defaultValue={data.runtimeSettings.aiRuntimeMode}>
                     <option value="env">Usar env</option>
                     <option value="disabled">Desactivada</option>
-                    <option value="mock">Simulación</option>
+                    <option value="mock">SimulaciÃ³n</option>
                     <option value="gemini">Gemini</option>
                   </select>
                 </label>
                 <div className="assessment-preview-grid">
                   <label className="assessment-inline-note"><input name="aiEnforceBudget" type="checkbox" defaultChecked={data.runtimeSettings.aiEnforceBudget} /> Aplicar presupuesto IA</label>
                   <label className="assessment-inline-note"><input name="aiBlockOnBudgetExceeded" type="checkbox" defaultChecked={data.runtimeSettings.aiBlockOnBudgetExceeded} /> Bloquear IA al superar presupuesto</label>
-                  <label className="assessment-inline-note"><input name="reportsPdfGenerationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsPdfGenerationEnabled} /> Generación PDF activa</label>
+                  <label className="assessment-inline-note"><input name="reportsPdfGenerationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsPdfGenerationEnabled} /> GeneraciÃ³n PDF activa</label>
                   <label className="assessment-inline-note"><input name="reportsDownloadEnabled" type="checkbox" defaultChecked={data.runtimeSettings.reportsDownloadEnabled} /> Descargas de reportes activas</label>
-                  <label className="assessment-inline-note"><input name="assessmentsCreationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.assessmentsCreationEnabled} /> Creación de evaluaciones activa</label>
+                  <label className="assessment-inline-note"><input name="assessmentsCreationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.assessmentsCreationEnabled} /> CreaciÃ³n de evaluaciones activa</label>
                   <label className="assessment-inline-note"><input name="uploadsEnabled" type="checkbox" defaultChecked={data.runtimeSettings.uploadsEnabled} /> Uploads activos</label>
-                  <label className="assessment-inline-note"><input name="publicRegistrationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.publicRegistrationEnabled} /> Registro público activo</label>
+                  <label className="assessment-inline-note"><input name="publicRegistrationEnabled" type="checkbox" defaultChecked={data.runtimeSettings.publicRegistrationEnabled} /> Registro pÃºblico activo</label>
                   <label className="assessment-inline-note"><input name="maintenanceMode" type="checkbox" defaultChecked={data.runtimeSettings.maintenanceMode} /> Modo mantenimiento informativo</label>
                 </div>
                 <label className="assessment-inline-note">
-                  <input name="confirmRuntimeChange" type="checkbox" required /> Confirmo que este cambio puede afectar operación.
+                  <input name="confirmRuntimeChange" type="checkbox" required /> Confirmo que este cambio puede afectar operaciÃ³n.
                 </label>
-                <button type="submit" className="btn btn-primary btn-glow">Guardar configuración operativa</button>
+                <button type="submit" className="btn btn-primary btn-glow">Guardar configuraciÃ³n operativa</button>
               </form>
             </article>
           </div>
@@ -853,7 +827,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<Gauge size={18} />}
             label="Centro Operativo"
             title="Estado del Sistema"
-            description="Luces operativas derivadas de configuración segura, métricas existentes y señales persistidas."
+            description="Luces operativas derivadas de configuraciÃ³n segura, mÃ©tricas existentes y seÃ±ales persistidas."
           />
           <div className="report-history-grid">
             {data.systemHealth.map((item) => (
@@ -863,7 +837,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <StatusPill status={item.status} />
                 </div>
                 <p>{item.description}</p>
-                <p className="assessment-inline-note">Acción recomendada: {item.recommendation}</p>
+                <p className="assessment-inline-note">AcciÃ³n recomendada: {item.recommendation}</p>
               </article>
             ))}
           </div>
@@ -880,13 +854,13 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             description="Estado seguro de proveedores. Gemini es primario; OpenCode Go queda como fallback. No muestra keys, prompts ni respuestas crudas."
           />
           <section className="assessment-summary-grid">
-            <MetricCard icon={<Bot size={22} />} label="IA activa" value={ai.iaActiva ? "Sí" : "No"} note={`Proveedor: ${ai.proveedor}`} />
+            <MetricCard icon={<Bot size={22} />} label="IA activa" value={ai.iaActiva ? "SÃ­" : "No"} note={`Proveedor: ${ai.proveedor}`} />
             <MetricCard icon={<Settings size={22} />} label="Modelo primario" value={ai.modelo ?? "No configurado"} note="Gemini operativo esperado" />
             <MetricCard icon={<Settings size={22} />} label="Fallback IA" value={ai.proveedorFallback ? formatStatusLabel(ai.proveedorFallback) : "No configurado"} note={ai.modeloFallback ?? "Sin modelo fallback"} />
-            <MetricCard icon={<CheckCircle2 size={22} />} label="Último estado" value={ai.ultimoEstado} note={`Último error: ${ai.ultimoError}`} />
+            <MetricCard icon={<CheckCircle2 size={22} />} label="Ãšltimo estado" value={ai.ultimoEstado} note={`Ãšltimo error: ${ai.ultimoError}`} />
             <MetricCard icon={<ShieldCheck size={22} />} label="Fallback" value={ai.fallbackDisponible ? "Disponible" : "No disponible"} note="Preview/PDF no deben romperse" />
             <MetricCard icon={<Activity size={22} />} label="Llamadas en memoria" value={data.aiConsumption.callsInMemory} note="Se reinician con deploy/restart" />
-            <MetricCard icon={<Gauge size={22} />} label="Duración promedio" value={formatDuration(data.aiConsumption.averageDurationMs)} note="Sobre eventos en memoria" />
+            <MetricCard icon={<Gauge size={22} />} label="DuraciÃ³n promedio" value={formatDuration(data.aiConsumption.averageDurationMs)} note="Sobre eventos en memoria" />
             <MetricCard icon={<AlertTriangle size={22} />} label="Errores" value={data.aiConsumption.errorsInMemory} note={`Timeouts: ${data.aiConsumption.timeoutsInMemory}`} />
             <MetricCard icon={<FileText size={22} />} label="Costos y tokens" value={formatCurrency(aiUsage.summary.estimatedCostUsd)} note={`${formatNumber(aiUsage.summary.estimatedTotalTokens)} tokens estimados`} />
             <MetricCard icon={<Activity size={22} />} label="Llamadas 24h" value={aiUsage.summary.calls24h} note="Eventos IA persistidos" />
@@ -898,31 +872,31 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           </section>
           <div className="assessment-preview-grid">
             <article className="glass-card report-history-card">
-              <h3>Configuración segura de IA</h3>
+              <h3>ConfiguraciÃ³n segura de IA</h3>
               <div className="report-history-meta">
                 <span>Credencial Gemini: {ai.geminiConfigurado ? "Configurada" : "No configurada"}</span>
                 <span>Credencial OpenCode Go: {ai.opencodeGoConfigurado ? "Configurada" : "No configurada"}</span>
                 <span>OpenAI: no expuesto como proveedor operativo</span>
-                <span>Secretos expuestos: {ai.secretosExpuestos ? "Sí" : "No"}</span>
-                <span>Archivos crudos enviados: {ai.archivosCrudosEnviados ? "Sí" : "No"}</span>
+                <span>Secretos expuestos: {ai.secretosExpuestos ? "SÃ­" : "No"}</span>
+                <span>Archivos crudos enviados: {ai.archivosCrudosEnviados ? "SÃ­" : "No"}</span>
                 <span>Timeout: {ai.timeoutMs} ms</span>
-                <span>Entrada máxima: {ai.maxInputChars} caracteres</span>
-                <span>Salida máxima: {ai.maxOutputChars} caracteres</span>
+                <span>Entrada mÃ¡xima: {ai.maxInputChars} caracteres</span>
+                <span>Salida mÃ¡xima: {ai.maxOutputChars} caracteres</span>
               </div>
               <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola.</p>
             </article>
             <article className="glass-card report-history-card">
-              <h3>Métricas en memoria</h3>
+              <h3>MÃ©tricas en memoria</h3>
               <div className="report-history-meta">
                 <span>Solicitudes: {ai.metricas.solicitudes}</span>
-                <span>Éxitos: {ai.metricas.exitos}</span>
+                <span>Ã‰xitos: {ai.metricas.exitos}</span>
                 <span>Errores: {ai.metricas.errores}</span>
                 <span>Timeouts: {ai.metricas.timeouts}</span>
                 <span>Fallback usado: {ai.metricas.fallbackUsado}</span>
-                <span>Última duración: {formatDuration(ai.ultimaDuracionMs)}</span>
+                <span>Ãšltima duraciÃ³n: {formatDuration(ai.ultimaDuracionMs)}</span>
                 <span>Promedio: {formatDuration(ai.duracionPromedioMs)}</span>
               </div>
-              <p className="assessment-inline-note">Las métricas en memoria pueden perderse con un deploy. Los eventos persistentes y costos siguen siendo estimados; no hay facturación automática real.</p>
+              <p className="assessment-inline-note">Las mÃ©tricas en memoria pueden perderse con un deploy. Los eventos persistentes y costos siguen siendo estimados; no hay facturaciÃ³n automÃ¡tica real.</p>
             </article>
             <article className="glass-card report-history-card">
               <h3>Alertas operativas</h3>
@@ -938,7 +912,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               <h3>Costos estimados</h3>
               <p>{data.aiConsumption.costStatus}</p>
               <p className="assessment-inline-note">{data.aiConsumption.costDescription}</p>
-              <p className="assessment-inline-note">No se guardan prompts completos ni respuestas crudas. No es facturación automática.</p>
+              <p className="assessment-inline-note">No se guardan prompts completos ni respuestas crudas. No es facturaciÃ³n automÃ¡tica.</p>
             </article>
             <article className="glass-card report-history-card">
               <h3>Uso persistente 30 dias</h3>
@@ -958,11 +932,11 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 <span>Consumido mes actual: {formatCurrency(data.aiConsumption.budget.spentMonthUsd)}</span>
                 <span>Uso: {formatPercent(data.aiConsumption.budget.percentUsed)}</span>
                 <span>Restante: {formatCurrency(data.aiConsumption.budget.remainingMonthUsd)}</span>
-                <span>Límite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
-                <span>Límite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
-                <span>Límite por evaluación: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
+                <span>LÃ­mite diario: {formatCurrency(data.aiConsumption.budget.settings.dailyBudgetUsd)}</span>
+                <span>LÃ­mite usuario: {formatCurrency(data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd)}</span>
+                <span>LÃ­mite por evaluaciÃ³n: {formatCurrency(data.aiConsumption.budget.settings.perAssessmentBudgetUsd)}</span>
               </div>
-              <p className="assessment-inline-note">El bloqueo automático se activa desde Configuración Operativa con aplicación de límites IA y bloqueo por presupuesto.</p>
+              <p className="assessment-inline-note">El bloqueo automÃ¡tico se activa desde ConfiguraciÃ³n Operativa con aplicaciÃ³n de lÃ­mites IA y bloqueo por presupuesto.</p>
             </article>
             <article className="glass-card report-history-card">
               <h3>Configurar presupuesto IA</h3>
@@ -973,15 +947,15 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <input name="monthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.monthlyBudgetUsd ?? ""} />
                   </label>
                   <label className="form-label">
-                    Límite diario USD
+                    LÃ­mite diario USD
                     <input name="dailyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.dailyBudgetUsd ?? ""} />
                   </label>
                   <label className="form-label">
-                    Límite por usuario USD
+                    LÃ­mite por usuario USD
                     <input name="perUserMonthlyBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perUserMonthlyBudgetUsd ?? ""} />
                   </label>
                   <label className="form-label">
-                    Límite por evaluación USD
+                    LÃ­mite por evaluaciÃ³n USD
                     <input name="perAssessmentBudgetUsd" type="number" step="0.01" min="0" className="form-input" defaultValue={data.aiConsumption.budget.settings.perAssessmentBudgetUsd ?? ""} />
                   </label>
                 </div>
@@ -1118,7 +1092,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 ) : (
                   aiUsage.recentErrors.map((event) => (
                     <div key={event.id} className="assessment-inline-note">
-                      <strong>{formatStatusLabel(event.status)}</strong> / {event.errorCategory ?? "sin categoría"} - {event.assessmentTitle ?? "sin evaluación"} - {formatDate(event.createdAt)}
+                      <strong>{formatStatusLabel(event.status)}</strong> / {event.errorCategory ?? "sin categorÃ­a"} - {event.assessmentTitle ?? "sin evaluaciÃ³n"} - {formatDate(event.createdAt)}
                     </div>
                   ))
                 )}
@@ -1144,7 +1118,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Modelo</th>
                   <th>Estado</th>
                   <th>Error</th>
-                  <th>Duración</th>
+                  <th>DuraciÃ³n</th>
                   <th>Fecha</th>
                 </tr>
               </thead>
@@ -1322,7 +1296,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<ShieldCheck size={18} />}
             label="Accesos y Planes"
             title="Derechos de acceso y accesos manuales"
-            description="Gestión interna de sólo lectura o confirmada para planes, accesos, IA y reportes. No hay facturación automática ni borrado duro."
+            description="GestiÃ³n interna de sÃ³lo lectura o confirmada para planes, accesos, IA y reportes. No hay facturaciÃ³n automÃ¡tica ni borrado duro."
           />
           <div className="assessment-preview-grid">
             <article className="glass-card report-history-card">
@@ -1375,7 +1349,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                     <input name="expiresAt" type="date" className="form-input" />
                   </label>
                   <label className="form-label">
-                    Máximo de evaluaciones
+                    MÃ¡ximo de evaluaciones
                     <input name="maxAssessments" type="number" min="0" className="form-input" />
                   </label>
                   <label className="form-label">
@@ -1399,7 +1373,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               <p className="assessment-inline-note">Estas acciones son instrucciones, no botones destructivos. ADMIN-3 no edita variables del runtime productivo.</p>
               <div className="report-history-meta">
                 <span>Apagar IA: configurar AI_ADVISORY_ENABLED=false en el entorno productivo aprobado.</span>
-                <span>Volver a simulación: configurar AI_ADVISORY_PROVIDER=mock.</span>
+                <span>Volver a simulaciÃ³n: configurar AI_ADVISORY_PROVIDER=mock.</span>
                 <span>Reactivar Gemini: validar proveedor, credencial configurada y prueba de humo antes de exponerlo.</span>
               </div>
             </article>
@@ -1430,8 +1404,8 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       <td>{formatStatusLabel(entitlement.status)}</td>
                       <td>{formatStatusLabel(entitlement.source)}</td>
                       <td>{formatDate(entitlement.expiresAt)}</td>
-                      <td>{entitlement.aiEnabled ? "Sí" : "No"}</td>
-                      <td>{entitlement.fullReportEnabled ? "Sí" : "No"}</td>
+                      <td>{entitlement.aiEnabled ? "SÃ­" : "No"}</td>
+                      <td>{entitlement.fullReportEnabled ? "SÃ­" : "No"}</td>
                       <td>{entitlement.notesInternal ?? "Sin notas"}</td>
                       <td>
                         <form action={revokeUserEntitlementAction.bind(null, entitlement.id)}>
@@ -1460,13 +1434,13 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             id="oportunidades"
             icon={<Gauge size={18} />}
             label="Oportunidades"
-            title="Oportunidades comerciales y próxima acción"
-            description="Score determinístico inicial para seguimiento comercial relacionado con la evaluación. No usa IA como autoridad."
+            title="Oportunidades comerciales y prÃ³xima acciÃ³n"
+            description="Score determinÃ­stico inicial para seguimiento comercial relacionado con la evaluaciÃ³n. No usa IA como autoridad."
           />
           <section className="assessment-summary-grid">
             <MetricCard icon={<Gauge size={22} />} label="Alto potencial" value={data.commercialOpportunities.filter((item) => item.score >= 70).length} note="Score >= 70" />
             <MetricCard icon={<AlertTriangle size={22} />} label="Requieren seguimiento" value={data.commercialOpportunities.filter((item) => item.tags.includes("Requiere seguimiento")).length} note="Customer success" />
-            <MetricCard icon={<FileText size={22} />} label="Candidatos Blueprint" value={data.commercialOpportunities.filter((item) => item.tags.includes("Candidato Blueprint")).length} note="Diseño destino" />
+            <MetricCard icon={<FileText size={22} />} label="Candidatos Blueprint" value={data.commercialOpportunities.filter((item) => item.tags.includes("Candidato Blueprint")).length} note="DiseÃ±o destino" />
             <MetricCard icon={<Users size={22} />} label="Pendientes de pago" value={data.commercialOpportunities.filter((item) => item.status === "pending_payment").length} note="Estado comercial" />
           </section>
 
@@ -1508,7 +1482,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
 
                   <div>
                     <label className="form-label" style={{ marginBottom: "12px", display: "block" }}>
-                      Próxima Acción Comercial
+                      PrÃ³xima AcciÃ³n Comercial
                       <input name="nextBestAction" className="form-input" defaultValue={activeOpportunity.nextBestAction ?? ""} style={{ width: "100%", marginTop: "4px" }} />
                     </label>
 
@@ -1531,10 +1505,10 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               <thead>
                 <tr>
                   <th>Cliente</th>
-                  <th>Evaluación</th>
+                  <th>EvaluaciÃ³n</th>
                   <th>Score</th>
                   <th>Etiquetas</th>
-                  <th>Próxima acción</th>
+                  <th>PrÃ³xima acciÃ³n</th>
                   <th>Plan sugerido</th>
                   <th>Estado</th>
                   <th>Notas</th>
@@ -1582,9 +1556,9 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <SectionTitle
             id="configuracion"
             icon={<Settings size={18} />}
-            label="Configuración"
-            title="Health de configuración segura"
-            description="Sólo estados seguros. No se muestran secretos, tokens, URLs privadas completas ni API keys."
+            label="ConfiguraciÃ³n"
+            title="Health de configuraciÃ³n segura"
+            description="SÃ³lo estados seguros. No se muestran secretos, tokens, URLs privadas completas ni API keys."
           />
           <p className="assessment-inline-note">Las credenciales no se muestran ni se editan desde esta consola.</p>
           <div className="assessment-table-wrap">
@@ -1617,7 +1591,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<Users size={18} />}
             label="Usuarios"
             title="Usuarios recientes"
-            description="Vista de sólo lectura. Acciones destructivas y suplantación quedan fuera de ADMIN-1."
+            description="Vista de sÃ³lo lectura. Acciones destructivas y suplantaciÃ³n quedan fuera de ADMIN-1."
           />
           
           <form method="GET" className="admin-filter-row" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
@@ -1642,7 +1616,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Usuario</th>
                   <th>Email</th>
                   <th>Alta</th>
-                  <th>Último acceso</th>
+                  <th>Ãšltimo acceso</th>
                   <th>Rol</th>
                   <th>Estado</th>
                   <th>Evaluaciones</th>
@@ -1769,7 +1743,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 Anterior
               </Link>
               <span className="assessment-inline-note" style={{ alignSelf: "center" }}>
-                Página {usersPage} de {data.pagination.users.totalPages || 1}
+                PÃ¡gina {usersPage} de {data.pagination.users.totalPages || 1}
               </span>
               <Link
                 href={`?tab=usuarios&usersSearch=${encodeURIComponent(usersSearch)}&usersPage=${usersPage + 1}`}
@@ -1790,7 +1764,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<Database size={18} />}
             label="Evaluaciones"
             title="Evaluaciones recientes"
-            description="Vista de sólo lectura para revisar estado, evidencia, contexto, PDF e IA."
+            description="Vista de sÃ³lo lectura para revisar estado, evidencia, contexto, PDF e IA."
           />
 
           <form method="GET" className="admin-filter-row" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
@@ -1799,7 +1773,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               name="assessmentsSearch"
               className="form-input"
               style={{ maxWidth: "300px" }}
-              placeholder="Buscar por título o cliente..."
+              placeholder="Buscar por tÃ­tulo o cliente..."
               defaultValue={assessmentsSearch}
             />
             <button type="submit" className="btn btn-primary">Buscar</button>
@@ -1812,14 +1786,14 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             <table className="assessment-table">
               <thead>
                 <tr>
-                  <th>Evaluación</th>
+                  <th>EvaluaciÃ³n</th>
                   <th>Cliente/usuario</th>
                   <th>Estado</th>
                   <th>Evidencia</th>
                   <th>Evidencia avanzada</th>
                   <th>Contexto</th>
                   <th>PDF</th>
-                  <th>Plan migraciÃ³n</th>
+                  <th>Plan migraciÃƒÂ³n</th>
                   <th>IA</th>
                   <th>Readiness</th>
                   <th>Confianza</th>
@@ -1830,7 +1804,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <th>Ultimo estado IA</th>
                   <th>Oportunidad</th>
                   <th>Etiquetas</th>
-                  <th>Próxima acción</th>
+                  <th>PrÃ³xima acciÃ³n</th>
                   <th>Actualizado</th>
                   <th>Acciones</th>
                 </tr>
@@ -1935,7 +1909,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 Anterior
               </Link>
               <span className="assessment-inline-note" style={{ alignSelf: "center" }}>
-                Página {assessmentsPage} de {data.pagination.assessments.totalPages || 1}
+                PÃ¡gina {assessmentsPage} de {data.pagination.assessments.totalPages || 1}
               </span>
               <Link
                 href={`?tab=evaluaciones&assessmentsSearch=${encodeURIComponent(assessmentsSearch)}&assessmentsPage=${assessmentsPage + 1}`}
@@ -1954,23 +1928,23 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <SectionTitle
             id="licenciamiento"
             icon={<BadgePercent size={18} />}
-            label="Análisis de Licenciamiento"
+            label="AnÃ¡lisis de Licenciamiento"
             title="Seguimiento de Licensing & Cost Exposure"
-            description="Revisión de configuraciones de licenciamiento, modos, fechas de renovación, disclaimers y notas cargadas por los clientes."
+            description="RevisiÃ³n de configuraciones de licenciamiento, modos, fechas de renovaciÃ³n, disclaimers y notas cargadas por los clientes."
           />
           <div className="assessment-table-wrap">
             <table className="assessment-table">
               <thead>
                 <tr>
-                  <th>Evaluación</th>
+                  <th>EvaluaciÃ³n</th>
                   <th>Cliente</th>
                   <th>Estado</th>
-                  <th>Modo de Análisis</th>
+                  <th>Modo de AnÃ¡lisis</th>
                   <th>Confianza Financiera</th>
                   <th>Calidad Ahorros</th>
-                  <th>Renovación</th>
-                  <th>Escalación YoY</th>
-                  <th>Inversión Migración</th>
+                  <th>RenovaciÃ³n</th>
+                  <th>EscalaciÃ³n YoY</th>
+                  <th>InversiÃ³n MigraciÃ³n</th>
                   <th>Soporte Proxmox</th>
                   <th>Contrato / Oferta</th>
                   <th>Notas del cliente</th>
@@ -1997,15 +1971,15 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                       <td>{lic && lic.financialConfidenceScore !== null ? `${lic.financialConfidenceScore}/100 (${lic.financialConfidenceLabel})` : "-"}</td>
                       <td>{lic ? formatStatusLabel(lic.savingsQuality) : "-"}</td>
                       <td>{lic?.renewalDate ? formatDate(lic.renewalDate) : "-"}</td>
-                      <td>{lic ? (lic.includeEscalation ? "Sí (10%)" : "No") : "-"}</td>
+                      <td>{lic ? (lic.includeEscalation ? "SÃ­ (10%)" : "No") : "-"}</td>
                       <td>{lic && lic.migrationInvestment !== null ? formatCurrency(lic.migrationInvestment) : "-"}</td>
                       <td>{lic ? formatStatusLabel(lic.proxmoxSupportScenario) : "-"}</td>
                       <td>
                         {lic ? (
                           <span>
-                            {lic.hasContract ? "Contrato: Sí" : "Contrato: No"}
+                            {lic.hasContract ? "Contrato: SÃ­" : "Contrato: No"}
                             <br />
-                            {lic.hasRenewalQuote ? "Oferta: Sí" : "Oferta: No"}
+                            {lic.hasRenewalQuote ? "Oferta: SÃ­" : "Oferta: No"}
                           </span>
                         ) : "-"}
                       </td>
@@ -2033,19 +2007,19 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<FileText size={18} />}
             label="Contexto y Evidencias Adicionales"
             title="Seguimiento de Client Context & Additional Evidence"
-            description="Revisión del contexto libre ingresado por el cliente, estado de análisis de IA y archivos de evidencia clasificados."
+            description="RevisiÃ³n del contexto libre ingresado por el cliente, estado de anÃ¡lisis de IA y archivos de evidencia clasificados."
           />
           <div className="assessment-table-wrap">
             <table className="assessment-table">
               <thead>
                 <tr>
-                  <th>Evaluación</th>
+                  <th>EvaluaciÃ³n</th>
                   <th>Cliente/usuario</th>
                   <th>Estado Contexto</th>
                   <th>Largo Contexto</th>
-                  <th>Estado Análisis IA</th>
+                  <th>Estado AnÃ¡lisis IA</th>
                   <th>Resumen Interpretado</th>
-                  <th>Archivos Adicionales (Clasificación)</th>
+                  <th>Archivos Adicionales (ClasificaciÃ³n)</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -2089,7 +2063,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                         {files.length > 0 ? (
                           <ul style={{ margin: 0, paddingLeft: "16px", fontSize: "11px", listStyleType: "disc" }}>
                             {files.map((file) => (
-                              <li key={file.id} title={`Propósito: ${file.purpose || "Sin propósito"}. Estado parser: ${file.processingStatus}`}>
+                              <li key={file.id} title={`PropÃ³sito: ${file.purpose || "Sin propÃ³sito"}. Estado parser: ${file.processingStatus}`}>
                                 <strong>{file.filename}</strong> ({Math.round(file.fileSize / 1024)} KB)
                                 <br />
                                 <span className="assessment-inline-note">Tipo: {formatStatusLabel(file.classification)}</span>
@@ -2121,7 +2095,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             icon={<HardDrive size={18} />}
             label="Storage y Ceph"
             title="Consola Operativa de Storage / Ceph"
-            description="Métricas agregadas, distribución de clasificaciones de evidencia, estados del motor Ceph y auditoría de IA de Storage."
+            description="MÃ©tricas agregadas, distribuciÃ³n de clasificaciones de evidencia, estados del motor Ceph y auditorÃ­a de IA de Storage."
           />
 
           <div className="assessment-summary-grid" style={{ marginBottom: "24px" }}>
@@ -2129,7 +2103,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
               icon={<HardDrive size={22} />}
               label="Storage Activo"
               value={data.storageCeph.activeStorageAssessments}
-              note="Evaluaciones con módulo activo"
+              note="Evaluaciones con mÃ³dulo activo"
             />
             <MetricCard
               icon={<Server size={22} />}
@@ -2219,12 +2193,12 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <div className="grid-2-columns" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "24px" }}>
             <div className="glass-card" style={{ padding: "16px" }}>
               <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
-                Evidencias de Storage por Clasificación
+                Evidencias de Storage por ClasificaciÃ³n
               </h3>
               <table className="assessment-table" style={{ fontSize: "12px" }}>
                 <thead>
                   <tr>
-                    <th>Clasificación Técnica</th>
+                    <th>ClasificaciÃ³n TÃ©cnica</th>
                     <th style={{ textAlign: "right" }}>Cantidad</th>
                   </tr>
                 </thead>
@@ -2258,12 +2232,12 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
 
             <div className="glass-card" style={{ padding: "16px" }}>
               <h3 style={{ marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "6px" }}>
-                Auditoría IA (Estado Análisis Storage)
+                AuditorÃ­a IA (Estado AnÃ¡lisis Storage)
               </h3>
               <table className="assessment-table" style={{ fontSize: "12px" }}>
                 <thead>
                   <tr>
-                    <th>Estado de Análisis IA</th>
+                    <th>Estado de AnÃ¡lisis IA</th>
                     <th style={{ textAlign: "right" }}>Cantidad</th>
                   </tr>
                 </thead>
@@ -2293,7 +2267,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
             <table className="assessment-table">
               <thead>
                 <tr>
-                  <th>Evaluación</th>
+                  <th>EvaluaciÃ³n</th>
                   <th>Cliente/Usuario</th>
                   <th>Flujo Readiness</th>
                   <th>Modo Destino</th>
@@ -2374,7 +2348,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                 {data.recentAssessments.filter((assessment) => assessment.storage.enabled).length === 0 && (
                   <tr>
                     <td colSpan={9} style={{ textAlign: "center" }} className="assessment-empty-note">
-                      No hay evaluaciones con módulo Storage habilitado.
+                      No hay evaluaciones con mÃ³dulo Storage habilitado.
                     </td>
                   </tr>
                 )}
@@ -2389,12 +2363,12 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
           <SectionTitle
             id="auditoria"
             icon={<Activity size={18} />}
-            label="Auditoría y errores"
-            title="Últimos eventos"
+            label="AuditorÃ­a y errores"
+            title="Ãšltimos eventos"
             description="Eventos persistidos disponibles. La consola avanzada de errores se mantiene como monitoreo operativo interno."
           />
           {data.advancedAuditEvents.length === 0 ? (
-            <p className="assessment-empty-note">No hay eventos recientes para mostrar. La auditoría persistente registra cambios admin, IA, PDF, accesos y eventos operativos cuando existen.</p>
+            <p className="assessment-empty-note">No hay eventos recientes para mostrar. La auditorÃ­a persistente registra cambios admin, IA, PDF, accesos y eventos operativos cuando existen.</p>
           ) : (
             <div className="report-history-grid">
               {data.advancedAuditEvents.map((event) => (
@@ -2406,7 +2380,7 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
                   <p>{event.message}</p>
                   <div className="report-history-meta">
                     <span>Usuario: {event.user?.email ?? "No disponible"}</span>
-                    <span>Evaluación: {event.assessment?.title ?? "No disponible"}</span>
+                    <span>EvaluaciÃ³n: {event.assessment?.title ?? "No disponible"}</span>
                   </div>
                 </article>
               ))}

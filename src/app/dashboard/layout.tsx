@@ -66,7 +66,7 @@ export default async function DashboardLayout({
           <div className="dashboard-nav-right">
             <span className="dashboard-user-badge">
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#06b6d4" }}></span>
-              {session.user.email}
+              {session.user.name ?? "Usuario"}
             </span>
             <SignOutButton className="btn btn-secondary dashboard-nav-signout" />
           </div>

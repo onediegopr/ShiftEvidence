@@ -32,6 +32,7 @@ import {
   METHODOLOGY_NOTE_PRIORITIES,
   METHODOLOGY_REVIEW_STATUSES,
 } from "../../../../server/methodology/types";
+import { formatAdminDate } from "../../../../lib/adminDate";
 import {
   archiveMethodologyAdminNoteAction,
   createMethodologyAdminNoteAction,
@@ -41,18 +42,7 @@ import {
 } from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
-  if (!value) return "No disponible";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "No disponible";
-
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return formatAdminDate(value);
 }
 
 function formatCount(value: number) {

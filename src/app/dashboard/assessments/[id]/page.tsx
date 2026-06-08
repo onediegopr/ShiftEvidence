@@ -107,6 +107,7 @@ import { buildAssessmentLicensingAnalysisSummary } from "../../../../server/asse
 import { buildAssessmentClientContextSummary } from "../../../../server/assessments/clientContextService";
 import { buildAssessmentStorageDestinationReadinessSummary } from "../../../../server/assessments/storageDestinationReadinessService";
 import { SUPPORT_CATEGORY_OPTIONS } from "../../../../server/support/supportConfig";
+import { formatCompactDateTime } from "../../../../lib/compactDate";
 
 type AssessmentDetailPageProps = {
   params: Promise<{
@@ -190,15 +191,7 @@ function statusLabel(value: string) {
 }
 
 function dateLabel(value: Date | string | null | undefined) {
-  if (!value) {
-    return "—";
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date(value));
+  return formatCompactDateTime(value, "—");
 }
 
 function formatBytes(value: number | null | undefined) {

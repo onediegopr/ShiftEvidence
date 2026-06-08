@@ -24,6 +24,7 @@ import {
   updateBillingInvoiceRequestAction,
 } from "./actions";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
+import { formatAdminDate } from "../../../../lib/adminDate";
 import {
   getBillingAdminLedgerSnapshot,
   getBillingLedgerFallback,
@@ -96,17 +97,8 @@ type AdminBillingPageProps = {
 type Tone = "neutral" | "good" | "warning" | "danger";
 
 function formatDate(value: Date | string | null | undefined) {
-  if (!value) return "Sin eventos";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Sin eventos";
-
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  const formatted = formatAdminDate(value);
+  return formatted === "No disponible" ? "Sin eventos" : formatted;
 }
 
 function formatProvider(value: string) {
@@ -1133,7 +1125,7 @@ function SubscriptionsTable({
 }
 
 export default async function AdminBillingPage({ searchParams }: AdminBillingPageProps) {
-  const session = await requireAdminSession();
+  await requireAdminSession();
   const query = await Promise.resolve(searchParams);
   const matchSearch = query?.matchSearch ?? "";
   let ledger;
@@ -1182,7 +1174,6 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           <div className="badge badge-cyan">Administracion</div>
           <h1>Billing y proveedores</h1>
           <p>Estado operativo de checkout, proveedores, fulfillment manual, webhooks, ledger y entitlements.</p>
-          <p className="assessment-inline-note">Sesion admin: {session.user.email}</p>
           {savedMessage ? <div className="dashboard-banner dashboard-banner-success" role="status">{savedMessage}</div> : null}
           {errorMessage ? <div className="dashboard-banner dashboard-banner-error" role="alert">{errorMessage}</div> : null}
         </div>

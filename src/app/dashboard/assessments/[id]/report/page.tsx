@@ -35,6 +35,7 @@ import {
   getUnlockRequestTypeLabel,
 } from "../../../../../server/unlocks/unlockRequestService";
 import { requestUnlockAction } from "./actions";
+import { formatCompactDateTime } from "../../../../../lib/compactDate";
 
 type ReportPageProps = {
   params: Promise<{
@@ -123,15 +124,7 @@ function formatBytes(value: number | null | undefined) {
 }
 
 function dateLabel(value: Date | string | null | undefined) {
-  if (!value) {
-    return "—";
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date(value));
+  return formatCompactDateTime(value, "—");
 }
 
 function statusLabel(value: string) {

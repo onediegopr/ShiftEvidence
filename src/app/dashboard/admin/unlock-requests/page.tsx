@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { UnlockRequestStatus, UnlockRequestType } from "@prisma/client";
 import { ArrowLeft, BadgePercent, CheckCircle2, CircleAlert, ClipboardList, ShieldCheck, XCircle } from "lucide-react";
 import { requireAdminSession } from "../../../../server/admin/adminAuth";
+import { formatAdminDate } from "../../../../lib/adminDate";
 import {
   getUnlockRequestStatusTone,
   listPendingUnlockRequestsForAdmin,
@@ -16,17 +17,8 @@ import {
 } from "./actions";
 
 function formatDate(value: Date | string | null | undefined) {
-  if (!value) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("es-AR", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
+  const formatted = formatAdminDate(value);
+  return formatted === "No disponible" ? "-" : formatted;
 }
 
 function formatMoneyCents(value: number | null | undefined, currency = "USD") {
