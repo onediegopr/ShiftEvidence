@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "About | Shift Evidence",
   description:
     "Learn how Shift Evidence approaches VMware to Proxmox readiness with independent evidence review, senior guidance and controlled migration decision packs.",
+  alternates: {
+    canonical: "https://www.shiftevidence.com/about",
+  },
 };
 
 const trustSignals = [

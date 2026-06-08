@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "ShiftReadiness helps teams assess VMware to Proxmox cost, risk and target architecture before they migrate.",
   alternates: {
-    canonical: "https://shiftevidence.com/shiftreadiness",
+    canonical: "https://www.shiftevidence.com/shiftreadiness",
   },
 };
 

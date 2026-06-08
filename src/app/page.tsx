@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Shift Evidence helps you understand cost, risk and architecture before moving from VMware to Proxmox.",
   alternates: {
-    canonical: "https://shiftevidence.com/",
+    canonical: "https://www.shiftevidence.com/",
   },
 };
 

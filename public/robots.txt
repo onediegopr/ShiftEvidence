@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shiftevidence.com/sitemap.xml
+Disallow: /dashboard
+Disallow: /billing
+Disallow: /login
+Disallow: /sign-in
+Disallow: /client-login
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /laboratorio
+Disallow: /preview
+
+Sitemap: https://www.shiftevidence.com/sitemap.xml

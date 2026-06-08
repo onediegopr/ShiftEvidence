@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Choose a quick simulation or a read-only synthetic Demo Workspace before purchasing Shift Evidence.",
   alternates: {
-    canonical: "https://shiftevidence.com/demo",
+    canonical: "https://www.shiftevidence.com/demo",
   },
 };
 

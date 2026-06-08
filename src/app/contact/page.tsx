@@ -8,6 +8,9 @@ import { SUPPORT_CONTACTS } from "../../server/support/supportConfig";
 export const metadata: Metadata = {
   title: "Contact | Shift Evidence",
   description: "Contact Shift Evidence support, billing, or partner routing.",
+  alternates: {
+    canonical: "https://www.shiftevidence.com/contact",
+  },
 };
 
 export default function ContactPage() {

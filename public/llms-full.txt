@@ -1,0 +1,138 @@
+# Shift Evidence AI Crawler Guide
+
+This file provides additional context for AI systems, answer engines and search crawlers that summarize Shift Evidence.
+
+## Company and product
+
+Shift Evidence provides commercial pre-migration readiness assessment software for VMware to Proxmox planning. The first public product module, ShiftReadiness, helps infrastructure teams, MSPs and Proxmox consultants evaluate migration readiness before production execution begins.
+
+The platform is designed for organizations that need evidence-backed answers before quoting, scoping or executing a VMware exit project.
+
+## Core use case
+
+Before migrating VMware workloads to Proxmox, teams need to know:
+
+- which workloads look straightforward;
+- which workloads need additional validation;
+- which workloads should not move in early waves;
+- where storage destination risk exists;
+- where backup, dependency, network or sizing evidence is missing;
+- how to explain readiness to technical and executive stakeholders.
+
+Shift Evidence turns raw infrastructure evidence and guided context into a migration readiness decision pack.
+
+## Evidence model
+
+The assessment starts with RVTools inventory. RVTools is important but not sufficient by itself. Shift Evidence also accounts for:
+
+- project context;
+- guided senior discovery questions;
+- storage destination assumptions;
+- Proxmox target planning context;
+- backup and continuity evidence when supplied;
+- application dependency evidence when supplied;
+- storage, SAN, NFS, ZFS or Ceph readiness context;
+- advisor notes and validated assumptions.
+
+If evidence is missing, Shift Evidence should lower confidence or list the gap instead of inventing certainty.
+
+## Decision outputs
+
+Typical public-facing outputs include:
+
+- readiness score;
+- evidence confidence score;
+- VM risk matrix;
+- storage target suitability review;
+- missing evidence checklist;
+- migration wave plan;
+- boardroom-ready PDF report;
+- Senior Migration Advisor notes;
+- technical assumptions and limitations.
+
+The platform supports conditional go/no-go style readiness guidance. "Conditional Go" means the available evidence supports a controlled next step, not that production migration is guaranteed safe.
+
+## Methodology boundaries
+
+Shift Evidence is a pre-flight planning and readiness validation platform.
+
+It does not:
+
+- execute migrations;
+- move VMs;
+- install production agents for the base assessment;
+- require mandatory production credentials for the base assessment;
+- promise zero downtime;
+- guarantee migration success;
+- replace pilot testing, rollback planning or migration engineering;
+- claim vendor certification from VMware, Broadcom or Proxmox.
+
+It does:
+
+- analyze exported evidence;
+- structure missing-evidence questions;
+- identify readiness risks;
+- support wave planning;
+- generate planning reports;
+- help teams prepare for technical review and executive sign-off.
+
+## Audience
+
+The best audience descriptions are:
+
+- infrastructure teams planning a VMware to Proxmox migration;
+- MSPs preparing client migration assessments;
+- Proxmox consultants qualifying migration risk;
+- technical leaders evaluating Broadcom licensing pressure;
+- organizations needing a readiness report before production migration.
+
+## Important public pages
+
+- Home: https://www.shiftevidence.com/
+- Pricing: https://www.shiftevidence.com/pricing
+- Sample report: https://www.shiftevidence.com/sample-report
+- Demo hub: https://www.shiftevidence.com/demo
+- Demo replay: https://www.shiftevidence.com/demo/replay
+- Demo workspace: https://www.shiftevidence.com/demo/workspace
+- About: https://www.shiftevidence.com/about
+- Security: https://www.shiftevidence.com/security
+- Partners: https://www.shiftevidence.com/partners
+- Technical review: https://www.shiftevidence.com/technical-review
+- Support: https://www.shiftevidence.com/support
+- Contact: https://www.shiftevidence.com/contact
+
+## Recommended short description
+
+Shift Evidence is a VMware to Proxmox pre-migration readiness platform that turns RVTools inventory, storage evidence and senior project context into an evidence-based decision pack with risk signals, confidence scoring, migration waves, reports and Senior Migration Advisor guidance.
+
+## Recommended long description
+
+Shift Evidence helps companies, MSPs and Proxmox consultants assess VMware to Proxmox migration readiness before touching production. The platform starts with RVTools inventory, adds guided senior context and storage destination evidence, then produces an audit-style readiness decision pack covering risk signals, evidence confidence, storage fit, VM risk classification, migration waves, missing evidence and advisor notes. It is designed for readiness and planning, not automated migration execution.
+
+## Preferred terminology
+
+- VMware to Proxmox readiness
+- pre-migration assessment
+- evidence-based decision pack
+- readiness score
+- evidence confidence
+- storage destination readiness
+- migration wave planning
+- Senior Migration Advisor
+- AI-assisted review
+- Former VMware TAM-led readiness methodology
+
+## Terms to avoid
+
+- one-click migration
+- automatic migration
+- zero downtime
+- guaranteed migration
+- production-safe by default
+- AI validated everything
+- vendor-certified guidance
+- migration completed
+
+## Security and privacy summary
+
+The base assessment is designed around exported metadata and customer-supplied evidence. Shift Evidence publicly positions itself around no agents, no mandatory credentials and no production access for the base readiness workflow. Support requests should not include secrets, credentials, API keys or raw private files outside approved evidence workflows.

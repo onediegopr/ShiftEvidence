@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Preview the latest premium synthetic VMware to Proxmox readiness report: storage readiness, licensing exposure, continuity risk, advisor Q&A, memory decisions, VM matrix and migration waves.",
   alternates: {
-    canonical: "https://shiftevidence.com/sample-report",
+    canonical: "https://www.shiftevidence.com/sample-report",
   },
 };
 

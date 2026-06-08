@@ -10,6 +10,9 @@ import { createPublicSupportRequestAction } from "./actions";
 export const metadata: Metadata = {
   title: "Support | Shift Evidence",
   description: "Contact Shift Evidence support for assessment, privacy, security, and partner questions.",
+  alternates: {
+    canonical: "https://www.shiftevidence.com/support",
+  },
 };
 
 type SupportPageProps = {

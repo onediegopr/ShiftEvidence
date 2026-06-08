@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     "Watch a synthetic replay showing how VMware evidence becomes a Proxmox migration readiness decision pack.",
   alternates: {
-    canonical: "https://shiftevidence.com/demo/replay",
+    canonical: "https://www.shiftevidence.com/demo/replay",
   },
 };
 
