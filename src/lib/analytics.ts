@@ -2,6 +2,13 @@ type GoogleTagCommand = "config" | "event" | "js" | "set";
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
+const startAssessmentConversionSendTo = process.env.NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_SEND_TO?.trim();
+const startAssessmentConversionValue = Number.parseFloat(
+  process.env.NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_VALUE ?? "1.0",
+);
+const startAssessmentConversionCurrency =
+  process.env.NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_CURRENCY?.trim() || "ARS";
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -35,6 +42,19 @@ export function trackSampleReportDownload(params: AnalyticsParams = {}) {
 export function trackPricingClick(plan?: string, params: AnalyticsParams = {}) {
   trackEvent("pricing_click", {
     plan,
+    ...params,
+  });
+}
+
+export function trackStartAssessmentConversion(params: AnalyticsParams = {}) {
+  if (!startAssessmentConversionSendTo) {
+    return;
+  }
+
+  trackEvent("conversion", {
+    send_to: startAssessmentConversionSendTo,
+    value: Number.isFinite(startAssessmentConversionValue) ? startAssessmentConversionValue : 1.0,
+    currency: startAssessmentConversionCurrency,
     ...params,
   });
 }

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { authClient } from "../../lib/auth-client";
+import { trackStartAssessmentConversion } from "../../lib/analytics";
 import { createOnboardingAssessmentAction } from "./actions";
 import vmwareLogo from "../../../images/vmware.svg";
 import proxmoxLogo from "../../../images/proxmox.svg";
@@ -146,6 +147,9 @@ export default function SignUpPage() {
     }
 
     setIsSubmitting(false);
+    trackStartAssessmentConversion({
+      source: "sign_up",
+    });
     setIsRegistered(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

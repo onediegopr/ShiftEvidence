@@ -44,15 +44,39 @@ Available helpers:
 - `trackLead`
 - `trackSampleReportDownload`
 - `trackPricingClick`
+- `trackStartAssessmentConversion`
 
-These helpers are intentionally not wired into paid conversion flows yet. They are safe client-side wrappers around `window.gtag` and no-op during SSR or when the tag has not loaded.
+These helpers are safe client-side wrappers around `window.gtag` and no-op during SSR or when the tag has not loaded.
+
+## Google Ads start assessment conversion
+
+The Start Assessment conversion fires only after a successful account creation on `/sign-up`.
+
+It does not fire on generic page view, `/start` redirect, or ordinary visits to `/sign-up`.
+
+Configure it with public build-time variables:
+
+```env
+NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_SEND_TO=AW-16907601641/5DFjCLyvi7scEOmNlv4-
+NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_VALUE=1.0
+NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_CURRENCY=ARS
+```
+
+The emitted event matches the Google Ads snippet:
+
+```js
+gtag("event", "conversion", {
+  send_to: "AW-16907601641/5DFjCLyvi7scEOmNlv4-",
+  value: 1.0,
+  currency: "ARS",
+});
+```
 
 ## What remains for Google Ads conversion tracking
 
-Real Google Ads conversion tracking still requires:
+Additional Google Ads conversion tracking still requires:
 
-- Google Ads Conversion ID, usually `AW-XXXXXXX`
-- Conversion labels per action
+- Conversion labels per additional action
 - A consent/privacy decision
 - Explicit event mapping for actions such as lead submit, sample download, pricing intent, or checkout start
 - Validation in Google Tag Assistant / GA4 DebugView
