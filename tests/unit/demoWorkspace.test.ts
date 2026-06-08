@@ -111,9 +111,9 @@ describe("read-only synthetic Demo Workspace", () => {
         labels: ["Watch Quick Simulation", "Explore a Sample Assessment"],
       },
       "/vmware-to-proxmox-readiness": {
-        file: "src/app/vmware-to-proxmox-readiness/page.tsx",
-        hrefs: ['href="/demo/replay"', 'href="/demo/workspace"'],
-        labels: ["Watch 90-second simulation", "Explore a Sample Assessment"],
+        file: "src/components/googleAdsLanding/GoogleAdsLandingV2.tsx",
+        hrefs: ['href="/demo/replay"', 'href: "/demo/workspace"', 'href="/sample-report"', 'href="/start"'],
+        labels: ["Watch 90-Second Demo", "Explore workspace", "Download Sample Report", "Start Readiness Assessment"],
       },
     };
 

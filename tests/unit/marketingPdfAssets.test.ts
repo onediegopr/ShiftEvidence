@@ -28,7 +28,6 @@ const pdfAssets = [
 const linkSources = [
   "src/components/sample-report/SampleReportPage.tsx",
   "src/app/pricing/page.tsx",
-  "src/app/vmware-to-proxmox-readiness/page.tsx",
   "src/components/demo/MigrationReadinessReplay.tsx",
 ] as const;
 
@@ -66,8 +65,6 @@ describe("marketing PDF assets", () => {
     expect(sources["src/components/sample-report/SampleReportPage.tsx"]).toContain(productBrochurePath);
     expect(sources["src/app/pricing/page.tsx"]).toContain(productBrochurePath);
     expect(sources["src/app/pricing/page.tsx"]).toContain(blueprintOverviewPath);
-    expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).toContain(productBrochurePath);
-    expect(sources["src/app/vmware-to-proxmox-readiness/page.tsx"]).toContain(blueprintOverviewPath);
     expect(sources["src/components/demo/MigrationReadinessReplay.tsx"]).toContain(productBrochurePath);
 
     for (const source of linkSources) {

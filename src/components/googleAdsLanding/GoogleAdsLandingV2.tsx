@@ -111,7 +111,7 @@ const after = [
 const trustItems = [
   ["No agents", "The base path starts with exported evidence, not installed collectors."],
   ["No mandatory vCenter credentials", "Teams can begin with RVTools and approved files."],
-  ["No production access required", "The lab page preserves the assessment-before-execution boundary."],
+  ["No production access required", "The workflow preserves the assessment-before-execution boundary."],
   ["Customer-controlled evidence", "Missing evidence stays visible instead of being guessed away."],
   ["Synthetic demos available", "Buyers can inspect output quality before private upload."],
   ["Optional collectors only where applicable", "Read-only collectors remain optional and scoped."],
@@ -172,7 +172,6 @@ function SectionHeader({ eyebrow, title, copy }: { eyebrow: string; title: strin
 export default function GoogleAdsLandingV2() {
   return (
     <>
-      <div className={styles.labBanner}>LAB PREVIEW - Google Ads Landing V2. Not the live production landing.</div>
       <Navbar />
       <main className={styles.page}>
         <section className={styles.hero}>
@@ -252,7 +251,7 @@ export default function GoogleAdsLandingV2() {
             <SectionHeader
               eyebrow="What you receive"
               title="A decision pack built for migration pressure."
-              copy="The landing leads with outputs because Google Ads traffic needs to understand value fast."
+              copy="Outputs are structured so technical teams, MSPs and decision makers can move from raw evidence to a safer next step."
             />
             <div className={styles.outputGrid}>
               {outputs.map(([title, copy, Icon]) => (
@@ -334,7 +333,7 @@ export default function GoogleAdsLandingV2() {
             <SectionHeader
               eyebrow="Why now"
               title="Teams are evaluating Proxmox because the VMware path changed."
-              copy="This section speaks to Broadcom-era urgency without making legal, financial or guaranteed-savings claims."
+              copy="Shift Evidence helps teams evaluate the VMware exit path with evidence, not assumptions."
             />
             <div className={styles.marketGrid}>
               {broadcomDrivers.map((driver) => (
@@ -394,7 +393,7 @@ export default function GoogleAdsLandingV2() {
             <SectionHeader
               eyebrow="Pricing preview"
               title="Start with the level of confidence you need."
-              copy="Uses current plan data and existing routes. No checkout, billing or payment logic was changed."
+              copy="Current assessment plans support first-pass readiness, deeper professional review, migration blueprint planning and repeatable MSP workflows."
             />
             <div className={styles.pricingGrid}>
               {marketingPlans.map((plan) => (
@@ -426,7 +425,7 @@ export default function GoogleAdsLandingV2() {
               <SectionHeader
                 eyebrow="Security and trust"
                 title="Built for assessment boundaries, not production access."
-                copy="The page keeps the safety story explicit for search traffic evaluating a migration vendor."
+                copy="Start with customer-controlled evidence and keep production changes out of the readiness workflow."
               />
             </div>
             <div className={styles.trustGrid}>

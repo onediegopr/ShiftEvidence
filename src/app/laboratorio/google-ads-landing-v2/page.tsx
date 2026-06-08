@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import GoogleAdsLandingV2 from "../../../components/googleAdsLanding/GoogleAdsLandingV2";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Google Ads Landing V2 Lab",
+  title: "Google Ads Landing V2 Lab Redirect",
   description:
-    "Laboratory preview for a Google Ads-oriented VMware to Proxmox readiness landing page.",
+    "Redirects to the published VMware to Proxmox readiness landing page.",
   robots: {
     index: false,
     follow: false,
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function GoogleAdsLandingV2LabPage() {
-  return <GoogleAdsLandingV2 />;
+  redirect("/vmware-to-proxmox-readiness");
 }
