@@ -14670,6 +14670,208 @@ p {
     box-shadow: 0 18px 44px rgba(109, 73, 23, 0.16);
 }
 
+.commercial-resources {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid rgba(110, 231, 255, 0.14);
+    border-radius: 32px;
+    background:
+        radial-gradient(circle at 12% 12%, rgba(46, 211, 243, 0.16), transparent 34%),
+        radial-gradient(circle at 88% 18%, rgba(245, 166, 59, 0.12), transparent 30%),
+        linear-gradient(135deg, rgba(9, 17, 32, 0.94), rgba(3, 7, 18, 0.9));
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+}
+
+.commercial-resources::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    border-radius: inherit;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(circle at 50% 0%, black, transparent 72%);
+    opacity: 0.65;
+}
+
+.commercial-resources-head {
+    max-width: 840px;
+}
+
+.commercial-resources-head h2 {
+    margin-top: 0.85rem;
+    color: white;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.02;
+    letter-spacing: -0.055em;
+}
+
+.commercial-resources-head p {
+    max-width: 760px;
+    margin-top: 0.85rem;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+}
+
+.commercial-resource-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.commercial-resource-card {
+    position: relative;
+    min-height: 290px;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 1rem;
+    padding: 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 26px;
+    background:
+        linear-gradient(155deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018)),
+        rgba(5, 10, 24, 0.74);
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.commercial-resource-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(110, 231, 255, 0.28);
+    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.32);
+}
+
+.commercial-resource-card-featured {
+    border-color: rgba(245, 166, 59, 0.32);
+    box-shadow: inset 0 0 0 1px rgba(245, 166, 59, 0.08), 0 18px 52px rgba(0, 0, 0, 0.26);
+}
+
+.commercial-resource-card[data-tone="cyan"] {
+    --resource-accent: #2ed3f3;
+    --resource-accent-soft: rgba(46, 211, 243, 0.16);
+}
+
+.commercial-resource-card[data-tone="violet"] {
+    --resource-accent: #9d7cff;
+    --resource-accent-soft: rgba(139, 92, 246, 0.16);
+}
+
+.commercial-resource-card[data-tone="amber"] {
+    --resource-accent: #f5a63b;
+    --resource-accent-soft: rgba(245, 166, 59, 0.16);
+}
+
+.commercial-resource-orb {
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    right: -74px;
+    top: -74px;
+    border-radius: 999px;
+    background: radial-gradient(circle, var(--resource-accent-soft), transparent 68%);
+    pointer-events: none;
+}
+
+.commercial-resource-cover {
+    width: 76px;
+    height: 94px;
+    display: grid;
+    align-content: space-between;
+    padding: 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--resource-accent), transparent 62%);
+    border-radius: 18px 18px 24px 18px;
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--resource-accent), transparent 82%), transparent),
+        rgba(255, 255, 255, 0.045);
+    color: var(--resource-accent);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+}
+
+.commercial-resource-cover strong {
+    color: white;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+}
+
+.commercial-resource-meta {
+    display: grid;
+    gap: 0.58rem;
+}
+
+.commercial-resource-badge {
+    width: fit-content;
+    padding: 0.34rem 0.58rem;
+    border: 1px solid color-mix(in srgb, var(--resource-accent), transparent 58%);
+    border-radius: 999px;
+    background: var(--resource-accent-soft);
+    color: var(--resource-accent);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.commercial-resource-meta strong {
+    color: white;
+    font-size: 1.16rem;
+    letter-spacing: -0.025em;
+}
+
+.commercial-resource-meta span:last-child {
+    color: var(--text-muted);
+    line-height: 1.52;
+}
+
+.commercial-resource-fit {
+    display: grid;
+    gap: 0.18rem;
+    padding: 0.78rem 0.86rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #dff8ff;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.commercial-resource-fit small {
+    color: var(--text-dark);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.commercial-resource-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: white;
+    font-weight: 900;
+}
+
+.commercial-resource-cta svg {
+    color: var(--resource-accent);
+}
+
+.commercial-resources-compact {
+    margin-top: 2.5rem;
+}
+
+.partners-resource-block {
+    margin-top: 2.5rem;
+}
+
 .pricing-hero-panel {
     padding: 0;
     overflow: hidden;
@@ -15531,6 +15733,7 @@ p {
 @media (max-width: 920px) {
     .pricing-plan-grid,
     .pricing-signal-strip,
+    .commercial-resource-grid,
     .pricing-sample-actions,
     .pricing-plan-columns,
     .pricing-addon-body,

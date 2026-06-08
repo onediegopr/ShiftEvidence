@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import CommercialResources from "../../components/CommercialResources";
 
 export const metadata: Metadata = {
   title: "About | Shift Evidence",
@@ -323,6 +324,17 @@ export default function AboutPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="section about-resource-section">
+          <div className="container">
+            <CommercialResources
+              eyebrow="Stakeholder resources"
+              title="Short, shareable materials for the people reviewing the decision."
+              copy="Use the brief for fast context, the brochure for a fuller product explanation and the Blueprint overview when the conversation moves into wave planning."
+              featured="brochure"
+            />
           </div>
         </section>
 

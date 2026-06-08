@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Building2, Handshake, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import CommercialResources from "../../components/CommercialResources";
 import { marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
@@ -60,6 +61,16 @@ export default function PartnersPage() {
               <Link href={mspPlan?.secondaryCta.href ?? "/support?category=partner_msp_inquiry"} className="btn btn-secondary">
                 {mspPlan?.secondaryCta.label ?? "Request invoice"}
               </Link>
+            </div>
+
+            <div className="partners-resource-block">
+              <CommercialResources
+                eyebrow="Partner enablement"
+                title="Resources for client-facing readiness conversations."
+                copy="Give client sponsors a concise brief, a complete product overview or a Blueprint explanation before a formal assessment or proposal discussion."
+                featured="brief"
+                compact
+              />
             </div>
           </div>
         </section>

@@ -12,6 +12,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import SavingsCalculator from "../components/SavingsCalculator";
+import CommercialResources from "../components/CommercialResources";
 import Footer from "../components/Footer";
 import { getPaymentOptionLabel, marketingPlans, paymentOptionsCopy } from "../lib/pricingPlans";
 import vmwareLogo from "../../images/vmware.svg";
@@ -1360,8 +1361,19 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="section landing-commercial-resources-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 15 }}>
+          <div className="container">
+            <CommercialResources
+              eyebrow="Commercial PDFs"
+              title="Share the right explanation before the buying meeting."
+              copy="Use the short brief for fast alignment, the product brochure for the full readiness story and the Blueprint overview when planning depth becomes the next conversation."
+              featured="brochure"
+            />
+          </div>
+        </section>
+
         {/* Section 11 — FAQ */}
-        <section id="faq" className="section faq-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 15 }}>
+        <section id="faq" className="section faq-section" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 16 }}>
           <div className="container">
             <div className="text-center mb-8">
               <div className="badge badge-cyan">FAQ</div>
@@ -1415,7 +1427,7 @@ export default function LandingPage() {
         </section>
 
         {/* Section 12 — Final CTA */}
-        <section id="final-cta" className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.6)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 16 }}>
+        <section id="final-cta" className="section cta-section" style={{ background: "rgba(6, 9, 19, 0.6)", borderTop: "1px solid rgba(255, 255, 255, 0.05)", order: 17 }}>
           <div className="bg-mesh"></div>
           <div
             className="glow-orb"

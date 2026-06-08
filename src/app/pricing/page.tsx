@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import CommercialResources from "../../components/CommercialResources";
 import {
   getBillingCadenceLabel,
   marketingAddOns,
@@ -373,17 +374,6 @@ export default function PricingPage() {
                 {paymentOptionsCopy.cardCheckout} {paymentOptionsCopy.bankTransfer}
               </p>
               <p className="assessment-inline-note">
-                Need a shareable overview?{" "}
-                <a href="/marketing/shift-evidence-product-brochure.pdf" target="_blank" rel="noreferrer">
-                  Download the product brochure
-                </a>{" "}
-                or{" "}
-                <a href="/marketing/migration-blueprint-overview.pdf" target="_blank" rel="noreferrer">
-                  review the Blueprint overview
-                </a>
-                .
-              </p>
-              <p className="assessment-inline-note">
                 Manual invoice requests are reviewed before fulfillment. Bank transfer is not an automatic transfer,
                 balance action or instant fulfillment path.
               </p>
@@ -445,6 +435,17 @@ export default function PricingPage() {
                 </div>
               </div>
             </aside>
+          </div>
+        </section>
+
+        <section className="section shiftreadiness-section pricing-resource-section">
+          <div className="container">
+            <CommercialResources
+              eyebrow="Buyer enablement"
+              title="Give stakeholders the right PDF for the right conversation."
+              copy="A short brief, a full product brochure and a Blueprint overview help buyers separate readiness assessment from deeper migration planning."
+              featured="blueprint"
+            />
           </div>
         </section>
 
