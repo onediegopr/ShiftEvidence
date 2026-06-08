@@ -6,8 +6,9 @@ import Footer from "../../components/Footer";
 import { createTechnicalReviewRequestAction } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Technical Review | Shift Evidence",
-  description: "Request a technical review of your readiness findings, assumptions, blockers, and next-step migration guidance.",
+  title: "Senior Technical Review for VMware to Proxmox Readiness",
+  description:
+    "Review migration evidence, readiness findings, assumptions and next-step planning with senior VMware to Proxmox readiness guidance.",
   alternates: {
     canonical: "https://shiftevidence.com/technical-review",
   },

@@ -8,8 +8,9 @@ import { SUPPORT_CATEGORY_OPTIONS, SUPPORT_CONTACTS } from "../../server/support
 import { createPublicSupportRequestAction } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Support | Shift Evidence",
-  description: "Contact Shift Evidence support for assessment, privacy, security, and partner questions.",
+  title: "Shift Evidence Support",
+  description:
+    "Support for VMware to Proxmox readiness assessments, sample reports, partner questions, billing routing and security inquiries.",
   alternates: {
     canonical: "https://shiftevidence.com/support",
   },

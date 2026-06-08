@@ -17,9 +17,12 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export const metadata: Metadata = {
-  title: "About | Shift Evidence",
+  title: "About Shift Evidence",
   description:
-    "Learn how Shift Evidence approaches VMware to Proxmox readiness with independent evidence review, senior guidance and controlled migration decision packs.",
+    "Learn how Shift Evidence applies former VMware TAM-led readiness methodology to VMware to Proxmox migration planning and evidence-based decision support.",
+  alternates: {
+    canonical: "https://shiftevidence.com/about",
+  },
 };
 
 const trustSignals = [

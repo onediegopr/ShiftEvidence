@@ -6,9 +6,9 @@ type DemoReplayPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Migration Readiness Replay | Shift Evidence",
+  title: "Migration Readiness Replay",
   description:
-    "Watch a synthetic replay showing how VMware evidence becomes a Proxmox migration readiness decision pack.",
+    "Watch a synthetic VMware to Proxmox readiness replay showing how RVTools, project context, Advisor review and evidence gaps become a migration decision pack.",
   alternates: {
     canonical: "https://shiftevidence.com/demo/replay",
   },

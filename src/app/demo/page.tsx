@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import DemoHubPage from "../../components/demo/DemoHubPage";
 
 export const metadata: Metadata = {
-  title: "Demos | Shift Evidence",
+  title: "Migration Readiness Demo",
   description:
-    "Choose a quick simulation or a read-only synthetic Demo Workspace before purchasing Shift Evidence.",
+    "Explore synthetic Shift Evidence demos for VMware to Proxmox readiness, replay walkthroughs and read-only evidence workspaces.",
   alternates: {
     canonical: "https://shiftevidence.com/demo",
   },

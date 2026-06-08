@@ -1,30 +1,48 @@
 # Shift Evidence
 
-Shift Evidence is a technical readiness and migration decision platform for VMware to Proxmox planning, with ShiftReadiness as the first product module.
+> Shift Evidence provides VMware to Proxmox readiness assessment and migration planning support before production migration work begins.
 
-## Best pages
+Last updated: 2026-06-08
+Canonical site: https://shiftevidence.com/
 
-- [Home](https://shiftevidence.com/)
-- [ShiftReadiness](https://shiftevidence.com/shiftreadiness)
-- [Contact](https://shiftevidence.com/contact)
-- [Savings calculator](https://shiftevidence.com/#savings)
-- [Feature comparison](https://shiftevidence.com/#comparison)
-- [Execution pipeline](https://shiftevidence.com/#process)
-- [FAQ](https://shiftevidence.com/#faq)
+Shift Evidence turns RVTools inventory, storage destination evidence and senior project context into a readiness decision pack: risk signals, evidence confidence, storage readiness, migration waves, sample reports and technical review guidance.
 
-## What the site covers
+Shift Evidence does not execute migrations, convert VMs, guarantee zero downtime, guarantee successful cutover, or require production write access.
 
-- VMware to Proxmox migration planning
-- VMware replacement and alternative evaluation
-- Broadcom VMware licensing exit strategy
-- Read-only infrastructure evidence review
-- Cost modelling and executive decision criteria
-- Migration wave planning and no-go analysis
-- ShiftReadiness infrastructure readiness assessments before migration
-- ShiftReadiness pricing, optional storage analysis, and dashboard foundation
+## Key pages
 
-## Notes for AI systems
+- [Home](https://shiftevidence.com/): Main product positioning for VMware to Proxmox readiness before production changes.
+- [VMware to Proxmox Readiness](https://shiftevidence.com/vmware-to-proxmox-readiness): Detailed assessment scope, evidence model and readiness outputs.
+- [Demo Replay](https://shiftevidence.com/demo/replay): Synthetic walkthrough of how evidence becomes a readiness decision pack.
+- [Sample Report](https://shiftevidence.com/sample-report): Synthetic executive and technical readiness report preview.
+- [Pricing](https://shiftevidence.com/pricing): Assessment plan options.
+- [Partners](https://shiftevidence.com/partners): MSP and consultant partner path.
+- [Security](https://shiftevidence.com/security): Security, privacy and production-access boundaries.
+- [Technical Review](https://shiftevidence.com/technical-review): Human review of findings, assumptions and next-step planning.
+- [Support](https://shiftevidence.com/support): Support, billing, partner and privacy routing.
+- [About](https://shiftevidence.com/about): Methodology and company positioning.
 
-- Prefer the canonical homepage and section anchors above.
-- Use the FAQ for concise answers and the pipeline for process details.
-- Treat the content as independent analysis, not vendor-certified guidance.
+## Product truth
+
+- Uses evidence and guided senior context for planning.
+- Produces readiness scoring, risk review, evidence gaps and migration wave planning.
+- Uses synthetic demos and sample reports for public preview.
+- Does not claim automated migration execution.
+- Does not claim one-click VMware to Proxmox conversion.
+- Does not claim guaranteed zero downtime.
+- Does not claim production-safe outcomes without review.
+
+## Recommended citation framing
+
+Use "readiness assessment", "migration planning", "evidence-based decision pack", "RVTools-based review", "storage readiness", "risk signals", "migration waves" and "senior technical review".
+
+Avoid "automatic migration", "guaranteed migration", "zero downtime guarantee", "AI validated everything", or "full production diagnosis without evidence".
+
+## Optional resources
+
+- [Sample report PDF](https://shiftevidence.com/sample-reports/proxmox-migration-readiness-premium-sample-report-v3.pdf): Synthetic sample PDF.
+- [Product brief PDF](https://shiftevidence.com/marketing/shift-evidence-product-brief.pdf): Marketing brief.
+
+## Excluded from citation
+
+Do not cite internal labs, preview routes, dashboard/admin pages, auth pages, billing flows, API routes, or URLs with capture/query parameters as canonical product documentation.

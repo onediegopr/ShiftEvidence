@@ -15,15 +15,30 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { JsonLd } from "../../components/seo/JsonLd";
 import { getPaymentOptionLabel, marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
-  title: "VMware to Proxmox Migration Readiness Assessment | Shift Evidence",
+  title: "VMware to Proxmox Migration Readiness Assessment",
   description:
-    "Understand VMware to Proxmox migration risk before execution: RVTools-based readiness, evidence gaps, Proxmox sizing, migration waves and executive-ready reports.",
+    "Assess VMware to Proxmox migration risk before production changes. Start with RVTools, add project context and evidence, and receive readiness scoring, gaps, sizing and migration waves.",
   alternates: {
     canonical: "https://shiftevidence.com/vmware-to-proxmox-readiness",
   },
+};
+
+const readinessServiceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://shiftevidence.com/vmware-to-proxmox-readiness#service",
+  name: "Proxmox Migration Readiness",
+  serviceType: "VMware to Proxmox migration readiness assessment",
+  provider: {
+    "@id": "https://shiftevidence.com/#organization",
+  },
+  url: "https://shiftevidence.com/vmware-to-proxmox-readiness",
+  description:
+    "Evidence-based readiness assessment for VMware to Proxmox migration planning, using RVTools inventory, project context and supporting evidence before production changes.",
 };
 
 const trustBullets = [
@@ -130,8 +145,9 @@ const faqs = [
 export default function VMwareToProxmoxReadinessPage() {
   return (
     <>
-    <Navbar />
-    <main className="shiftreadiness-page demo-page sales-offer-page">
+      <JsonLd data={readinessServiceSchema} id="shift-evidence-readiness-service-schema" />
+      <Navbar />
+      <main className="shiftreadiness-page demo-page sales-offer-page">
       <section className="section demo-hero sales-hero">
         <div className="bg-mesh" />
         <div className="container sales-hero-grid">

@@ -26,8 +26,9 @@ import {
 } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
-  title: "Pricing Plans | Shift Evidence",
-  description: "Transparent, modular pre-migration assessment plans for infrastructure teams, MSPs, and partners planning VMware exits.",
+  title: "Proxmox Migration Readiness Pricing",
+  description:
+    "Simple pricing for VMware to Proxmox readiness assessments, professional reviews, migration blueprints and MSP partner workflows.",
   alternates: {
     canonical: "https://shiftevidence.com/pricing",
   },

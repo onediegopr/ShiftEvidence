@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import DemoWorkspacePage from "../../../components/demo/DemoWorkspacePage";
 
 export const metadata: Metadata = {
-  title: "Demo Workspace | Shift Evidence",
+  title: "Synthetic Readiness Workspace",
   description:
-    "Explore a read-only synthetic VMware to Proxmox Demo Workspace with scenarios, scores and demo PDFs.",
+    "Read-only synthetic workspace preview for VMware to Proxmox readiness evidence and reports.",
   alternates: {
     canonical: "https://shiftevidence.com/demo/workspace",
+  },
+  robots: {
+    index: false,
+    follow: true,
   },
 };
 
