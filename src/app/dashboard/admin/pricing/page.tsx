@@ -159,7 +159,7 @@ function AccessDenied() {
         <div>
           <div className="badge badge-cyan">Pricing Intelligence</div>
           <h1>No tenes permisos para acceder a esta consola.</h1>
-          <p>Esta ruta usa el guard admin existente y no expone datos de pricing fuera de la consola interna.</p>
+          <p>Esta ruta usa el guard admin existente y no expone datos de pricing fuera del panel interno.</p>
         </div>
         <Link href="/dashboard" className="btn btn-secondary">
           Volver al panel

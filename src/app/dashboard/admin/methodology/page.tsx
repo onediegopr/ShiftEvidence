@@ -395,7 +395,7 @@ export default async function MethodologyAdminPage({ searchParams }: Methodology
               Admin
             </span>
           </div>
-          <h1>Knowledge Base versionada para Advisor, scoring y consola interna</h1>
+          <h1>Knowledge Base versionada para Advisor, scoring y operación interna</h1>
           <p>
             Esta consola muestra el seed v2.1, la edicion auditable de notas internas, el workflow de revision
             y el changelog persistido sin tocar produccion, pagos, Wise ni datos reales.

@@ -128,6 +128,10 @@ function dateLabel(value: Date | string | null | undefined) {
 }
 
 function statusLabel(value: string) {
+  if (value === "plan_not_available") {
+    return "Plan no disponible";
+  }
+
   return value
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))

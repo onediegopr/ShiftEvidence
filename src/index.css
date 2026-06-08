@@ -5211,6 +5211,7 @@ p {
 .assessment-chip {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.35rem;
     max-width: 100%;
     padding: 0.4rem 0.75rem;
@@ -5220,7 +5221,10 @@ p {
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    overflow-wrap: anywhere;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+    line-height: 1.15;
 }
 
 .assessment-chip-neutral {
