@@ -44,7 +44,7 @@ export const getPasswordResetUrl = (token: string) => {
 };
 
 export const detectRecoveryEmailProvider = () => {
-  if (process.env.RESEND_API_KEY && process.env.EMAIL_FROM) {
+  if (env.RESEND_API_KEY && env.EMAIL_FROM) {
     return "resend";
   }
 
@@ -65,11 +65,11 @@ export const sendPasswordRecoveryEmail = async ({
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.EMAIL_FROM,
+      from: env.EMAIL_FROM,
       to: email,
       subject: "Reset your ShiftReadiness password",
       html: `

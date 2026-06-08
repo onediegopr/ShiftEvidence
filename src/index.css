@@ -8732,6 +8732,204 @@ p {
     font-size: 1.02rem;
 }
 
+.billing-provider-card,
+.billing-metric-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.billing-provider-card::before,
+.billing-metric-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: rgba(148, 163, 184, 0.32);
+}
+
+.billing-provider-card-good,
+.billing-metric-card-good {
+    border-color: rgba(16, 185, 129, 0.22);
+    background:
+        radial-gradient(circle at 18% 0%, rgba(16, 185, 129, 0.08), transparent 34%),
+        rgba(13, 18, 36, 0.72);
+}
+
+.billing-provider-card-good::before,
+.billing-metric-card-good::before {
+    background: #34d399;
+    box-shadow: 0 0 18px rgba(52, 211, 153, 0.38);
+}
+
+.billing-provider-card-warning,
+.billing-metric-card-warning {
+    border-color: rgba(245, 158, 11, 0.28);
+    background:
+        radial-gradient(circle at 18% 0%, rgba(245, 158, 11, 0.11), transparent 36%),
+        rgba(13, 18, 36, 0.72);
+}
+
+.billing-provider-card-warning::before,
+.billing-metric-card-warning::before {
+    background: #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+}
+
+.billing-provider-card-danger,
+.billing-metric-card-danger {
+    border-color: rgba(248, 113, 113, 0.36);
+    background:
+        radial-gradient(circle at 18% 0%, rgba(248, 113, 113, 0.16), transparent 38%),
+        rgba(13, 18, 36, 0.76);
+}
+
+.billing-provider-card-danger::before,
+.billing-metric-card-danger::before {
+    background: #fb7185;
+    box-shadow: 0 0 24px rgba(251, 113, 133, 0.55);
+    animation: billingAlertPulse 1.7s ease-in-out infinite;
+}
+
+.billing-provider-safety {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: #cbd5e1;
+}
+
+.billing-provider-safety svg {
+    color: #7dd3fc;
+}
+
+.billing-metric-icon {
+    color: #cbd5e1;
+}
+
+.billing-metric-card-good .billing-metric-icon {
+    color: #34d399;
+}
+
+.billing-metric-card-warning .billing-metric-icon {
+    color: #fbbf24;
+}
+
+.billing-metric-card-danger .billing-metric-icon {
+    color: #fb7185;
+}
+
+.billing-diagnostic-list {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+}
+
+.billing-diagnostic-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 14px;
+    background: rgba(2, 6, 23, 0.3);
+    padding: 0.7rem 0.78rem;
+}
+
+.billing-diagnostic-row dt {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.48rem;
+    color: #cbd5e1;
+    font-size: 0.84rem;
+    font-weight: 750;
+}
+
+.billing-diagnostic-row dd {
+    margin: 0;
+    text-align: right;
+}
+
+.billing-diagnostic-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+}
+
+.billing-diagnostic-row-good {
+    border-color: rgba(16, 185, 129, 0.19);
+    background: rgba(16, 185, 129, 0.045);
+}
+
+.billing-diagnostic-row-good .billing-diagnostic-icon {
+    color: #34d399;
+}
+
+.billing-diagnostic-row-warning {
+    border-color: rgba(245, 158, 11, 0.24);
+    background: rgba(245, 158, 11, 0.065);
+}
+
+.billing-diagnostic-row-warning .billing-diagnostic-icon {
+    color: #fbbf24;
+}
+
+.billing-diagnostic-row-danger {
+    border-color: rgba(248, 113, 113, 0.3);
+    background:
+        linear-gradient(90deg, rgba(248, 113, 113, 0.11), rgba(2, 6, 23, 0.24));
+}
+
+.billing-diagnostic-row-danger .billing-diagnostic-icon {
+    color: #fb7185;
+}
+
+.billing-diagnostic-row-danger .assessment-chip-danger {
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.08), 0 0 18px rgba(248, 113, 113, 0.12);
+}
+
+.billing-blocker-panel {
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 8% 0%, rgba(248, 113, 113, 0.18), transparent 32%),
+        rgba(127, 29, 29, 0.13);
+    color: #fecaca;
+    padding: 1rem;
+}
+
+.billing-blocker-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffe4e6;
+}
+
+.billing-blocker-head svg {
+    color: #fb7185;
+}
+
+.billing-blocker-panel ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.75rem 0 0;
+    padding-left: 1.15rem;
+}
+
+.billing-blocker-panel li {
+    line-height: 1.55;
+}
+
+@keyframes billingAlertPulse {
+    0%,
+    100% {
+        opacity: 0.72;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
 .report-history-meta {
     display: flex;
     flex-wrap: wrap;

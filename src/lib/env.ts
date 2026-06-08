@@ -3,6 +3,8 @@ export const env = {
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET?.trim() ?? "",
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL?.trim() ?? "",
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "",
+  RESEND_API_KEY: process.env.RESEND_API_KEY?.trim() ?? "",
+  EMAIL_FROM: process.env.EMAIL_FROM?.trim() ?? "",
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
   PREVIEW_TRUSTED_ORIGINS: process.env.PREVIEW_TRUSTED_ORIGINS ?? "",

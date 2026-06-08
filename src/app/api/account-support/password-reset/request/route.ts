@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   createPasswordResetToken,
+  detectRecoveryEmailProvider,
   getClientIpHash,
   getPasswordResetExpiry,
   getPasswordResetUrl,
@@ -69,6 +70,7 @@ export async function POST(request: Request) {
     const resetUrl = getPasswordResetUrl(token);
     let deliveryMode: PasswordRecoveryDeliveryMode = "manual";
     let status = "manual_pending";
+    const recoveryProvider = detectRecoveryEmailProvider();
 
     await prisma.passwordResetRequest.updateMany({
       where: {
@@ -102,6 +104,12 @@ export async function POST(request: Request) {
     } catch {
       deliveryMode = "manual";
       status = "manual_pending";
+      logger.warn("password_reset_email_delivery_failed", {
+        userId: user.id,
+        deliveryMode,
+        status,
+        providerConfigured: recoveryProvider === "resend",
+      });
     }
 
     await prisma.passwordResetRequest.update({
@@ -117,9 +125,19 @@ export async function POST(request: Request) {
         metadataJson: {
           deliveryMode,
           status,
+          providerConfigured: recoveryProvider === "resend",
         },
       },
     });
+
+    if (!recoveryProvider) {
+      logger.warn("password_reset_email_provider_missing", {
+        userId: user.id,
+        deliveryMode,
+        status,
+        providerConfigured: false,
+      });
+    }
 
     return NextResponse.json({ ok: true, message: PASSWORD_RESET_NEUTRAL_MESSAGE });
   } catch (error) {

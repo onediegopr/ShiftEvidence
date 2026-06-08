@@ -14,6 +14,7 @@ import {
   LinkIcon,
   Search,
   ShieldCheck,
+  XCircle,
 } from "lucide-react";
 import {
   fulfillBillingOrderAction,
@@ -91,6 +92,8 @@ type AdminBillingPageProps = {
     matchSearch?: string;
   }>;
 };
+
+type Tone = "neutral" | "good" | "warning" | "danger";
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "Sin eventos";
@@ -242,9 +245,11 @@ function invoiceRequestStatusTone(value: BillingInvoiceRequestStatusInput) {
   return tones[value];
 }
 function statusTone(value: string) {
-  if (value.includes("live") || value.includes("alto") || value === "failed") return "danger";
-  if (value.includes("test") || value.includes("ok") || value === "processed") return "good";
-  if (value.includes("manual") || value.includes("pendiente") || value.includes("medio")) return "warning";
+  const normalized = value.toLowerCase();
+
+  if (normalized.includes("live") || normalized.includes("alto") || normalized === "failed") return "danger";
+  if (normalized.includes("test") || normalized.includes("ok") || normalized === "processed") return "good";
+  if (normalized.includes("manual") || normalized.includes("pendiente") || normalized.includes("medio")) return "warning";
   return "neutral";
 }
 
@@ -297,7 +302,7 @@ function orderActionLabel(order: BillingAdminLedgerOrder, preview?: BillingFulfi
   return "Revisar";
 }
 
-function Chip({ label, tone = "neutral" }: { label: string; tone?: "neutral" | "good" | "warning" | "danger" }) {
+function Chip({ label, tone = "neutral" }: { label: string; tone?: Tone }) {
   return <span className={`assessment-chip assessment-chip-${tone}`}>{label}</span>;
 }
 
@@ -306,20 +311,75 @@ function MetricCard({
   label,
   value,
   note,
+  tone = "neutral",
 }: {
   icon: ReactNode;
   label: string;
   value: string | number;
   note: string;
+  tone?: Tone;
 }) {
   return (
-    <article className="glass-card assessment-summary-card">
-      {icon}
+    <article className={`glass-card assessment-summary-card billing-metric-card billing-metric-card-${tone}`}>
+      <span className="billing-metric-icon">{icon}</span>
       <span className="assessment-summary-label">{label}</span>
       <strong>{value}</strong>
       <p>{note}</p>
     </article>
   );
+}
+
+function normalizeDiagnosticValue(value: string | number | ReactNode) {
+  if (typeof value === "number") return value;
+  if (typeof value !== "string") return null;
+
+  return value.trim().toLowerCase();
+}
+
+function diagnosticTone(label: string, value: string | number | ReactNode): Tone {
+  const normalizedLabel = label.toLowerCase();
+  const normalizedValue = normalizeDiagnosticValue(value);
+
+  if (typeof normalizedValue === "number") {
+    if (
+      normalizedLabel.includes("fallidos") ||
+      normalizedLabel.includes("pendientes") ||
+      normalizedLabel.includes("sin match") ||
+      normalizedLabel.includes("acciones requeridas")
+    ) {
+      return normalizedValue > 0 ? "danger" : "good";
+    }
+
+    return "neutral";
+  }
+
+  if (!normalizedValue) return "neutral";
+
+  if (normalizedLabel.includes("pagos live")) return normalizedValue === "on" ? "warning" : "good";
+  if (normalizedLabel.includes("accesos automaticos")) return normalizedValue === "on" ? "danger" : "good";
+  if (normalizedLabel.includes("automatizacion")) return normalizedValue.includes("desactiv") ? "good" : "warning";
+  if (normalizedLabel.includes("api url") && normalizedValue.includes("no configurada")) return "warning";
+  if (normalizedLabel.includes("listo pre-pago")) return normalizedValue === "no" ? "danger" : "good";
+  if (normalizedLabel.includes("price")) return normalizedValue === "no" ? "danger" : "good";
+  if (normalizedLabel.includes("modo de clave secreta")) {
+    if (normalizedValue.includes("faltante") || normalizedValue.includes("desconoc")) return "danger";
+    if (normalizedValue.includes("live")) return "warning";
+    return "good";
+  }
+  if (normalizedLabel.includes("modo checkout")) return normalizedValue.includes("live") ? "warning" : "good";
+  if (["ok", "si", "sí", "presente", "activo", "on", "modo test"].includes(normalizedValue)) return "good";
+  if (["no", "faltante", "off", "desactivada", "desactivado", "no configurada", "desconocido", "desconocida"].includes(normalizedValue)) return "danger";
+  if (normalizedValue.includes("live") || normalizedValue.includes("revision") || normalizedValue.includes("revisión")) return "warning";
+  if (normalizedValue.includes("manual") || normalizedValue.includes("pendiente")) return "warning";
+
+  return "neutral";
+}
+
+function diagnosticIcon(tone: Tone) {
+  if (tone === "good") return <CheckCircle2 size={16} aria-hidden="true" />;
+  if (tone === "danger") return <XCircle size={16} aria-hidden="true" />;
+  if (tone === "warning") return <AlertTriangle size={16} aria-hidden="true" />;
+  return <ShieldCheck size={16} aria-hidden="true" />;
 }
 
 function FieldList({ rows }: { rows: Array<[string, string | number | ReactNode]> }) {
@@ -332,6 +392,50 @@ function FieldList({ rows }: { rows: Array<[string, string | number | ReactNode]
         </div>
       ))}
     </dl>
+  );
+}
+
+function DiagnosticFieldList({ rows }: { rows: Array<[string, string | number | ReactNode]> }) {
+  return (
+    <dl className="billing-diagnostic-list">
+      {rows.map(([label, value]) => {
+        const tone = diagnosticTone(label, value);
+
+        return (
+          <div key={label} className={`billing-diagnostic-row billing-diagnostic-row-${tone}`}>
+            <dt>
+              <span className="billing-diagnostic-icon">{diagnosticIcon(tone)}</span>
+              {label}
+            </dt>
+            <dd>
+              {typeof value === "string" || typeof value === "number" ? (
+                <Chip label={String(value)} tone={tone} />
+              ) : (
+                value
+              )}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}
+
+function BillingBlockerPanel({ blockers }: { blockers: string[] }) {
+  if (blockers.length === 0) return null;
+
+  return (
+    <div className="billing-blocker-panel" role="alert">
+      <div className="billing-blocker-head">
+        <AlertTriangle size={18} aria-hidden="true" />
+        <strong>Blockers que impiden pre-pago</strong>
+      </div>
+      <ul>
+        {blockers.map((blocker) => (
+          <li key={blocker}>{blocker}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -628,16 +732,18 @@ function ProviderCard({
   risk: string;
   children: ReactNode;
 }) {
+  const riskTone = statusTone(risk);
+
   return (
-    <article className="glass-card report-history-card">
+    <article className={`glass-card report-history-card billing-provider-card billing-provider-card-${riskTone}`}>
       <div className="report-history-header">
         <div>
           <span className="assessment-preview-label">{title}</span>
           <h3>{status}</h3>
         </div>
-        <Chip label={`Riesgo ${risk}`} tone={statusTone(risk)} />
+        <Chip label={`Riesgo ${risk}`} tone={riskTone} />
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+      <div className="billing-provider-safety">
         {icon}
         <span className="assessment-inline-note">Estado operativo seguro, sin secretos.</span>
       </div>
@@ -1095,16 +1201,16 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
       <BillingOpsSafetyBanner />
 
       <section className="assessment-summary-grid">
-        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout modo test" value={status.operations.checkoutTestMode ? "OK" : "NO"} note="Modo seguro esperado" />
-        <MetricCard icon={<AlertTriangle size={22} />} label="Pagos live" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" />
-        <MetricCard icon={<ShieldCheck size={22} />} label="Manual fulfillment" value={status.operations.manualFulfillment ? "ON" : "OFF"} note="Runbook manual activo" />
-        <MetricCard icon={<LinkIcon size={22} />} label="Webhooks" value={status.operations.webhooks ? "ON" : "OFF"} note="Endpoint disponible, secret separado" />
-        <MetricCard icon={<Database size={22} />} label="Ledger" value={status.operations.ledger ? "ON" : "OFF"} note="Eventos y ledger comercial" />
-        <MetricCard icon={<BadgePercent size={22} />} label="Accesos automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" />
-        <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin match automatico" />
-        <MetricCard icon={<AlertTriangle size={22} />} label="Eventos fallidos" value={status.operations.failedEventsCount} note="Requieren revision segura" />
-        <MetricCard icon={<AlertTriangle size={22} />} label="Acciones requeridas" value={reconciliation.actionRequiredCount} note="Billing owner debe revisar" />
-        <MetricCard icon={<ShieldCheck size={22} />} label="Ordenes fulfilled" value={reconciliation.fulfilledOrderCount} note="Con grant activo" />
+        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout modo test" value={status.operations.checkoutTestMode ? "OK" : "NO"} note="Modo seguro esperado" tone={status.operations.checkoutTestMode ? "good" : "warning"} />
+        <MetricCard icon={<AlertTriangle size={22} />} label="Pagos live" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" tone={status.operations.livePayments ? "warning" : "good"} />
+        <MetricCard icon={<ShieldCheck size={22} />} label="Manual fulfillment" value={status.operations.manualFulfillment ? "ON" : "OFF"} note="Runbook manual activo" tone={status.operations.manualFulfillment ? "good" : "danger"} />
+        <MetricCard icon={<LinkIcon size={22} />} label="Webhooks" value={status.operations.webhooks ? "ON" : "OFF"} note="Endpoint disponible, secret separado" tone={status.operations.webhooks ? "good" : "warning"} />
+        <MetricCard icon={<Database size={22} />} label="Ledger" value={status.operations.ledger ? "ON" : "OFF"} note="Eventos y ledger comercial" tone={status.operations.ledger ? "good" : "danger"} />
+        <MetricCard icon={<BadgePercent size={22} />} label="Accesos automaticos" value={status.operations.automaticEntitlements ? "ON" : "OFF"} note="Sin grants automaticos" tone={status.operations.automaticEntitlements ? "danger" : "good"} />
+        <MetricCard icon={<Gauge size={22} />} label="Reconciliacion" value="Manual" note="Sin match automatico" tone="warning" />
+        <MetricCard icon={<AlertTriangle size={22} />} label="Eventos fallidos" value={status.operations.failedEventsCount} note="Requieren revision segura" tone={status.operations.failedEventsCount > 0 ? "danger" : "good"} />
+        <MetricCard icon={<AlertTriangle size={22} />} label="Acciones requeridas" value={reconciliation.actionRequiredCount} note="Billing owner debe revisar" tone={reconciliation.actionRequiredCount > 0 ? "danger" : "good"} />
+        <MetricCard icon={<ShieldCheck size={22} />} label="Ordenes fulfilled" value={reconciliation.fulfilledOrderCount} note="Con grant activo" tone={reconciliation.fulfilledOrderCount > 0 ? "good" : "neutral"} />
       </section>
 
       <section className="report-history-grid">
@@ -1116,7 +1222,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         >
           {stripeDiagnostics ? (
             <>
-              <FieldList
+              <DiagnosticFieldList
                 rows={[
                   ["Modo de clave secreta", formatStripeSecretKeyMode(stripeDiagnostics.runtimeEnv.secretKeyMode)],
                   ["Webhook secret presente", formatBooleanPresence(stripeDiagnostics.runtimeEnv.webhookSecretPresent)],
@@ -1131,11 +1237,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
                   ["Chequeado", formatDate(stripeDiagnostics.checkedAt)],
                 ]}
               />
-              {stripeDiagnostics.overall.blockers.length > 0 ? (
-                <p className="assessment-inline-note assessment-warning-note">
-                  Blockers: {stripeDiagnostics.overall.blockers.join(" ")}
-                </p>
-              ) : null}
+              <BillingBlockerPanel blockers={stripeDiagnostics.overall.blockers} />
               {stripeDiagnostics.overall.warnings.length > 0 ? (
                 <p className="assessment-inline-note">
                   Warnings: {stripeDiagnostics.overall.warnings.join(" ")}
@@ -1158,7 +1260,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           status={formatStripeStatus(status.stripe.status)}
           risk={formatBillingRiskLevel(status.stripe.riskLevel)}
         >
-          <FieldList
+          <DiagnosticFieldList
             rows={[
               ["Clave secreta presente", formatBooleanPresence(status.stripe.secretKeyPresent)],
               ["Webhook secret presente", formatBooleanPresence(status.stripe.webhookSecretPresent)],
@@ -1184,7 +1286,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           status={formatWiseStatus(status.wise.status)}
           risk={formatBillingRiskLevel(status.wise.riskLevel)}
         >
-          <FieldList
+          <DiagnosticFieldList
             rows={[
               ["Token", formatBooleanPresence(status.wise.tokenPresent)],
               ["API URL", formatWiseApiMode(status.wise.apiUrlMode)],
@@ -1206,7 +1308,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
           status="Lectura operativa"
           risk={status.operations.failedEventsCount > 0 ? "Medio" : "Bajo"}
         >
-          <FieldList
+          <DiagnosticFieldList
             rows={[
               ["Checkout modo test", status.operations.checkoutTestMode ? "OK" : "NO"],
               ["Pagos live", status.operations.livePayments ? "ON" : "OFF"],
