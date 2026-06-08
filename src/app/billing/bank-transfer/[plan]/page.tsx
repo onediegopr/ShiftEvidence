@@ -9,12 +9,8 @@ import { getBillingInvoicePlanBySlug } from "../../../../server/billing/invoiceR
 import { createBillingInvoiceRequestAction } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Bank Transfer Invoice",
+  title: "Bank Transfer Invoice | Shift Evidence",
   description: "Manual invoice and bank transfer request flow for Shift Evidence plans.",
-  robots: {
-    index: false,
-    follow: false,
-  },
 };
 
 type BankTransferPageProps = {

@@ -3,12 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { LogIn, Menu, Sparkles, X } from "lucide-react";
+import { LogIn, Sparkles } from "lucide-react";
 import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../lib/brandAssets";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,8 +24,8 @@ export default function Navbar() {
 
   return (
     <header className={`navbar-wrapper ${isScrolled ? "navbar-scrolled" : ""}`}>
-      <div className={`container navbar-container ${isMenuOpen ? "navbar-container-open" : ""}`}>
-        <Link href="/" className="logo-container" onClick={() => setIsMenuOpen(false)}>
+      <div className="container navbar-container">
+        <Link href="/" className="logo-container">
           <Image
             src={BRAND_PUBLIC_ASSETS.webLogo}
             alt={`${BRAND_WORDMARK} Logo`}
@@ -38,47 +37,35 @@ export default function Navbar() {
           <span>{BRAND_WORDMARK}</span>
         </Link>
 
-        <button
-          type="button"
-          className="navbar-menu-toggle"
-          aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={isMenuOpen}
-          aria-controls="site-navigation"
-          onClick={() => setIsMenuOpen((current) => !current)}
-        >
-          {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          <span>Menu</span>
-        </button>
-
-        <nav id="site-navigation" aria-label="Primary navigation">
+        <nav>
           <ul className="nav-links">
             <li>
-              <Link href="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/" className="nav-link">
                 Product
               </Link>
             </li>
             <li>
-              <Link href="/demo" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/demo" className="nav-link">
                 Demo
               </Link>
             </li>
             <li>
-              <Link href="/sample-report" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/sample-report" className="nav-link">
                 Sample report
               </Link>
             </li>
             <li>
-              <Link href="/pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/pricing" className="nav-link">
                 Pricing
               </Link>
             </li>
             <li>
-              <Link href="/partners" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/partners" className="nav-link">
                 Partners
               </Link>
             </li>
             <li>
-              <Link href="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/about" className="nav-link">
                 About
               </Link>
             </li>
@@ -86,11 +73,11 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar-actions">
-          <Link href="/sign-up" className="nav-start-check" onClick={() => setIsMenuOpen(false)}>
+          <Link href="/sign-up" className="nav-start-check">
             <Sparkles size={15} />
             Start assessment
           </Link>
-          <Link href="/sign-in" className="nav-client-login" onClick={() => setIsMenuOpen(false)}>
+          <Link href="/sign-in" className="nav-client-login">
             <LogIn size={15} />
             Client login
           </Link>

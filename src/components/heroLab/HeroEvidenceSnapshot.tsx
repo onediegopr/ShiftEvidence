@@ -20,20 +20,16 @@ import {
   migrationWaves,
   riskSignals,
   snapshotMetrics,
-} from "./HeroSnapshotData";
-import styles from "./HeroSnapshot.module.css";
+} from "./heroSnapshotData";
+import styles from "./HeroEvidenceSnapshot.module.css";
 
 type HeroEvidenceSnapshotProps = {
   captureMode?: boolean;
-  compactMobile?: boolean;
 };
 
-export function HeroEvidenceSnapshot({ captureMode = false, compactMobile = false }: HeroEvidenceSnapshotProps) {
+export function HeroEvidenceSnapshot({ captureMode = false }: HeroEvidenceSnapshotProps) {
   return (
-    <div
-      className={`${captureMode ? styles.captureFrame : styles.snapshotFrame} ${compactMobile ? styles.compactMobileFrame : ""}`}
-      aria-label="Hero Evidence Snapshot animated product visual"
-    >
+    <div className={captureMode ? styles.captureFrame : styles.snapshotFrame} aria-label="Hero Evidence Snapshot animated product visual">
       <div className={styles.snapshotGlow} aria-hidden="true" />
       <div className={styles.infrastructureMap} aria-hidden="true">
         <span className={styles.sourceNode}>VMware source</span>

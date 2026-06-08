@@ -8,12 +8,8 @@ import { getBillingBankTransferPath, getBillingPaymentOptionLabel } from "../../
 import { getBillingCheckoutRouteState } from "../../../../server/billing/billingConfiguration";
 
 export const metadata: Metadata = {
-  title: "Secure Checkout",
+  title: "Secure Checkout | Shift Evidence",
   description: "Secure Stripe checkout routing for Shift Evidence plans.",
-  robots: {
-    index: false,
-    follow: false,
-  },
 };
 
 type BillingCheckoutPageProps = {

@@ -5,12 +5,8 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export const metadata: Metadata = {
-  title: "Security and Privacy for Agentless Readiness Assessments",
-  description:
-    "Shift Evidence starts with exported evidence and does not require agents, mandatory credentials or production write access for the base VMware to Proxmox readiness workflow.",
-  alternates: {
-    canonical: "https://shiftevidence.com/security",
-  },
+  title: "Security | Shift Evidence",
+  description: "Security and privacy boundaries for Shift Evidence support and assessments.",
 };
 
 export default function SecurityPage() {

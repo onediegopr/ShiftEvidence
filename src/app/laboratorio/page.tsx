@@ -6,7 +6,7 @@ type LaboratorioPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Migration Readiness Lab",
+  title: "Migration Readiness Lab | Shift Evidence",
   description: "See how raw VMware evidence becomes a Proxmox migration decision pack.",
   robots: {
     index: false,

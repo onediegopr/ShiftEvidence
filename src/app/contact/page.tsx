@@ -6,12 +6,8 @@ import Footer from "../../components/Footer";
 import { SUPPORT_CONTACTS } from "../../server/support/supportConfig";
 
 export const metadata: Metadata = {
-  title: "Contact Shift Evidence",
-  description:
-    "Contact Shift Evidence about VMware to Proxmox readiness assessments, technical review, sample reports, security or partner questions.",
-  alternates: {
-    canonical: "https://shiftevidence.com/contact",
-  },
+  title: "Contact | Shift Evidence",
+  description: "Contact Shift Evidence support, billing, or partner routing.",
 };
 
 export default function ContactPage() {

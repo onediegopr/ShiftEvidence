@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import SampleReportPage from "../../components/sample-report/SampleReportPage";
 
 export const metadata: Metadata = {
-  title: "VMware to Proxmox Readiness Sample Report",
+  title: "Premium Sample Readiness Report v3 | Shift Evidence",
   description:
-    "Download a synthetic sample report showing readiness score, evidence confidence, VM risk matrix, storage readiness, Advisor notes, guided questions and migration waves.",
+    "Preview the latest premium synthetic VMware to Proxmox readiness report: storage readiness, licensing exposure, continuity risk, advisor Q&A, memory decisions, VM matrix and migration waves.",
   alternates: {
     canonical: "https://shiftevidence.com/sample-report",
   },

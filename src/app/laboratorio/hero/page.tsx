@@ -6,7 +6,7 @@ type HeroLaboratoryPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Hero Lab Preview",
+  title: "Hero Lab Preview | Shift Evidence",
   description: "Prototype landing hero visual for VMware to Proxmox readiness assessment positioning.",
   robots: {
     index: false,

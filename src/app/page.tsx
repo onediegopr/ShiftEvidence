@@ -1,35 +1,15 @@
 import type { Metadata } from "next";
-import { JsonLd } from "../components/seo/JsonLd";
 import LandingPage from "../views/LandingPage";
 
 export const metadata: Metadata = {
-  title: "VMware to Proxmox Readiness Assessment",
+  title: "Shift Evidence | VMware to Proxmox readiness",
   description:
-    "Senior-grade VMware to Proxmox readiness before touching production. Turn RVTools inventory, storage destination evidence and project context into risk signals, evidence confidence, migration waves and decision-ready reports.",
+    "Shift Evidence helps you understand cost, risk and architecture before moving from VMware to Proxmox.",
   alternates: {
     canonical: "https://shiftevidence.com/",
   },
 };
 
-const serviceSchema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "@id": "https://shiftevidence.com/#proxmox-migration-readiness",
-  name: "Proxmox Migration Readiness",
-  serviceType: "VMware to Proxmox migration readiness assessment",
-  provider: {
-    "@id": "https://shiftevidence.com/#organization",
-  },
-  url: "https://shiftevidence.com/",
-  description:
-    "Evidence-based VMware to Proxmox readiness assessment and migration planning support before production migration.",
-};
-
 export default function Page() {
-  return (
-    <>
-      <JsonLd data={serviceSchema} id="shift-evidence-home-service-schema" />
-      <LandingPage />
-    </>
-  );
+  return <LandingPage />;
 }

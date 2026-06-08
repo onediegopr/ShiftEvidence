@@ -9,9 +9,9 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { HeroEvidenceSnapshot } from "../heroSnapshot/HeroEvidenceSnapshot";
-import { trustBadges } from "../heroSnapshot/HeroSnapshotData";
-import styles from "../heroSnapshot/HeroSnapshot.module.css";
+import { HeroEvidenceSnapshot } from "./HeroEvidenceSnapshot";
+import { trustBadges } from "./heroSnapshotData";
+import styles from "./HeroEvidenceSnapshot.module.css";
 
 type HeroLabPageProps = {
   captureMode?: boolean;

@@ -6,12 +6,8 @@ import Footer from "../../components/Footer";
 import { marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 
 export const metadata: Metadata = {
-  title: "Partner Platform for VMware to Proxmox Assessments",
-  description:
-    "For MSPs, consultants and Proxmox integrators: turn RVTools exports and client context into repeatable readiness reports, migration plans and client-ready outputs.",
-  alternates: {
-    canonical: "https://shiftevidence.com/partners",
-  },
+  title: "Partners | Shift Evidence",
+  description: "Partner and MSP inquiry path for Shift Evidence.",
 };
 
 export default function PartnersPage() {

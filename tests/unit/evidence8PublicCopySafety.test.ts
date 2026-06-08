@@ -7,7 +7,6 @@ const publicCopyFiles = [
   "src/components/sample-report/SampleReportPage.tsx",
   "src/views/LandingPage.tsx",
   "src/views/ShiftReadinessPage.tsx",
-  "src/app/vmware-to-proxmox-readiness/page.tsx",
   "src/components/assessments/EvidenceExpansionCenter.tsx",
 ];
 
