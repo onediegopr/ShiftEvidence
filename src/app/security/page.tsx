@@ -7,6 +7,9 @@ import Footer from "../../components/Footer";
 export const metadata: Metadata = {
   title: "Security | Shift Evidence",
   description: "Security and privacy boundaries for Shift Evidence support and assessments.",
+  alternates: {
+    canonical: "https://shiftevidence.com/security",
+  },
 };
 
 export default function SecurityPage() {

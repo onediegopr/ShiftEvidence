@@ -443,6 +443,26 @@ p {
     flex-shrink: 0;
 }
 
+.navbar-menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    min-height: 38px;
+    padding: 0.56rem 0.78rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.14), transparent 44%),
+        rgba(8, 13, 28, 0.78);
+    color: #e0faff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+}
+
 .nav-start-check,
 .nav-client-login {
     display: inline-flex;
@@ -9994,14 +10014,20 @@ p {
         padding: 4.5rem 0;
     }
     .container {
-        padding: 0 1.5rem;
+        padding: 0 1rem;
+        min-width: 0;
     }
     .hero-section {
-        padding-top: 13rem;
-        padding-bottom: 4.5rem;
+        overflow-x: clip;
+        padding-top: 5.9rem;
+        padding-bottom: 3.75rem;
+    }
+    .glow-orb {
+        max-width: min(72vw, 280px);
+        max-height: min(72vw, 280px);
     }
     main > .section:first-child {
-        padding-top: 13rem !important;
+        padding-top: 5.9rem !important;
     }
     .navbar-wrapper {
         background: rgba(3, 7, 18, 0.94);
@@ -10009,25 +10035,121 @@ p {
         backdrop-filter: blur(18px);
     }
     .navbar-container {
-        height: auto;
-        padding: 1rem 0;
-        flex-direction: column;
+        height: 4.6rem;
+        padding: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 0.75rem;
+        align-content: center;
+    }
+    .logo-container {
+        gap: 0.58rem;
+        min-width: 0;
+        font-size: clamp(1.05rem, 5vw, 1.28rem);
+    }
+    .nav-brand-logo {
+        width: 34px;
+        height: 34px;
+    }
+    .navbar-menu-toggle {
+        display: inline-flex;
+        margin-left: auto;
     }
     .navbar-container nav {
-        flex: initial;
+        display: none;
+        flex: 0 0 100%;
         width: 100%;
     }
     .nav-links {
-        gap: 0.75rem 1.1rem;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        width: 100%;
     }
     .navbar-actions {
-        justify-content: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        display: none;
+        justify-content: stretch;
+        gap: 0.55rem;
+        flex: 0 0 100%;
+        width: 100%;
         margin-left: 0;
+    }
+    .navbar-container-open {
+        height: auto;
+        padding: 0.78rem 0;
+    }
+    .navbar-container-open nav,
+    .navbar-container-open .navbar-actions {
+        display: flex;
+    }
+    .navbar-container-open .navbar-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.55rem;
+        padding: 0.55rem 0.65rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.5);
+        text-align: center;
+    }
+    .nav-start-check,
+    .nav-client-login {
+        width: 100%;
+    }
+    .hero-grid,
+    .hero-grid > *,
+    .hero-visual {
+        min-width: 0;
+    }
+    .hero-title {
+        font-size: clamp(2.55rem, 12vw, 3.55rem);
+        line-height: 1.04;
+        overflow-wrap: anywhere;
+    }
+    .hero-route-line {
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 100%;
+    }
+    .hero-route-brand {
+        min-width: 0;
+        font-size: clamp(1rem, 6vw, 1.25rem);
+    }
+    .hero-description-group,
+    .hero-description-group p,
+    .text-muted {
+        max-width: 100%;
+        min-width: 0;
+    }
+    .hero-methodology-signals {
+        max-width: 100%;
+    }
+    .hero-methodology-signals span {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+    .hero-visual {
+        width: 100%;
+        overflow: hidden;
+        margin-top: 0;
+    }
+    .migration-flow-svg {
+        max-width: 100%;
+        transform: translateZ(0);
+    }
+    .hero-action-deck {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.62rem;
+    }
+    .hero-action-primary {
+        gap: 0.7rem;
+        padding: 0.78rem 0.82rem;
     }
     .hero-action-grid {
         grid-template-columns: 1fr;
@@ -10050,6 +10172,16 @@ p {
     }
     .savings-grid {
         grid-template-columns: 1fr;
+    }
+    .calc-container,
+    .calc-inputs,
+    .calc-results {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .calc-inputs,
+    .calc-results {
+        padding: 1.25rem;
     }
     .cta-form {
         flex-direction: column;
@@ -15548,12 +15680,59 @@ p {
 }
 
 @media (max-width: 640px) {
+    .pricing-page-hero {
+        overflow-x: clip;
+        padding-top: 5.9rem;
+        padding-bottom: 2.75rem;
+    }
+
     .pricing-page-shell .container {
-        max-width: min(100vw, calc(100vw - 1rem));
+        width: min(100% - 1.5rem, 1360px);
+        max-width: none;
+        padding-inline: 0;
+    }
+
+    .pricing-hero-grid,
+    .pricing-hero-grid > *,
+    .pricing-hero-copy,
+    .pricing-hero-panel,
+    .pricing-hero-panel-body,
+    .pricing-signal-card,
+    .pricing-hero-action-card,
+    .pricing-inline-card {
+        min-width: 0;
     }
 
     .pricing-brand-route {
         flex-wrap: wrap;
+        max-width: 100%;
+        gap: 0.5rem;
+    }
+
+    .pricing-brand {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        padding-inline: 0.72rem;
+        font-size: 0.72rem;
+    }
+
+    .pricing-route-arrow {
+        width: 1.85rem;
+        height: 1.85rem;
+    }
+
+    .pricing-hero-copy h1 {
+        max-width: 100%;
+        font-size: clamp(2.45rem, 12vw, 3.25rem);
+        line-height: 1.02;
+        overflow-wrap: anywhere;
+    }
+
+    .pricing-hero-subtitle,
+    .pricing-hero-body,
+    .assessment-inline-note {
+        max-width: 100%;
+        overflow-wrap: anywhere;
     }
 
     .pricing-signal-strip,
@@ -15568,6 +15747,20 @@ p {
     .pricing-plan-head,
     .pricing-addon-head {
         flex-direction: column;
+    }
+
+    .pricing-signal-card,
+    .pricing-hero-action-card,
+    .pricing-inline-card {
+        min-height: auto;
+        padding: 0.95rem;
+    }
+
+    .pricing-hero-actions > .btn,
+    .pricing-plan-actions .btn,
+    .pricing-partner-actions .btn,
+    .pricing-sample-actions .btn {
+        width: 100%;
     }
 
     .pricing-plan-decision-strip {

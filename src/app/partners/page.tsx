@@ -8,6 +8,9 @@ import { marketingPlans, paymentOptionsCopy } from "../../lib/pricingPlans";
 export const metadata: Metadata = {
   title: "Partners | Shift Evidence",
   description: "Partner and MSP inquiry path for Shift Evidence.",
+  alternates: {
+    canonical: "https://shiftevidence.com/partners",
+  },
 };
 
 export default function PartnersPage() {

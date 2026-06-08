@@ -8,6 +8,9 @@ import { createTechnicalReviewRequestAction } from "./actions";
 export const metadata: Metadata = {
   title: "Technical Review | Shift Evidence",
   description: "Request a technical review of your readiness findings, assumptions, blockers, and next-step migration guidance.",
+  alternates: {
+    canonical: "https://shiftevidence.com/technical-review",
+  },
 };
 
 type TechnicalReviewPageProps = {

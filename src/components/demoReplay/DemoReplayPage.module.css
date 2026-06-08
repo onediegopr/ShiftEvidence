@@ -1627,23 +1627,67 @@
 }
 
 @media (max-width: 760px) {
+  .page {
+    overflow-x: hidden;
+  }
+
   .hero,
   .section,
   .replaySection {
-    width: min(100% - 1rem, 1180px);
+    width: min(100% - 1.5rem, 1180px);
   }
 
   .hero {
-    padding-top: 6.5rem;
+    padding-top: 5.75rem;
+    padding-bottom: 1.35rem;
+  }
+
+  .heroGrid {
+    gap: 1.1rem;
+  }
+
+  .badgeRow,
+  .trustBadges,
+  .heroActions,
+  .routeLine {
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+
+  .badge,
+  .softBadge,
+  .decisionPill,
+  .trustBadges span,
+  .routeLine span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .routeLine {
+    flex-wrap: wrap;
+  }
+
+  .routeLine i {
+    width: 34px;
   }
 
   .heroCopy h1 {
-    max-width: 9ch;
-    font-size: clamp(3rem, 16vw, 4.4rem);
+    max-width: 11ch;
+    font-size: clamp(2.55rem, 13vw, 3.65rem);
+    letter-spacing: -0.055em;
+  }
+
+  .heroLead {
+    font-size: clamp(1rem, 5vw, 1.14rem);
+    line-height: 1.48;
+  }
+
+  .heroBody {
+    line-height: 1.62;
   }
 
   .heroVisual {
-    min-height: auto;
+    display: none;
   }
 
   .heroScores,
@@ -1689,8 +1733,23 @@
     margin-left: 0;
   }
 
+  .controls button,
+  .primaryAction,
+  .secondaryAction,
+  .ghostAction {
+    width: 100%;
+  }
+
   .consoleBody {
     min-height: auto;
+  }
+
+  .leftRail {
+    padding: 0.9rem;
+  }
+
+  .contextRail {
+    display: none;
   }
 
   .stage {
@@ -1699,6 +1758,25 @@
 
   .sceneHeader {
     grid-template-columns: 1fr;
+  }
+
+  .stepRail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+    padding: 0.75rem;
+  }
+
+  .stepRail::before,
+  .stepRail::after {
+    display: none;
+  }
+
+  .stepRail button {
+    min-width: 0;
+    justify-content: flex-start;
+    padding: 0.58rem;
+    white-space: normal;
   }
 
   .riskScene {

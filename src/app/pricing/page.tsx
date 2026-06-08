@@ -28,6 +28,9 @@ import {
 export const metadata: Metadata = {
   title: "Pricing Plans | Shift Evidence",
   description: "Transparent, modular pre-migration assessment plans for infrastructure teams, MSPs, and partners planning VMware exits.",
+  alternates: {
+    canonical: "https://shiftevidence.com/pricing",
+  },
 };
 
 const purchaseSignals = [
