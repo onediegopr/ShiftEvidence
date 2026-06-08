@@ -1,0 +1,31 @@
+Campaign,Language,Callout Text,Status
+SE | Search EN | VMware to Proxmox High Intent,English,No Agents,Paused
+SE | Search EN | VMware to Proxmox High Intent,English,No Production Access,Paused
+SE | Search EN | VMware to Proxmox High Intent,English,Starts With RVTools,Paused
+SE | Search EN | VMware to Proxmox High Intent,English,Evidence-Based,Paused
+SE | Search EN | VMware to Proxmox High Intent,English,Executive Report,Paused
+SE | Search EN | VMware to Proxmox High Intent,English,Technical Report,Paused
+SE | Search EN | Broadcom VMware Exit,English,No Agents,Paused
+SE | Search EN | Broadcom VMware Exit,English,No Production Access,Paused
+SE | Search EN | Broadcom VMware Exit,English,Starts With RVTools,Paused
+SE | Search EN | Broadcom VMware Exit,English,Evidence-Based,Paused
+SE | Search EN | Broadcom VMware Exit,English,Executive Report,Paused
+SE | Search EN | Broadcom VMware Exit,English,Technical Report,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Sin Agentes,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Sin Tocar Produccion,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Basado En RVTools,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Basado En Evidencia,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Reporte Ejecutivo,Paused
+SE | Search ES | LATAM Espana VMware Proxmox,Spanish,Reporte Tecnico,Paused
+SE | Search EN ES | MSP Consultants Partners,English,No Agents,Paused
+SE | Search EN ES | MSP Consultants Partners,English,No Production Access,Paused
+SE | Search EN ES | MSP Consultants Partners,English,Starts With RVTools,Paused
+SE | Search EN ES | MSP Consultants Partners,English,Evidence-Based,Paused
+SE | Search EN ES | MSP Consultants Partners,English,Executive Report,Paused
+SE | Search EN ES | MSP Consultants Partners,English,Technical Report,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Sin Agentes,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Sin Tocar Produccion,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Basado En RVTools,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Basado En Evidencia,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Reporte Ejecutivo,Paused
+SE | Search EN ES | MSP Consultants Partners,Spanish,Reporte Tecnico,Paused
