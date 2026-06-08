@@ -39,13 +39,13 @@ describe("read-only synthetic Demo Workspace", () => {
 
   it("publishes the quick Migration Readiness Replay route", () => {
     const replayPage = readProjectFile("src/app/demo/replay/page.tsx");
-    const replayComponent = readProjectFile("src/components/demo/MigrationReadinessReplay.tsx");
+    const replayComponent = readProjectFile("src/components/demoReplay/DemoReplayPage.tsx");
 
-    expect(replayPage).toContain("MigrationReadinessReplay");
-    expect(replayComponent).toContain("Run Guided Replay");
-    expect(replayComponent).toContain("Live readiness replay");
-    expect(replayComponent).toContain('href="/demo/workspace"');
-    expect(replayComponent).toContain("Open Demo Workspace");
+    expect(replayPage).toContain("DemoReplayExperience");
+    expect(replayComponent).toContain("Senior-grade migration readiness before touching production.");
+    expect(replayComponent).toContain("Synthetic replay only");
+    expect(replayComponent).toContain('href="/sample-report"');
+    expect(replayComponent).toContain("Download full sample report");
   });
 
   it("publishes the deep Demo Workspace route with a quick replay cross-link", () => {
@@ -92,8 +92,8 @@ describe("read-only synthetic Demo Workspace", () => {
     const expectationsByRoute = {
       "/": {
         file: "src/components/Hero.tsx",
-        hrefs: ['href="/demo/replay"', 'href="/demo/workspace"'],
-        labels: ["Watch Quick Simulation", "Explore Demo Workspace"],
+        hrefs: ['href="/demo/replay"', 'href="/sample-report"'],
+        labels: ["Watch the replay", "Download sample report"],
       },
       "/shiftreadiness": {
         file: "src/views/ShiftReadinessPage.tsx",
