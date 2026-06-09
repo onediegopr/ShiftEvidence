@@ -61,7 +61,7 @@ describe("billing checkout architecture", () => {
     ]);
   });
 
-  it("keeps checkout routes available but prioritizes invoice CTAs while production is safe-off", () => {
+  it("keeps checkout routes available while prioritizing invoice CTAs for B2B onboarding", () => {
     expect(getBillingPlanByCheckoutSlug("starter")?.primaryAction.href).toBe("/billing/bank-transfer/starter");
     expect(getBillingPlanByCheckoutSlug("starter")?.secondaryAction.href).toBe("/billing/checkout/starter");
     expect(getBillingPlanByCheckoutSlug("professional")?.primaryAction.href).toBe("/billing/bank-transfer/professional");

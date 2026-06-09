@@ -53,6 +53,10 @@ export default async function BankTransferInvoicePage({ params, searchParams }: 
                   Wise is used only as a manual bank transfer reference. No transfers, recipients, balances, card
                   payments or entitlements are automated in this flow.
                 </p>
+                <p className="assessment-inline-note">
+                  Bank or Wise receiving details are sent on the reviewed invoice instead of being published publicly.
+                  Use the invoice number as the payment reference so billing can reconcile the transfer safely.
+                </p>
               </div>
               <div className="dashboard-hero-actions">
                 <Link href="/pricing" className="btn btn-secondary">
@@ -92,7 +96,7 @@ export default async function BankTransferInvoicePage({ params, searchParams }: 
                 <h2>Billing contact</h2>
                 <p>
                   These details are used only to prepare a manual invoice and follow up with bank transfer
-                  instructions.
+                  instructions. After the transfer is verified, access is matched and fulfilled from the admin console.
                 </p>
               </div>
 

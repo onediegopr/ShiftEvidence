@@ -25,6 +25,7 @@ type BillingCheckoutPageProps = {
 function statusTone(status: string) {
   switch (status) {
     case "configured_but_disabled":
+    case "configured_live_disabled":
       return "warning";
     case "configured":
       return "good";
@@ -41,6 +42,8 @@ function statusLabel(status: string) {
   switch (status) {
     case "configured_but_disabled":
       return "Configured, disabled";
+    case "configured_live_disabled":
+      return "Configured, review required";
     case "configured":
       return "Ready";
     case "invoice_only":
@@ -86,7 +89,7 @@ function errorMessage(error: string | undefined) {
 function statusMessage(status: string | undefined) {
   switch (status) {
     case "success":
-      return "Payment was completed in Stripe test checkout. Access may require manual verification and fulfillment before the assessment is unlocked.";
+      return "Payment was completed in Stripe checkout. Access may require manual verification and fulfillment before the assessment is unlocked.";
     case "cancelled":
       return "Checkout was cancelled. You can retry card checkout or contact billing support for an invoice.";
     default:

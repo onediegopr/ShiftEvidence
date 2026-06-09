@@ -1,6 +1,6 @@
 # Current Canonical State
 
-Fecha: 2026-06-05
+Fecha: 2026-06-09
 
 ## 1. Purpose
 
@@ -20,7 +20,7 @@ Current posture:
 - Private outreach: allowed with guardrails.
 - Public launch masivo: not approved.
 - Paid Ads: not approved.
-- Live payment collection: not approved.
+- Live payment collection: approved only through the controlled Stripe checkout flow.
 - Real customer pilot: only with explicit prospect/dataset/consent.
 
 ## 3. What Is Live
@@ -32,8 +32,8 @@ Current posture:
 - Storage: Cloudflare R2 production configured and app upload/download/delete validated.
 - Rate limiting: Upstash production configured and smoke validated.
 - Auth/admin: production auth/admin smoke validated.
-- Billing: safe-off.
-- Stripe: live hosted checkout smoke completed without payment; live payment collection remains off.
+- Billing: controlled live Stripe checkout plus manual invoice / bank transfer.
+- Stripe: live hosted checkout is enabled for approved public checkout routes; fulfillment remains manual.
 - PDFs: demo, public sample, and premium sample validated.
 - Demo/workspace/sample report: public routes validated.
 
@@ -41,8 +41,7 @@ Current posture:
 
 - Paid Ads.
 - Tracking implementation in this hito.
-- Live payment collection.
-- Real customer payment.
+- Real customer payment without operational review and fulfillment readiness.
 - Automatic grants.
 - Automatic entitlements.
 - Public launch masivo.
@@ -56,7 +55,7 @@ Recommended order:
 1. `OUTREACH-FOLLOWUP-1` after private replies arrive.
 2. `PILOT-EXECUTION-1` when prospect/dataset/consent exists.
 3. `GOOGLE-ADS-TRACKING-SETUP-1`.
-4. `STRIPE-LIVE-PAYMENT-FINAL-GATE-1` only with exact owner approval.
+4. `BILLING-FULFILLMENT-OPS-1` to rehearse paid order matching, invoice follow-up and manual access grants with explicit owner approval.
 
 ## 6. Historical Docs Policy
 
@@ -76,21 +75,22 @@ Current source of truth hierarchy:
 
 - Workbook parsing dependency risk has initial guardrails but remains a controlled-pilot-only risk; see `docs/dependency-xlsx-risk.md` and `docs/dependency-xlsx-risk-1.md`.
 - Tracking/Ads remains out of scope until a dedicated tracking/privacy hito.
-- Stripe live payment final gate remains pending.
+- Stripe live checkout can collect payment, but paid access still requires manual match and fulfillment from the admin console.
 - Real pilot remains pending prospect/dataset/consent.
 - Private outreach motion and safe execution record are prepared; sending remains manual one-to-one by the owner and should not store personal contact data in repo.
 - Docs history remains broad; operators should start from this canonical file.
 
-## 8. Current Safe-Off Billing Rule
+## 8. Current Controlled Billing Rule
 
-Production checkout start routes should remain disabled until explicit approval.
+Production checkout start routes may create hosted Stripe Checkout sessions for approved public plans.
 
 Public pricing should prioritize:
 
 - invoice request;
 - controlled onboarding;
 - support/contact;
-- checkout link only after controlled approval.
+- controlled card checkout;
+- no promise of instant access or automatic entitlements.
 
 ## 9. Operational Rule
 

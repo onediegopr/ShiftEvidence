@@ -56,17 +56,17 @@ export interface AddOn {
 }
 
 export const paymentOptionsCopy = {
-  cardCheckout: "Card checkout is available only through a controlled rollout after approval.",
+  cardCheckout: "Card checkout is available through a controlled Stripe flow. Service access is reviewed after payment.",
   bankTransfer: "Bank transfer invoices are the primary onboarding path for business customers.",
-  general: "Manual invoice requests are reviewed before fulfillment. Card checkout remains controlled until explicitly approved.",
+  general: "Manual invoice requests are reviewed before fulfillment. Card checkout is available through a controlled Stripe flow.",
   pricingNote:
-    "Manual invoice and controlled onboarding are the default paths while production checkout remains safe-off. Card checkout links can be enabled only after approval.",
+    "Manual invoice and controlled onboarding remain the default paths. Card checkout is available securely at runtime, with access matching handled after payment.",
   faq:
-    "Card checkout is a controlled Stripe path, not open self-service. Bank transfer is a reviewed manual invoice request, not an automatic transfer or instant fulfillment path.",
+    "Card checkout is a controlled Stripe path, not instant self-service fulfillment. Bank transfer is a reviewed manual invoice request, not an automatic transfer or instant access path.",
   blueprint:
     "Blueprint engagements are scoped before payment. Request a manual invoice after confirming project scope.",
   msp:
-    "MSP partner plans are handled through reviewed business invoice by default. Card checkout can be approved later for controlled rollout.",
+    "MSP partner plans are handled through reviewed business invoice by default. Card checkout is available through the controlled Stripe flow, with partner access reviewed after payment.",
   notActive:
     "If checkout is unavailable or account matching is required, requests are routed for manual follow-up, review and invoice handling.",
 } as const;
@@ -98,7 +98,7 @@ export const marketingPlans: Plan[] = [
     futureProvider: "stripe",
     cta: starterBillingPlan.primaryAction,
     secondaryCta: starterBillingPlan.secondaryAction,
-    paymentNote: "Invoice requests are reviewed before fulfillment. Card checkout is available only after controlled approval.",
+    paymentNote: "Invoice requests are reviewed before fulfillment. Card checkout is available through the controlled Stripe flow.",
     includes: [
       "Guided VMware readiness intake",
       "RVTools ingestion and guided evidence review",
@@ -130,7 +130,7 @@ export const marketingPlans: Plan[] = [
     futureProvider: "stripe",
     cta: professionalBillingPlan.primaryAction,
     secondaryCta: professionalBillingPlan.secondaryAction,
-    paymentNote: "Manual invoice requests are reviewed before access or fulfillment. Card checkout is available only after controlled approval.",
+    paymentNote: "Manual invoice requests are reviewed before access or fulfillment. Card checkout is available through the controlled Stripe flow.",
     includes: [
       "Everything in Starter Readiness",
       "Full licensing and cost exposure review",

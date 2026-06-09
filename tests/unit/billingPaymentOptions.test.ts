@@ -17,7 +17,7 @@ describe("billing payment options foundation", () => {
 
   it("keeps Stripe as the controlled configurable card checkout provider", () => {
     expect(marketingPlans.every((plan) => plan.futureProvider === "stripe")).toBe(true);
-    expect(paymentOptionsCopy.cardCheckout).toContain("controlled rollout");
+    expect(paymentOptionsCopy.cardCheckout).toContain("controlled Stripe flow");
     expect(paymentOptionsCopy.notActive).toContain("manual follow-up");
   });
 

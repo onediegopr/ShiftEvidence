@@ -20,7 +20,7 @@ export type BillingCheckoutSlug = "starter" | "professional" | "msp";
 export type BillingPlanAction = {
   label: string;
   href: string;
-  kind: "checkout_placeholder" | "invoice_request" | "scope_discussion" | "partner_inquiry";
+  kind: "card_checkout" | "invoice_request" | "scope_discussion" | "partner_inquiry";
 };
 
 export type BillingPlanConfig = {
@@ -125,9 +125,9 @@ export const billingPlans: BillingPlanConfig[] = [
       kind: "invoice_request",
     },
     secondaryAction: {
-      label: "Request checkout link",
+      label: "Card checkout",
       href: getBillingCheckoutPath("starter"),
-      kind: "checkout_placeholder",
+      kind: "card_checkout",
     },
   },
   {
@@ -149,9 +149,9 @@ export const billingPlans: BillingPlanConfig[] = [
       kind: "invoice_request",
     },
     secondaryAction: {
-      label: "Request checkout link",
+      label: "Card checkout",
       href: getBillingCheckoutPath("professional"),
-      kind: "checkout_placeholder",
+      kind: "card_checkout",
     },
   },
   {
@@ -199,9 +199,9 @@ export const billingPlans: BillingPlanConfig[] = [
       kind: "invoice_request",
     },
     secondaryAction: {
-      label: "Request checkout link",
+      label: "Card checkout",
       href: getBillingCheckoutPath("msp"),
-      kind: "checkout_placeholder",
+      kind: "card_checkout",
     },
   },
 ];
