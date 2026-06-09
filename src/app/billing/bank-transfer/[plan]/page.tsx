@@ -100,6 +100,20 @@ export default async function BankTransferInvoicePage({ params, searchParams }: 
                 </p>
               </div>
 
+              <div className="assessment-lists-grid" style={{ marginTop: "1rem" }}>
+                <article className="assessment-subcard">
+                  <h3>Manual payment workflow</h3>
+                  <ol className="assessment-bullet-list">
+                    <li>Submit this invoice request with company and billing contact details.</li>
+                    <li>Billing reviews the request and sends the invoice with bank or Wise receiving details.</li>
+                    <li>Pay by bank transfer using the invoice number or payment reference.</li>
+                    <li>Send payment proof or remittance details if your bank does not include the reference.</li>
+                    <li>Billing validates the transfer outside the platform.</li>
+                    <li>Access is matched and enabled manually from the admin console after verification.</li>
+                  </ol>
+                </article>
+              </div>
+
               {requestCreated ? (
                 <p className="assessment-inline-note assessment-success-note">
                   Invoice request received. Billing will review it manually before sending bank transfer instructions.

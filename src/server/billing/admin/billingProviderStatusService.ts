@@ -151,7 +151,7 @@ function getStripeRecommendedAction(params: {
     return "Stripe test-mode puede crear checkout si los Price IDs estan presentes; falta webhook secret para capturar eventos.";
   }
 
-  return "Mantener test-mode, fulfillment manual y webhooks sin grants automaticos.";
+  return "Mantener checkout controlado, fulfillment manual y webhooks sin grants automaticos.";
 }
 
 export function getBillingProviderStatusSnapshot(
@@ -249,7 +249,7 @@ export function getBillingProviderStatusSnapshot(
       publiclyVisible: true,
       reason: stripeCheckoutActive
         ? stripeCheckoutMode === "live"
-          ? "Stripe live esta aprobado para el smoke controlado de BILLING-9."
+          ? "Stripe live esta aprobado para checkout controlado; fulfillment sigue siendo manual."
           : "Stripe es el provider principal configurable en test-mode."
         : stripeCheckoutMode === "live"
           ? "Live detectado pero bloqueado por policy hasta aprobacion explicita."

@@ -10,6 +10,12 @@ type StripeCheckoutApiResponse = {
   url?: string | null;
 };
 
+export type StripeCheckoutCustomerContext = {
+  userId?: string | null;
+  customerEmail?: string | null;
+  workspaceId?: string | null;
+};
+
 export type StripeCheckoutResult =
   | {
       ok: true;
@@ -77,6 +83,19 @@ function appendFormValue(body: URLSearchParams, key: string, value: string | num
   body.append(key, String(value));
 }
 
+function appendOptionalFormValue(body: URLSearchParams, key: string, value: string | null | undefined) {
+  const normalized = value?.trim();
+  if (normalized) {
+    body.append(key, normalized);
+  }
+}
+
+function normalizeCheckoutEmail(value: string | null | undefined) {
+  const email = value?.trim().toLowerCase();
+  if (!email || !email.includes("@") || email.startsWith("@") || email.endsWith("@")) return null;
+  return email;
+}
+
 function isAbortError(error: unknown) {
   return error instanceof DOMException
     ? error.name === "AbortError"
@@ -138,6 +157,7 @@ async function mapStripeErrorResponse(
 export async function createStripeCheckoutSession(
   plan: BillingPlanConfig,
   origin: string,
+  customerContext: StripeCheckoutCustomerContext = {},
 ): Promise<StripeCheckoutResult> {
   if (!plan.checkoutEligible || !plan.checkoutSlug) {
     return {
@@ -197,15 +217,22 @@ export async function createStripeCheckoutSession(
   }
 
   const body = new URLSearchParams();
+  const customerEmail = normalizeCheckoutEmail(customerContext.customerEmail);
+
   appendFormValue(body, "mode", plan.cadence === "monthly" ? "subscription" : "payment");
   appendFormValue(body, "line_items[0][price]", priceId);
   appendFormValue(body, "line_items[0][quantity]", 1);
   appendFormValue(body, "success_url", `${redirectOrigin}/billing/checkout/${plan.checkoutSlug}?status=success`);
   appendFormValue(body, "cancel_url", `${redirectOrigin}/billing/checkout/${plan.checkoutSlug}?status=cancelled`);
+  appendOptionalFormValue(body, "client_reference_id", customerContext.userId);
+  appendOptionalFormValue(body, "customer_email", customerEmail);
   appendFormValue(body, "metadata[provider]", "stripe");
   appendFormValue(body, "metadata[plan_id]", plan.id);
   appendFormValue(body, "metadata[plan_slug]", plan.checkoutSlug);
   appendFormValue(body, "metadata[source]", "shift_evidence_public_checkout");
+  appendOptionalFormValue(body, "metadata[user_id]", customerContext.userId);
+  appendOptionalFormValue(body, "metadata[customer_email]", customerEmail);
+  appendOptionalFormValue(body, "metadata[workspace_id]", customerContext.workspaceId);
   appendFormValue(body, "allow_promotion_codes", "true");
 
   const controller = new AbortController();

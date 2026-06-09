@@ -10,6 +10,15 @@ describe("billing operations public and admin copy", () => {
     expect(checkoutPage).not.toMatch(/instant access/i);
   });
 
+  it("keeps bank transfer flow explicit about invoice reference and manual fulfillment", () => {
+    const bankTransferPage = readFileSync("src/app/billing/bank-transfer/[plan]/page.tsx", "utf8");
+
+    expect(bankTransferPage).toContain("Bank or Wise receiving details are sent on the reviewed invoice");
+    expect(bankTransferPage).toContain("Use the invoice number as the payment reference");
+    expect(bankTransferPage).toContain("Billing validates the transfer outside the platform");
+    expect(bankTransferPage).toContain("Access is matched and enabled manually from the admin console");
+  });
+
   it("keeps support billing copy focused on manual invoice and refunds without provider automation", () => {
     const supportPage = readFileSync("src/app/support/page.tsx", "utf8");
 

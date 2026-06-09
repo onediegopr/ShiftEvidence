@@ -79,9 +79,40 @@ describe("Stripe checkout foundation", () => {
     expect(body.get("metadata[provider]")).toBe("stripe");
     expect(body.get("metadata[plan_id]")).toBe("starter_readiness");
     expect(body.get("metadata[plan_slug]")).toBe("starter");
+    expect(body.get("metadata[source]")).toBe("shift_evidence_public_checkout");
     expect(body.get("success_url")).toBe("https://shiftevidence.com/billing/checkout/starter?status=success");
     expect(body.get("cancel_url")).toBe("https://shiftevidence.com/billing/checkout/starter?status=cancelled");
     expect(String(request.body)).not.toContain("sk_test_example");
+  });
+
+  it("adds logged-in customer context metadata when available", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_test_example";
+    process.env.STRIPE_STARTER_PRICE_ID = "price_starter";
+    process.env.STRIPE_CHECKOUT_MODE = "test";
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: "cs_test_123",
+        livemode: false,
+        url: "https://checkout.stripe.com/c/pay/cs_test_123",
+      }),
+    });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await createStripeCheckoutSession(starterPlan, "https://shiftevidence.com", {
+      userId: "user_123",
+      customerEmail: "Buyer@Example.com",
+      workspaceId: "workspace_123",
+    });
+
+    const [, request] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    const body = new URLSearchParams(String(request.body));
+
+    expect(body.get("client_reference_id")).toBe("user_123");
+    expect(body.get("customer_email")).toBe("buyer@example.com");
+    expect(body.get("metadata[user_id]")).toBe("user_123");
+    expect(body.get("metadata[customer_email]")).toBe("buyer@example.com");
+    expect(body.get("metadata[workspace_id]")).toBe("workspace_123");
   });
 
   it("creates a one-time Professional Checkout payload from server-side config", async () => {

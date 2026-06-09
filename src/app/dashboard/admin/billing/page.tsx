@@ -250,7 +250,7 @@ function BillingOpsSafetyBanner() {
     <div className="dashboard-banner dashboard-banner-warning" role="alert">
       <strong>Operacion interna sensible.</strong> Accion manual: revisar antes de confirmar. No ejecutar si no
       verificaste el pago fuera de la plataforma. Wise/bank transfer es solicitud manual, no transferencia
-      automatica. Stripe live debe permanecer desactivado salvo aprobacion explicita. Nunca guardar secretos,
+      automatica. Stripe live solo debe operar bajo hito aprobado y con fulfillment manual. Nunca guardar secretos,
       datos de tarjeta, passwords ni API keys en notas internas.
     </div>
   );
@@ -1192,7 +1192,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
       <BillingOpsSafetyBanner />
 
       <section className="assessment-summary-grid">
-        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout modo test" value={status.operations.checkoutTestMode ? "OK" : "NO"} note="Modo seguro esperado" tone={status.operations.checkoutTestMode ? "good" : "warning"} />
+        <MetricCard icon={<CheckCircle2 size={22} />} label="Checkout controlado" value={status.stripe.checkoutActive ? "OK" : "NO"} note="Stripe runtime validado" tone={status.stripe.checkoutActive ? "good" : "warning"} />
         <MetricCard icon={<AlertTriangle size={22} />} label="Pagos live" value={status.operations.livePayments ? "ON" : "OFF"} note="No activar sin hito separado" tone={status.operations.livePayments ? "warning" : "good"} />
         <MetricCard icon={<ShieldCheck size={22} />} label="Manual fulfillment" value={status.operations.manualFulfillment ? "ON" : "OFF"} note="Runbook manual activo" tone={status.operations.manualFulfillment ? "good" : "danger"} />
         <MetricCard icon={<LinkIcon size={22} />} label="Webhooks" value={status.operations.webhooks ? "ON" : "OFF"} note="Endpoint disponible, secret separado" tone={status.operations.webhooks ? "good" : "warning"} />
@@ -1301,7 +1301,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
         >
           <DiagnosticFieldList
             rows={[
-              ["Checkout modo test", status.operations.checkoutTestMode ? "OK" : "NO"],
+              ["Checkout controlado", status.stripe.checkoutActive ? "OK" : "NO"],
               ["Pagos live", status.operations.livePayments ? "ON" : "OFF"],
               ["Fulfillment manual", status.operations.manualFulfillment ? "ON" : "OFF"],
               ["Solicitudes transferencia", status.operations.bankTransferRequests ? "ON" : "OFF"],

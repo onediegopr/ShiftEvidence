@@ -20,7 +20,7 @@ describe("admin operations Spanish safety copy", () => {
 
     expect(source).toContain("Operacion interna sensible");
     expect(source).toContain("Wise/bank transfer es solicitud manual");
-    expect(source).toContain("Stripe live debe permanecer desactivado");
+    expect(source).toContain("Stripe live solo debe operar bajo hito aprobado");
     expect(source).toContain("Factura enviada");
     expect(source).toContain("Esta actualizacion no concede acceso ni crea transferencias Wise");
   });

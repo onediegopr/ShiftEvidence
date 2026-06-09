@@ -92,6 +92,48 @@ Public pricing should prioritize:
 - controlled card checkout;
 - no promise of instant access or automatic entitlements.
 
-## 9. Operational Rule
+## 9. Monetization And Fulfillment State
+
+Stripe:
+
+- Public card checkout is enabled for Starter Readiness, Professional Assessment, and MSP Partner.
+- Checkout creates hosted Stripe Checkout sessions server-side.
+- Success and cancel routes return to the plan checkout page.
+- Checkout metadata includes provider, plan id, plan slug, source, and, when the buyer is logged in, user/email/workspace context.
+- Stripe webhooks are implemented at `/api/webhooks/stripe` with signature verification.
+- Webhook events are persisted into billing events, orders, payments and subscriptions for admin review.
+- Stripe webhook processing does not grant access automatically.
+
+Wise / bank transfer:
+
+- Wise is used as a manual bank transfer / invoice reference, not as an automated transfer system.
+- Public pages do not expose bank or Wise receiving details.
+- Customers submit invoice requests from the bank-transfer routes.
+- Billing sends bank/Wise receiving details on the reviewed invoice.
+- Customers should pay using the invoice number or payment reference.
+- Billing validates transfer evidence manually before access is fulfilled.
+
+Fulfillment:
+
+- Automatic entitlements are not approved.
+- Paid Stripe orders require manual review, match and fulfillment from `/dashboard/admin/billing`.
+- Manual invoice requests can be marked pending, invoice sent, payment received, cancelled, or rejected.
+- Marking an invoice request as payment received does not create an automatic grant.
+- Starter and Professional paid orders can be fulfilled manually after paid status and complete user/workspace/assessment match.
+- MSP Partner requires partner-specific manual onboarding and is not auto-granted by the standard assessment fulfillment flow.
+- All manual match, fulfillment, revocation and invoice status changes write audit events.
+
+Operational procedure:
+
+1. Buyer chooses a plan from pricing, partners, demo, sample report, landing, or direct billing route.
+2. Buyer uses card checkout or submits manual invoice request.
+3. For Stripe, wait for webhook/ledger record and verify payment status in admin billing.
+4. For bank transfer, send reviewed invoice with bank/Wise details and require invoice/reference on payment.
+5. Confirm payment externally in Stripe/Wise/bank before granting access.
+6. Match paid order to user, workspace and assessment in admin billing.
+7. Fulfill manually only after match is complete and the paid status is verified.
+8. If refund/cancel occurs, use the refund/cancel review panel and manual revocation flow. Do not delete customer data.
+
+## 10. Operational Rule
 
 If a future task conflicts with this file, pause and update the canonical state first or document why a newer approved hito supersedes it.
