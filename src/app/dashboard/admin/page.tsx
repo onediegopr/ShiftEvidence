@@ -519,9 +519,12 @@ export default async function AdminConsolePage({ searchParams }: AdminConsolePag
     <main className="dashboard-page">
       <section className="dashboard-hero glass-card">
         <div>
-          <div className="badge badge-cyan">Panel de Administración</div>
+          <div className="badge badge-cyan">Consola interna segura</div>
           <h1>Centro Operativo interno</h1>
-          <p>Panel interno para revisar salud del sistema, IA, usuarios y evaluaciones.</p>
+          <p>
+            Panel interno para revisar salud del sistema, IA, usuarios y evaluaciones. No guardar secretos,
+            passwords, API keys ni datos de tarjeta en notas internas.
+          </p>
         </div>
         <div className="dashboard-hero-actions">
           <Link href="/dashboard/admin/pricing" className="btn btn-secondary">

@@ -12,6 +12,30 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: {
+    title: "Shift Evidence | VMware to Proxmox readiness",
+    description:
+      "Evidence-based VMware to Proxmox migration readiness analysis before scope, budget or architecture decisions are locked.",
+    url: "https://www.shiftevidence.com/",
+    siteName: BRAND_WORDMARK,
+    images: [
+      {
+        url: BRAND_PUBLIC_ASSETS.appIcon,
+        width: 512,
+        height: 512,
+        alt: `${BRAND_WORDMARK} icon`,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Shift Evidence | VMware to Proxmox readiness",
+    description:
+      "Before migrating VMware to Proxmox, know what can break with evidence-based readiness analysis.",
+    images: [BRAND_PUBLIC_ASSETS.appIcon],
+  },
   icons: {
     icon: [
       { url: BRAND_PUBLIC_ASSETS.favicon },

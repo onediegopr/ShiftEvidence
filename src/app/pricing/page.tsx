@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import {
   ArrowRight,
+  ArrowDownToLine,
   Brain,
   Building2,
   Check,
@@ -60,6 +61,19 @@ const purchaseStats = [
   ["1", "Partner program"],
   ["1", "Technical review add-on"],
   ["0", "Production agents required"],
+] as const;
+
+const pricingBuyerResources = [
+  {
+    title: "Product Brochure",
+    href: "/marketing/shift-evidence-product-brochure.pdf",
+    body: "Share the full Shift Evidence methodology, outputs and trust boundaries with buyers.",
+  },
+  {
+    title: "Migration Blueprint Overview",
+    href: "/marketing/migration-blueprint-overview.pdf",
+    body: "Use this when the conversation moves from assessment into waves, rollback and planning gates.",
+  },
 ] as const;
 
 type ComparisonTone = "included" | "limited" | "premium" | "excluded";
@@ -446,6 +460,18 @@ export default function PricingPage() {
               copy="A short brief, a full product brochure and a Blueprint overview help buyers separate readiness assessment from deeper migration planning."
               featured="blueprint"
             />
+
+            <div className="pricing-buyer-resource-strip" aria-label="Pricing buyer PDF downloads">
+              {pricingBuyerResources.map((resource) => (
+                <a key={resource.href} href={resource.href} target="_blank" rel="noreferrer" className="pricing-buyer-resource-link">
+                  <span>
+                    <strong>{resource.title}</strong>
+                    <small>{resource.body}</small>
+                  </span>
+                  <ArrowDownToLine size={17} />
+                </a>
+              ))}
+            </div>
           </div>
         </section>
 

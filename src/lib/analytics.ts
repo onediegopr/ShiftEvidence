@@ -2,6 +2,7 @@ type GoogleTagCommand = "config" | "event" | "js" | "set";
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
+const useGoogleTagManager = Boolean(process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim());
 const startAssessmentConversionSendTo = process.env.NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_SEND_TO?.trim();
 const startAssessmentConversionValue = Number.parseFloat(
   process.env.NEXT_PUBLIC_GOOGLE_ADS_START_ASSESSMENT_VALUE ?? "1.0",
@@ -22,6 +23,12 @@ function compactParams(params: AnalyticsParams) {
 
 export function trackEvent(eventName: string, params: AnalyticsParams = {}) {
   if (typeof window === "undefined" || typeof window.gtag !== "function") {
+    if (useGoogleTagManager && Array.isArray(window.dataLayer)) {
+      window.dataLayer.push({
+        event: eventName,
+        ...compactParams(params),
+      });
+    }
     return;
   }
 
@@ -47,6 +54,8 @@ export function trackPricingClick(plan?: string, params: AnalyticsParams = {}) {
 }
 
 export function trackStartAssessmentConversion(params: AnalyticsParams = {}) {
+  trackEvent("start_assessment", params);
+
   if (!startAssessmentConversionSendTo) {
     return;
   }

@@ -37,3 +37,4 @@ qa-artifacts/
 *.sw?
 
 .vercel
+.env*

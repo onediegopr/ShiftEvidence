@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import DemoReplayExperience from "../../../components/demoReplay/DemoReplayPage";
 
+const MigrationReadinessReplay = DemoReplayExperience;
+
 type DemoReplayPageProps = {
   searchParams?: Promise<{ capture?: string }> | { capture?: string };
 };
@@ -18,5 +20,5 @@ export default async function DemoReplayPage({ searchParams }: DemoReplayPagePro
   const query = await Promise.resolve(searchParams);
   const captureMode = query?.capture === "1";
 
-  return <DemoReplayExperience captureMode={captureMode} />;
+  return <MigrationReadinessReplay captureMode={captureMode} />;
 }
