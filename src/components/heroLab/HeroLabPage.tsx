@@ -9,12 +9,17 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { trackStartAssessmentClick } from "../../lib/analytics";
 import { HeroEvidenceSnapshot } from "./HeroEvidenceSnapshot";
 import { trustBadges } from "./heroSnapshotData";
 import styles from "./HeroEvidenceSnapshot.module.css";
 
 type HeroLabPageProps = {
   captureMode?: boolean;
+};
+
+const handleStartAssessmentClick = () => {
+  trackStartAssessmentClick({ source: "hero_lab" });
 };
 
 export function HeroLabPage({ captureMode = false }: HeroLabPageProps) {
@@ -67,7 +72,7 @@ export function HeroLabPage({ captureMode = false }: HeroLabPageProps) {
           </div>
 
           <div className={styles.actions} aria-label="Hero actions">
-            <Link href="/start" className={styles.primaryAction}>
+            <Link href="/start" className={styles.primaryAction} onClick={handleStartAssessmentClick}>
               Start readiness assessment
               <ArrowRight size={17} />
             </Link>

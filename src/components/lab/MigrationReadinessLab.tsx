@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   SkipForward,
 } from "lucide-react";
+import { trackStartAssessmentClick } from "../../lib/analytics";
 import { acmeDataset, auditStream, labScenes, type EvidenceState, type KeyValueRow, type LabScene, type Severity } from "./labData";
 import styles from "./MigrationReadinessLab.module.css";
 
@@ -24,6 +25,10 @@ const SCENE_OFFSETS = labScenes.map((_scene, index) =>
 );
 const TOTAL_DURATION = labScenes.reduce((sum, scene) => sum + scene.durationMs, 0);
 const CAPTURE_DURATION = TOTAL_DURATION + CAPTURE_FINAL_HOLD_MS;
+
+const handleStartAssessmentClick = () => {
+  trackStartAssessmentClick({ source: "migration_lab" });
+};
 
 function subscribeToMotionPreference(onStoreChange: () => void) {
   if (typeof window === "undefined") {
@@ -600,7 +605,9 @@ function FinalScene({ captureMode, onReplay }: { captureMode: boolean; onReplay:
       <p>Move low-risk workloads first. Validate backup and dependencies before critical waves. Do not migrate blind.</p>
       {captureMode ? null : (
         <div className={styles.finalCtas}>
-          <Link href="/start">Start readiness assessment</Link>
+          <Link href="/start" onClick={handleStartAssessmentClick}>
+            Start readiness assessment
+          </Link>
           <Link href="/sample-report">Download sample report</Link>
           <button type="button" onClick={onReplay}>Replay simulation</button>
         </div>

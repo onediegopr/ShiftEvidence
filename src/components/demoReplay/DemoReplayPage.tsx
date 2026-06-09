@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import { trackStartAssessmentClick } from "../../lib/analytics";
 import {
   advisorInputs,
   advisorObservations,
@@ -58,6 +59,10 @@ const STEP_OFFSETS = replaySteps.map((_step, index) => replaySteps.slice(0, inde
 const TOTAL_DURATION = replaySteps.reduce((sum, step) => sum + step.durationMs, 0);
 const CAPTURE_DURATION = TOTAL_DURATION + FINAL_HOLD_MS;
 const FINAL_STEP_INDEX = replaySteps.length - 1;
+
+const handleStartAssessmentClick = () => {
+  trackStartAssessmentClick({ source: "demo_replay" });
+};
 
 function subscribeToMotionPreference(onStoreChange: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -253,7 +258,9 @@ function HeroSection({ onRunReplay, onSkipToReport }: { onRunReplay: () => void;
           <div className={styles.heroActions}>
             <button type="button" className={styles.primaryAction} onClick={onRunReplay}><Play size={18} />Run guided replay</button>
             <button type="button" className={styles.secondaryAction} onClick={onSkipToReport}>Open final report<SkipForward size={17} /></button>
-            <Link href="/start" className={styles.ghostAction}>Start readiness assessment<ArrowRight size={17} /></Link>
+            <Link href="/start" className={styles.ghostAction} onClick={handleStartAssessmentClick}>
+              Start readiness assessment<ArrowRight size={17} />
+            </Link>
           </div>
         </div>
 
@@ -664,7 +671,13 @@ function FinalScene() {
       <div className={styles.finalScores}><ScoreCard label="Migration Readiness" value={68} /><ScoreCard label="Evidence Confidence" value={64} /><article className={styles.finalDecision}><span>Decision</span><strong>Conditional Go</strong></article></div>
       <h3>Senior-grade VMware -&gt; Proxmox readiness before touching production.</h3>
       <p>Pilot first. Validate backups. Confirm dependencies. Delay ERP and domain controllers. Do not migrate blind.</p>
-      <div className={styles.finalCtas}><Link href="/start">Start readiness assessment</Link><Link href="/sample-report">Download sample report</Link><Link href="/technical-review">Book technical review</Link></div>
+      <div className={styles.finalCtas}>
+        <Link href="/start" onClick={handleStartAssessmentClick}>
+          Start readiness assessment
+        </Link>
+        <Link href="/sample-report">Download sample report</Link>
+        <Link href="/technical-review">Book technical review</Link>
+      </div>
     </section>
   );
 }
@@ -715,7 +728,15 @@ function ActionCenter() {
     <section className={styles.section}>
       <div className={styles.sectionHeader}><span className={styles.badge}>Action Center</span><h2>Ready for your environment?</h2><p>Start with your RVTools export or review the full downloadable sample report before booking an assessment.</p></div>
       <div className={styles.actionGrid}>
-        <article className={styles.actionPrimary}><span>Start with your VMware evidence</span><h3>Upload or prepare your RVTools inventory export and senior context.</h3><p>Get a structured readiness path: VM risks, storage readiness, Advisor notes, evidence gaps and migration waves.</p><div className={styles.trustBadges}>{["RVTools-based", "Guided questions", "No production access"].map((badge) => <span key={badge}>{badge}</span>)}</div><Link href="/start" className={styles.primaryAction}>Start readiness assessment <ArrowRight size={17} /></Link></article>
+        <article className={styles.actionPrimary}>
+          <span>Start with your VMware evidence</span>
+          <h3>Upload or prepare your RVTools inventory export and senior context.</h3>
+          <p>Get a structured readiness path: VM risks, storage readiness, Advisor notes, evidence gaps and migration waves.</p>
+          <div className={styles.trustBadges}>{["RVTools-based", "Guided questions", "No production access"].map((badge) => <span key={badge}>{badge}</span>)}</div>
+          <Link href="/start" className={styles.primaryAction} onClick={handleStartAssessmentClick}>
+            Start readiness assessment <ArrowRight size={17} />
+          </Link>
+        </article>
         <article className={styles.actionSecondary}><span>Downloadable decision pack</span><h3>Download the full sample report.</h3><p>See evidence coverage, Advisor notes, guided questions, VM risk classification, Proxmox target sizing, required validations and migration waves.</p><Link href="/sample-report" className={styles.downloadAction}>Download full sample report <Download size={17} /></Link><div className={styles.actionLinks}><Link href="/technical-review">Book technical review</Link><Link href="/pricing">View pricing plans</Link></div></article>
       </div>
     </section>

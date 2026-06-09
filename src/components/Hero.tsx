@@ -19,6 +19,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { assetSrc } from "../lib/assetSrc";
+import { trackStartAssessmentClick } from "../lib/analytics";
 import vmwareLogo from "../../images/vmware.svg";
 import proxmoxLogo from "../../images/proxmox.svg";
 
@@ -2754,7 +2755,13 @@ export default function Hero({ onOpenScanner }: HeroProps) {
             </div>
 
             <div className="hero-action-deck" aria-label="Primary Shift Evidence actions">
-              <button onClick={onOpenScanner} className="hero-action-primary">
+              <button
+                onClick={() => {
+                  trackStartAssessmentClick({ source: "hero" });
+                  onOpenScanner();
+                }}
+                className="hero-action-primary"
+              >
                 <span>
                   <strong>Start readiness assessment</strong>
                   <small>Upload RVTools, then complete guided senior context.</small>

@@ -53,8 +53,12 @@ export function trackPricingClick(plan?: string, params: AnalyticsParams = {}) {
   });
 }
 
-export function trackStartAssessmentConversion(params: AnalyticsParams = {}) {
+export function trackStartAssessmentClick(params: AnalyticsParams = {}) {
   trackEvent("start_assessment", params);
+}
+
+export function trackStartAssessmentConversion(params: AnalyticsParams = {}) {
+  trackStartAssessmentClick(params);
 
   if (!startAssessmentConversionSendTo) {
     return;

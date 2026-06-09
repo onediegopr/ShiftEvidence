@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { LogIn, Sparkles } from "lucide-react";
 import { BRAND_PUBLIC_ASSETS, BRAND_WORDMARK } from "../lib/brandAssets";
+import { trackStartAssessmentClick } from "../lib/analytics";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -73,7 +74,11 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar-actions">
-          <Link href="/sign-up" className="nav-start-check">
+          <Link
+            href="/sign-up"
+            className="nav-start-check"
+            onClick={() => trackStartAssessmentClick({ source: "navbar" })}
+          >
             <Sparkles size={15} />
             Start assessment
           </Link>
